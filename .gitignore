@@ -1,0 +1,4 @@
+# Local tooling / editor / assistant files
+.claude/
+.vscode/
+CLAUDE.md

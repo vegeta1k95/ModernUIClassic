@@ -1,0 +1,32 @@
+<Bindings>
+    <!--
+        Auto-loaded by the client because of its filename + addon-root location
+        (NOT listed in ModernUI.toc — TOC-listed XML is parsed as UI XML where
+        <Binding> isn't a valid element). All addon-wide keybindings go here.
+
+        BINDING_HEADER_MUI / BINDING_NAME_MUI_* labels are set in
+        MUI_Professions\MUI_ProfessionsOverview.lua at load time.
+    -->
+
+    <!--
+        Toggle Professions Pane: click the existing Professions micromenu
+        SecureButton. Its SecureHandlerClickTemplate `_onclick` snippet
+        toggles MUI_ProfessionsOverviewFrame:Show()/Hide() in secure context,
+        so the binding works in combat too (direct Show/Hide on this frame
+        from tainted code would be blocked — frame has secure descendants).
+    -->
+    <!--
+        Empty body on purpose. Addon-loaded binding actions run TAINTED — so
+        calling :Click() on a SecureHandlerClickTemplate button from here
+        fails inside SecureHandler_OnClick ("Invalid 'self' frame handle"
+        because GetFrameHandle rejects tainted callers).
+        Instead, MUI_ProfessionsOverview.lua reads the configured key via
+        GetBindingKey("MUI_TOGGLE_PROFESSIONS") and re-applies
+        SetOverrideBindingClick on every UPDATE_BINDINGS. The override fires
+        a SECURE click on MUI_MicroBtn_Professions, which is the path
+        SecureHandler_OnClick expects, and combat-safe by design.
+    -->
+    <Binding name="MUI_TOGGLE_PROFESSIONS" category="BINDING_HEADER_INTERFACE">
+    </Binding>
+
+</Bindings>
