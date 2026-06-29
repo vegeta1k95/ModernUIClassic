@@ -194,6 +194,17 @@ class "MinimapTrackerMenu" {
                 else
                     CancelTrackingBuff()
                 end
+                -- A tracking cast can silently fail (e.g. a Druid's Track
+                -- Humanoids needs Cat Form): tracking doesn't change,
+                -- MINIMAP_UPDATE_TRACKING never fires, and the checkbox would
+                -- stay stuck "on". Re-sync from the real tracking state next
+                -- frame so a failed cast reverts the box (a successful one,
+                -- whose texture updates on the event, settles correctly).
+                if C_Timer and C_Timer.After then
+                    C_Timer.After(0, function() self:UpdateStates() end)
+                else
+                    self:UpdateStates()
+                end
             end,
         }
     end;
@@ -218,7 +229,11 @@ class "MinimapTrackerMenu" {
             if item.spellID and item._checkbox then
                 local _, _, icon = GetSpellInfo(item.spellID)
                 local override = MUI_IconOverrides and MUI_IconOverrides:GetOverride(item.spellID)
-                item._checkbox:SetChecked(icon == activeTex or override == activeTex)
+                -- Require a real active texture. Without the activeTex guard,
+                -- `override == activeTex` is `nil == nil` → true for any spell with
+                -- no icon-override whenever nothing is tracked, falsely ticking it
+                -- on (e.g. Track Humanoids lights up when you cancel Find Herbs).
+                item._checkbox:SetChecked(activeTex ~= nil and (icon == activeTex or override == activeTex))
             end
         end
     end;
