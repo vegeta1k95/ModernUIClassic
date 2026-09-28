@@ -287,7 +287,7 @@ class "SpecColumn" : extends "SecureActionButton" {
 
     SetSpec = function(self, index)
         local _, _, classID = UnitClass("player")
-        local _, name = GetTalentTabInfo(index)
+        local _, name = C_SpecializationInfo.GetSpecializationInfo(index)
         local coords = SPEC_THUMBNAILS[classID]
         self._thumbnail:SetTextureRegion(TEX_THUMBNAILS, 2048, 2048, coords[index].x, coords[index].y, 308, 188)
         self._title:SetText(name)

@@ -235,7 +235,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
 
         local quality = 1
         if outputLink then
-            local _, _, q = GetItemInfo(outputLink)
+            local _, _, q = C_Item.GetItemInfo(outputLink)
             if q then quality = q end
         end
 
@@ -325,7 +325,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         -- hyperlink and the quality border.
         local quality, icon, link
         if entry.output and entry.output[1] then
-            local _, itemLink, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(entry.output[1])
+            local _, itemLink, itemQuality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(entry.output[1])
             icon    = itemTexture
             link    = itemLink
             quality = itemQuality
@@ -366,8 +366,8 @@ class "ProfessionsRecipePane" : extends "Frame" {
         for i, r in ipairs(reagents) do
             local row = self:_AcquireReagentRow(i)
             local itemId, req = r[1], r[2]
-            local itemName, itemLink, quality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemId)
-            local owned = (GetItemCount and GetItemCount(itemId)) or 0
+            local itemName, itemLink, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemId)
+            local owned = C_Item.GetItemCount(itemId) or 0
             row:SetData(itemTexture, quality or 1, owned, req,
                         itemName or ("Item #" .. tostring(itemId)), itemLink)
             row:Show()
@@ -385,7 +385,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
             local rLink                       = adapter:GetReagentItemLink(idx, i)
             local q = 1
             if rLink then
-                local _, _, lq = GetItemInfo(rLink)
+                local _, _, lq = C_Item.GetItemInfo(rLink)
                 if lq then q = lq end
             end
             row:SetData(rTex, q, pCount, rCount, rName, rLink)

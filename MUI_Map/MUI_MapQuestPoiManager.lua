@@ -84,6 +84,12 @@ class "MapQuestPoiManager" : extends "Frame" {
         if MUI_QuestHelper then
             MUI_QuestHelper:RegisterTrackingListener(function() self:Rebuild() end)
             MUI_QuestHelper:RegisterClustersChangedListener(function() self:Rebuild() end)
+            -- Hovering the quest's row in the map's quest log lights up its
+            -- pin here too (retail highlights both).
+            MUI_QuestHelper:RegisterQuestHoverListener(function(questId, isHovered)
+                local poi = self._buttons[questId]
+                if poi then poi:SetHighlighted(isHovered) end
+            end)
 
             local watcher = MUI_QuestHelper.watcher
             if watcher then
@@ -163,7 +169,10 @@ class "MapQuestPoiManager" : extends "Frame" {
 
         -- Compute desired set: for each eligible quest, project its target
         -- onto the displayed map. Off-map quests are absent from `needed`
-        -- and their pooled buttons hide below.
+        -- and their pooled buttons hide below. A quest with targets on two
+        -- continents is picked on the displayed map's continent, so it
+        -- gets a POI on both maps.
+        local _, _, mapCont = MUI_MapMath:MapToWorld(displayedMapId, 0.5, 0.5)
         local needed = {}
         for questId, entry in pairs(watcher:GetWatched() or {}) do
             -- Solo filter (description tab open) only applies on zone
@@ -177,7 +186,7 @@ class "MapQuestPoiManager" : extends "Frame" {
                 -- different continent than the player. The minimap edge
                 -- arrow + on-screen compass still reroute (they guide
                 -- the player to the boat dock).
-                local target = MUI_FocusManager:PickTarget("quest", questId, true)
+                local target = MUI_FocusManager:PickTarget("quest", questId, true, mapCont)
                 if target and target.continent then
                     local nx, ny = MUI_MapMath:WorldToMap(
                         displayedMapId, target.wx, target.wy, target.continent)
@@ -249,10 +258,10 @@ class "MapQuestPoiManager" : extends "Frame" {
 
             local entry = MUI_QuestHelper.watcher and MUI_QuestHelper.watcher:GetEntry(questId)
             if not entry then return end
-            local title = entry.title or ("quest " .. questId)
+            local title, r, g, b = MUI_QuestHelper:FormatQuestTitle(entry, questId)
 
             tooltip:SetMinimumWidth(100)
-            tooltip:AddTitle(title, true)
+            tooltip:AddLine(title, r, g, b, true, 13)
 
             -- Live leaderboard objectives. Finished lines go green, in-
             -- progress white, both bullet-prefixed for easy scanning.
@@ -267,6 +276,15 @@ class "MapQuestPoiManager" : extends "Frame" {
                             tooltip:AddLine("-" .. o.text, 1, 1, 1, true)
                         end
                     end
+                end
+            end
+            for _, s in ipairs(MUI_QuestHelper:GetSourceItemObjectives(questId)) do
+                emittedAny = true
+                local line = "-" .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
+                if s.finished then
+                    tooltip:AddLine(line, 0.4, 0.85, 0.4, true)
+                else
+                    tooltip:AddLine(line, 1, 1, 1, true)
                 end
             end
 
@@ -295,6 +313,7 @@ class "MapQuestPoiManager" : extends "Frame" {
         poi:SetRecurring(_isRepeatable(questId))
         poi:SetComplete(entry and entry.isComplete and true or false)
         poi:SetFocused(MUI_FocusManager:IsFocused("quest", questId))
+        poi:SetHighlighted(MUI_QuestHelper:IsQuestHovered(questId))
     end;
 
     _SyncQuestState = function(self, questId)

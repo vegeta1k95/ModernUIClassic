@@ -45,6 +45,9 @@ class "UnitFrameComboBar" {
         self.bar:SetScale(0.66)
         self.bar:Below(anchorWidget, 9)
         self.bar:SetCount(0)
+        -- Apply the form gate now: a fresh frame is shown, and the first
+        -- Update otherwise waits for a power / form / target event.
+        self:Update()
     end;
 
     Update = function(self)

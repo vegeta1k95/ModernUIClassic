@@ -21,9 +21,12 @@ Output schema, keyed by questId:
         finisher = [ { uiMapId, normX, normY }, ... ],
     }
 
-`kind` ∈ {"npc", "object", "item", "trigger"}. `name` is the in-game
-target name as it appears in the quest log leaderboard line, used at
-runtime to filter completed targets via prefix match.
+`kind` ∈ {"npc", "object", "item", "sourceitem", "trigger"}. `name` is
+the in-game target name as it appears in the quest log leaderboard line,
+used at runtime to filter completed targets via prefix match.
+"sourceitem" rows are the quest's requiredSourceItems (needed, never a
+leaderboard line); they carry `itemId` and the runtime drops them once
+the item is in the player's bags.
 
 Per-TARGET (not per-category) so a quest like "Kill 10 X, 10 Y, 10 Z" —
 which has three creatures all in the creature-kill category — produces
@@ -42,6 +45,7 @@ from __future__ import annotations
 import math
 
 from lua_parser import LUA_NIL
+from enums import RACE_KEYS
 
 
 # Single-linkage threshold in normalized space (0-1). 0.07 ≈ 200 yards in
@@ -49,6 +53,13 @@ from lua_parser import LUA_NIL
 # CLUSTER_RADIUS_YARDS constant.
 CLUSTER_THRESHOLD = 0.07
 MIN_CLUSTER_SIZE  = 3
+
+# Under-sized groups are folded into their nearest group only when that
+# neighbour is within this distance. Anything farther stays a stray point:
+# gluing an isolated spawn onto a cluster on the other side of the zone
+# stretched hulls across the map (four scattered scout camps became one
+# zone-spanning "area" with its centroid in the sea).
+MERGE_THRESHOLD = 2 * CLUSTER_THRESHOLD
 
 
 # Dungeon-entrance rewrites — mirror MUI_TransportDB._dungeons. Maps a
@@ -143,6 +154,25 @@ def _table_field(t, num_key, list_idx=None):
     return None
 
 
+def _is_horde_only(q):
+    races = q.get("requiredRaces")
+    if not isinstance(races, int):
+        return False
+    return (races & RACE_KEYS["ALL_HORDE"]) != 0 \
+        and (races & RACE_KEYS["ALL_ALLIANCE"]) == 0
+
+
+def _item_drops(item, key, horde):
+    """Drop-source ids for `key` ("npcDrops" / "objectDrops"): the Horde
+    overlay (emit.add_horde_item_overlay) for Horde-only quests, else the
+    Alliance-baked value."""
+    if horde:
+        v = item.get(key + "Horde")
+        if v is not None and v is not LUA_NIL:
+            return v
+    return item.get(key)
+
+
 # -------- spawn enumeration --------
 
 def _emit_spawns_into(out_list, spawns_table, area_to_ui):
@@ -198,22 +228,25 @@ def _cluster_points(points, threshold=CLUSTER_THRESHOLD):
     return list(groups.values())
 
 
-def _merge_small(clusters, min_size=MIN_CLUSTER_SIZE):
+def _merge_small(clusters, min_size=MIN_CLUSTER_SIZE, merge_threshold=MERGE_THRESHOLD):
+    """Fold under-sized groups into their nearest neighbour, smallest first.
+    Groups with no neighbour within merge_threshold are left as they are;
+    the caller turns them into stray points."""
     clusters = [list(c) for c in clusters]
+    isolated = set()
+    m2 = merge_threshold * merge_threshold
     while True:
         small_idx = None
         small_size = math.inf
         for i, c in enumerate(clusters):
-            if len(c) < min_size and len(c) < small_size:
+            if i not in isolated and len(c) < min_size and len(c) < small_size:
                 small_idx = i
                 small_size = len(c)
         if small_idx is None:
             break
-        if len(clusters) == 1:
-            return []
         small = clusters[small_idx]
         nearest = None
-        nearest_d = math.inf
+        nearest_d = m2
         for j, other in enumerate(clusters):
             if j == small_idx:
                 continue
@@ -224,9 +257,12 @@ def _merge_small(clusters, min_size=MIN_CLUSTER_SIZE):
                     if d < nearest_d:
                         nearest_d = d
                         nearest = j
-        target = clusters[nearest]
-        target.extend(small)
+        if nearest is None:
+            isolated.add(small_idx)
+            continue
+        clusters[nearest].extend(small)
         clusters.pop(small_idx)
+        isolated = {i - 1 if i > small_idx else i for i in isolated}
     return clusters
 
 
@@ -253,16 +289,11 @@ def _build_uimap_clusters(points):
     """Cluster points in a single uiMap. Returns (clusters, stray)."""
     if len(points) < MIN_CLUSTER_SIZE:
         return [], list(points)
-    groups = _cluster_points(points)
-    groups = _merge_small(groups)
-    if not groups:
-        return [], list(points)
-    clusters = []
-    for g in groups:
-        if len(g) < MIN_CLUSTER_SIZE:
-            continue
-        hull = _convex_hull(g)
+    clusters, stray = [], []
+    for g in _merge_small(_cluster_points(points)):
+        hull = _convex_hull(g) if len(g) >= MIN_CLUSTER_SIZE else []
         if len(hull) < 3:
+            stray.extend(g)
             continue
         cx = sum(p[0] for p in g) / len(g)
         cy = sum(p[1] for p in g) / len(g)
@@ -271,7 +302,7 @@ def _build_uimap_clusters(points):
             "centroid": [cx, cy],
             "count": len(g),
         })
-    return clusters, []
+    return clusters, stray
 
 
 def _bake_target_groups(target_groups):
@@ -305,6 +336,8 @@ def _bake_target_groups(target_groups):
         if not target_clusters and not target_stray:
             continue
         row = {"kind": tg["kind"], "name": tg["name"]}
+        if "itemId" in tg:
+            row["itemId"] = tg["itemId"]
         if target_clusters:
             row["clusters"] = target_clusters
         if target_stray:
@@ -366,32 +399,64 @@ def build_all(quests, npcs, objects, items, area_to_ui):
 
         # [3] item loot — combine ALL source NPCs / objects under the
         # item's name (leaderboard line shows just the item name).
+        horde = _is_horde_only(q)
+
+        def item_points(item):
+            points = []
+            for src_id in _entries_of(_item_drops(item, "npcDrops", horde)):
+                if isinstance(src_id, int):
+                    npc = npcs.get(src_id)
+                    if npc:
+                        _emit_spawns_into(points, npc.get("spawns"), area_to_ui)
+            for src_id in _entries_of(_item_drops(item, "objectDrops", horde)):
+                if isinstance(src_id, int):
+                    obj = objects.get(src_id)
+                    if obj:
+                        _emit_spawns_into(points, obj.get("spawns"), area_to_ui)
+            return points
+
+        objective_items = set()
         cat = _objectives_category(objs, 3)
         if cat:
             for entry in _entries_of(cat):
                 iid = _entry_target_id(entry)
                 if not iid:
                     continue
+                objective_items.add(iid)
                 item = items.get(iid)
                 if not item:
                     continue
-                points = []
-                for src_id in _entries_of(item.get("npcDrops")):
-                    if isinstance(src_id, int):
-                        npc = npcs.get(src_id)
-                        if npc:
-                            _emit_spawns_into(points, npc.get("spawns"), area_to_ui)
-                for src_id in _entries_of(item.get("objectDrops")):
-                    if isinstance(src_id, int):
-                        obj = objects.get(src_id)
-                        if obj:
-                            _emit_spawns_into(points, obj.get("spawns"), area_to_ui)
+                points = item_points(item)
                 if points:
                     target_groups.append({
                         "kind":   "item",
                         "name":   item.get("name") or "?",
                         "points": points,
                     })
+
+        # requiredSourceItems — items the quest needs but never lists as a
+        # leaderboard objective (pendant halves, keys, runestones). Questie
+        # shows them as "special objectives" at the item's drop sources;
+        # emitted as kind="sourceitem" rows carrying itemId so the runtime
+        # can drop the target once the item is in the player's bags. Items
+        # already covered by an item objective, or handed out on accept
+        # (sourceItemId), are skipped — same rule as Questie.
+        source_item = q.get("sourceItemId")
+        for iid in _entries_of(q.get("requiredSourceItems")):
+            if not isinstance(iid, int) or iid in objective_items \
+                    or iid == source_item:
+                continue
+            item = items.get(iid)
+            if not item:
+                continue
+            points = item_points(item)
+            if points:
+                target_groups.append({
+                    "kind":   "sourceitem",
+                    "name":   item.get("name") or "?",
+                    "itemId": iid,
+                    "points": points,
+                })
 
         # triggerEnd (scout-location). Shape: { desc, { [areaId] = {{x,y}} } }
         trig = q.get("triggerEnd")

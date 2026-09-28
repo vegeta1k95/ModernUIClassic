@@ -106,7 +106,7 @@ class "SpecGridColumn" : extends "Frame" {
             self._icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask")
         end)
 
-        local _, specName = GetTalentTabInfo(spec)
+        local _, specName = C_SpecializationInfo.GetSpecializationInfo(spec)
         self._name = FontString(self)
         self._name:Below(self._icon, 10)
         self._name:SetFont(MUI.FONT, 22, "")
@@ -139,7 +139,7 @@ class "SpecGridColumn" : extends "Frame" {
 
     SetGroup = function(self, group)
         self._grid:SetGroup(group)
-        self._bg:SetDesaturated(group ~= GetActiveTalentGroup())
+        self._bg:SetDesaturated(group ~= C_SpecializationInfo.GetActiveSpecGroup())
     end
 }
 
@@ -174,13 +174,13 @@ class "TabTalents" : extends "SecureFrame" {
         -- Subscribe to updates to spells and talents
         self:RegisterEventHandler("PLAYER_LEVEL_UP", function() self:_UpdateLevel() end)
         self:RegisterEventHandler("ACTIVE_TALENT_GROUP_CHANGED", function()
-            if self._specGrid then self:SetPreviewGroup(GetActiveTalentGroup()) end
+            if self._specGrid then self:SetPreviewGroup(C_SpecializationInfo.GetActiveSpecGroup()) end
         end)
         self:RegisterEventHandler("PLAYER_ENTERING_WORLD", function()
 
             self:_CreateSpecView()
             self:_CreateFullView()
-            self:SetPreviewGroup(GetActiveTalentGroup())
+            self:SetPreviewGroup(C_SpecializationInfo.GetActiveSpecGroup())
 
             local className, _, classID = UnitClass("player")
             self._className:SetText(string.upper(className))
@@ -248,7 +248,7 @@ class "TabTalents" : extends "SecureFrame" {
 
     _UpdateTalents = function(self)
         if self._showSpec > 0 then
-            local _, name = GetTalentTabInfo(self._showSpec)
+            local _, name = C_SpecializationInfo.GetSpecializationInfo(self._showSpec)
             self._specName:SetText(string.upper(name))
             self._specHeader:SetWidth(self._specName:GetStringWidth() + self._specPoints:GetStringWidth() + 20)
             self._specGrid:UpdateFromSpec(self._showSpec)
@@ -261,7 +261,7 @@ class "TabTalents" : extends "SecureFrame" {
     end;
 
     _UpdateTalentsPreview = function(self)
-        local stashed = GetGroupPreviewTalentPointsSpent(false, GetActiveTalentGroup())
+        local stashed = GetGroupPreviewTalentPointsSpent(false, C_SpecializationInfo.GetActiveSpecGroup())
         local unspent = GetUnspentTalentPoints()
         local available = unspent - stashed
         local color = (available > 0) and "|cff00ff00" or "|cff666666"
@@ -307,7 +307,7 @@ class "TabTalents" : extends "SecureFrame" {
         self._btnReset:SetTexture(TEX, 2048, 1024, 1535, 111, 38, 38)
         self._btnReset:SetEnabled(false)
         self._btnReset.OnClick = function()
-            ResetGroupPreviewTalentPoints(false, GetActiveTalentGroup())
+            ResetGroupPreviewTalentPoints(false, C_SpecializationInfo.GetActiveSpecGroup())
         end
 
         self._pointsAvailable = FontString(self._bottomBar, nil, "OVERLAY")
@@ -370,7 +370,7 @@ class "TabTalents" : extends "SecureFrame" {
     -- only when previewing a group that isn't currently active.
     SetPreviewGroup = function(self, group)
         self._previewGroup = group
-        local desat = group ~= GetActiveTalentGroup()
+        local desat = group ~= C_SpecializationInfo.GetActiveSpecGroup()
         self._ddPreset:SetText((group == 1 and "Primary" or "Secondary")
                                .. (desat and STATUS_INACTIVE or STATUS_ACTIVE))
         self._btnPresetActivate:SetEnabled(desat)
@@ -384,7 +384,7 @@ class "TabTalents" : extends "SecureFrame" {
     -- Re-text the (already-built) menu rows in place and toggle Secondary's
     -- enabled state. The rows are created once via SetItems in _CreateBottomBar.
     _RefreshPresetMenu = function(self)
-        local active = GetActiveTalentGroup()
+        local active = C_SpecializationInfo.GetActiveSpecGroup()
         self._presetMenu:SetItemLabel(1, "Primary"   .. (active == 1 and STATUS_ACTIVE or STATUS_INACTIVE))
         self._presetMenu:SetItemLabel(2, "Secondary" .. (active == 2 and STATUS_ACTIVE or STATUS_INACTIVE))
         self._presetMenu:SetItemEnabled(2, GetNumTalentGroups() > 1)

@@ -9,9 +9,58 @@ class "MinimapFrame" : extends {"Frame", "Editable"} {
 
         self:EditModeSetLabel("Minimap")
         self:EditModeSetupSettings(function(content)
-
+            self:_AddRotateSetting(content)
         end)
 
+    end;
+
+    -- 1.15.9 moved "Rotate Minimap" out of Options into Blizzard's Edit Mode, which
+    -- writes its own value back on every layout apply. Ours rides with our layout
+    -- and is re-asserted after Blizzard's.
+    _AddRotateSetting = function(self, content)
+        self.rotateMinimap = GetCVarBool("rotateMinimap")
+
+        self._chkRotate = CheckBox(content, nil, HUD_EDIT_MODE_SETTING_MINIMAP_ROTATE_MINIMAP)
+        self._chkRotate.label:SetFontSize(12)
+        self._chkRotate:SetSize(200, 29)
+        self._chkRotate:SetBoxSize(24, 24)
+        self._chkRotate:AlignParentTopLeft(0, 0)
+        self._chkRotate:SetChecked(self.rotateMinimap)
+        self._chkRotate.OnChanged = function(_, checked)
+            self:SetRotateMinimap(checked)
+            self:EditModeNotifyChanged()
+        end
+
+        self:EditModeTrackSetting(
+            function() return self.rotateMinimap end,
+            function(v) self:SetRotateMinimap(v) end)
+
+        hooksecurefunc(MinimapCluster, "SetRotateMinimap", function()
+            SetCVar("rotateMinimap", self.rotateMinimap and "1" or "0")
+        end)
+    end;
+
+    SetRotateMinimap = function(self, rotate)
+        self.rotateMinimap = rotate
+        SetCVar("rotateMinimap", rotate and "1" or "0")
+        self._chkRotate:SetChecked(rotate)
+    end;
+
+    -- Only the non-default (on) is stored, like scale.
+    EditModeGetLayout = function(self)
+        local data = Editable.EditModeGetLayout(self)
+        if self.rotateMinimap then
+            data = data or {}
+            data.rotateMinimap = true
+        end
+        return data
+    end;
+
+    EditModeApplyLayout = function(self, data)
+        Editable.EditModeApplyLayout(self, data)
+        if data and data.rotateMinimap then
+            self:SetRotateMinimap(true)
+        end
     end;
 
     SetBlipTexture = function(self, path)

@@ -53,7 +53,9 @@ class "ProfessionsTabs" : extends "TabGroup" {
         for _, state in ipairs(ordered) do
             if not state.def.isGathering and state.knownSpells.rank then
                 idx = idx + 1
-                local tab = self:AddTab("MUI_ProfessionTab" .. state.name, state.name or state.def.key, nil, 98, 200, 4)
+                -- state.name comes from the skill list, which lags the spellbook when a
+                -- profession has just been learned: fall back to the rank spell's name.
+                local tab = self:AddTab("MUI_ProfessionTab" .. state.def.key, state.name or GetSpellInfo(state.knownSpells.rank), nil, 98, 200, 4)
                 tab._spellID = state.knownSpells.rank
                 if state == activeState then activeIdx = idx end
             end

@@ -1,4 +1,4 @@
-## Interface: 11508
+## Interface: 11509
 ## Title: ModernUI
 ## Notes: Modern UI overhaul for Classic
 ## Author: ModernUI Team
@@ -51,6 +51,7 @@ MUI_Shared\MUI_CheckBox.lua
 MUI_Shared\MUI_ItemIcon.lua
 MUI_Shared\MUI_TextureTiled.lua
 MUI_Shared\MUI_MetalBorder.lua
+MUI_Shared\MUI_PanelChrome.lua
 MUI_Shared\MUI_Model.lua
 MUI_Shared\MUI_DiamondBorder.lua
 MUI_Shared\MUI_InnerBorder.lua
@@ -165,5 +166,7 @@ MUI_Nameplates\MUI_Nameplates.lua
 MUI_Chat\MUI_ChatFrame.lua
 MUI_Chat\MUI_Chat.lua
 MUI_Options\MUI_Options.lua
+
+MUI_Mail\MUI_Mail.lua
 
 MUI_Test.lua

@@ -269,6 +269,10 @@ object "MinimapTracker" : extends "Module" {
                     for i, coord in ipairs(spawns) do
                         local pinName = "MUI_Tracker_" .. key .. "_" .. id .. "_" .. i
                         local pin = MinimapPin(pinName, 12)
+                        -- One level under the quest pins: the same NPC is often both
+                        -- (class quests turn in at the class trainer), and the quest
+                        -- marker has to win that overlap.
+                        pin:SetFrameLevel(MUI_MINIMAP_PIN_FRAME_LEVEL - 1)
                         pin:SetIconType(spec.icon)
                         pin:SetWorldPosition(uiMapId, coord[1] / 100, coord[2] / 100)
                         -- Click-through: hover detection is purely geometric

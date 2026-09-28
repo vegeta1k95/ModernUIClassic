@@ -68,8 +68,12 @@ class "FontString" : extends {"Widget", "ScriptObject"} {
         self._native:SetShadowColor(r, g, b, a or 1)
     end;
 
+    -- Natural single-line width of the full text. The native GetStringWidth is bounded
+    -- by the FontString's current width — it measures the truncated "7..." rendering —
+    -- so a label that sizes itself from it (fs:SetWidth(fs:GetStringWidth())) can only
+    -- ever shrink. Every caller wants the unbounded measure.
     GetStringWidth = function(self)
-        return self._native:GetStringWidth()
+        return self._native:GetUnboundedStringWidth()
     end;
 
     SetTextHeight = function(self, height)

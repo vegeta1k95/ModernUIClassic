@@ -50,6 +50,11 @@ class "Button" : extends "Frame" {
         self.label:SetText(text)
     end;
 
+    -- Text Blizzard set on a wrapped native button (SetText drives our own label).
+    GetNativeText = function(self)
+        return self._native:GetText()
+    end;
+
     SetNormalTexture = function(self, path, hWrap, vWrap)
         self._native:SetNormalTexture(path, hWrap, vWrap)
         return self:GetNormalTexture()
@@ -187,9 +192,7 @@ class "Button" : extends "Frame" {
     -- Resolve the action-page-aware action ID for an ActionButton-style
     -- native. Returns nil for buttons that aren't action buttons.
     GetActionID = function(self)
-        if ActionButton_GetPagedID then
-            return ActionButton_GetPagedID(self._native)
-        end
+        return self._native.action
     end;
 
     SetClickSound = function(self, sound)

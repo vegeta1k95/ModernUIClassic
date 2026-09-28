@@ -43,6 +43,10 @@ local ZONE_MAP_TYPE = 3
 local GLOW_THICK = 5
 local CORE_THICK = 30
 
+-- Stray-point circle radius (world yards). Larger than the minimap's 26 so a
+-- lone camp still reads as an area at zone-map scale (~9 px on Darkshore).
+local STRAY_CIRCLE_YARDS = 60
+
 -- Per-hull adaptive core thickness. The core gradient extends INWARD
 -- from each edge by CORE_THICK pixels; on a hull narrower than 2x
 -- CORE_THICK the cores from opposing edges overlap and add up into a
@@ -338,7 +342,7 @@ class "MapQuestAreaManager" : extends "Frame" {
         end)
 
         hooksecurefunc(WorldMapFrame, "OnMapChanged", function()
-            for _, area in pairs(self._areas) do area:Refresh() end
+            self:_UpdateAll()
         end)
 
         -- Re-project hulls every time the world map is opened. OnMapChanged
@@ -349,7 +353,7 @@ class "MapQuestAreaManager" : extends "Frame" {
         -- early-returned, leaving lines hidden until the next hover/focus
         -- event nudged the area back through _Refresh.
         WorldMapFrame:HookScript("OnShow", function()
-            for _, area in pairs(self._areas) do area:Refresh() end
+            self:_UpdateAll()
         end)
 
         for questId in pairs(watcher:GetWatched() or {}) do
@@ -362,12 +366,23 @@ class "MapQuestAreaManager" : extends "Frame" {
             self:_Destroy(questId); return
         end
         local cluster = MUI_QuestHelper:GetQuestClusters(questId)
-        if not cluster or not cluster:HasClusters() then
+        if not cluster then
             self:_Destroy(questId); return
         end
+        -- Targets on the displayed map's continent; _UpdateAll re-picks
+        -- on every map change.
+        local cont = self:_DisplayedContinent() or cluster:GetContinent()
+        -- Real hulls when the quest has enough points to form one; otherwise
+        -- per-point stray circles, as on the minimap, so scattered single
+        -- locations (scout camps, lone objects) still get an area.
         local hulls = {}
-        for _, c in ipairs(cluster:GetClusters()) do
-            if c.hull then hulls[#hulls + 1] = c.hull end
+        local real = cluster:GetClusters(cont)
+        if #real > 0 then
+            for _, c in ipairs(real) do
+                if c.hull then hulls[#hulls + 1] = c.hull end
+            end
+        else
+            hulls = cluster:GetStrayHulls(STRAY_CIRCLE_YARDS, cont)
         end
         if #hulls == 0 then self:_Destroy(questId); return end
 
@@ -376,8 +391,22 @@ class "MapQuestAreaManager" : extends "Frame" {
             area = MapQuestObjectiveArea("MUI_MapQuestArea_" .. questId, questId)
             self._areas[questId] = area
         end
-        area:SetHulls(hulls, cluster:GetContinent())
+        area:SetHulls(hulls, cont)
         self:_ApplyVisibility(questId)
+    end;
+
+    _DisplayedContinent = function(self)
+        local mapId = WorldMapFrame:GetMapID()
+        if not mapId then return nil end
+        local _, _, cont = MUI_MapMath:MapToWorld(mapId, 0.5, 0.5)
+        return cont
+    end;
+
+    _UpdateAll = function(self)
+        for questId in pairs(self.watcher:GetWatched() or {}) do
+            self:_Update(questId)
+        end
+        for _, area in pairs(self._areas) do area:Refresh() end
     end;
 
     _Destroy = function(self, questId)

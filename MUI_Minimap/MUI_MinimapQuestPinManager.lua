@@ -8,23 +8,10 @@ end
 
 -- Quests whose surviving objective points number fewer than QuestObjective-
 -- Cluster's MIN_CLUSTER_SIZE don't form a cluster hull. Render a small
--- CCW-polygon circle around each stray point so single-target quests still
--- get a visible area overlay (with hover tooltip). Radius / vertex count
--- are picked for "clearly localised marker" rather than geographic accuracy.
-local STRAY_CIRCLE_YARDS    = 26
-local STRAY_CIRCLE_VERTICES = 12
-local function _strayCircleHull(cx, cy)
-    local hull = {}
-    local step = 2 * math.pi / STRAY_CIRCLE_VERTICES
-    for i = 1, STRAY_CIRCLE_VERTICES do
-        local a = (i - 1) * step
-        hull[i] = {
-            cx + STRAY_CIRCLE_YARDS * math.cos(a),
-            cy + STRAY_CIRCLE_YARDS * math.sin(a),
-        }
-    end
-    return hull
-end
+-- circle around each stray point so single-target quests still get a
+-- visible area overlay (with hover tooltip). Radius is picked for "clearly
+-- localised marker" rather than geographic accuracy.
+local STRAY_CIRCLE_YARDS = 26
 
 -- Hotzone cluster radius for objective pins (world yards). Matches Questie's
 -- `clusterLevelHotzone` default — merges nearby spawns of the same target
@@ -219,6 +206,15 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local n = 0
         for _, bucket in pairs(self.pins) do n = n + #bucket end
         return n
+    end;
+
+    -- Re-seat every pin and the area overlay of one quest from the current
+    -- specs / clusters (a required source item was looted or destroyed).
+    RefreshQuest = function(self, questId)
+        local entry = self.watcher:GetEntry(questId)
+        if not entry then return end
+        self:_DestroyPinsForQuest(questId)
+        self:_SpawnPinsForQuest(questId, entry)
     end;
 
     -- ---- watcher callbacks ----------------------------------------------
@@ -475,25 +471,31 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local cluster = MUI_QuestHelper:GetQuestClusters(questId)
         if not cluster then return end
 
+        -- This continent's targets only; the overlay is rebuilt on every
+        -- zone change, so crossing the sea picks up the other side.
+        local _, _, _, playerCont = UnitPosition("player")
+        local cont = playerCont or cluster:GetContinent()
+
         -- Prefer real cluster hulls when the quest has enough points to
         -- form one; otherwise fall back to per-point stray circles so
         -- low-count quests (1-2 objectives) still get an area outline.
         local hulls, strayCenters = {}, nil
-        if cluster:HasClusters() then
-            for _, c in ipairs(cluster:GetClusters()) do
+        local real = cluster:GetClusters(cont)
+        if #real > 0 then
+            for _, c in ipairs(real) do
                 hulls[#hulls + 1] = c.hull
             end
         else
+            hulls = cluster:GetStrayHulls(STRAY_CIRCLE_YARDS, cont)
             strayCenters = {}
-            for _, p in ipairs(cluster:GetPoints()) do
-                hulls[#hulls + 1] = _strayCircleHull(p[1], p[2])
+            for _, p in ipairs(cluster:GetPoints(cont)) do
                 strayCenters[#strayCenters + 1] = { p[1], p[2] }
             end
         end
         if #hulls == 0 then return end
 
         local area = MinimapQuestObjectiveArea()
-        area:SetHulls(hulls, cluster:GetContinent())
+        area:SetHulls(hulls, cont)
         if strayCenters then
             -- Centre icons render only for the focused quest; visibility
             -- is toggled from _ApplyFocusDimming. The icon stays in sync

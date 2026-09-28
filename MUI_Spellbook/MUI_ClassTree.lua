@@ -523,7 +523,7 @@ class "ClassTree" : extends "SpellGrid" {
                     tooltip:AddLine("Quest at level |cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
                 elseif isLearnable then
                     tooltip:AddLine("Available at trainer", 0, 1, 0, false, 10.5)
-                    tooltip:AddLine("Cost:   " .. GetCoinTextureString(displayRank.cost), 1, 1, 1)
+                    tooltip:AddLine("Cost:   " .. C_CurrencyInfo.GetCoinTextureString(displayRank.cost), 1, 1, 1)
                 else
                     tooltip:AddLine("Next rank at level |cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
                 end

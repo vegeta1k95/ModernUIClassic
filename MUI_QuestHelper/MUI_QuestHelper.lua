@@ -29,6 +29,24 @@ local _LEADER_TYPE = {
     trigger         = "event",
 }
 
+-- Quest-level difficulty colours for tooltip titles (same thresholds as
+-- the quest tracker and the map quest log).
+local _DIFF_RED    = { 1.00, 0.10, 0.10 }
+local _DIFF_ORANGE = { 1.00, 0.50, 0.25 }
+local _DIFF_YELLOW = { 1.00, 1.00, 0.00 }
+local _DIFF_GREEN  = { 0.25, 0.75, 0.25 }
+local _DIFF_GRAY   = { 0.62, 0.62, 0.62 }
+
+local function _difficultyColor(level)
+    local diff = level - UnitLevel("player")
+    if     diff >=  5                                   then return _DIFF_RED
+    elseif diff >=  3                                   then return _DIFF_ORANGE
+    elseif diff >= -2                                   then return _DIFF_YELLOW
+    elseif -diff <= (GetQuestGreenRange("player") or 5) then return _DIFF_GREEN
+    else                                                     return _DIFF_GRAY
+    end
+end
+
 
 object "QuestHelper" : extends "Module" {
 
@@ -89,9 +107,25 @@ object "QuestHelper" : extends "Module" {
             end
         end)
         self.watcher:RegisterCallback("OnQuestRemoved", function(questId)
+            self._sourceItemState[questId] = nil
             if self.clusters[questId] then
                 self.clusters[questId] = nil
                 self:_FireClustersChanged(questId)
+            end
+        end)
+
+        -- Required source items (pendant halves, keys, …) have no
+        -- leaderboard line, so the quest log never signals when one is
+        -- looted or destroyed: watch the bags and recluster / re-pin the
+        -- quests whose source-item state changed.
+        self._sourceItemState = {}
+        self._bagDriver = Frame("Frame", nil, "MUI_QuestHelperBagDriver")
+        self._bagDriver:RegisterEventHandler("BAG_UPDATE_DELAYED", function()
+            for questId, entry in pairs(self.watcher:GetWatched()) do
+                if self:_SourceItemStateKey(questId) ~= self._sourceItemState[questId] then
+                    self:_UpdateQuestClusters(questId, entry)
+                    self.minimapPinManager:RefreshQuest(questId)
+                end
             end
         end)
     end;
@@ -106,6 +140,7 @@ object "QuestHelper" : extends "Module" {
     -- (tools/questdb_export/clusters.py:DUNGEON_ENTRANCES), so the
     -- precomputed coords already point at outer-world entrances.
     _UpdateQuestClusters = function(self, questId, entry)
+        self._sourceItemState[questId] = self:_SourceItemStateKey(questId)
         local data = MUI_QuestClustersDB:Get(questId)
         local cluster = QuestObjectiveCluster()
         cluster:SetData(data, entry)
@@ -136,6 +171,10 @@ object "QuestHelper" : extends "Module" {
         -- keep their specs in the cluster forever and the nav arrow never
         -- swaps to the turn-in.
         if entry.isComplete then return true end
+        -- Required source item pins: done once the item is in the bags.
+        if spec.sourceItemId then
+            return C_Item.GetItemCount(spec.sourceItemId) > 0
+        end
         if not entry.objectives then return false end
         local name = spec.targetName or ""
         -- Item specs carry "ItemName <SourceName>"; the quest log shows only
@@ -310,20 +349,15 @@ object "QuestHelper" : extends "Module" {
     -- separators or intentional repeated lines.
     -- objectiveFilter (optional): { [idx] = true, ... } — when present,
     -- only entry.objectives at those indices are emitted. nil = emit all.
-    FillQuestTooltip = function(self, questId, mode, objectiveFilter, monoSize)
+    FillQuestTooltip = function(self, questId, mode, objectiveFilter)
         local entry = self.watcher and self.watcher:GetEntry(questId)
         if not entry then return end
-        local title = entry.title or ("quest " .. questId)
+        local title, r, g, b = self:FormatQuestTitle(entry, questId)
         if not MUI_Tooltip:HasLine(title) then
-            if monoSize then
-                MUI_Tooltip:AddLine(title, 1, 0.82, 0)
-            else
-                MUI_Tooltip:AddTitle(title)
-            end
+            MUI_Tooltip:AddLine(title, r, g, b, nil, 13)
         end
         if mode == "title" then return end
-        if not entry.objectives then return end
-        for idx, o in ipairs(entry.objectives) do
+        for idx, o in ipairs(entry.objectives or {}) do
             if (not objectiveFilter or objectiveFilter[idx])
                 and o.text and o.text ~= "" then
                 local line = (o.finished and _CHECK_ICON or _BULLET_ICON) .. " " .. o.text
@@ -333,11 +367,100 @@ object "QuestHelper" : extends "Module" {
                 end
             end
         end
+        -- Required source items have no leaderboard line, so a target
+        -- filter can never name them: only the unfiltered block lists them.
+        if objectiveFilter then return end
+        for _, s in ipairs(self:GetSourceItemObjectives(questId)) do
+            local line = (s.finished and _CHECK_ICON or _BULLET_ICON) .. " "
+                      .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
+            if not MUI_Tooltip:HasLine(line) then
+                local c = s.finished and 0.5 or 1
+                MUI_Tooltip:AddLine(line, c, c, c)
+            end
+        end
+    end;
+
+    -- Drop sources of an item for the player's faction. The exporter bakes
+    -- Alliance sources into npcDrops / objectDrops and adds npcDropsHorde /
+    -- objectDropsHorde only where the Horde sources differ.
+    GetItemDrops = function(self, item)
+        if UnitFactionGroup("player") == "Horde" then
+            return item.npcDropsHorde or item.npcDrops,
+                   item.objectDropsHorde or item.objectDrops
+        end
+        return item.npcDrops, item.objectDrops
+    end;
+
+    -- Items the quest requires but never lists as a leaderboard objective
+    -- (requiredSourceItems minus the item objectives and the item handed
+    -- out on accept) — Questie's "special objectives".
+    GetRequiredSourceItems = function(self, questId)
+        local q = MUI_QuestDB:Get(questId)
+        local req = q and q.requiredSourceItems
+        if not req then return {} end
+        local listed = {}
+        if q.objectives and q.objectives[3] then
+            for _, e in ipairs(q.objectives[3]) do
+                if e and e[1] then listed[e[1]] = true end
+            end
+        end
+        local out = {}
+        for _, itemId in ipairs(req) do
+            if not listed[itemId] and itemId ~= q.sourceItemId then
+                out[#out + 1] = itemId
+            end
+        end
+        return out
+    end;
+
+    -- Tooltip view of the required source items: name + whether the item
+    -- is already in the bags.
+    GetSourceItemObjectives = function(self, questId)
+        local out = {}
+        for _, itemId in ipairs(self:GetRequiredSourceItems(questId)) do
+            local item = MUI_ItemDB:Get(itemId)
+            out[#out + 1] = {
+                itemId   = itemId,
+                name     = item and item.name or ("item " .. itemId),
+                finished = C_Item.GetItemCount(itemId) > 0,
+            }
+        end
+        return out
+    end;
+
+    -- "itemId=0|1" per required source item, nil for quests without any;
+    -- a change between two bag updates means recluster + re-pin.
+    _SourceItemStateKey = function(self, questId)
+        local items = self:GetRequiredSourceItems(questId)
+        if #items == 0 then return nil end
+        local parts = {}
+        for i, itemId in ipairs(items) do
+            parts[i] = itemId .. "=" .. (C_Item.GetItemCount(itemId) > 0 and 1 or 0)
+        end
+        return table.concat(parts, ",")
     end;
 
     RegisterTrackingListener = function(self, fn)
         self._trackingListeners = self._trackingListeners or {}
         table.insert(self._trackingListeners, fn)
+    end;
+
+    -- Quest title as the objective tooltips (minimap pin / area / arrow,
+    -- world-map POI / hull) show it: "[level] " prefix when showQuestLevel
+    -- is on, difficulty colour when showQuestDifficultyColor is on, gold
+    -- otherwise. Returns text, r, g, b.
+    FormatQuestTitle = function(self, entry, questId)
+        local title = entry.title or ("quest " .. questId)
+        local level = entry.level
+        local s = MUI_DB and MUI_DB.settings and MUI_DB.settings.questHelper
+        if s and s.showQuestLevel and level and level > 0 then
+            title = "[" .. level .. "] " .. title
+        end
+        if s and s.showQuestDifficultyColor and level and level > 0 then
+            local c = _difficultyColor(level)
+            return title, c[1], c[2], c[3]
+        end
+        return title, 1, 0.82, 0
     end;
 
     -- Cursor-anchored quest tooltip used by both the world-map POI button
@@ -350,10 +473,10 @@ object "QuestHelper" : extends "Module" {
     ShowMapQuestTooltip = function(self, anchorFrame, questId)
         local entry = self.watcher:GetEntry(questId)
         if not entry then return end
-        local title = entry.title or ("quest " .. questId)
         MUI_Tooltip:ShowFor(anchorFrame, "ANCHOR_CURSOR", function(tip)
+            local title, r, g, b = self:FormatQuestTitle(entry, questId)
             tip:SetMinimumWidth(100)
-            tip:AddTitle(title, true)
+            tip:AddLine(title, r, g, b, true, 13)
             local emittedAny = false
             if entry.objectives then
                 for _, o in ipairs(entry.objectives) do
@@ -365,6 +488,15 @@ object "QuestHelper" : extends "Module" {
                             tip:AddLine("-" .. o.text, 1, 1, 1, true)
                         end
                     end
+                end
+            end
+            for _, s in ipairs(self:GetSourceItemObjectives(questId)) do
+                emittedAny = true
+                local line = "-" .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
+                if s.finished then
+                    tip:AddLine(line, 0.4, 0.85, 0.4, true)
+                else
+                    tip:AddLine(line, 1, 1, 1, true)
                 end
             end
             if not emittedAny then

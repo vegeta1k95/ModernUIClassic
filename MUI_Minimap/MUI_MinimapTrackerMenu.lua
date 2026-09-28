@@ -6,8 +6,8 @@
 
 local OBJECTS_ATLAS = "Interface\\AddOns\\ModernUI\\assets\\textures\\objecticonsatlas"
 
--- Classic Era has no GetNumTrackingTypes — enumerate by IsSpellKnown on the
--- known set of tracking/sense spells across all classes + gathering professions.
+-- Classic Era has no GetNumTrackingTypes — enumerate by C_SpellBook.IsSpellInSpellBook
+-- on the known set of tracking/sense spells across all classes + gathering professions.
 local TRACKING_SPELL_IDS = {
     1494,  -- Track Beasts (Hunter)
     19878, -- Track Demons
@@ -56,9 +56,9 @@ class "MinimapTrackerMenu" {
         -- Rebuild when the player learns a new spell or gains/loses a
         -- profession skill, so Find Herbs / Track Humanoids / etc. appear
         -- without /reload.
-        self.menu.popup:RegisterEventHandler("LEARNED_SPELL_IN_TAB", function() self:_SchedulePopulate() end)
-        self.menu.popup:RegisterEventHandler("SKILL_LINES_CHANGED",  function() self:_SchedulePopulate() end)
-        self.menu.popup:RegisterEventHandler("SPELLS_CHANGED",       function() self:_SchedulePopulate() end)
+        self.menu.popup:RegisterEventHandler("LEARNED_SPELL_IN_SKILL_LINE", function() self:_SchedulePopulate() end)
+        self.menu.popup:RegisterEventHandler("SKILL_LINES_CHANGED",         function() self:_SchedulePopulate() end)
+        self.menu.popup:RegisterEventHandler("SPELLS_CHANGED",              function() self:_SchedulePopulate() end)
         -- Refresh radio-state when tracking spell toggles (including from
         -- external macros).
         self.menu.popup:RegisterEventHandler("MINIMAP_UPDATE_TRACKING", function() self:UpdateStates() end)
@@ -111,7 +111,7 @@ class "MinimapTrackerMenu" {
         }
 
         for _, spellID in ipairs(TRACKING_SPELL_IDS) do
-            if IsSpellKnown(spellID, false) then
+            if C_SpellBook.IsSpellInSpellBook(spellID, Enum.SpellBookSpellBank.Player, false) then
                 local name, _, icon = GetSpellInfo(spellID)
                 local override = MUI_IconOverrides and MUI_IconOverrides:GetOverride(spellID)
                 if override then icon = override end

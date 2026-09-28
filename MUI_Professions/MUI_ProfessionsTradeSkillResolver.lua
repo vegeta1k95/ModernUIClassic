@@ -74,7 +74,7 @@ object "ProfessionsSourceResolver" {
         if not itemId then return "" end
         local entry = MUI_ItemDB and MUI_ItemDB:Get(itemId)
         if entry and entry.name then return entry.name end
-        return (GetItemInfo and GetItemInfo(itemId)) or ("Item #" .. tostring(itemId))
+        return C_Item.GetItemInfo(itemId) or ("Item #" .. tostring(itemId))
     end;
 
     -- Resolve a quest id into its localized name (MUI_QuestDB first, then

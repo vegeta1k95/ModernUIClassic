@@ -450,7 +450,7 @@ class "SpellGroup" {
     ResetIsKnown = function(self)
         for _, spell in pairs(self._spells) do
             if spell.spellID then
-                spell.isKnown = IsPlayerSpell(spell.spellID)
+                spell.isKnown = C_SpellBook.IsSpellKnown(spell.spellID)
             else
                 spell.isKnown = false
             end
@@ -493,7 +493,7 @@ object "Spells" : extends "Module" {
 
         self:UpdateFromCharacter()
 
-        self._eventFrame:RegisterEventHandler("LEARNED_SPELL_IN_TAB", function() self:UpdateFromCharacter() end)
+        self._eventFrame:RegisterEventHandler("LEARNED_SPELL_IN_SKILL_LINE", function() self:UpdateFromCharacter() end)
         self._eventFrame:RegisterEventHandler("CHARACTER_POINTS_CHANGED", function() self:UpdateFromCharacter() end)
         self._eventFrame:RegisterEventHandler("ACTIVE_TALENT_GROUP_CHANGED", function() self:UpdateFromCharacter() end)
         self._eventFrame:RegisterEventHandler("TRAINER_SHOW", function()
@@ -640,8 +640,8 @@ object "Spells" : extends "Module" {
                     if not raceID or raceID == self._raceID then
                         local name = C_Spell.GetSpellName(spellID)
                         local rank = C_Spell.GetSpellSubtext(spellID) or ""
-                        local levelReq = GetSpellLevelLearned(spellID) or 1
-                        local isKnown = IsPlayerSpell(spellID) or false
+                        local levelReq = C_Spell.GetSpellLevelLearned(spellID) or 1
+                        local isKnown = C_SpellBook.IsSpellKnown(spellID) or false
                         local isPassive = IsPassiveSpell(spellID)
                         local def = {
                             spellID   = spellID,
@@ -675,8 +675,8 @@ object "Spells" : extends "Module" {
                 for _, spellID in ipairs(spells) do
                     local name = C_Spell.GetSpellName(spellID)
                     local rank = C_Spell.GetSpellSubtext(spellID) or ""
-                    local levelReq = GetSpellLevelLearned(spellID) or 1
-                    local isKnown = IsPlayerSpell(spellID) or false
+                    local levelReq = C_Spell.GetSpellLevelLearned(spellID) or 1
+                    local isKnown = C_SpellBook.IsSpellKnown(spellID) or false
                     local isPassive = IsPassiveSpell(spellID)
                     local def = {
                         spellID   = spellID,
@@ -788,7 +788,7 @@ object "Spells" : extends "Module" {
                 local _, spellID = GetSpellBookItemInfo(i, "spell")
                 local name = C_Spell.GetSpellName(spellID)
                 local rank = C_Spell.GetSpellSubtext(spellID) or ""
-                local levelReq = GetSpellLevelLearned(spellID)
+                local levelReq = C_Spell.GetSpellLevelLearned(spellID)
                 local isPassive = IsPassiveSpell(spellID)
                 local source
 
@@ -860,13 +860,13 @@ object "Spells" : extends "Module" {
             local numServices = GetNumTrainerServices()
             if not numServices or numServices == 0 then return end
             if numServices == MUI_DB.data.spells.trainerServiceCount then return end
-            if numServices > MUI_DB.data.spells.trainerServiceCount then
-                MUI_DB.data.spells.trainerServiceCount = numServices
-            end
 
             local spells = {}
             local anchors = SPEC_ANCHORS[self._classID]
 
+            -- Only a class trainer lists the spec anchor spells. Weapon masters, pet and
+            -- riding trainers don't, and their services must not reach the catalogue.
+            local isClassTrainer = false
             local processed = 0
 
             for i = 1, numServices do
@@ -886,7 +886,7 @@ object "Spells" : extends "Module" {
                         name = C_Spell.GetSpellName(spellID) or name
 
                         local levelReq = GetTrainerServiceLevelReq(i)
-                        local isKnown = IsPlayerSpell(spellID) or false -- category == "used"
+                        local isKnown = C_SpellBook.IsSpellKnown(spellID) or false -- category == "used"
                         local isPassive = IsPassiveSpell(spellID)
                         local cost = GetTrainerServiceCost(i)
                         local spellReq = GetTrainerServiceAbilityReq(i, 1)
@@ -896,6 +896,7 @@ object "Spells" : extends "Module" {
                         local specIndex = anchors[spellID]
                         if specIndex then
                             self._skillLineToSpec[skillLineName] = specIndex
+                            isClassTrainer = true
                         end
 
                         local groupName = self._GetGroupName(spellID) or name
@@ -922,6 +923,12 @@ object "Spells" : extends "Module" {
                         --print("Didn't manage to get spell ID for", name, "(" .. rank .. ")")
                     end
                 end
+            end
+
+            if not isClassTrainer then return end
+
+            if numServices > MUI_DB.data.spells.trainerServiceCount then
+                MUI_DB.data.spells.trainerServiceCount = numServices
             end
 
             for skillLine, spellsSpec in pairs(spells) do

@@ -25,7 +25,7 @@ object "TooltipItemHook" {
     end;
 
     _HookChatItemLinks = function(self)
-        for i = 1, NUM_CHAT_WINDOWS do
+        for i = 1, Constants.ChatFrameConstants.MaxChatWindows do
             local cf = _G["ChatFrame" .. i]
             if cf then
                 cf:HookScript("OnHyperlinkEnter", function(frame, link)
@@ -47,7 +47,7 @@ object "TooltipItemHook" {
             tooltip:HookScript("OnTooltipSetItem", function()
                 local _, link = tooltip:GetItem()
                 if not link then return end
-                local _, _, _, ilvl, _, _, _, _, equipLoc, _, _, classID, subclassID = GetItemInfo(link)
+                local _, _, _, ilvl, _, _, _, _, equipLoc, _, _, classID, subclassID = C_Item.GetItemInfo(link)
 
                 if classID == 7 then
                     tooltip:InsertLine(2, "Crafting Reagent", 0.38, 0.68, 0.95)
@@ -79,9 +79,9 @@ object "TooltipItemHook" {
                 if tooltip._mui_sellPriceAdded then return end
                 local _, link = tooltip:GetItem()
                 if not link then return end
-                local sellPrice = select(11, GetItemInfo(link))
+                local sellPrice = select(11, C_Item.GetItemInfo(link))
                 if not sellPrice or sellPrice <= 0 then return end
-                tooltip:AddLine("Selling price:   " .. GetCoinTextureString(sellPrice), 1, 1, 1)
+                tooltip:AddLine("Selling price:   " .. C_CurrencyInfo.GetCoinTextureString(sellPrice), 1, 1, 1)
                 tooltip._mui_sellPriceAdded = true
                 tooltip:Show()
             end)

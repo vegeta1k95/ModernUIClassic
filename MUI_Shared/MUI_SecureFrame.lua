@@ -56,6 +56,9 @@ class "SecureActionButton" : extends {"SecureFrame", "Button"} {
         SecureFrame.__init(self, parent, name, "Button", AddTemplate("SecureActionButtonTemplate", template))
         self:EnableMouse(true)
         self:RegisterForClicks("AnyUp")
+        -- 1.15.9's SecureActionButton_OnClick never gets isSecureAction for addon buttons, so it
+        -- falls back to the ActionButtonUseKeyDown CVar and drops every up-click. Opt out per button.
+        self:SetAttribute("useOnKeyDown", false)
         self:SetEnabled(true)
     end;
 

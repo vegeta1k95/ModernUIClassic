@@ -37,7 +37,7 @@ from zones import load_all as load_zones
 from quest_xp import load as load_quest_xp
 from emit import (
     apply_corrections, add_missing, drop_blacklisted,
-    apply_faction_autopatch, positional_to_named,
+    apply_faction_autopatch, positional_to_named, add_horde_item_overlay,
     build_objective_reverse_index, mark_repeatable_turn_ins,
     serialize_singleton,
 )
@@ -249,6 +249,12 @@ def main() -> int:
     apply_corrections(base["items"],   c["item_main"])
     apply_corrections(base["objects"], c["obj_main"])
 
+    # 3b. Horde-side item snapshot — only used to derive the per-item
+    #     `npcDropsHorde` / `objectDropsHorde` overlay after conversion.
+    import copy
+    items_horde_pos = copy.deepcopy(base["items"])
+    apply_corrections(items_horde_pos, c["item_horde"])
+
     # 4. Faction auto-patch: set requiredRaces based on starter NPC faction
     #    for quests that don't already have it. Uses hardcoded Alliance=77,
     #    Horde=178 from enums.RACE_KEYS.
@@ -279,6 +285,10 @@ def main() -> int:
     npcs    = positional_to_named(base["npcs"],    env["npcKeys"])
     objects = positional_to_named(base["objects"], env["objectKeys"])
     items   = positional_to_named(base["items"],   env["itemKeys"])
+
+    items_horde = positional_to_named(items_horde_pos, env["itemKeys"])
+    n_overlay = add_horde_item_overlay(items, items_horde)
+    print(f"  items with Horde drop overlay: {n_overlay}")
 
     print(f"  final: quests={len(quests)}, npcs={len(npcs)}, objects={len(objects)}, items={len(items)}")
 

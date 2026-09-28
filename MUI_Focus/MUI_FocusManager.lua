@@ -128,7 +128,11 @@ object "FocusManager" : extends "Module" {
     --   position / cross-continent with no bridge (reroute path only).
     -- `continent` is the picked candidate's continent (tier.continent if not
     -- rerouted; player's continent if rerouted to a transport endpoint).
-    PickTarget = function(self, kind, key, noReroute)
+    -- `preferContinent` (optional): the first non-empty tier on that
+    -- continent wins over earlier tiers elsewhere. The world-map POI passes
+    -- the displayed map's continent so a quest with targets on two
+    -- continents gets a POI on both maps.
+    PickTarget = function(self, kind, key, noReroute, preferContinent)
         if kind == nil then
             kind, key = self:GetFocus()
         end
@@ -141,12 +145,22 @@ object "FocusManager" : extends "Module" {
         local playerY, playerX, _, playerCont = UnitPosition("player")
         if not playerX or not playerY then return nil end
 
-        -- First non-empty tier wins.
+        -- First non-empty tier wins (on preferContinent when it has one).
         local tier
-        for _, t in ipairs(tiers) do
-            if t.points and #t.points > 0 then
-                tier = t
-                break
+        if preferContinent then
+            for _, t in ipairs(tiers) do
+                if t.points and #t.points > 0 and t.continent == preferContinent then
+                    tier = t
+                    break
+                end
+            end
+        end
+        if not tier then
+            for _, t in ipairs(tiers) do
+                if t.points and #t.points > 0 then
+                    tier = t
+                    break
+                end
             end
         end
         if not tier then return nil end

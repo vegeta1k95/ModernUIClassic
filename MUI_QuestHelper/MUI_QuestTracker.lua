@@ -41,6 +41,12 @@ local OBJECTIVE_H         = 12
 local BULLET_W            = 6
 local BULLET_ICON_SIZE    = 14
 
+-- Quest item button at a block's right edge, centred on the block's text
+-- (retail's QuestObjectiveItemButtonTemplate is 26 px at the block's top
+-- right; rightEdgeFrameSpacing 2).
+local ITEM_BTN_SIZE       = 22
+local ITEM_BTN_GAP        = 2
+
 -- specialFlags bit 0 = repeatable (Questie's QuestieDB.IsRepeatable).
 local function _isRepeatable(questId)
     if not MUI_QuestDB then return false end
@@ -296,6 +302,12 @@ class "QuestPoiButton" : extends "Frame" {
         
     end;
 
+    -- Hover highlight driven from outside the button: the quest-log row
+    -- and the map pin of the same quest mirror each other's hover.
+    SetHighlighted = function(self, on)
+        if on then self.innerGlow:Show() else self.innerGlow:Hide() end
+    end;
+
     PlayPulse = function(self)
         -- Grow/shrink each POI texture around its CENTER anchor by
         -- mutating SetSize each frame. Leaves the POI frame rect
@@ -446,6 +458,128 @@ class "QuestTrackerObjective" : extends "Frame" {
 -- the mouse moves from block body onto POI (which would otherwise fire
 -- block.OnLeave even though the block is still effectively hovered).
 -- ---------------------------------------------------------------------
+-- ---------------------------------------------------------------------
+-- QuestTrackerItemButton: the quest's usable item (retail's
+-- QuestObjectiveItemButtonTemplate), a secure item-use button seated at the
+-- block's top-right. Deliberately NOT a child of the block: a protected
+-- descendant makes Show / SetPoint / SetHeight on the block — and on the
+-- whole tracker above it — protected in combat, which is exactly what froze
+-- the layout back when quest rows were secure. Parented to the root instead
+-- and positioned by absolute offsets from the block's rect by the tracker's
+-- item driver. In combat it can't be moved, re-bound, shown or hidden; only
+-- the cooldown and range indicators stay live.
+-- ---------------------------------------------------------------------
+class "QuestTrackerItemButton" : extends "SecureActionButton" {
+    __init = function(self, name)
+        SecureActionButton.__init(self, nil, name)
+        self:SetSize(ITEM_BTN_SIZE, ITEM_BTN_SIZE)
+        self:SetFrameStrata("LOW")
+        self:SetAttribute("type", "item")
+        self.rangeTimer = 0
+
+        local atlas = MUI_AtlasRegistry.ActionBar
+
+        self.bg = Texture(self, nil, "BACKGROUND")
+        self.bg:SetAtlas(atlas, "IconFrameSlot", true)
+        self.bg:FillParent(-2)
+
+        self.icon = Texture(self, nil, "ARTWORK")
+        self.icon:FillParent()
+        self.icon:SetTexCoord(0.05, 0.96, 0.06, 0.96)
+
+        self.cooldown = Cooldown(self)
+        self.cooldown:FillParent()
+        self.cooldown:SetSwipeColor(0, 0, 0, 0.8)
+        self.cooldown:SetDrawEdge(false)
+
+        -- Border, count and range dot sit on a raised child so they draw
+        -- over the cooldown swipe, like the action bars' border frame.
+        self.overlay = Frame("Frame", self)
+        self.overlay:FillParent()
+        self.overlay:SetFrameLevel(self:GetFrameLevel() + 2)
+
+        self.border = Texture(self.overlay, nil, "ARTWORK")
+        self.border:SetTextureRegion(MUI.TEX_SKIN .. "actionbars\\actionbar-slot", 128, 128, 17, 16, 92, 95)
+        self.border:FillParentPadding(-2, -2, -1.5, -2.4)
+
+        self.count = FontString(self.overlay, nil, "OVERLAY")
+        self.count:SetFont(MUI.FONT, 9, "OUTLINE")
+        self.count:SetJustifyH("RIGHT")
+        self.count:AlignParentBottomRight(2, 1)
+
+        self.range = FontString(self.overlay, nil, "OVERLAY")
+        self.range:SetFont(MUI.FONT, 12, "OUTLINE")
+        self.range:SetText("•")
+        self.range:AlignParentTopRight(1, -3)
+        self.range:Hide()
+
+        local hl = atlas:GetRegion("IconFrameMouseover")
+        local hlTex = self:SetHighlightTexture(hl.file)
+        hlTex:SetTexCoord(hl.left, hl.right, hl.top, hl.bottom)
+        hlTex:SetBlendMode("ADD")
+        local pushed = atlas:GetRegion("IconFrameDown")
+        local pushedTex = self:SetPushedTexture(pushed.file)
+        pushedTex:SetTexCoord(pushed.left, pushed.right, pushed.top, pushed.bottom)
+
+        -- To the left: the tracker hugs the screen's right edge.
+        self:SetTooltip("ANCHOR_LEFT", function(tip)
+            if self.logIndex then tip:SetQuestLogSpecialItem(self.logIndex) end
+        end)
+    end;
+
+    -- Bind to a quest's item. Out of combat only — attributes of a protected
+    -- frame are locked in combat.
+    SetItem = function(self, questId, logIndex, link, icon)
+        self.questId  = questId
+        self.logIndex = logIndex
+        self.itemId   = tonumber(link:match("item:(%d+)"))
+        self:SetAttribute("item", link)
+        self.icon:SetTexture(icon)
+        local _, _, charges = GetQuestLogSpecialItemInfo(logIndex)
+        self.count:SetText((charges and charges > 1) and tostring(charges) or "")
+        self:UpdateCooldown()
+        self.rangeTimer = 0
+    end;
+
+    -- Put the top-right corner at screen point (right, top) in the tracker's
+    -- scale. No-op when nothing moved, so the per-frame driver stays cheap.
+    Seat = function(self, scale, right, top)
+        if self.seatScale == scale and self.seatRight == right and self.seatTop == top then return end
+        self.seatScale, self.seatRight, self.seatTop = scale, right, top
+        self:SetScale(scale)
+        self:ClearAllPoints()
+        self:SetPoint("TOPRIGHT", MUI_Root, "BOTTOMLEFT", right, top)
+    end;
+
+    -- Read by item ID, as bag slots do: Era's own UI never calls
+    -- GetQuestLogSpecialItemCooldown (only the Wrath watch frame does).
+    UpdateCooldown = function(self)
+        if not self.itemId then return end
+        local start, duration, enable = C_Container.GetItemCooldown(self.itemId)
+        self.cooldown:SetCooldown(start, duration, enable)
+        local c = (duration and duration > 0 and enable == 0) and 0.4 or 1
+        self.icon:SetVertexColor(c, c, c)
+    end;
+
+    -- Retail polls the range check every TOOLTIP_UPDATE_TIME: red dot out of
+    -- range, grey in range, nothing when the item has no range.
+    UpdateRange = function(self, elapsed)
+        self.rangeTimer = self.rangeTimer - elapsed
+        if self.rangeTimer > 0 or not self.logIndex then return end
+        self.rangeTimer = 0.2
+        local inRange = IsQuestLogSpecialItemInRange(self.logIndex)
+        if inRange == 0 then
+            self.range:SetTextColor(1, 0.1, 0.1)
+            self.range:Show()
+        elseif inRange == 1 then
+            self.range:SetTextColor(0.6, 0.6, 0.6)
+            self.range:Show()
+        else
+            self.range:Hide()
+        end
+    end;
+}
+
 class "QuestTrackerQuest" : extends "Frame" {
     __init = function(self, parent, name)
         Frame.__init(self, "Frame", parent, name)
@@ -468,6 +602,7 @@ class "QuestTrackerQuest" : extends "Frame" {
         self.title:SetShadowOffset(1, -1)
         self.title:SetTextColor(1, 0.82, 0, 1)
         self.title:SetJustifyH("LEFT")
+        self.title:SetWordWrap(false)
         self.title:RightOf(self.poi, 2, -0.5)
 
         -- Header glow bar that sweeps across the title on accept + on
@@ -591,6 +726,23 @@ class "QuestTrackerQuest" : extends "Frame" {
             title = "[" .. entry.level .. "] " .. title
         end
         self.title:SetText(title)
+
+        -- Quest item: a usable item the quest gave (retail shows it while in
+        -- progress, or when complete if the item is flagged for that). The
+        -- tracker's pooled buttons render it; the block records what to bind
+        -- and reserves the right-edge room so text can't run under it.
+        local link, icon, _, showWhenComplete
+        if entry.logIndex then
+            link, icon, _, showWhenComplete = GetQuestLogSpecialItemInfo(entry.logIndex)
+        end
+        self.logIndex = entry.logIndex
+        self.itemLink = (link and (not entry.isComplete or showWhenComplete)) and link or nil
+        self.itemIcon = icon
+        local inset = self.itemLink and (ITEM_BTN_SIZE + ITEM_BTN_GAP) or 0
+        self.title:SetWidth(WIDTH - self.poi:GetWidth() - 2 - inset)
+        self.objContainer:ClearAllPoints()
+        self.objContainer:SetPoint("TOPLEFT",  self.title, "BOTTOMLEFT", 0, -4)
+        self.objContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", -inset, 0)
 
         -- "All objectives complete" transition → replay the add anim so
         -- the row visually celebrates the milestone the same way it
@@ -1109,6 +1261,31 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         end)
         MUI_FocusManager:RegisterChangeListener(function() self:RefreshFocus() end)
 
+        -- Quest item buttons: pooled secure buttons outside the tracker's
+        -- frame tree (see QuestTrackerItemButton), seated against the blocks
+        -- every frame by an always-running driver so they follow rebuilds,
+        -- collapse, edit-mode drags and scale.
+        self._itemButtons = {}
+        self._itemsDirty  = true
+        self._itemDriver  = Frame("Frame", nil, "MUI_QuestTrackerItemDriver")
+        self._itemDriver:SetScript("OnUpdate", function(_, elapsed) self:_SyncItemButtons(elapsed) end)
+        local function markItemsDirty() self._itemsDirty = true end
+        self._itemDriver:RegisterEventHandler("BAG_UPDATE",           markItemsDirty)
+        self._itemDriver:RegisterEventHandler("PLAYER_REGEN_ENABLED", markItemsDirty)
+        -- Cooldowns stay live in combat: the swipe isn't protected, unlike the
+        -- re-binding the dirty pass does out of combat. SPELL_UPDATE_COOLDOWN
+        -- adds the global cooldown, as on the action bars.
+        local function updateCooldowns()
+            for _, btn in ipairs(self._itemButtons) do
+                if btn:IsShown() then btn:UpdateCooldown() end
+            end
+        end
+        self._itemDriver:RegisterEventHandler("BAG_UPDATE_COOLDOWN",   updateCooldowns)
+        self._itemDriver:RegisterEventHandler("SPELL_UPDATE_COOLDOWN", updateCooldowns)
+        self._itemDriver:RegisterEventHandler("PLAYER_TARGET_CHANGED", function()
+            for _, btn in ipairs(self._itemButtons) do btn.rangeTimer = 0 end
+        end)
+
         self:Rebuild()
     end;
 
@@ -1165,6 +1342,7 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         end)
 
         self.questsCategory:SetQuests(tracked, self._pendingAddAnim)
+        self._itemsDirty = true
         self:_Restack()
     end;
 
@@ -1191,6 +1369,54 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
                   + (self.questsCategory:GetHeight() or 0)
                   + OUTER_PAD
         self:SetHeight(h)
+    end;
+
+    -- One pooled item button per visible block with a quest item, top to
+    -- bottom (MUI_QuestItemButton1 is always the topmost, so it can be
+    -- driven from a macro with /click). Binding, geometry and show / hide
+    -- only out of combat: the buttons are protected frames. Cooldown / range
+    -- indicators stay live in combat.
+    _SyncItemButtons = function(self, elapsed)
+        local locked = InCombatLockdown()
+        local used = 0
+        if self:IsVisible() then
+            local scale = self:GetScale()
+            for _, row in ipairs(self.questsCategory.quests) do
+                if row.itemLink and row:IsVisible() then
+                    used = used + 1
+                    local btn = self._itemButtons[used]
+                    if not btn and not locked then
+                        btn = QuestTrackerItemButton("MUI_QuestItemButton" .. used)
+                        btn:SetFrameLevel(self:GetFrameLevel() + 10)
+                        self._itemButtons[used] = btn
+                    end
+                    if btn then
+                        if not locked then
+                            if self._itemsDirty or btn.questId ~= row.questId then
+                                btn:SetItem(row.questId, row.logIndex, row.itemLink, row.itemIcon)
+                            end
+                            -- Centred on the entry's text: title top through the last
+                            -- objective line (the block's own edges carry padding).
+                            local right = row:GetRight()
+                            local textTop, textBottom = row.title:GetTop(), row.objContainer:GetBottom()
+                            if right and textTop and textBottom then
+                                btn:Seat(scale, right, (textTop + textBottom + ITEM_BTN_SIZE) / 2)
+                            end
+                            if not btn:IsShown() then btn:Show() end
+                        end
+                        if btn:IsShown() then btn:UpdateRange(elapsed) end
+                    end
+                end
+            end
+        end
+        if not locked then
+            for i = used + 1, #self._itemButtons do
+                local btn = self._itemButtons[i]
+                if btn:IsShown() then btn:Hide() end
+                btn.questId = nil
+            end
+            self._itemsDirty = false
+        end
     end;
 
     RefreshFocus = function(self)

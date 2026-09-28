@@ -19,6 +19,7 @@ local rawSetPoint       = UIParent.SetPoint
 local rawClearAllPoints = UIParent.ClearAllPoints
 local rawSetFrameStrata = UIParent.SetFrameStrata
 local rawSetFrameLevel  = UIParent.SetFrameLevel
+local rawSetScale       = UIParent.SetScale
 local function doNothing () end
 
 class "Frame" : extends {"Widget", "ScriptObject"} {
@@ -72,6 +73,24 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         rawSetPoint(self._native, point, relativeTo, relativePoint, x or 0, y or 0)
     end;
 
+    -- Multi-anchor raw geometry. Blizzard Edit Mode system frames (PlayerFrame,
+    -- TargetFrame, PetFrame, …) swap SetPoint / ClearAllPoints / SetScale on the
+    -- instance for Lua overrides that rewrite offsets and Edit Mode state.
+    RawAddPoint = function(self, point, relativeTo, relativePoint, x, y)
+        if relativeTo and type(relativeTo) == "table" and relativeTo._native then
+            relativeTo = relativeTo._native
+        end
+        rawSetPoint(self._native, point, relativeTo, relativePoint, x or 0, y or 0)
+    end;
+
+    RawClearAllPoints = function(self)
+        rawClearAllPoints(self._native)
+    end;
+
+    RawSetScale = function(self, scale)
+        rawSetScale(self._native, scale)
+    end;
+
     RawSetDrawOrder = function(self, strata, level)
         rawSetFrameStrata(self._native, strata)
         rawSetFrameLevel(self._native, level)
@@ -91,6 +110,22 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
 
     GetFrameStrata = function(self)
         return self._native:GetFrameStrata()
+    end;
+
+    -- PortraitFrameMixin layering: orders NineSlice / PortraitContainer / Title /
+    -- CloseButton from a base level (retail's frame-border stacking). No-op on
+    -- frames that don't inherit the mixin.
+    SetFrameLevelsFromBaseLevel = function(self, base)
+        if self._native.SetFrameLevelsFromBaseLevel then
+            self._native:SetFrameLevelsFromBaseLevel(base)
+        end
+    end;
+
+    -- Set the round portrait in a PortraitFrameMixin frame's portrait ring.
+    SetPortraitToAsset = function(self, asset)
+        if self._native.SetPortraitToAsset then
+            self._native:SetPortraitToAsset(asset)
+        end
     end;
 
     -- When false, the frame no longer auto-raises to the top of its strata on
@@ -129,6 +164,10 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
 
     EnableMouseWheel = function(self, enable)
         self._native:EnableMouseWheel(enable)
+    end;
+
+    SetHitRectInsets = function(self, left, right, top, bottom)
+        self._native:SetHitRectInsets(left, right, top, bottom)
     end;
 
     SetPropagateMouseClicks = function(self, propagate)
@@ -293,6 +332,12 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         if self._native.UnregisterAllEvents then self._native:UnregisterAllEvents() end
         if self._native.EnableMouse then self._native:EnableMouse(false) end
         self._native:SetAlpha(0)
+    end;
+
+    -- Give our own native frame a Lua method Blizzard code expects to find on it
+    -- (e.g. a reparented child whose OnShow calls GetParent():Layout()).
+    SetNativeMethod = function(self, name, func)
+        self._native[name] = func
     end;
 
     SetScale = function(self, scale)

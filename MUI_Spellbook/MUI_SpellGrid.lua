@@ -92,6 +92,7 @@ class "SpellGridSlot" : extends "Button" {
         if self._isPassive then
             self._icon:SetPortrait(icon)
         else
+            self._icon:ClearPortrait()
             self._icon:SetTexture(icon)
         end
     end;

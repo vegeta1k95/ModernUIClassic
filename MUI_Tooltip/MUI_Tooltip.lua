@@ -42,16 +42,30 @@ class "TooltipBase" : extends "Frame" {
         -- refonted tooltip and apply per-line sizes on top.
         self._refontedAt = 0
 
+        -- True while the tooltip shows content built through ShowFor; consumers
+        -- that react to engine-built tooltips (world-object hover) check it.
+        self._ownContent = false
+
         local function _maybeRefont()
             local n = self._native:NumLines()
             if n > self._refontedAt then
                 self:_RefontRange(self._refontedAt + 1, n)
                 self._refontedAt = n
+                -- The engine sized the tooltip for the fonts the lines had
+                -- BEFORE this refont (the first time a slot is used after
+                -- login), so the last line clips at the bottom on static
+                -- tooltips like the minimap mail one. Show() on a shown
+                -- tooltip only re-lays it out for the new metrics.
+                if self._native:IsShown() then self._native:Show() end
             end
         end
 
         self:HookScript("OnTooltipCleared", function()
             self._refontedAt = 0
+            self._ownContent = false
+        end)
+        self:HookScript("OnHide", function()
+            self._ownContent = false
         end)
         self:HookScript("OnTooltipSetItem",  _maybeRefont)
         self:HookScript("OnTooltipSetUnit",  _maybeRefont)
@@ -90,12 +104,6 @@ class "TooltipBase" : extends "Frame" {
                 if fsR.SetWordWrap then fsR:SetWordWrap(true) end
             end
         end
-    end;
-
-    -- Whole-tooltip refont. Kept for callers that want to force a
-    -- full reset (Refresh()).
-    _RefreshFont = function(self)
-        self:_RefontRange(1, self:NumLines())
     end;
 
     _GetLastLine = function(self)
@@ -410,6 +418,10 @@ class "TooltipBase" : extends "Frame" {
         self._native:SetSpellByID(spellID)
     end;
 
+    SetQuestLogSpecialItem = function(self, questLogIndex)
+        self._native:SetQuestLogSpecialItem(questLogIndex)
+    end;
+
     SetTradeSkillItem = function(self, index, reagentIndex)
         if self._native.SetTradeSkillItem then
             self._native:SetTradeSkillItem(index, reagentIndex)
@@ -441,15 +453,26 @@ class "TooltipBase" : extends "Frame" {
     -- Set owner, populate via buildFunc, show.
     ShowFor = function(self, owner, anchor, buildFunc)
         self:SetOwner(owner, anchor)
+        self._ownContent = true
         if buildFunc then buildFunc(self) end
         
         self:Show()
     end;
 
+    IsOwnContent = function(self)
+        return self._ownContent
+    end;
+
     -- Recalculate tooltip size after appending lines outside of ShowFor.
+    -- Only lines Blizzard added since the last wrapper write get the default
+    -- refont — a whole-tooltip pass would stomp titles set via AddTitle.
     -- Native :Show() on an already-shown tooltip just re-lays it out.
     Refresh = function(self)
-        self:_RefreshFont()
+        local n = self._native:NumLines()
+        if n > self._refontedAt then
+            self:_RefontRange(self._refontedAt + 1, n)
+            self._refontedAt = n
+        end
         self:Show()
     end;
 

@@ -1,6 +1,6 @@
 -- UnitFrameTargetAuras: lays out target buffs / debuffs inside the
 -- aura container created by UnitFrameTarget. Hooks
--- TargetFrame_UpdateAuras so re-layout happens whenever Blizzard's path
+-- TargetFrame:UpdateAuras so re-layout happens whenever Blizzard's path
 -- ticks (target change, buff add/remove, etc.).
 --
 -- Source-aware sizing: when `showDynamicBuffSize` is on, auras applied
@@ -19,6 +19,9 @@ local ICON_SIZE   = 22
 
 local SCALE_SMALL = 0.70
 local SCALE_LARGE = 0.85
+
+-- dispelName -> { color = ColorMixin, … }; "None" covers undispellable debuffs
+local DEBUFF_INFO = AuraUtil.GetDebuffDisplayInfoTable()
 
 -- Lazy cache for the TargetFrameBuff/Debuff globals. Blizzard creates
 -- these on demand when the target gains buffs, so a single eager init
@@ -66,7 +69,7 @@ class "UnitFrameTargetAuras" {
         self.target        = target
         self.auraContainer = target.auraContainer
 
-        hooksecurefunc("TargetFrame_UpdateAuras", function() self:Update() end)
+        hooksecurefunc(TargetFrame, "UpdateAuras", function() self:Update() end)
     end;
 
     Update = function(self)
@@ -82,14 +85,14 @@ class "UnitFrameTargetAuras" {
 
         local numBuffs = 0
         for i = 1, MUI_MAX_BUFFS do
-            local _, icon, _, _, _, _, source = UnitBuff("target", i)
+            local aura = C_UnitAuras.GetBuffDataByIndex("target", i)
             local button, iconTex = _buff(i)
             if button then
-                if icon then
-                    if iconTex then iconTex:SetTexture(icon) end
+                if aura then
+                    if iconTex then iconTex:SetTexture(aura.icon) end
                     button:Show()
                     button.id = i
-                    button._muiSource = source
+                    button._muiSource = aura.sourceUnit
                     numBuffs = numBuffs + 1
                 else
                     button:Hide()
@@ -99,16 +102,14 @@ class "UnitFrameTargetAuras" {
 
         local numDebuffs = 0
         for i = 1, MUI_MAX_DEBUFFS do
-            local _, icon, debuffStack, debuffType, _, _, source = UnitDebuff("target", i)
+            local aura = C_UnitAuras.GetDebuffDataByIndex("target", i)
             local button, iconTex, debuffCount, debuffBorder = _debuff(i)
             if button then
-                if icon then
-                    if iconTex then iconTex:SetTexture(icon) end
-                    local color = (debuffType and DebuffTypeColor and DebuffTypeColor[debuffType])
-                                  or (DebuffTypeColor and DebuffTypeColor["none"])
-                                  or { r=0.8, g=0, b=0 }
-                    if debuffStack and debuffStack > 1 then
-                        if debuffCount then debuffCount:SetText(debuffStack); debuffCount:Show() end
+                if aura then
+                    if iconTex then iconTex:SetTexture(aura.icon) end
+                    local color = (DEBUFF_INFO[aura.dispelName] or DEBUFF_INFO["None"]).color
+                    if aura.applications > 1 then
+                        if debuffCount then debuffCount:SetText(aura.applications); debuffCount:Show() end
                     else
                         if debuffCount then debuffCount:Hide() end
                     end
@@ -117,7 +118,7 @@ class "UnitFrameTargetAuras" {
                     end
                     button:Show()
                     button.id = i
-                    button._muiSource = source
+                    button._muiSource = aura.sourceUnit
                     numDebuffs = numDebuffs + 1
                 else
                     button:Hide()
@@ -144,10 +145,12 @@ class "UnitFrameTargetAuras" {
             buffContainerH = buffContainerH + 40
         end
 
-        self.auraContainer:SetSize(buffContainerW, buffContainerH)
+        -- Never 0: a zero-height frame has no bottom edge, so the cast bar anchored
+        -- Below it loses its vertical anchor and lands on the mana bar.
+        self.auraContainer:SetSize(buffContainerW, math.max(buffContainerH, 0.1))
 
         -- Don't reparent TargetFrameBuff/Debuff* — SetParent marks them addon-modified
-        -- and any subsequent Blizzard read (TargetFrame_UpdateAuras) taints the secure
+        -- and any subsequent Blizzard read (TargetFrame:UpdateAuras) taints the secure
         -- call chain that led us here. Anchor via SetPoint cross-parent instead.
 
         -- SetPoint offsets are in the positioned frame's own scale, so a uniform

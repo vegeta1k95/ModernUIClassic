@@ -17,15 +17,17 @@ local function GridSize(perRow, maxCount)
            BUFF_HEIGHT * rows + PADDING_VERTICAL * (rows - 1)
 end
 
+-- Consolidation icon leads the buff grid; private-aura anchors aren't buttons.
 local function CollectButtons()
     local buffs, debuffs = {}, {}
-    for i = 1, BUFF_MAX_DISPLAY or 32 do
-        local btn = getglobal("BuffButton" .. i)
-        if btn then table.insert(buffs, btn) end
+    if BuffFrame.ConsolidatedBuffs:ShouldShow() then
+        table.insert(buffs, BuffFrame.ConsolidatedBuffs)
     end
-    for i = 1, DEBUFF_MAX_DISPLAY or 16 do
-        local btn = getglobal("DebuffButton" .. i)
-        if btn then table.insert(debuffs, btn) end
+    for _, btn in ipairs(BuffFrame.auraFrames) do
+        table.insert(buffs, btn)
+    end
+    for _, btn in ipairs(DebuffFrame.auraFrames) do
+        if not btn.isAuraAnchor then table.insert(debuffs, btn) end
     end
     return buffs, debuffs
 end
@@ -68,11 +70,38 @@ object "ModuleBuffBar" : extends "Module" {
         self:ApplyLayout()
 
         -- Blizzard re-anchors buttons on aura change; re-apply our layout after.
-        hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", function()
+        hooksecurefunc(BuffFrame, "UpdateGridLayout", function()
             self:ApplyLayout()
         end)
-        hooksecurefunc("DebuffButton_UpdateAnchors", function()
+        hooksecurefunc(BuffFrame, "UpdateAuraButtons", function()
             self:ApplyLayout()
+        end)
+        hooksecurefunc(DebuffFrame, "UpdateGridLayout", function()
+            self:ApplyLayout()
+        end)
+
+        self:SetupWarningPulse()
+    end;
+
+    -- Blizzard pulses expiring auras through their parent container, which is ours now.
+    SetupWarningPulse = function(self)
+        local auras = {}
+        for _, list in ipairs({ BuffFrame.auraFrames, DebuffFrame.auraFrames }) do
+            for _, btn in ipairs(list) do
+                if not btn.isAuraAnchor then
+                    table.insert(auras, { native = btn, button = Frame(btn) })
+                end
+            end
+        end
+
+        local container = BuffFrame.AuraContainer
+        self.pulseFrame = Frame("Frame", nil, "MUI_AuraPulse")
+        self.pulseFrame:SetScript("OnUpdate", function()
+            for _, aura in ipairs(auras) do
+                if aura.native.timeLeft and aura.button:IsVisible() then
+                    aura.button:SetAlpha(container:GetAuraWarningAlphaForDuration(aura.native.timeLeft))
+                end
+            end
         end)
     end;
 
@@ -145,28 +174,23 @@ object "ModuleBuffBar" : extends "Module" {
         for i, btn in ipairs(buffs) do
             local button = Frame(btn)
             self:AnchorAuraButton(button, buffs, i, self.buffFrame, BUFFS_PER_ROW)
-
-            local duration = getglobal(button:GetName() .. "Duration")
-            if duration then
-                FontString(duration):SetFontSize(9)
-            end
+            Texture(btn.Icon):SetSize(BUFF_WIDTH, BUFF_HEIGHT)
+            FontString(btn.Duration):SetFontSize(9)
         end
 
         for i, btn in ipairs(debuffs) do
             local button = Frame(btn)
             self:AnchorAuraButton(button, debuffs, i, self.debuffFrame, DEBUFFS_PER_ROW)
+            Texture(btn.Icon):SetSize(BUFF_WIDTH, BUFF_HEIGHT)
 
-            local duration = getglobal(button:GetName() .. "Duration")
-            if duration then
-                local fs = FontString(duration)
-                fs:SetFontSize(9)
-                fs:ClearAllPoints()
-                fs:AlignBottom(button, -12)
-            end
+            local fs = FontString(btn.Duration)
+            fs:SetFontSize(9)
+            fs:ClearAllPoints()
+            fs:AlignBottom(button, -12)
         end
 
         -- Hide the collapse toggle when there's nothing to collapse.
-        -- `buffs` counts EXISTING BuffButtonN frames, not active auras —
+        -- `buffs` counts EXISTING aura button frames, not active auras —
         -- Blizzard keeps the frame around for the session and just :Hide()s
         -- it when the slot empties. Count visible buttons instead so the
         -- toggle disappears the moment the last buff drops.

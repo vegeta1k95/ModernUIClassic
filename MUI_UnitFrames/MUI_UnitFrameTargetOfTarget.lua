@@ -2,7 +2,7 @@
 -- Blizzard when a target's target exists). Owns the ToT health/mana
 -- bars + dead text.
 --
--- TargetofTarget_Update is the engine's ToT-refresh entry point and we
+-- TargetFrameToT:Update is the engine's ToT-refresh entry point and we
 -- hook it for value updates. The frame anchor lives here because it
 -- only needs to land relative to the parent target frame.
 
@@ -64,7 +64,7 @@ class "UnitFrameTargetOfTarget" {
         totDead:ClearAllPoints()
         totDead:CenterInParent()
 
-        hooksecurefunc("TargetofTarget_Update", function() self:UpdateBars() end)
+        hooksecurefunc(TargetFrameToT, "Update", function() self:UpdateBars() end)
     end;
 
     UpdateBars = function(self)

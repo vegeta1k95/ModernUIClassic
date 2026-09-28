@@ -48,10 +48,14 @@ See `MUI_DB/README.md` for the currently-vendored version.
 
 - **enUS only**. Locale overlays are a future extension (see
   `MUI_DB/locale/` folder stub).
-- **Alliance-side faction fixes baked in**. Horde-only overrides for ~20
-  quest/NPC pairs aren't yet applied; Horde players will see the base values.
-  Follow-up: emit a separate `MUI_QuestsHordeDB.lua` overlay file and
-  have the runtime apply it based on `UnitFactionGroup("player")`.
+- **Alliance-side faction fixes baked in**. Horde-only quest / NPC
+  overrides (~20 pairs) aren't yet applied; Horde players will see the base
+  values. Items are the exception: where the Horde item fixes change an
+  item's drop sources, the row carries `npcDropsHorde` / `objectDropsHorde`
+  beside the Alliance values; the runtime picks by `UnitFactionGroup("player")`
+  (`MUI_QuestHelper:GetItemDrops`) and the cluster exporter uses the Horde
+  sources for Horde-only quests. Follow-up: emit a separate
+  `MUI_QuestsHordeDB.lua` overlay file for the quest / NPC side.
 - **No Anniversary phase-gating**. Per the plan, Anniversary content-phase
   blacklists are ignored — the addon ships with the full Classic DB and can
   filter at the UI layer if needed.

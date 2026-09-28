@@ -28,7 +28,7 @@ for i = NUM_BAGS + 1, NUM_BAGS + NUM_BANKBAGS do BANK_CONTAINERS[#BANK_CONTAINER
 -- Sort key: group by item class -> subclass -> quality (high first) -> name ->
 -- itemID -> stack size. Uncached items (GetItemInfo nil) sort to the end.
 local function ComputeKey(item)
-    local name, _, _, _, _, _, _, maxStack, _, _, _, classID, subclassID = GetItemInfo(item.link or item.itemID)
+    local name, _, _, _, _, _, _, maxStack, _, _, _, classID, subclassID = C_Item.GetItemInfo(item.link or item.itemID)
     item.name       = name or ""
     item.maxStack   = maxStack or 1
     item.classID    = classID or 99

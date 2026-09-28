@@ -1,5 +1,6 @@
 -- MUI_GameMenu: reskin-in-place of Blizzard's GameMenuFrame. Native buttons keep their
 -- OnClick handlers (so secure call chain is preserved); we only overlay visuals on top.
+-- Buttons are pooled and rebuilt on every show, then laid out a frame later: we act from the Layout hook.
 
 local BUTTON_WIDTH    = 200
 local BUTTON_HEIGHT   = 36
@@ -27,7 +28,7 @@ object "GameMenuSkin" : extends "Module" {
         self._applied = true
 
         self._menuFrame = Frame(GameMenuFrame)
-        self._menuFrame:SetBackdrop(nil)
+        self._skins = {}
 
         self:_HideUnused()
 
@@ -50,46 +51,22 @@ object "GameMenuSkin" : extends "Module" {
             end
         end;
 
-        self._layout = {
-            { self._ReskinButton(GameMenuButtonOptions,  "Options")              },
-            { self._ReskinButton(GameMenuButtonAddons,   "AddOns"),         true },
-            { self._btnEditMode,                                                 },
-            { self._ReskinButton(GameMenuButtonHelp,     "Support")              },
-            { self._ReskinButton(GameMenuButtonMacros,   "Macros")               },
-            { self._ReskinButton(GameMenuButtonLogout,   "Log Out"),        true },
-            { self._ReskinButton(GameMenuButtonQuit,     "Exit Game")            },
-            { self._ReskinButton(GameMenuButtonContinue, "Return to Game"), true },
-        }
-
-        self._totalHeight = PADDING_TOP + (#self._layout * BUTTON_HEIGHT*0.9) + (3 * SECTION_SPACING) + PADDING_BOTTOM
-        self._menuFrame:SetSize(BUTTON_WIDTH + PADDING_SIDE * 2, self._totalHeight)
-        self._menuFrame:HookScript("OnShow", function() self:RelayoutButtons() end)
+        hooksecurefunc(GameMenuFrame, "Layout", function() self:RelayoutButtons() end)
     end;
 
+    -- Native chrome, plus the Blizzard Edit Mode tutorial dot (re-shown on every rebuild)
     _HideUnused = function(self)
-
-        local UNUSED_BUTTONS = {
-            "GameMenuFrameHeader", "GameMenuButtonStore",
-            "GameMenuButtonUIOptions",
-            "GameMenuButtonKeybindings", "GameMenuButtonRatings",
-            "GameMenuButtonMacOptions", "GameMenuButtonWhatsNew",
-        }
-
-        for _, name in ipairs(UNUSED_BUTTONS) do
-            local r = getglobal(name)
-            if r and r.GetRegions then
-                for _, region in ipairs(Frame(r):GetRegions()) do
-                    region:SetAlpha(0)
-                end
-            end
-        end
+        Frame(GameMenuFrame.Border):Hide()
+        Frame(GameMenuFrame.Header):Hide()
+        Frame(GameMenuFrame.EditModeNotification):Kill()
     end;
 
     -- Overlay our visual on a native button. No SetParent, no secure forwarders — the
     -- native OnClick handler stays intact and runs in its original secure context.
-    _ReskinButton = function(nativeBtn, text)
-        if nativeBtn._muiSkinned then return end
-        nativeBtn._muiSkinned = true
+    -- Skinned once per pooled button; the label is refreshed on every relayout.
+    _ReskinButton = function(self, nativeBtn)
+        local skin = self._skins[nativeBtn]
+        if skin then return skin end
 
         local atlas = MUI_AtlasRegistry.ButtonRed
         local btn = Button(nativeBtn)
@@ -128,7 +105,6 @@ object "GameMenuSkin" : extends "Module" {
         end
 
         local label = FontString(btn, nil, "OVERLAY")
-        label:SetText(text)
         label:SetFontSize(14)
         label:CenterInParent()
         label:SetShadowOffset(1, -1)
@@ -153,22 +129,50 @@ object "GameMenuSkin" : extends "Module" {
             label:CenterInParent()
         end)
 
-        return btn
+        skin = { button = btn, label = label }
+        self._skins[nativeBtn] = skin
+        return skin
     end;
 
     -- Anchor each button to GameMenuFrame's TOP with absolute Y offsets. Anchoring to
     -- border directly or chaining between siblings creates a cycle because Blizzard's
     -- layout sizes GameMenuFrame based on its buttons.
+    -- Blizzard's Edit Mode entry is hidden, ours sits above Support; topPadding marks a section start.
     RelayoutButtons = function(self)
-        self._menuFrame:SetSize(BUTTON_WIDTH + PADDING_SIDE * 2, self._totalHeight)
-        local y = PADDING_TOP
-        for _, entry in ipairs(self._layout) do
-            if entry[2] then y = y + SECTION_SPACING end
-            local r = entry[1]
+        local natives = {}
+        for native in GameMenuFrame.buttonPool:EnumerateActive() do
+            table.insert(natives, native)
+        end
+        table.sort(natives, function(a, b) return a.layoutIndex < b.layoutIndex end)
+
+        local y, count, sections, newSection = PADDING_TOP, 0, 0, false
+        local function place(r)
+            if newSection then
+                y = y + SECTION_SPACING
+                sections = sections + 1
+                newSection = false
+            end
             r:ClearAllPoints()
             r:SetPoint("TOP", self._menuFrame, "TOP", 0, -y)
             r:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
             y = y + BUTTON_HEIGHT + BUTTON_SPACING
+            count = count + 1
         end
+
+        for _, native in ipairs(natives) do
+            local skin = self:_ReskinButton(native)
+            local text = skin.button:GetNativeText()
+            newSection = newSection or native.topPadding ~= nil
+            if text == HUD_EDIT_MODE_MENU then
+                skin.button:Hide()
+            else
+                if text == GAMEMENU_SUPPORT then place(self._btnEditMode) end
+                skin.label:SetText(text)
+                place(skin.button)
+            end
+        end
+
+        self._menuFrame:SetSize(BUTTON_WIDTH + PADDING_SIDE * 2,
+            PADDING_TOP + (count * BUTTON_HEIGHT*0.9) + (sections * SECTION_SPACING) + PADDING_BOTTOM)
     end;
 }

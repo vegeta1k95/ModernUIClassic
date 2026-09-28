@@ -11,11 +11,9 @@ local TEXT_HPPERC_W = 20
 -- healthText mode values (match dropdown option values)
 local HP_NONE, HP_NUMERIC, HP_PERCENT, HP_BOTH = 0, 1, 2, 3
 
--- Slider index (1..5) → engine scale multiplier
+-- Slider index (1..5) → plate scale multiplier
 local SCALE_STEPS = { 1.0, 1.25, 1.5, 1.75, 2.0 }
-local function ApplyScaleStep(step)
-    SetCVar("nameplateGlobalScale", tostring(SCALE_STEPS[step] or 1.0))
-end
+local BAR_SCALE = 0.34
 
 object "ModuleNameplates" : extends "Module" {
     __init = function(self)
@@ -25,7 +23,6 @@ object "ModuleNameplates" : extends "Module" {
     OnEnable = function(self)
 
 		SetCVar("nameplateSelectedScale", tostring(1.30))
-        ApplyScaleStep((MUI_DB and MUI_DB.settings and MUI_DB.settings.nameplates and MUI_DB.settings.nameplates.scale) or 1)
 
         self:RegisterSettings()
 
@@ -35,6 +32,7 @@ object "ModuleNameplates" : extends "Module" {
             if not np then return end
             self:SkinPlate(np)
             np._muiUnit = unit
+            self:UpdateScale(unit)
             self:UpdateFill(unit)
             self:UpdateColor(unit)
             self:UpdateName(unit)
@@ -54,15 +52,24 @@ object "ModuleNameplates" : extends "Module" {
             self:UpdateFill(unit)
             self:UpdateHealthText(unit)
         end)
-        -- Our own PvP toggle changes attackability of every other plate, so refresh all.
-        self.driver:RegisterEventHandler("UNIT_FACTION", function(_, _, unit)
-            if unit == "player" then self:UpdateAllColors() else self:UpdateColor(unit) end
-        end)
-        self.driver:RegisterEventHandler("UNIT_FLAGS", function(_, _, unit)
-            if unit == "player" then self:UpdateAllColors() else self:UpdateColor(unit) end
-        end)
+        -- Our own PvP toggle changes attackability of every other plate (bar and
+        -- level colours), so refresh all.
+        local function attackabilityChanged(_, _, unit)
+            if unit == "player" then
+                self:UpdateAllColors()
+                self:UpdateAllLevels()
+            else
+                self:UpdateColor(unit)
+                self:UpdateLevel(unit)
+            end
+        end
+        self.driver:RegisterEventHandler("UNIT_FACTION", attackabilityChanged)
+        self.driver:RegisterEventHandler("UNIT_FLAGS",   attackabilityChanged)
         self.driver:RegisterEventHandler("UNIT_NAME_UPDATE", function(_, _, unit) self:UpdateName(unit) end)
-        self.driver:RegisterEventHandler("UNIT_LEVEL",       function(_, _, unit) self:UpdateLevel(unit) end)
+        -- Level colours are relative to the player's level, so a ding recolours all.
+        self.driver:RegisterEventHandler("UNIT_LEVEL", function(_, _, unit)
+            if unit == "player" then self:UpdateAllLevels() else self:UpdateLevel(unit) end
+        end)
         self.driver:RegisterEventHandler("PLAYER_TARGET_CHANGED", function() self:UpdateAllSelections() end)
         self.driver:RegisterEventHandler("PLAYER_REGEN_DISABLED", function() self:UpdateAllColors() end)
         self.driver:RegisterEventHandler("PLAYER_REGEN_ENABLED",  function() self:UpdateAllColors() end)
@@ -140,7 +147,7 @@ object "ModuleNameplates" : extends "Module" {
         bg:ClearAllPoints()
         bg:CenterAt(plate)
         bg:SetFromAtlas(ATLAS1, "BarBG", 10, 10, 16, 19)
-        bg:SetScale(0.34)
+        bg:SetScale(BAR_SCALE)
         bg:SetSubpixelRendering(true)
         namePlate._muiBarBG = bg
 
@@ -169,6 +176,7 @@ object "ModuleNameplates" : extends "Module" {
         local overlay = Frame("Frame", plate, "MUI_NamePlateOverlay_" .. plate:GetName())
         overlay:SetAllPoints(fill)
         overlay:SetFrameLevel(bg:GetFrameLevel() + 5)
+        namePlate._muiOverlay = overlay
 		
 		local TEXT_SIZE = 6
 		
@@ -239,6 +247,18 @@ object "ModuleNameplates" : extends "Module" {
         np._muiName:SetText(UnitName(unit) or "")
     end;
 
+    -- Attackable NPCs: level coloured by difficulty against the player's level,
+    -- as the target frame does (TargetFrameMixin:CheckLevel); "??" takes the
+    -- impossible red. Friendly NPCs and players keep plain white.
+    GetLevelColor = function(self, unit, lvl)
+        if UnitIsPlayer(unit) or not UnitCanAttack("player", unit) then
+            return 1, 1, 1
+        end
+        local c = (lvl == -1) and QuestDifficultyColors["impossible"]
+                  or GetCreatureDifficultyColor(lvl)
+        return c.r, c.g, c.b
+    end;
+
     UpdateLevel = function(self, unit)
         if not unit then return end
         local np = C_NamePlate.GetNamePlateForUnit(unit)
@@ -254,9 +274,11 @@ object "ModuleNameplates" : extends "Module" {
         local lvl = UnitLevel(unit)
         if lvl == -1 then
             np._muiLevel:SetText("??")
+            np._muiLevel:SetTextColor(self:GetLevelColor(unit, lvl))
 			np._muiLevel:SetWidth(TEXT_LVL_W)
         elseif lvl and lvl > 0 then
             np._muiLevel:SetText(tostring(lvl))
+            np._muiLevel:SetTextColor(self:GetLevelColor(unit, lvl))
 			np._muiLevel:SetWidth(TEXT_LVL_W)
         else
             np._muiLevel:SetText("")
@@ -298,14 +320,11 @@ object "ModuleNameplates" : extends "Module" {
             showPercent = (mode == HP_PERCENT or mode == HP_BOTH)
         end
 
+        -- Width 0 = auto-size. An exact-fit width measured at one plate scale truncates
+        -- to "..." at another (the plate grows and shrinks with nameplateSelectedScale).
         local hpVal = np._muiHealthValue
-        if showNumeric then
-            hpVal:SetText(tostring(cur))
-            hpVal:SetWidth(hpVal:GetStringWidth())
-        else
-            hpVal:SetText("")
-            hpVal:SetWidth(0)
-        end
+        hpVal:SetText(showNumeric and tostring(cur) or "")
+        hpVal:SetWidth(0)
 
         local hpPerc = np._muiHealthPercent
         if showPercent then
@@ -364,9 +383,25 @@ object "ModuleNameplates" : extends "Module" {
         end
     end;
 
+    -- 1.15.9 dropped the engine's nameplateGlobalScale CVar, so scale our own visuals.
+    UpdateScale = function(self, unit)
+        if not unit then return end
+        local np = C_NamePlate.GetNamePlateForUnit(unit)
+        if not np or not np._muiBarBG then return end
+        local scale = SCALE_STEPS[MUI_DB.settings.nameplates.scale] or 1.0
+        np._muiBarBG:SetScale(BAR_SCALE * scale)
+        np._muiOverlay:SetScale(scale)
+    end;
+
+    UpdateAllScales = function(self)
+        for _, np in ipairs(C_NamePlate.GetNamePlates()) do
+            if np._muiUnit then self:UpdateScale(np._muiUnit) end
+        end
+    end;
+
     RegisterSettings = function(self)
         MUI.InjectOption({
-            categoryId   = "INTERFACE_CATEGORY_ID",
+            categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
             variable     = "MUI_Nameplate_ShowLevel",
             type         = "checkbox",
             label        = "Show level",
@@ -379,7 +414,7 @@ object "ModuleNameplates" : extends "Module" {
         })
 
         MUI.InjectOption({
-            categoryId   = "INTERFACE_CATEGORY_ID",
+            categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
             variable     = "MUI_Nameplate_HealthText",
             type         = "dropdown",
             label        = "Show health text",
@@ -398,7 +433,7 @@ object "ModuleNameplates" : extends "Module" {
         })
 
         MUI.InjectOption({
-            categoryId   = "INTERFACE_CATEGORY_ID",
+            categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
             variable     = "MUI_Nameplate_Scale",
             type         = "slider",
             label        = "Scale",
@@ -408,7 +443,7 @@ object "ModuleNameplates" : extends "Module" {
             key          = "scale",
             min = 1, max = 5, step = 1,
             after        = "Show health text",
-            onChange     = function(value) ApplyScaleStep(value) end,
+            onChange     = function() self:UpdateAllScales() end,
         })
     end;
 

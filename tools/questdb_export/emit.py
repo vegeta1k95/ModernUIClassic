@@ -269,6 +269,35 @@ def build_objective_reverse_index(
 
 # ----------------------------------------------- repeatable turn-in tagging
 
+# --------------------------------------------------- Horde drop-source overlay
+
+def _drop_list(v: Any) -> list:
+    if v is None or v is LUA_NIL:
+        return []
+    return [x for x in _entries_of(v) if isinstance(x, int)]
+
+
+def add_horde_item_overlay(items: dict[int, dict], items_horde: dict[int, dict]) -> int:
+    """Items whose drop sources differ between the Alliance bake and the
+    Horde faction fixes (pendant halves, Soothing Spices, ...) get
+    `npcDropsHorde` / `objectDropsHorde` beside the Alliance fields so the
+    runtime can pick by player faction. Returns the number of items patched."""
+    n = 0
+    for iid, row in items.items():
+        h = items_horde.get(iid)
+        if h is None:
+            continue
+        patched = False
+        for key in ("npcDrops", "objectDrops"):
+            h_list = _drop_list(h.get(key))
+            if h_list != _drop_list(row.get(key)):
+                row[key + "Horde"] = h_list
+                patched = True
+        if patched:
+            n += 1
+    return n
+
+
 def mark_repeatable_turn_ins(
     quests: dict[int, dict],
     items:  dict[int, dict],

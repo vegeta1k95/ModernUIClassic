@@ -62,6 +62,18 @@ class "ChatFrame" : extends "Frame" {
         end
     end;
 
+    -- ===== Geometry =====
+
+    -- ChatFrame1 is a Blizzard Edit Mode system: its instance SetPoint / ClearAllPoints are
+    -- Lua overrides that write Edit Mode state. Drive the geometry through the C methods.
+    SetPoint = function(self, point, relativeTo, relativePoint, x, y)
+        self:RawAddPoint(point, relativeTo, relativePoint, x, y)
+    end;
+
+    ClearAllPoints = function(self)
+        self:RawClearAllPoints()
+    end;
+
     -- ===== Movability / clamping =====
 
     SetClampedToScreen = function(self, clamped)

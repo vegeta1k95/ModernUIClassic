@@ -12,11 +12,13 @@
 --       normY        = 0..1,
 --       iconType     = <string key into MUI_MinimapPinIcons>,
 --       questId      = questId,
---       objectiveIdx = <1..N, 0 for turn-in, -1 for trigger-end scout>,
+--       objectiveIdx = <1..N, 0 for turn-in, -1 for trigger-end scout,
+--                       -2 for a required source item>,
 --       targetId     = <npc/object/item id>,
 --       targetKind   = "npc" | "object" | "item-npc" | "item-object" | "trigger",
 --       spawnIdx     = <per-areaId spawn index>,
 --       targetName   = <string, DB target name, may include item context>,
+--       sourceItemId = <item id for required-source-item specs, else nil>,
 --   }
 
 -- Safety ceiling matching Questie's `iconLimit` default. Effectively
@@ -47,6 +49,7 @@ local function _emitSpawnSpecs(out, spawns, base)
                 targetKind   = base.targetKind,
                 spawnIdx     = spawnIdx,
                 targetName   = base.targetName,
+                sourceItemId = base.sourceItemId,
             }
             count = count + 1
         end
@@ -79,17 +82,18 @@ local function _resolveObject(out, questId, objectiveIdx, objectId, iconType)
     })
 end
 
-local function _resolveItem(out, questId, objectiveIdx, itemId)
+local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId)
     local item = MUI_ItemDB:Get(itemId)
     if not item then return end
     local itemName = item.name or "?"
+    local npcDrops, objectDrops = MUI_QuestHelper:GetItemDrops(item)
     -- IMPORTANT: targetId is the *source* ID (NPC / Object), not itemId.
     -- Clustering downstream groups by (objectiveIdx, targetId); using itemId
     -- would merge every drop source into one cluster, erasing distinct camps
     -- across the zone. Matches Questie's QuestieQuestPrivates.item() which
     -- keys the return table by source.Id.
-    if item.npcDrops then
-        for _, npcId in ipairs(item.npcDrops) do
+    if npcDrops then
+        for _, npcId in ipairs(npcDrops) do
             local npc = MUI_NpcDB:Get(npcId)
             if npc then
                 _emitSpawnSpecs(out, npc.spawns, {
@@ -99,12 +103,13 @@ local function _resolveItem(out, questId, objectiveIdx, itemId)
                     targetId     = npcId,
                     targetKind   = "item-npc",
                     targetName   = itemName .. " <" .. (npc.name or "?") .. ">",
+                    sourceItemId = sourceItemId,
                 })
             end
         end
     end
-    if item.objectDrops then
-        for _, objId in ipairs(item.objectDrops) do
+    if objectDrops then
+        for _, objId in ipairs(objectDrops) do
             local obj = MUI_ObjectDB:Get(objId)
             if obj then
                 -- Items sourced from world objects need an interact icon,
@@ -118,6 +123,7 @@ local function _resolveItem(out, questId, objectiveIdx, itemId)
                     targetId     = objId,
                     targetKind   = "item-object",
                     targetName   = itemName .. " <" .. (obj.name or "?") .. ">",
+                    sourceItemId = sourceItemId,
                 })
             end
         end
@@ -185,6 +191,13 @@ object "QuestObjectiveResolver" {
                 end
             end
             -- [6] spell — no geographic target, skip
+        end
+
+        -- Required source items (pendant halves, keys, runestones): needed
+        -- for the quest but never a leaderboard line. Pinned at their drop
+        -- sources until the item is in the bags — MUI_QuestHelper.IsSpecFinished.
+        for _, itemId in ipairs(MUI_QuestHelper:GetRequiredSourceItems(questId)) do
+            _resolveItem(out, questId, -2, itemId, itemId)
         end
 
         -- Scout-location trigger end (world position, no target entity).

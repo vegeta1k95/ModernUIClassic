@@ -224,7 +224,9 @@ class "CastBar" : extends "Frame" {
     end;
 
     _StartCast = function(self)
-        local name, _, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(self._unit)
+        -- 2nd return is the display text Blizzard's bar shows; 1st is the internal spell
+        -- name, which for some object casts is literally "Opening - No Text".
+        local name, text, texture, startTime, endTime, isTradeSkill = UnitCastingInfo(self._unit)
         if not name then return false end
         self:_InitState()  -- reset BEFORE assigning, otherwise it would clobber our values
         self._isCraft = isTradeSkill and true or false
@@ -235,7 +237,7 @@ class "CastBar" : extends "Frame" {
         self._sparkTrail:Show()
         self._startTime = startTime / 1000
         self._maxValue = endTime / 1000
-        self._spellText:SetText(name)
+        self._spellText:SetText(text)
         self.timeText:SetText("")
         self:SetAlpha(1.0)
         self._casting = true
@@ -248,7 +250,7 @@ class "CastBar" : extends "Frame" {
     end;
 
     _StartChannel = function(self)
-        local name, _, texture, startTime, endTime = UnitChannelInfo(self._unit)
+        local name, text, texture, startTime, endTime = UnitChannelInfo(self._unit)
         if not name then return false end
         self:_InitState()
         self:_SetFillAtlas("FillingChannel")
@@ -257,7 +259,7 @@ class "CastBar" : extends "Frame" {
         self._sparkTrail:Show()
         self._startTime = startTime / 1000
         self._endTime = endTime / 1000
-        self._spellText:SetText(name)
+        self._spellText:SetText(text)
         self.timeText:SetText("")
         self:SetAlpha(1.0)
         self._channeling = true

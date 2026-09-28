@@ -29,7 +29,18 @@ class "UnitFramePet" {
         local _, class = UnitClass("player")
         self.frame:EditModeEnabled(class == "HUNTER" or class == "WARLOCK")
 
-        hooksecurefunc("PetFrame_Update", function()
+        -- PetFrame is a managed frame: Blizzard re-parents and re-lays it out under
+        -- PlayerFrameBottomManagedFramesContainer on every show, combat included.
+        -- The flag opts it out; Edit Mode clears it whenever it applies a layout.
+        local function reclaim()
+            PetFrame.ignoreFramePositionManager = true
+            self.frame:Reassert()
+        end
+        PetFrame.ignoreFramePositionManager = true
+        hooksecurefunc(PetFrame, "UpdateSystem", reclaim)
+        hooksecurefunc(PlayerFrameBottomManagedFramesContainer, "Layout", reclaim)
+
+        hooksecurefunc(PetFrame, "Update", function()
             Texture(PetFrameTexture):Hide()
         end)
 
@@ -84,10 +95,11 @@ class "UnitFramePet" {
         petHappiness:ClearAllPoints()
         petHappiness:RightOf(self.health, 0, -3)
 
-        local petDebuff = Frame(PetFrameDebuff1)
-        petDebuff:ClearAllPoints()
-        petDebuff:Below(self.mana, 3)
-        petDebuff:AlignLeft(self.mana)
+        -- Pet debuffs are pooled buttons laid out inside PetFrame.AuraFrameContainer
+        local petDebuffs = Frame(PetFrame.AuraFrameContainer)
+        petDebuffs:ClearAllPoints()
+        petDebuffs:Below(self.mana, 3)
+        petDebuffs:AlignLeft(self.mana)
 
         -- Combat feedback text ("Miss"/"Dodge"/heal) centred on the pet portrait,
         -- above the combat glow

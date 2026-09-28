@@ -42,6 +42,37 @@ end
 
 MUI_Minimap = MinimapFrame(Minimap)
 
+-- DurabilityFrame is a Blizzard Edit Mode system: its instance SetPoint / ClearAllPoints /
+-- SetScale are Lua overrides that rescale our offsets and write Edit Mode state. Drive
+-- the geometry through the C methods. Not protected, so no combat deferral.
+class "DurabilityEditable" : extends "EditableFrame" {
+    __init = function(self, native, label)
+        EditableFrame.__init(self, native, label)
+    end;
+
+    SetPoint = function(self, point, relativeTo, relativePoint, x, y)
+        self:RawAddPoint(point, relativeTo, relativePoint, x, y)
+    end;
+
+    ClearAllPoints = function(self)
+        self:RawClearAllPoints()
+    end;
+
+    SetScale = function(self, scale)
+        self:RawSetScale(scale)
+    end;
+
+    EditModeApplyScale = function(self, scale)
+        self.scale = scale
+        self:SetScale(scale)
+    end;
+
+    Reassert = function(self)
+        self:SetScale(self.scale)
+        MUI_EditMode:ReassertLayout(self)
+    end;
+}
+
 object "ModuleMinimap" : extends "Module" {
     __init = function(self)
         Module.__init(self, "Minimap")
@@ -75,6 +106,8 @@ object "ModuleMinimap" : extends "Module" {
     end;
 
     HideBlizzardFrame = function(self)
+        -- Out of MinimapCluster.MinimapContainer, which Blizzard's Edit Mode moves and scales
+        MUI_Minimap:SetParent(MUI_Root)
         MUI_Minimap:ClearAllPoints()
         MUI_Minimap:AlignParentTopRight(33, 10)
         MUI_Minimap:SetFrameStrata("MEDIUM")
@@ -93,8 +126,10 @@ object "ModuleMinimap" : extends "Module" {
         cluster:EnableMouse(false)
 
         -- Blizzard minimap chrome we want to kill
+        Frame(MinimapCluster.BorderTop):Kill()
+
         local kills = {
-            "MinimapBorder", "MinimapBorderTop", "MinimapToggleButton",
+            "MinimapBorder", "MinimapToggleButton",
             "GameTimeFrame", "TimeManagerClockButton", "TimeManagerFrame",
             "MiniMapLFGFrame", "LFGMinimapFrame", "QueueStatusButton",
             "QueueStatusMinimapButton", "QueueStatusFrame",
@@ -334,11 +369,11 @@ object "ModuleMinimap" : extends "Module" {
 
     SkinDurability = function(self)
         if not DurabilityFrame then return end
-        self.durability = EditableFrame(DurabilityFrame, "Durability")
+        self.durability = DurabilityEditable(DurabilityFrame, "Durability")
         self.durability:ClearAllPoints()
         self.durability:Below(MUI_Minimap, 4)
         self.durability:AlignLeft(MUI_Minimap)
-        self.durability:SetScale(0.7)
+        self.durability:EditModeApplyScale(0.7)
         self.durability:EditModeSetDefaultScale(0.7)   -- 0.7 is the default, not a user scale
         self.durability:EditModeSetDefaultPosition(function(d)
             d:ClearAllPoints()
@@ -346,12 +381,15 @@ object "ModuleMinimap" : extends "Module" {
             d:AlignLeft(MUI_Minimap)
         end)
 
-        -- Blizzard's UIParent_ManageFramePositions re-anchors DurabilityFrame to
-        -- the minimap cluster on zone changes / panel toggles, overriding ours.
-        -- Reclaim our (default or user-moved) layout after it runs.
-        hooksecurefunc("UIParent_ManageFramePositions", function()
-            MUI_EditMode:ReassertLayout(self.durability)
-        end)
+        -- Blizzard re-anchors DurabilityFrame through its right-side managed
+        -- container (on show, zone changes, sibling show/hide) and its Edit Mode
+        -- system re-applies anchor + size. Reclaim our layout after each.
+        local function reassert()
+            self.durability:Reassert()
+        end
+        hooksecurefunc("UIParent_ManageFramePositions", reassert)
+        hooksecurefunc(UIParentRightManagedFrameContainer, "Layout", reassert)
+        hooksecurefunc(DurabilityFrame, "UpdateSystem", reassert)
     end;
 
     -- Collapsible bin for third-party minimap buttons. A toggle on the left of

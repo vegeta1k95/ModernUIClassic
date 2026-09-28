@@ -695,9 +695,11 @@ object "EditMode" {
             self:_Stop()
         end)
 
-        -- Apply saved layouts once everything has registered (module OnEnable runs
-        -- at PLAYER_LOGIN, before the first PLAYER_ENTERING_WORLD). Re-running on
-        -- later world entries re-asserts user positions over any auto-relayout.
+        -- Apply saved layouts once everything has registered: this watcher is
+        -- created at file load, so it sees the first PLAYER_ENTERING_WORLD, after
+        -- the module registry (MUI_Core, registered earlier) has run every
+        -- OnEnable from that same event. Re-running on later world entries
+        -- re-asserts user positions over any auto-relayout.
         self._watcher = Frame("Frame", nil, "MUI_EditModeWatcher")
         self._watcher:RegisterEventHandler("PLAYER_ENTERING_WORLD", function()
             self:LoadLayouts()

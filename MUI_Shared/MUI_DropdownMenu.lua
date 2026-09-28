@@ -54,6 +54,12 @@ class "DropdownMenu" : extends "Frame" {
 
         self:_CreatePopup(ninesliceScale)
         self:_CreateCatcher()
+
+        -- The popup and catcher live at the root (unclipped, above every
+        -- panel), so they don't follow the owner's visibility. This frame
+        -- is the owner's child and goes hidden with it (hotkey, ESC,
+        -- HideUIPanel), which dismisses the popup.
+        self:SetScript("OnHide", function() self:Close() end)
     end;
 
     -- ----- configuration --------------------------------------------------

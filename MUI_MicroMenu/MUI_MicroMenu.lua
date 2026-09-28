@@ -174,8 +174,8 @@ object "ModuleMicroMenu" : extends "Module" {
         -- Shop
         self._btnShop = MicroButtonMacro(self._container, "Shop", "Shop")
         self._btnShop:LeftOf(self._btnGameMenu, BUTTON_SPACING)
-        self._btnShop:SetMacroText("/click GameMenuButtonStore")
-        hooksecurefunc("StoreFrame_SetShown", function(shown)
+        self._btnShop:SetMacroText("/click StoreMicroButton")
+        local function setShopShown(shown)
             if shown then
                 self._btnShop:SetButtonState("PUSHED", 1)
                 self._btnShop._bg:SetAtlas(ATLAS, "ButtonBGDown")
@@ -183,7 +183,9 @@ object "ModuleMicroMenu" : extends "Module" {
                 self._btnShop:SetButtonState("NORMAL")
                 self._btnShop._bg:SetAtlas(ATLAS, "ButtonBGUp")
             end
-        end)
+        end
+        hooksecurefunc("StoreFrame_SetShown", setShopShown)
+        hooksecurefunc(CatalogShopInboundInterface, "SetShown", setShopShown)
 
         -- Adventure
         self._btnAdventureGuide = MicroButtonToggle(self._container, "AdventureGuide", "AdventureGuide")
@@ -285,6 +287,21 @@ object "ModuleMicroMenu" : extends "Module" {
         end)
         nativeChar:HookScript("OnHide", function()
             self._portrait:SetAlpha(1.0)
+        end)
+
+        -- Blizzard's MicroMenu is a grid layout that pulls its buttons back on every Layout
+        local seats = {
+            { nativeMenu,      self._btnGameMenu  },
+            { nativeSocial,    self._btnGuild     },
+            { nativeSpellbook, self._btnSpellbook },
+            { nativeMap,       self._btnQuestLog  },
+            { nativeChar,      self._btnCharacter },
+        }
+        hooksecurefunc(MicroMenu, "Layout", function()
+            for _, seat in ipairs(seats) do
+                seat[1]:ClearAllPoints()
+                seat[1]:CenterAt(seat[2])
+            end
         end)
 
         self._container:RegisterEventHandler("UNIT_PORTRAIT_UPDATE", function(_, _, unit)

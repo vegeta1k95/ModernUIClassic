@@ -165,12 +165,16 @@ object "UnitFrames" : extends "Module" {
         self.eventFrame:RegisterEventHandler("UNIT_POWER_UPDATE", unitBars)
         self.eventFrame:RegisterEventHandler("UNIT_MAXPOWER",   unitBars)
 
-        self.eventFrame:RegisterEventHandler("PLAYER_ENTERING_WORLD", function()
+        local function onEnteringWorld()
             self.player:UpdateBars()
             self.combo:Update()
             if UnitExists("target") then self.target:OnTargetChanged() end
             if UnitExists("pet")    then self.pet:UpdateBars()         end
-        end)
+        end
+        self.eventFrame:RegisterEventHandler("PLAYER_ENTERING_WORLD", onEnteringWorld)
+        -- OnEnable itself runs from PLAYER_ENTERING_WORLD, so the handler
+        -- misses the login / reload instance: do that pass now.
+        onEnteringWorld()
 
         self.eventFrame:RegisterEventHandler("PLAYER_TARGET_CHANGED", function()
             self.target:OnTargetChanged()
@@ -192,15 +196,19 @@ object "UnitFrames" : extends "Module" {
             self.combo:Update()
         end)
 
-        -- Combat ended — drop any cached combo points.
+        -- Combat ended — drop any cached combo points, and re-apply any frame
+        -- layout Blizzard's Edit Mode overwrote while the frames were locked down.
         self.eventFrame:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()
             self.combo:ClearCache()
+            for _, unit in ipairs({ self.player, self.target, self.pet }) do
+                if unit.frame.reassertPending then unit.frame:Reassert() end
+            end
         end)
 
         -- Tracked combo target died → drop the cache.
         self.eventFrame:RegisterEventHandler("COMBAT_LOG_EVENT_UNFILTERED", function()
             if not self.combo.cachedTargetGUID then return end
-            local _, sub, _, _, _, _, _, destGUID = CombatLogGetCurrentEventInfo()
+            local _, sub, _, _, _, _, _, destGUID = C_CombatLog.GetCurrentEventInfo()
             if destGUID == self.combo.cachedTargetGUID
                     and (sub == "UNIT_DIED" or sub == "PARTY_KILL") then
                 self.combo:ClearCache()

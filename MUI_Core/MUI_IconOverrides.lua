@@ -23,7 +23,7 @@ object "IconOverrides" {
 
     _HookSpellOverrides = function(self)
         local function ApplyActionButtonOverride(btn)
-            if not btn or not btn.icon or not btn.action then return end
+            if not btn.action then return end
             local actionType, id = GetActionInfo(btn.action)
             if actionType ~= "spell" or not id then return end
             local override = self._spellOverrides[id]
@@ -32,16 +32,21 @@ object "IconOverrides" {
             end
         end
 
-        hooksecurefunc("ActionButton_Update", ApplyActionButtonOverride)
-
         -- ActionButton.lua has two events (UPDATE_SHAPESHIFT_FORM,
         -- UPDATE_SUMMONPETS_ACTION) that set self.icon:SetTexture directly
-        -- without going through ActionButton_Update. Re-apply on those.
-        hooksecurefunc("ActionButton_OnEvent", function(btn, event)
+        -- without going through Update. Re-apply on those.
+        local function OnActionButtonEvent(btn, event)
             if event == "UPDATE_SHAPESHIFT_FORM"
             or event == "UPDATE_SUMMONPETS_ACTION" then
                 ApplyActionButtonOverride(btn)
             end
+        end
+
+        -- Update / OnEvent are mixin methods copied onto every action button,
+        -- so they are hooked per button, not on ActionBarActionButtonMixin.
+        ActionBarButtonEventsFrame:ForEachFrame(function(btn)
+            hooksecurefunc(btn, "Update", ApplyActionButtonOverride)
+            hooksecurefunc(btn, "OnEvent", OnActionButtonEvent)
         end)
     end;
 

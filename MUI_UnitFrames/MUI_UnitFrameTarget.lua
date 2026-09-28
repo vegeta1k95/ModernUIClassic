@@ -7,8 +7,8 @@
 -- self.mana), but per-aura layout lives in UnitFrameTargetAuras — the
 -- container exposes itself as self.auraContainer for that consumer.
 --
--- UpdateBorder is split off because TargetFrame_CheckClassification fires
--- independently of TargetFrame_Update and we don't want one event to
+-- UpdateBorder is split off because TargetFrame:CheckClassification fires
+-- independently of TargetFrame:Update and we don't want one event to
 -- redo the other's work.
 
 local TEX = MUI.TEX_SKIN .. "unitframes\\"
@@ -22,6 +22,16 @@ class "UnitFrameTarget" {
         Frame(TargetFrameBackground):HideFrame()
         Texture(TargetFrameNameBackground):SetTexture(nil)
 
+        -- 1.15.9 gave the target frame native status text and a threat flash
+        local textureFrame = TargetFrame.textureFrame
+        Frame(textureFrame.HealthBarText):HideFrame()
+        Frame(textureFrame.HealthBarTextLeft):HideFrame()
+        Frame(textureFrame.HealthBarTextRight):HideFrame()
+        Frame(textureFrame.ManaBarText):HideFrame()
+        Frame(textureFrame.ManaBarTextLeft):HideFrame()
+        Frame(textureFrame.ManaBarTextRight):HideFrame()
+        Texture(TargetFrameFlash):SetAlpha(0)
+
         self.frame = UnitFrameEditable(TargetFrame, "Target")
         self.frame:ClearAllPoints()
         self.frame:SetSize(171, 58)
@@ -30,6 +40,7 @@ class "UnitFrameTarget" {
             f:ClearAllPoints()
             f:SetPoint("BOTTOMLEFT", MUI_ModuleActionBars.bars.MAIN1, "TOPRIGHT", 38, 162)
         end)
+        hooksecurefunc(TargetFrame, "UpdateSystem", function() self.frame:Reassert() end)
 
         self._portrait = Texture(TargetFramePortrait)
         self._portrait:SetSize(55, 54)
@@ -117,10 +128,10 @@ class "UnitFrameTarget" {
         self:_SetupNameAndLevel()
         self:_SetupQuestFlag()
 
-        hooksecurefunc("TargetFrame_CheckClassification", function()
+        hooksecurefunc(TargetFrame, "CheckClassification", function()
             self:UpdateBorder()
         end)
-        hooksecurefunc("TargetFrame_Update", function()
+        hooksecurefunc(TargetFrame, "Update", function()
             self:OnTargetChanged()
         end)
 
@@ -139,16 +150,8 @@ class "UnitFrameTarget" {
         levelFS:SetFont(MUI.FONT, 9)
         levelFS:SetTextColor(1, 0.82, 0)
         levelFS:SetJustifyH("LEFT")
-
-        local function reanchor()
-            levelFS:ClearAllPoints()
-            levelFS:SetPoint("LEFT", self.header, "CENTER", -57, 1)
-        end
-        reanchor()
-        hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", reanchor)
-        if BossTargetFrame_UpdateLevelTextAnchor then
-            hooksecurefunc("BossTargetFrame_UpdateLevelTextAnchor", reanchor)
-        end
+        levelFS:ClearAllPoints()
+        levelFS:SetPoint("LEFT", self.header, "CENTER", -57, 1)
 
         local skull = Texture(TargetFrameTextureFrameHighLevelTexture)
         skull:SetTexture(TEX .. "flag-skull")

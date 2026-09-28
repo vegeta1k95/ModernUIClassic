@@ -224,13 +224,13 @@ object "ModuleProfessions" : extends "Module" {
         -- Events that can change the player's profession/skill state:
         --   PLAYER_ENTERING_WORLD   — initial scan at login/reload
         --   SKILL_LINES_CHANGED     — rank-up, learn, abandon (skill UI side)
-        --   LEARNED_SPELL_IN_TAB    — explicit learning at trainer
+        --   LEARNED_SPELL_IN_SKILL_LINE — explicit learning at trainer
         --   SPELLS_CHANGED          — covers unlearn + most spellbook churn
         self._refreshing = false
-        self._eventFrame:RegisterEventHandler("PLAYER_ENTERING_WORLD", function() self:_Refresh() end)
-        self._eventFrame:RegisterEventHandler("SKILL_LINES_CHANGED",   function() self:_Refresh() end)
-        self._eventFrame:RegisterEventHandler("LEARNED_SPELL_IN_TAB",  function() self:_Refresh() end)
-        self._eventFrame:RegisterEventHandler("SPELLS_CHANGED",        function() self:_Refresh() end)
+        self._eventFrame:RegisterEventHandler("PLAYER_ENTERING_WORLD",       function() self:_Refresh() end)
+        self._eventFrame:RegisterEventHandler("SKILL_LINES_CHANGED",         function() self:_Refresh() end)
+        self._eventFrame:RegisterEventHandler("LEARNED_SPELL_IN_SKILL_LINE", function() self:_Refresh() end)
+        self._eventFrame:RegisterEventHandler("SPELLS_CHANGED",              function() self:_Refresh() end)
 
         self:_Refresh()
     end;
@@ -238,7 +238,7 @@ object "ModuleProfessions" : extends "Module" {
     -- Walk PROFESSIONS, mark each as known/unknown by scanning every spellID
     -- (ranks + specializations + other). One match is enough — the player
     -- has the profession. knownSpells captures:
-    --   rank           = highest learned rank spellID (last IsSpellKnown match
+    --   rank           = highest learned rank spellID (last IsSpellInSpellBook match
     --                    in def.spells.ranks; canonical "learned rank" spell,
     --                    use GetSpellInfo on it for the localized prof name).
     --   specialization = first known specialization spellID (if any).
@@ -250,22 +250,24 @@ object "ModuleProfessions" : extends "Module" {
 
         self._refreshing = true
 
+        local playerBank = Enum.SpellBookSpellBank.Player
+
         for key, def in pairs(PROFESSIONS) do
             local rank, specialization, other = nil, nil, nil
 
             if def.spells.ranks then
                 for _, spellID in ipairs(def.spells.ranks) do
-                    if IsSpellKnown(spellID, false) then rank = spellID end
+                    if C_SpellBook.IsSpellInSpellBook(spellID, playerBank, false) then rank = spellID end
                 end
             end
             if def.spells.specializations then
                 for _, spellID in ipairs(def.spells.specializations) do
-                    if IsSpellKnown(spellID, false) then specialization = spellID; break end
+                    if C_SpellBook.IsSpellInSpellBook(spellID, playerBank, false) then specialization = spellID; break end
                 end
             end
             if def.spells.other then
                 for _, spellID in ipairs(def.spells.other) do
-                    if IsSpellKnown(spellID, false) then other = spellID; break end
+                    if C_SpellBook.IsSpellInSpellBook(spellID, playerBank, false) then other = spellID; break end
                 end
             end
 

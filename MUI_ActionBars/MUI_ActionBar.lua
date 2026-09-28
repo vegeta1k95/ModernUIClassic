@@ -48,12 +48,13 @@ class "ActionBar" : extends "Frame" {
         self.spacing = 6.3
         self.slotPad = 2.5
 
-        self.showEmptySlots = Settings.GetValue("alwaysShowActionBars")
+        self.showEmptySlots = false
+        self.alwaysShowButtons = false
 
         self.slots = {}
 
         -- BG frame (behind buttons) and Border frame (above buttons).
-        -- Buttons live under Blizzard's parents (MainMenuBarArtFrame, MultiBarBottomLeft, etc.)
+        -- Buttons live under Blizzard's parents (MainActionBar, MultiBarBottomLeft, etc.)
         -- at MEDIUM strata, so we use LOW / HIGH strata to force layering across parent chains.
         self.bgFrame = Frame("Frame", self, (name or "ActionBar") .. "_BG")
         self.bgFrame:FillParent()
@@ -70,6 +71,13 @@ class "ActionBar" : extends "Frame" {
 
     SetShowEmptySlots = function(self, show)
         self.showEmptySlots = show
+        self:UpdateSlotVisibility()
+    end;
+
+    -- The user's "Always Show Buttons" choice; showEmptySlots is the transient
+    -- state (cursor drag) layered on top of it.
+    SetAlwaysShowButtons = function(self, show)
+        self.alwaysShowButtons = show
         self:UpdateSlotVisibility()
     end;
 
@@ -117,40 +125,28 @@ class "ActionBar" : extends "Frame" {
         border:SetTextureRegion(TEX .. "actionbar-slot", 128, 128, 17, 16, 92, 95)
         border:Fill(btn, -0.5-self.slotPad, -0.5-self.slotPad, -self.slotPad, -1-self.slotPad)
 
-        -- Autocast shine animation lives on the button (MEDIUM strata), so the
-        -- HIGH-strata border frame hides it. Lift it above the border (border
-        -- sits at self+10, see RaiseBorders).
-        local shine = getglobal(btn:GetName() .. "Shine")
-        if shine then
-            local sh = Frame(shine)
-            sh:SetFrameStrata("HIGH")
-            sh:SetFrameLevel(self:GetFrameLevel() + 12)
-        end
+        -- Autocast shine animation lives on the button's AutoCastOverlay child
+        -- (MEDIUM strata), so the HIGH-strata border frame hides it. Lift it
+        -- above the border (border sits at self+10, see RaiseBorders).
+        local nativeAC = Frame(nativeButton.AutoCastOverlay)
+        nativeAC:SetFrameStrata("HIGH")
+        nativeAC:SetFrameLevel(self:GetFrameLevel() + 12)
 
-        -- Static autocastable indicator (green glow), a texture on the button
-        -- under the border frame. ActionButtons toggle it via parentKey (no
-        -- global name). Pet buttons inherit that parentKey copy too but
-        -- Blizzard toggles a SEPARATE named-global copy — so prefer the named
-        -- global, fall back to parentKey. Mirror it, synced via SyncAutocast.
-        local acRaw = getglobal(btn:GetName() .. "AutoCastable") or nativeButton.AutoCastable
-        local nativeAC = acRaw and Texture(acRaw)
-        local autocast
-        if nativeAC then
-            autocast = Texture(self.borderFrame, nil, "OVERLAY")
-            autocast:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
-            autocast:SetSize(bw + 22, bh + 22)
-            autocast:CenterAt(btn)
-            autocast:Hide()
-        end
+        -- Static autocastable indicator (green glow): the overlay's Corners
+        -- texture. Blizzard shows the whole overlay while autocast is allowed;
+        -- replace Corners with our own copy, synced via SyncAutocast.
+        Texture(nativeButton.AutoCastOverlay.Corners):SetAlpha(0)
+        local autocast = Texture(self.borderFrame, nil, "OVERLAY")
+        autocast:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
+        autocast:SetSize(bw + 22, bh + 22)
+        autocast:CenterAt(btn)
+        autocast:Hide()
 
         -- Hide vanilla hotkey text. It doubles as the native range indicator and gets
         -- Show()'d by ActionButton_UpdateRangeIndicator, so SetAlpha(0) keeps it invisible.
-        local hotkey = getglobal(btn:GetName() .. "HotKey")
-        if hotkey then
-            local hk = FontString(hotkey)
-            hk:Hide()
-            hk:SetAlpha(0)
-        end
+        local hk = FontString(nativeButton.HotKey)
+        hk:Hide()
+        hk:SetAlpha(0)
 
         -- Custom keybind/range go on borderFrame (HIGH strata) so they render above the
         -- border texture, anchored to the button so they sit at its top-right corner.
@@ -162,12 +158,9 @@ class "ActionBar" : extends "Frame" {
 		fs:AlignRight(btn, 0)
 
         -- Style macro name text
-        local macroName = getglobal(btn:GetName() .. "Name")
-        if macroName then
-            local mn = FontString(macroName)
-            mn:SetFont(MUI.FONT, 9, "OUTLINE")
-            mn:SetTextColor(1, 1, 1)
-        end
+        local mn = FontString(nativeButton.Name)
+        mn:SetFont(MUI.FONT, 9, "OUTLINE")
+        mn:SetTextColor(1, 1, 1)
 
         -- Range indicator
         local range = FontString(self.borderFrame, nil, "OVERLAY")
@@ -277,15 +270,14 @@ class "ActionBar" : extends "Frame" {
                 local petName = GetPetActionInfo(i)
                 filled = (petName ~= nil and petName ~= "")
             else
-                filled = HasAction(slot.button:GetActionID())
+                filled = C_ActionBar.HasAction(slot.button:GetActionID())
             end
 
-			local isOn = self.showEmptySlots or filled
+			local isOn = self.showEmptySlots or self.alwaysShowButtons or filled
 
             -- Do NOT toggle slot.button — it's a secure button, and Hide/Show from
-            -- addon code taints ActionButton_Update → blocks combat actions. Blizzard
-            -- drives native visibility via StanceBar_Update / PetActionBar_Update /
-            -- MultiActionBar_UpdateGridVisibility.
+            -- addon code taints its Update → blocks combat actions. Blizzard drives
+            -- native visibility via ActionBarMixin:UpdateShownButtons.
             if isOn then
                 slot.hotkey:Show()
                 slot.bg:Show()
@@ -331,7 +323,7 @@ class "ActionBar" : extends "Frame" {
 
     _SyncSlotAutocast = function(self, slot)
         if slot.autocast and slot.nativeAutoCast then
-            -- IsShown() is the texture's own flag; when the pet bar hides,
+            -- IsShown() is the overlay's own flag; when the pet bar hides,
             -- Blizzard hides the PARENT without clearing it, so also require
             -- the button to be actually visible.
             if slot.nativeAutoCast:IsShown() and slot.border:IsVisible() then
@@ -359,6 +351,50 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         self:SetScale(scale)
         for _, slot in ipairs(self.slots) do
             if slot.button then slot.button:SetScale(scale) end
+        end
+    end;
+
+    SetAlwaysShowButtons = function(self, show)
+        ActionBar.SetAlwaysShowButtons(self, show)
+        if self._chkAlwaysShow then self._chkAlwaysShow:SetChecked(show) end
+    end;
+
+    -- Adds the "Always Show Buttons" checkbox to this bar's edit-mode settings
+    -- panel. 1.15.9 dropped the global "Always Show Action Bars" option for a
+    -- per-bar Blizzard Edit Mode setting we can't write (secure showgrid), so
+    -- this one drives our own slot art. On by default, as in retail.
+    EditModeAddAlwaysShowButtons = function(self, content)
+        self._chkAlwaysShow = CheckBox(content, nil, HUD_EDIT_MODE_SETTING_ACTION_BAR_ALWAYS_SHOW_BUTTONS)
+        self._chkAlwaysShow.label:SetFontSize(12)
+        self._chkAlwaysShow:SetSize(200, 29)
+        self._chkAlwaysShow:SetBoxSize(24, 24)
+        self._chkAlwaysShow:AlignParentTopLeft(0, 0)
+        self._chkAlwaysShow.OnChanged = function(_, checked)
+            self:SetAlwaysShowButtons(checked)
+            self:EditModeNotifyChanged()
+        end
+
+        self:SetAlwaysShowButtons(true)
+        self:EditModeTrackSetting(
+            function() return self.alwaysShowButtons end,
+            function(v) self:SetAlwaysShowButtons(v) end)
+    end;
+
+    -- The setting rides along with the saved layout. Only the non-default (off)
+    -- is stored, like scale.
+    EditModeGetLayout = function(self)
+        local data = Editable.EditModeGetLayout(self)
+        if self._chkAlwaysShow and not self.alwaysShowButtons then
+            data = data or {}
+            data.alwaysShowButtons = false
+        end
+        return data
+    end;
+
+    EditModeApplyLayout = function(self, data)
+        Editable.EditModeApplyLayout(self, data)
+        if data and data.alwaysShowButtons == false then
+            self:SetAlwaysShowButtons(false)
         end
     end;
 

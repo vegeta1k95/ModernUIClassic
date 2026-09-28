@@ -20,6 +20,9 @@ MUI_AtlasRegistry = {
 	
 	FrameInnerHorizontal = TextureAtlas("frame-inner-horizontal", 256, 128, 256, 128, {
 		InnerBottom = { w = 256, h = 3, l = 0.000000, r = 1.000000, t = 0.867188, b = 0.890625 },
+		-- TopTileStreaks: the metallic streak band under the title bar
+		-- (retail _UI-Frame-TopTileStreaks, same 256x128 sheet / FDID 1723833).
+		TopTileStreaks = { w = 256, h = 43, l = 0.000000, r = 1.000000, t = 0.007812, b = 0.343750 },
 	}),
 
     FrameMetalCorners = TextureAtlas("frame-metal-corners", 512, 512, 512, 512, {

@@ -28,6 +28,8 @@ class "BagBar" : extends {"Frame", "Editable"} {
         Editable.__init(self)
         self:EditModeSetLabel("Bags Bar")
         self:EditModeSetupSettings(function(content) end)
+        -- KeyRingButton's OnShow calls GetParent():Layout() (it expects Blizzard's BagsBar).
+        self:SetNativeMethod("Layout", function() end)
     end;
 }
 
@@ -55,6 +57,8 @@ object "ModuleBags" : extends "Module" {
         self:SkinMainBag()
         self:SkinSmallBags()
         self:SkinKeyRing()
+        self:AnchorBagBar()
+        self:HookBagBarLayout()
         self:CreateToggleButton()
         self:UpdateBagSlotIcons()
         self:CreateFreeSlotCounter()
@@ -76,8 +80,6 @@ object "ModuleBags" : extends "Module" {
         end)
 
         self.backpack:SetParent(self.bagBar)
-        self.backpack:ClearAllPoints()
-        self.backpack:AlignParentBottomRight(0, 0)
         self.backpack:SetClampedToScreen(true)
         self.backpack:SetScale(1.2)
 
@@ -100,21 +102,9 @@ object "ModuleBags" : extends "Module" {
     SkinSmallBags = function(self)
         local bagAtlas = TEX .. "bagslots2x"
 
-        local bag0 = self._slots[0].button
-        bag0:SetParent(self.bagBar)
-        bag0:ClearAllPoints()
-        bag0:LeftOf(self.backpack, 11)
-
-        for i = 1, 3 do
-            local bag = self._slots[i].button
-            local prevBag = self._slots[i-1].button
-            bag:SetParent(self.bagBar)
-            bag:ClearAllPoints()
-            bag:LeftOf(prevBag, 0)
-        end
-
         for i = 0, 3 do
             local slot = self._slots[i].button
+            slot:SetParent(self.bagBar)
             slot:SetScale(0.9)
             slot:SetSize(30, 30)
 
@@ -187,8 +177,6 @@ object "ModuleBags" : extends "Module" {
         local keyRing = Button(KeyRingButton)
         keyRing:SetParent(self.bagBar)
         keyRing:SetSize(30, 30)
-        keyRing:ClearAllPoints()
-        keyRing:LeftOf(self._slots[3].button, 0)
         keyRing:SetScale(0.9)
 
         local normal = keyRing:GetNormalTexture()
@@ -233,6 +221,48 @@ object "ModuleBags" : extends "Module" {
         keyIcon:CenterInParent()
 
         self.keyring = keyRing
+    end;
+
+    AnchorBagBar = function(self)
+        self.backpack:ClearAllPoints()
+        self.backpack:AlignParentBottomRight(0, 0)
+
+        local bag0 = self._slots[0].button
+        bag0:ClearAllPoints()
+        bag0:LeftOf(self.backpack, 11)
+
+        for i = 1, 3 do
+            local bag = self._slots[i].button
+            local prevBag = self._slots[i-1].button
+            bag:ClearAllPoints()
+            bag:LeftOf(prevBag, 0)
+        end
+
+        if self.keyring then
+            self.keyring:ClearAllPoints()
+            self.keyring:LeftOf(self._slots[3].button, 0)
+        end
+    end;
+
+    -- BagsBar:Layout (Edit Mode apply, cursor item pickup) re-anchors the bag buttons and resizes the keyring; re-assert ours.
+    HookBagBarLayout = function(self)
+        local function reanchor()
+            if self._anchoring then return end
+            self._anchoring = true
+            self:AnchorBagBar()
+            self._anchoring = false
+        end
+
+        hooksecurefunc(MainMenuBarBackpackButton, "SetPoint", reanchor)
+        for i = 0, 3 do
+            hooksecurefunc(getglobal("CharacterBag" .. i .. "Slot"), "SetPoint", reanchor)
+        end
+        if self.keyring then
+            hooksecurefunc(KeyRingButton, "SetPoint", reanchor)
+            hooksecurefunc(KeyRingButton, "UpdateOrientation", function()
+                self.keyring:SetSize(30, 30)
+            end)
+        end
     end;
 
     CreateToggleButton = function(self)

@@ -2,6 +2,10 @@
 -- Create: Texture(parentCFrame, name, layer)
 -- Wrap:   Texture(existingNativeTexture)
 
+-- Native texture -> its circular portrait MaskTexture. Keyed by the native because
+-- wrappers are throwaway (GetNormalTexture() builds a new one on every call).
+local portraitMasks = setmetatable({}, { __mode = "k" })
+
 class "Texture" : extends "Widget" {
     __init = function(self, parentOrNative, name, layer)
         Widget.__init(self)
@@ -18,6 +22,20 @@ class "Texture" : extends "Widget" {
     -- or "CLAMPTOEDGE" / "CLAMPTOBLACKADDITIVE" — defaults clamp.
     SetTexture = function(self, path, horizWrap, vertWrap)
         self._native:SetTexture(path, horizWrap, vertWrap)
+    end;
+
+    -- Tile the texture across its bounds (backgrounds / streak bands). The
+    -- texture must have been set with "REPEAT" wrap mode for tiling to show.
+    SetHorizTile = function(self, enable)
+        if self._native.SetHorizTile then
+            self._native:SetHorizTile(enable and true or false)
+        end
+    end;
+
+    SetVertTile = function(self, enable)
+        if self._native.SetVertTile then
+            self._native:SetVertTile(enable and true or false)
+        end
     end;
 
     GetTexture = function(self)
@@ -46,14 +64,25 @@ class "Texture" : extends "Widget" {
             b = (y + h) / fileH
         end
 
-		self._native:SetTexCoord(l, r, t, b)
+		self:_SetTexCoord(l, r, t, b)
 	end;
 
     -- Accepts the 4-arg form (left, right, top, bottom) and the 8-arg
     -- corner form (ULx, ULy, LLx, LLy, URx, URy, LRx, LRy) used for
     -- arbitrary affine cropping (rotated text textures, etc.).
     SetTexCoord = function(self, ...)
+        self:_SetTexCoord(...)
+    end;
+
+    -- The engine throws "Cannot set tex coords when texture has mask", but a
+    -- mask added AFTER the texcoords is fine — so lift our portrait mask around
+    -- the call. Matters for reused icons that stay round between updates.
+    _SetTexCoord = function(self, ...)
+        local mask = portraitMasks[self._native]
+        local masked = mask and self._native:GetNumMaskTextures() > 0
+        if masked then self._native:RemoveMaskTexture(mask) end
         self._native:SetTexCoord(...)
+        if masked then self._native:AddMaskTexture(mask) end
     end;
 
     GetTexCoord = function(self)
@@ -116,16 +145,37 @@ class "Texture" : extends "Widget" {
             return
         end
         self._native:SetTexture(info.file)
-        self._native:SetTexCoord(info.left, info.right, info.top, info.bottom)
+        self:_SetTexCoord(info.left, info.right, info.top, info.bottom)
         if not keepSize then
             if info.width then self._native:SetWidth(info.width) end
             if info.height then self._native:SetHeight(info.height) end
         end
     end;
 
-    -- Set a round-cropped portrait texture from a file path
+    -- Set a round-cropped portrait texture from a file path. Uses a real MaskTexture
+    -- anchored to our rect (as Blizzard's portrait templates do): the string form
+    -- SetMask(file) samples the mask through the texture's own texcoords, so it
+    -- distorts as soon as the icon is cropped with SetTexCoord. The mask stays on
+    -- the texture; ClearPortrait to go back to a square icon.
     SetPortrait = function(self, path)
-        SetPortraitToTexture(self._native, path)
+        local mask = portraitMasks[self._native]
+        if not mask then
+            mask = self._native:GetParent():CreateMaskTexture()
+            mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+            mask:SetAllPoints(self._native)
+            portraitMasks[self._native] = mask
+        end
+        if self._native:GetNumMaskTextures() == 0 then
+            self._native:AddMaskTexture(mask)
+        end
+        self._native:SetTexture(path)
+    end;
+
+    ClearPortrait = function(self)
+        local mask = portraitMasks[self._native]
+        if mask and self._native:GetNumMaskTextures() > 0 then
+            self._native:RemoveMaskTexture(mask)
+        end
     end;
 
     -- Set a portrait texture from a live unit (player/target/etc).

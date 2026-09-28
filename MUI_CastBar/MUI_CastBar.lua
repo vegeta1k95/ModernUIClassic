@@ -1,5 +1,5 @@
--- MUI_CastBar: Spawns the player cast bar (center bottom) and suppresses the vanilla
--- CastingBarFrame / PlayerCastingBarFrame. Target cast bar is owned by MUI_UnitFrames.
+-- MUI_CastBar: Spawns the player cast bar (center bottom) and suppresses the native
+-- PlayerCastingBarFrame. Target cast bar is owned by MUI_UnitFrames.
 
 -- Player cast bar plus the edit-mode overlay. Only the player bar is movable; the
 -- target bar stays anchored to the target frame. The bar is hidden except during a
@@ -31,10 +31,7 @@ object "ModuleCastBar" : extends "Module" {
     end;
 
     OnEnable = function(self)
-        Frame(CastingBarFrame):Kill()
-        if PlayerCastingBarFrame then
-            Frame(PlayerCastingBarFrame):Kill()
-        end
+        Frame(PlayerCastingBarFrame):Kill()
 
         self.playerBar = CastBarEditable(nil, "MUI_CastBar_Player", "player", 186, 9.5, "Cast Bar")
         self.playerBar:SetFrameStrata("HIGH")

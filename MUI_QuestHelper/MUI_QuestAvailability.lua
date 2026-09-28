@@ -107,10 +107,12 @@ local _PROF_RANK_SPELLS = {
     [356] = {7620, 7731, 7732, 18248},                     -- Fishing
     [393] = {8613, 8617, 8618, 10768},                     -- Skinning
 }
+local function _isSpellKnown(spellID)
+    return C_SpellBook.IsSpellInSpellBook(spellID, Enum.SpellBookSpellBank.Player, false)
+end
 local function _hasRequiredRanks(req)
     if not req then return true end
     if type(req) ~= "table" then return true end
-    if not IsSpellKnown then return true end
     -- Shape: list of {profId, rankLevel}. Any single failure → false.
     for _, pair in ipairs(req) do
         if type(pair) == "table" and pair[1] and pair[2] then
@@ -120,7 +122,7 @@ local function _hasRequiredRanks(req)
                 -- Accept the requested rank OR any higher rank (if the
                 -- player has Artisan Alchemy they satisfy rank-3 Expert).
                 for r = pair[2], #ranks do
-                    if IsSpellKnown(ranks[r]) then found = true; break end
+                    if _isSpellKnown(ranks[r]) then found = true; break end
                 end
                 if not found then return false end
             end
@@ -134,8 +136,7 @@ end
 -- QuestieProfessions.HasSpecialization which is just IsSpellKnown.
 local function _hasRequiredSpecialization(spec)
     if not spec or spec == 0 then return true end
-    if not IsSpellKnown then return true end
-    return IsSpellKnown(spec) and true or false
+    return _isSpellKnown(spec) and true or false
 end
 
 -- requiredSpell: positive id = must know the spell; negative id = must
@@ -144,8 +145,7 @@ end
 -- on sign.
 local function _hasRequiredSpell(req)
     if not req or req == 0 then return true end
-    if not IsSpellKnown then return true end
-    local known = IsSpellKnown(math.abs(req)) and true or false
+    local known = _isSpellKnown(math.abs(req)) and true or false
     if req > 0 then
         return known       -- must know
     else

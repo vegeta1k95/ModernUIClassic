@@ -88,19 +88,19 @@ object "ModuleActionBars" : extends "Module" {
         end)
 
         mb1:EditModeSetupSettings(function(content)
-            
+            mb1:EditModeAddAlwaysShowButtons(content)
         end)
 
         mb2:EditModeSetupSettings(function(content)
-            
+            mb2:EditModeAddAlwaysShowButtons(content)
         end)
 
         mb3:EditModeSetupSettings(function(content)
-            
+            mb3:EditModeAddAlwaysShowButtons(content)
         end)
 
         mb4:EditModeSetupSettings(function(content)
-            
+            mb4:EditModeAddAlwaysShowButtons(content)
         end)
 
         pet:EditModeSetupSettings(function(content)
@@ -167,17 +167,6 @@ object "ModuleActionBars" : extends "Module" {
         end)
     end;
 
-    _CheckButtonRange = function(self, button)
-        if not button or not button:IsVisible() then return true end
-        local slot = ActionButton_GetPagedID(button)
-        if not slot or slot == 0 then return true end
-        if not UnitExists("target") then return true end
-        if not UnitCanAttack("player", "target") then return true end
-        local inRange = IsActionInRange(slot)
-        if inRange == 0 then return false end
-        return true
-    end;
-
     _UpdateRangeIndicators = function(self)
         local canAttack = UnitExists("target") and UnitCanAttack("player", "target")
 
@@ -188,8 +177,8 @@ object "ModuleActionBars" : extends "Module" {
                         local actionSlot = slot.button:GetActionID()
                         local outOfRange = false
 
-                        local inRange = IsActionInRange(actionSlot)
-                        if canAttack and HasAction(actionSlot) and (inRange == 0 or inRange == false) then
+                        local inRange = C_ActionBar.IsActionInRange(actionSlot)
+                        if canAttack and C_ActionBar.HasAction(actionSlot) and inRange == false then
                             outOfRange = true
                         end
 
@@ -219,57 +208,34 @@ object "ModuleActionBars" : extends "Module" {
     end;
 
     _HideBlizzardArt = function(self)
+        -- Blizzard re-shows bar art via SetShown (UpdateEndCaps / SetBackgroundArtShown),
+        -- so blank the textures instead of relying on Hide.
         local textures = {
-            "MainMenuBarTexture0", "MainMenuBarTexture1",
-            "MainMenuBarTexture2", "MainMenuBarTexture3",
-            "MainMenuBarLeftEndCap", "MainMenuBarRightEndCap",
-            "BonusActionBarTexture0", "BonusActionBarTexture1",
-            "SlidingActionBarTexture0", "SlidingActionBarTexture1",
+            MainMenuBarTexture0, MainMenuBarTexture1,
+            MainMenuBarTexture2, MainMenuBarTexture3,
+            MainMenuBarLeftEndCap, MainMenuBarRightEndCap,
+            MainActionBar.EndCaps.LeftEndCap, MainActionBar.EndCaps.RightEndCap,
+            PetActionBar.BackgroundArt1, PetActionBar.BackgroundArt2,
+            StanceBar.BackgroundArtLeft, StanceBar.BackgroundArtMiddle, StanceBar.BackgroundArtRight,
         }
-        for _, name in ipairs(textures) do
-            local tex = getglobal(name)
-            if tex then
-                local t = Texture(tex)
-                t:SetTexture(nil)
-                t:Hide()
-            end
+        for _, tex in ipairs(textures) do
+            local t = Texture(tex)
+            t:SetTexture(nil)
+            t:Hide()
         end
 
         Frame(MainMenuBar):EnableMouse(false)
         Frame(MainMenuBarArtFrame):EnableMouse(false)
-        Frame(PetActionBarFrame):EnableMouse(false)
+        Frame(MainActionBar):EnableMouse(false)
+        Frame(StanceBar):EnableMouse(false)
+        Frame(PetActionBar):EnableMouse(false)
 
-        local stanceArt = { "StanceBarLeft", "StanceBarMiddle", "StanceBarRight" }
-        for _, name in ipairs(stanceArt) do
-            local tex = getglobal(name)
-            if tex then
-                local t = Texture(tex)
-                t:Hide()
-                t:SetAlpha(0)
-            end
-        end
-
-        if StanceBarFrame then
-            Frame(StanceBarFrame):HideAllRegions()
-        end
-
-        for i = 1, 10 do
-            local btn = getglobal("StanceButton" .. i)
-            if btn then
-                local bg = getglobal(btn:GetName() .. "Background")
-                if bg then Texture(bg):Hide() end
-            end
-        end
-
-        Frame(PetActionBarFrame):HideAllRegions()
-
-        UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = nil
-
-        Frame(ReputationWatchBar):Kill()
         Frame(MainMenuBarPerformanceBarFrame):Kill()
-        Frame(ActionBarUpButton):Kill()
-        Frame(ActionBarDownButton):Kill()
-        Frame(MainMenuBarPageNumber):Hide()
+
+        local pageNumber = MainActionBar.ActionBarPageNumber
+        Frame(pageNumber):Kill()
+        Frame(pageNumber.UpButton):Kill()
+        Frame(pageNumber.DownButton):Kill()
     end;
 
     _SetupMainBar = function(self)
@@ -434,8 +400,7 @@ object "ModuleActionBars" : extends "Module" {
     end;
 
     _UpdatePageNum = function(self)
-        local page = (GetActionBarPage and GetActionBarPage()) or 1
-        self.pageNumText:SetText(tostring(page))
+        self.pageNumText:SetText(tostring(C_ActionBar.GetActionBarPage()))
     end;
 
     _SetupMultiBars = function(self)
@@ -462,10 +427,6 @@ object "ModuleActionBars" : extends "Module" {
 			self:_UpdateBarsVisibility()
         end)
 
-        hooksecurefunc("MultiActionBar_UpdateGridVisibility", function()
-			self:_UpdateSlotsVisibility()
-        end)
-
         self.slotChangeWatcher = Frame("Frame", nil, "MUI_SlotChangeWatcher")
         self.slotChangeWatcher:RegisterEventHandler("ACTIONBAR_SHOWGRID", function()
             self.cursorDragging = true
@@ -477,7 +438,7 @@ object "ModuleActionBars" : extends "Module" {
         end)
         self.slotChangeWatcher:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()
             if self._pendingBarsVisibility then
-                self:UpdateBarsVisibility()
+                self:_UpdateBarsVisibility()
             end
             self:_UpdateSlotsVisibility()
         end)
@@ -488,30 +449,35 @@ object "ModuleActionBars" : extends "Module" {
             self:_UpdateSlotsVisibility()
         end)
 
-		hooksecurefunc("ActionButton_Update", function(btn)
-			if btn and btn.GetName then
-				local name = Button(btn):GetName()
-
-				-- Hide default textures
-				local nt = getglobal(name .. "NormalTexture")
-				local nt2 = getglobal(name .. "NormalTexture2")
-				if nt then Texture(nt):SetVertexColor(0,0,0,0) end
-				if nt2 then Texture(nt2):SetVertexColor(0,0,0,0) end
-
-				-- Hide default hotkey
-				local hotkey = getglobal(name .. "HotKey")
-				if hotkey then FontString(hotkey):Hide() end
-
-				local icon = Texture(getglobal(name .. "Icon"))
-				if icon then icon:SetAlpha(1) end
-
-				for _, bar in pairs(self.bars) do bar:SyncAutocast(name) end
+		-- Update is a mixin method copied onto every action button, so hook each button.
+		local actionButtons = {
+			"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+			"MultiBarRightButton", "MultiBarLeftButton"
+		}
+		for _, buttonType in ipairs(actionButtons) do
+			for i = 1, 12 do
+				hooksecurefunc(getglobal(buttonType .. i), "Update", function(btn)
+					self:_OnButtonUpdate(btn)
+				end)
 			end
-			for _, bar in pairs(self.bars) do
-				bar:UpdateSlotVisibility()
-			end
-		end)
-		
+		end
+
+    end;
+
+    _OnButtonUpdate = function(self, native)
+        -- Hide default textures
+        Texture(native.NormalTexture):SetVertexColor(0,0,0,0)
+
+        -- Hide default hotkey
+        FontString(native.HotKey):Hide()
+
+        Texture(native.icon):SetAlpha(1)
+
+        local name = Button(native):GetName()
+        for _, bar in pairs(self.bars) do bar:SyncAutocast(name) end
+        for _, bar in pairs(self.bars) do
+            bar:UpdateSlotVisibility()
+        end
     end;
 
     _SetupStanceBar = function(self)
@@ -528,7 +494,7 @@ object "ModuleActionBars" : extends "Module" {
             end
         end
 
-        hooksecurefunc("StanceBar_UpdateState", function()
+        hooksecurefunc(StanceBar, "UpdateState", function()
             stanceBar:UpdateSlotVisibility()
             stanceBar:RaiseBorders()
         end)
@@ -551,9 +517,9 @@ object "ModuleActionBars" : extends "Module" {
         end
 
         -- Hide/Show of the MUI_PetBar frame from this secure-hook callback taints
-        -- subsequent PetActionBarFrame operations in combat. UpdateSlotVisibility only
+        -- subsequent PetActionBar operations in combat. UpdateSlotVisibility only
         -- toggles our non-secure bg/border textures, which is safe.
-        hooksecurefunc("PetActionBar_Update", function()
+        hooksecurefunc(PetActionBar, "Update", function()
             petBar:UpdateSlotVisibility()
             petBar:SyncAllAutocast()
         end)
@@ -580,22 +546,13 @@ object "ModuleActionBars" : extends "Module" {
         local btn  = Button(native)
         local name = btn:GetName()
 
-        -- Action buttons: $parentNormalTexture. Stance buttons: $parentNormalTexture2.
-        for _, suffix in ipairs({ "NormalTexture", "NormalTexture2" }) do
-            local normalTex = getglobal(name .. suffix)
-            if normalTex then
-                Texture(normalTex):SetVertexColor(0,0,0,0)
-            end
-        end
+        Texture(native.NormalTexture):SetVertexColor(0,0,0,0)
 
-        -- Multibar buttons add a $parentFloatingBG (UI-Quickslot @ 0.4) that shows as a
+        -- Every button carries a SlotBackground (UI-Quickslot @ 0.4) that shows as a
         -- dark half-transparent square on empty slots. Kill it.
-        local floatingBG = getglobal(name .. "FloatingBG")
-        if floatingBG then
-            Texture(floatingBG):SetVertexColor(0,0,0,0)
-        end
+        Texture(native.SlotBackground):SetVertexColor(0,0,0,0)
 
-        local icon = Texture(getglobal(name .. "Icon"))
+        local icon = Texture(native.icon)
         icon:SetTexCoord(0.05, 0.96, 0.06, 0.96)
 
         local hlRegion = MUI_AtlasRegistry.ActionBar:GetRegion("IconFrameMouseover")
@@ -691,10 +648,10 @@ object "ModuleActionBars" : extends "Module" {
 		
     end;
 	
+	-- Empty slots show while dragging; the per-bar "Always Show Buttons" choice lives on the bar.
 	_UpdateSlotsVisibility = function(self)
-		local showEmptySlots = self.cursorDragging or Settings.GetValue("alwaysShowActionBars")
         for _, key in ipairs({"MULTIBAR1", "MULTIBAR2", "MULTIBAR3", "MULTIBAR4"}) do
-            self.bars[key]:SetShowEmptySlots(showEmptySlots)
+            self.bars[key]:SetShowEmptySlots(self.cursorDragging)
         end
 	end;
 }

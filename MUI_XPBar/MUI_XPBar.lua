@@ -58,17 +58,10 @@ object "ModuleXPBar" : extends "Module" {
         self:RegisterEvents()
     end;
 
+    -- Manager owns the native XP + reputation bars; the max-level filler is re-shown via SetShown
     HideVanillaBar = function(self)
-        local hides = {
-            "MainMenuExpBar", "MainMenuBarMaxLevelBar", "ExhaustionTick",
-            "StatusTrackingBarManager", "ReputationWatchBar",
-        }
-        for _, name in ipairs(hides) do
-            local f = getglobal(name)
-            if f then Frame(f):HideFrame() end
-        end
-
-        if ExhaustionLevelFillBar then Frame(ExhaustionLevelFillBar):Hide() end
+        Frame(StatusTrackingBarManager):HideFrame()
+        Frame(MainMenuBarMaxLevelBar):Kill()
     end;
 
     CreateBar = function(self)
@@ -148,7 +141,7 @@ object "ModuleXPBar" : extends "Module" {
             end
         end)
 
-        if UnitLevel("player") == MAX_PLAYER_LEVEL then
+        if IsPlayerAtEffectiveMaxLevel() then
             self.bar:Hide()
         end
     end;
@@ -190,7 +183,7 @@ object "ModuleXPBar" : extends "Module" {
     end;
 
     UpdateXP = function(self)
-        local maxLevel = UnitLevel("player") == MAX_PLAYER_LEVEL
+        local maxLevel = IsPlayerAtEffectiveMaxLevel()
         -- No XP bar at max level, so keep it out of edit mode too. Re-evaluated
         -- here (runs at login and on PLAYER_LEVEL_UP) so dinging max disables it.
         self.bar:EditModeEnabled(not maxLevel)
@@ -242,7 +235,7 @@ object "ModuleXPBar" : extends "Module" {
         -- bar. "Restore default position" re-runs the same state-dependent rule.
         local function repDefault(b)
             b:ClearAllPoints()
-            if UnitLevel("player") == MAX_PLAYER_LEVEL then
+            if IsPlayerAtEffectiveMaxLevel() then
                 b:AlignParentBottom(4)
             else
                 b:Above(self.bar, 5)
@@ -291,24 +284,27 @@ object "ModuleXPBar" : extends "Module" {
         end)
 
         self.repBar:SetTooltip("ANCHOR_TOP", function(tooltip)
-            local name, standing, minRep, maxRep, value = GetWatchedFactionInfo()
-            if not name then return end
+            local data = C_Reputation.GetWatchedFactionData()
+            if not data or data.name == "" then return end
 
-            local standingText = getglobal("FACTION_STANDING_LABEL" .. standing) or ""
-            local range = maxRep - minRep
-            local current = value - minRep
-            tooltip:AddLine(name, 1, 1, 1, false, 13)
+            local standingText = getglobal("FACTION_STANDING_LABEL" .. data.reaction) or ""
+            local range = data.nextReactionThreshold - data.currentReactionThreshold
+            local current = data.currentStanding - data.currentReactionThreshold
+            tooltip:AddLine(data.name, 1, 1, 1, false, 13)
             tooltip:AddDoubleLine("Standing:", standingText)
             tooltip:AddDoubleLine("Reputation:", current .. " / " .. range)
         end)
     end;
 
     UpdateRep = function(self)
-        local name, standing, minRep, maxRep, value = GetWatchedFactionInfo()
-        if not name then
+        local data = C_Reputation.GetWatchedFactionData()
+        if not data or data.name == "" then
             self.repBar:Hide()
             return
         end
+
+        local name, standing = data.name, data.reaction
+        local minRep, maxRep, value = data.currentReactionThreshold, data.nextReactionThreshold, data.currentStanding
 
         self.repBar:Show()
 

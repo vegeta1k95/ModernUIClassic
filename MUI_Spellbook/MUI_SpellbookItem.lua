@@ -111,9 +111,13 @@ class "SpellButton" : extends "SecureActionButton" {
         tex:SetAlpha(spell.isKnown and 1.0 or 0.6)
         tex:SetTexCoord(0.04, 0.96, 0.04, 0.96)
 
+        -- The portrait mask persists on the texture, and items are reused across rebuilds
         if spell.isPassive then
             tex:SetPortrait(icon)
             self:GetHighlightTexture():SetPortrait("Interface\\Buttons\\ButtonHilight-Square")
+        else
+            tex:ClearPortrait()
+            self:GetHighlightTexture():ClearPortrait()
         end
 
         PreloadSpellTooltip(spell.spellID)

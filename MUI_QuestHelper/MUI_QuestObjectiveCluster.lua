@@ -14,9 +14,11 @@
 --   },
 --   finisher = { {uiMapId, normX, normY}, ... }
 --
--- `kind` ∈ {"npc", "object", "item", "trigger"}. `name` is kept for
--- tooltip / debug; runtime filtering uses position-within-type matching
--- (locale-safe — no string comparison against the localised quest log).
+-- `kind` ∈ {"npc", "object", "item", "sourceitem", "trigger"}. `name` is
+-- kept for tooltip / debug; runtime filtering uses position-within-type
+-- matching (locale-safe — no string comparison against the localised
+-- quest log). "sourceitem" rows (required source items — never a
+-- leaderboard line) carry `itemId` and are filtered by bag contents.
 --
 -- Filtering: target rows are emitted in the same nested order Blizzard
 -- walks q.objectives, so the Nth row of `kind="npc"` corresponds to the
@@ -29,7 +31,10 @@
 -- Output (via GetClusters / GetPoints / GetFinisherPoints) matches what
 -- the previous runtime-clustering implementation produced — same shape,
 -- same world-yard convention — so existing consumers (focus arrow,
--- on-screen compass, minimap area overlay) need no changes.
+-- on-screen compass, minimap area overlay) need no changes. Every
+-- cluster and stray point carries its continent (a required source item
+-- can sit across the sea from the rest of the quest); the accessors take
+-- an optional continentId filter and GetContinents lists what's present.
 
 -- Maps our target `kind` to the quest log leaderboard `type` string.
 -- Stable across locales — Blizzard's leaderboard `type` is fixed
@@ -40,6 +45,9 @@ local _KIND_TO_LEADER_TYPE = {
     ["item"]    = "item",
     ["trigger"] = "event",
 }
+
+-- Vertex count of the circle polygon GetStrayHulls draws around each stray point.
+local STRAY_CIRCLE_VERTICES = 12
 
 class "QuestObjectiveCluster" {
     __init = function(self)
@@ -86,31 +94,39 @@ class "QuestObjectiveCluster" {
             -- within the type.
             local typeIdx = {}
             for _, target in ipairs(precomputed.objectives) do
-                local typeStr = _KIND_TO_LEADER_TYPE[target.kind]
-                if typeStr then
-                    typeIdx[typeStr] = (typeIdx[typeStr] or 0) + 1
-                    local pos      = typeIdx[typeStr]
-                    local board    = boards[typeStr]
-                    local boardEnt = board and board[pos]
-                    local finished = boardEnt and boardEnt.finished
-                    if not finished then
-                        if target.clusters then
-                            for _, c in ipairs(target.clusters) do
-                                local rec = self:_ConvertCluster(c)
-                                if rec then
-                                    self._clusters[#self._clusters + 1] = rec
-                                    self._continent = self._continent or rec._continent
-                                end
+                local include = false
+                if target.kind == "sourceitem" then
+                    -- Required source item: no leaderboard line, done once
+                    -- the item is in the bags.
+                    include = target.itemId ~= nil
+                          and C_Item.GetItemCount(target.itemId) == 0
+                else
+                    local typeStr = _KIND_TO_LEADER_TYPE[target.kind]
+                    if typeStr then
+                        typeIdx[typeStr] = (typeIdx[typeStr] or 0) + 1
+                        local pos      = typeIdx[typeStr]
+                        local board    = boards[typeStr]
+                        local boardEnt = board and board[pos]
+                        include = not (boardEnt and boardEnt.finished)
+                    end
+                end
+                if include then
+                    if target.clusters then
+                        for _, c in ipairs(target.clusters) do
+                            local rec = self:_ConvertCluster(c)
+                            if rec then
+                                self._clusters[#self._clusters + 1] = rec
+                                self._continent = self._continent or rec._continent
                             end
                         end
-                        if target.stray then
-                            for _, s in ipairs(target.stray) do
-                                local wx, wy, cont = MUI_MapMath:MapToWorld(
-                                    s.uiMapId, s.normX, s.normY)
-                                if wx and wy then
-                                    self._points[#self._points + 1] = { wx, wy }
-                                    self._continent = self._continent or cont
-                                end
+                    end
+                    if target.stray then
+                        for _, s in ipairs(target.stray) do
+                            local wx, wy, cont = MUI_MapMath:MapToWorld(
+                                s.uiMapId, s.normX, s.normY)
+                            if wx and wy then
+                                self._points[#self._points + 1] = { wx, wy, cont }
+                                self._continent = self._continent or cont
                             end
                         end
                     end
@@ -166,11 +182,63 @@ class "QuestObjectiveCluster" {
         }
     end;
 
-    -- ---- accessors ------------------------------------------------------
+    -- Stray points as small CCW circle polygons (world yards) for the area
+    -- renderers: a target with too few spawns for a hull still gets a clearly
+    -- localised marker. Radius is a per-surface legibility choice, not geography.
+    GetStrayHulls = function(self, radiusYards, continentId)
+        local hulls = {}
+        local step = 2 * math.pi / STRAY_CIRCLE_VERTICES
+        for _, p in ipairs(self:GetPoints(continentId)) do
+            local hull = {}
+            for v = 1, STRAY_CIRCLE_VERTICES do
+                local a = (v - 1) * step
+                hull[v] = { p[1] + radiusYards * math.cos(a), p[2] + radiusYards * math.sin(a) }
+            end
+            hulls[#hulls + 1] = hull
+        end
+        return hulls
+    end;
 
-    GetClusters          = function(self) return self._clusters end;
+    -- ---- accessors ------------------------------------------------------
+    -- continentId (optional) restricts clusters / points to one continent.
+
+    GetClusters = function(self, continentId)
+        if not continentId then return self._clusters end
+        local out = {}
+        for _, c in ipairs(self._clusters) do
+            if c._continent == continentId then out[#out + 1] = c end
+        end
+        return out
+    end;
+
+    GetPoints = function(self, continentId)
+        if not continentId then return self._points end
+        local out = {}
+        for _, p in ipairs(self._points) do
+            if p[3] == continentId then out[#out + 1] = p end
+        end
+        return out
+    end;
+
+    -- Distinct continents carrying objective data, `firstContinent` moved
+    -- to the front when present.
+    GetContinents = function(self, firstContinent)
+        local seen, out = {}, {}
+        local function add(cont)
+            if not cont or seen[cont] then return end
+            seen[cont] = true
+            if cont == firstContinent then
+                table.insert(out, 1, cont)
+            else
+                out[#out + 1] = cont
+            end
+        end
+        for _, c in ipairs(self._clusters) do add(c._continent) end
+        for _, p in ipairs(self._points) do add(p[3]) end
+        return out
+    end;
+
     GetContinent         = function(self) return self._continent end;
-    GetPoints            = function(self) return self._points end;
     GetFinisherPoints    = function(self) return self._finisherPoints end;
     GetFinisherContinent = function(self) return self._finisherCont end;
     HasClusters          = function(self) return #self._clusters > 0 end;

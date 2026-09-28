@@ -37,7 +37,7 @@ object "ModuleChat" : extends "Module" {
         self:RepositionButtonFrameChildren()
         self:RepositionDock()
 
-        for i = 1, (NUM_CHAT_WINDOWS or 10) do
+        for i = 1, Constants.ChatFrameConstants.MaxChatWindows do
             local cf = getglobal("ChatFrame" .. i)
             if cf then self:SetupChatFrame(cf) end
         end
@@ -61,7 +61,7 @@ object "ModuleChat" : extends "Module" {
             SetChatColorNameByClass(t, true)
         end
         -- Every numbered channel (CHANNEL1..CHANNEL20) gets it too.
-        for i = 1, (MAX_WOW_CHAT_CHANNELS or 20) do
+        for i = 1, Constants.ChatFrameConstants.MaxChatChannels do
             SetChatColorNameByClass("CHANNEL" .. i, true)
         end
     end;
@@ -89,6 +89,12 @@ object "ModuleChat" : extends "Module" {
         apply()
 
         hooksecurefunc("FCF_DockUpdate", function() apply(); self:RepositionDock() end)
+
+        -- ChatFrame1 is an Edit Mode system: every layout apply re-anchors and re-sizes it.
+        hooksecurefunc(ChatFrame1, "UpdateSystem", function()
+            apply()
+            self.chat:SetSize(CHAT_WIDTH, CHAT_HEIGHT)
+        end)
     end;
 
     -- Pull menu + channel buttons out of the ButtonFrame's LayoutMixin and position manually.

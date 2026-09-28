@@ -83,6 +83,11 @@ class "QuestObjectiveTooltip" {
             end
             -- [4] reputation, [6] spell: no hover target.
         end
+        -- Required source items (never a leaderboard line): their drop
+        -- sources surface the quest too.
+        for _, itemId in ipairs(MUI_QuestHelper:GetRequiredSourceItems(questId)) do
+            self:_IndexItem(itemId, questId)
+        end
         -- Turn-in NPCs / objects also get a hover annotation so the player
         -- can see "this is where quest X turns in" from the unit tooltip.
         if q.finishedBy then
@@ -110,13 +115,14 @@ class "QuestObjectiveTooltip" {
         self:_AddIdx(self._itemQuests, itemId, questId)
         local item = MUI_ItemDB:Get(itemId)
         if not item then return end
-        if item.npcDrops then
-            for _, npcId in ipairs(item.npcDrops) do
+        local npcDrops, objectDrops = MUI_QuestHelper:GetItemDrops(item)
+        if npcDrops then
+            for _, npcId in ipairs(npcDrops) do
                 self:_AddIdx(self._npcQuests, npcId, questId)
             end
         end
-        if item.objectDrops then
-            for _, objId in ipairs(item.objectDrops) do
+        if objectDrops then
+            for _, objId in ipairs(objectDrops) do
                 self:_IndexObject(objId, questId)
             end
         end
@@ -182,7 +188,7 @@ class "QuestObjectiveTooltip" {
         end
         local npcId = tonumber(idStr)
         if npcId then
-            self:_AppendQuestsFor(tt, self._npcQuests[npcId], "npc", npcId, true)
+            self:_AppendQuestsFor(tt, self._npcQuests[npcId], "npc", npcId)
         end
     end;
 
@@ -193,12 +199,16 @@ class "QuestObjectiveTooltip" {
         local idStr = link:match("item:(%d+)")
         local itemId = idStr and tonumber(idStr) or nil
         if itemId then
-            self:_AppendQuestsFor(tt, self._itemQuests[itemId], "item", itemId, true)
+            self:_AppendQuestsFor(tt, self._itemQuests[itemId], "item", itemId)
         end
     end;
 
     _AugmentObject = function(self, tt)
         if tt ~= GameTooltip then return end
+        -- Never on a tooltip we built ourselves: our quest tooltips put the quest
+        -- title on line 1, and a quest can share its name with its turn-in object
+        -- (Buzzbox 827), which would append the objectives a second time.
+        if MUI_Tooltip:IsOwnContent() then return end
         -- Unit / item / spell tooltips flow through their own hooks or
         -- aren't interesting for quest-target matching. Bail if any of
         -- those fire so the name-based match only runs on actual world-
@@ -215,7 +225,7 @@ class "QuestObjectiveTooltip" {
         self:_AppendQuestsFor(tt, self._objNameQuests[name], "object-name", name)
     end;
 
-    _AppendQuestsFor = function(self, tt, questIds, targetKind, targetId, monoSize)
+    _AppendQuestsFor = function(self, tt, questIds, targetKind, targetId)
         if not questIds or #questIds == 0 then return end
         local watcher = self.watcher
         local appended = false
@@ -223,7 +233,7 @@ class "QuestObjectiveTooltip" {
             local entry = watcher and watcher:GetEntry(questId)
             if entry then
                 local filter = self:_FilterFor(questId, entry, targetKind, targetId)
-                MUI_QuestHelper:FillQuestTooltip(questId, "full", filter, monoSize)
+                MUI_QuestHelper:FillQuestTooltip(questId, "full", filter)
                 appended = true
             end
         end
@@ -271,8 +281,9 @@ class "QuestObjectiveTooltip" {
             if q.objectives and q.objectives[3] then
                 for _, e in ipairs(q.objectives[3]) do
                     local item = e[1] and MUI_ItemDB:Get(e[1])
-                    if item and item.npcDrops then
-                        for _, nid in ipairs(item.npcDrops) do
+                    local npcDrops = item and MUI_QuestHelper:GetItemDrops(item)
+                    if npcDrops then
+                        for _, nid in ipairs(npcDrops) do
                             if nid == id and item.name then
                                 names[#names + 1] = item.name
                                 break
@@ -289,8 +300,9 @@ class "QuestObjectiveTooltip" {
             if q.objectives and q.objectives[3] then
                 for _, e in ipairs(q.objectives[3]) do
                     local item = e[1] and MUI_ItemDB:Get(e[1])
-                    if item and item.objectDrops then
-                        for _, oid in ipairs(item.objectDrops) do
+                    local objectDrops = item and select(2, MUI_QuestHelper:GetItemDrops(item))
+                    if objectDrops then
+                        for _, oid in ipairs(objectDrops) do
                             local obj = MUI_ObjectDB:Get(oid)
                             if obj and obj.name == id and item.name then
                                 names[#names + 1] = item.name

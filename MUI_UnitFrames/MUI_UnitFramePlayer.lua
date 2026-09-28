@@ -19,6 +19,38 @@ class "UnitFrameEditable" : extends {"Frame", "Editable"} {
         self:EditModeSetLabel(label)
         self:EditModeSetupSettings(function(content) end)
     end;
+
+    -- PlayerFrame / TargetFrame / PetFrame are Blizzard Edit Mode systems: their
+    -- instance SetPoint / ClearAllPoints / SetScale are Lua overrides that rescale
+    -- our offsets and write Edit Mode state. Drive the geometry through the C methods.
+    SetPoint = function(self, point, relativeTo, relativePoint, x, y)
+        self:RawAddPoint(point, relativeTo, relativePoint, x, y)
+    end;
+
+    ClearAllPoints = function(self)
+        self:RawClearAllPoints()
+    end;
+
+    SetScale = function(self, scale)
+        self:RawSetScale(scale)
+    end;
+
+    EditModeApplyScale = function(self, scale)
+        self.scale = scale
+        self:SetScale(scale)
+    end;
+
+    -- Blizzard re-anchors and re-scales its Edit Mode systems whenever it applies a
+    -- layout; reclaim ours. The frames are protected, so wait out combat.
+    Reassert = function(self)
+        if InCombatLockdown() then
+            self.reassertPending = true
+            return
+        end
+        self.reassertPending = false
+        if self.scale then self:SetScale(self.scale) end
+        MUI_EditMode:ReassertLayout(self)
+    end;
 }
 
 class "UnitFramePlayer" {
@@ -35,7 +67,8 @@ class "UnitFramePlayer" {
         Frame(PlayerFrameManaBarTextLeft):HideFrame()
         Frame(PlayerFrameManaBarTextRight):HideFrame()
         Frame(PlayerFrameBackground):HideFrame()
-        Texture(PlayerFrameTexture):Hide()
+        -- Blanked, not hidden: PlayerFrame_ToPlayerArt re-Shows it on every loading screen.
+        Texture(PlayerFrameTexture):SetTexture("")
         Texture(PlayerStatusTexture):SetTexture("")
 
         self.frame = UnitFrameEditable(PlayerFrame, "Player")
@@ -46,6 +79,9 @@ class "UnitFramePlayer" {
             f:ClearAllPoints()
             f:SetPoint("BOTTOMRIGHT", MUI_ModuleActionBars.bars.MAIN1, "TOPLEFT", -38, 162)
         end)
+        -- 1.15.9 shrank the native hit rect to (21, 19, 12, 15); keep the pre-1.15.9 one.
+        self.frame:SetHitRectInsets(6, 0, 4, 9)
+        hooksecurefunc(PlayerFrame, "UpdateSystem", function() self.frame:Reassert() end)
 
         self._portrait = Texture(PlayerPortrait)
         self._portrait:SetSize(56, 54)
@@ -82,28 +118,26 @@ class "UnitFramePlayer" {
         self.manaText   = self.module:CreateBarText(self.frame, self.mana,   9, self.health)
 
         local nameFS = FontString(PlayerFrame.name)
-        nameFS:ClearAllPoints()
-        nameFS:SetJustifyH("LEFT")
-        nameFS:AlignTop(self.frame, 8.5 )
-        nameFS:RightOf(self._portrait, 4)
+        local function anchorPlayerName()
+            nameFS:ClearAllPoints()
+            nameFS:SetJustifyH("LEFT")
+            nameFS:AlignTop(self.frame, 8.5 )
+            nameFS:RightOf(self._portrait, 4)
+        end
+        anchorPlayerName()
         nameFS:SetFont(MUI.FONT, 9)
         nameFS:SetTextColor(1, 0.82, 0)
+        -- PlayerFrame_ToPlayerArt (every PLAYER_ENTERING_WORLD) adds a CENTER anchor to
+        -- the name on top of ours, so hook it and re-apply our anchors.
+        hooksecurefunc("PlayerFrame_ToPlayerArt", anchorPlayerName)
 
         local levelFS = FontString(PlayerLevelText)
-        local function anchorPlayerLevel()
-            levelFS:ClearAllPoints()
-            levelFS:SetJustifyH("RIGHT")
-            levelFS:AlignRight(self.frame, 4)
-            levelFS:AlignTop(self.frame, 10)
-        end
-        anchorPlayerLevel()
+        levelFS:ClearAllPoints()
+        levelFS:SetJustifyH("RIGHT")
+        levelFS:AlignRight(self.frame, 4)
+        levelFS:AlignTop(self.frame, 10)
         levelFS:SetFont(MUI.FONT, 9)
         levelFS:SetTextColor(1, 0.82, 0)
-        -- PlayerFrame_UpdateLevelTextAnchor re-SetPoints the text on every
-        -- UNIT_LEVEL / refresh, so hook it and re-apply our anchor.
-        hooksecurefunc("PlayerFrame_UpdateLevelTextAnchor", anchorPlayerLevel)
-		
-		
 
         -- Suppress vanilla combat/attack/rest glow visuals
         local attackGlow = Texture(PlayerAttackGlow)

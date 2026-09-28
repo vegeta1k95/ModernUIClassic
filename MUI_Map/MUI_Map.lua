@@ -146,12 +146,6 @@ object "ModuleMap" : extends "Module" {
         -- else.
         --self.frame:SetIgnoreParentScale(false)
 
-        self.anchor = WorldMapScreenAnchor and Frame(WorldMapScreenAnchor) or nil
-        if self.anchor then
-            self.anchor:ClearAllPoints()
-            self.anchor:AlignParentTopLeft(80, 10)
-        end
-
         self.navBar = MapNavBar(self.frame, "MUI_MapNavBar")
         self.navBar:AlignParentTopLeft(10, 42)
 
@@ -264,12 +258,6 @@ object "ModuleMap" : extends "Module" {
 
         self.filterButton.OnClick = function() self._filterMenu:Toggle() end
 
-        -- The dropdown popup is a top-level frame (parented to the root so it
-        -- isn't clipped), so it doesn't ride WorldMapFrame's visibility. Closing
-        -- the map (ESC / close button / HideUIPanel) must dismiss it explicitly.
-        self.frame:HookScript("OnHide", function() self._filterMenu:Close() end)
-
-
         self.pinButton = MapCornerButton(self.map, "MUI_MapPinButton")
         self.pinButton.icon:SetTextureRegion(MUI.TEX_BASE .. "objecticonsatlas", 1024, 1024, 898, 726, 27, 26)
         self.pinButton:Below(self.filterButton, 0.5)
@@ -352,7 +340,13 @@ object "ModuleMap" : extends "Module" {
             self.frame:SetSize(448, 335)
             self.frame:SetAttribute("UIPanelLayout-width", 448)
         end
-        
+
+        -- 1.15.9 places the mini map as a "left" UI panel (WorldMapScreenAnchor is unused): keep it at 10, -80 UIParent units.
+        local uiParent = Frame(UIParent)
+        local ratio = uiParent:GetEffectiveScale() / self.frame:GetEffectiveScale()
+        SetUIPanelAttribute(WorldMapFrame, "xoffset",  10 * ratio - uiParent:GetAttribute("LEFT_OFFSET"))
+        SetUIPanelAttribute(WorldMapFrame, "yoffset", -80 * ratio - uiParent:GetAttribute("TOP_OFFSET"))
+
         self.closeBtn:ClearAllPoints()
         self.closeBtn:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 2, 6)
 

@@ -83,7 +83,7 @@ object "Talents" {
         local bestPoints = 0
 
         for i = 1, GetNumTalentTabs() do
-			local _, name, _, icon, pointsSpent = GetTalentTabInfo(i)
+			local _, name, _, icon, _, _, pointsSpent = C_SpecializationInfo.GetSpecializationInfo(i)
             if pointsSpent > bestPoints then
                 bestIndex  = i
                 bestName   = name

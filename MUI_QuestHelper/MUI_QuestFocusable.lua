@@ -9,6 +9,10 @@
 --   2. Stray objective points (no hull — quests below clustering threshold).
 --   3. Finisher (turn-in NPC / object) points — used when objectives are
 --      exhausted or the quest is ready to turn in.
+-- Levels 1 and 2 emit one tier per continent, the player's continent
+-- first, so a quest with targets on both sides of the sea (a required
+-- source item in Westfall for a Moonglade quest) walks the reachable
+-- ones before rerouting to a boat.
 
 object "QuestFocusable" {
 
@@ -24,29 +28,27 @@ object "QuestFocusable" {
         if not cluster or cluster:IsEmpty() then return nil end
 
         local tiers = {}
+        local _, _, _, playerCont = UnitPosition("player")
+        local continents = cluster:GetContinents(playerCont)
 
-        local clusters = cluster:GetClusters()
-        if #clusters > 0 then
+        for _, cont in ipairs(continents) do
             local pts = {}
-            for _, c in ipairs(clusters) do
+            for _, c in ipairs(cluster:GetClusters(cont)) do
                 pts[#pts + 1] = { c.centroid[1], c.centroid[2], hull = c.hull }
             end
-            tiers[#tiers + 1] = {
-                points    = pts,
-                continent = cluster:GetContinent(),
-            }
+            if #pts > 0 then
+                tiers[#tiers + 1] = { points = pts, continent = cont }
+            end
         end
 
-        local stray = cluster:GetPoints()
-        if stray and #stray > 0 then
+        for _, cont in ipairs(continents) do
             local pts = {}
-            for _, p in ipairs(stray) do
+            for _, p in ipairs(cluster:GetPoints(cont)) do
                 pts[#pts + 1] = { p[1], p[2] }
             end
-            tiers[#tiers + 1] = {
-                points    = pts,
-                continent = cluster:GetContinent(),
-            }
+            if #pts > 0 then
+                tiers[#tiers + 1] = { points = pts, continent = cont }
+            end
         end
 
         local fins = cluster:GetFinisherPoints()

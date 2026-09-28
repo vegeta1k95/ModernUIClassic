@@ -88,7 +88,7 @@ class "RewardTile" : extends "Frame" {
         -- border. SetQuality also internally hides for poor/common
         -- (<= 1) which is the convention most addons use.
         local quality
-        if link then quality = select(3, GetItemInfo(link)) end
+        if link then quality = select(3, C_Item.GetItemInfo(link)) end
         self._icon:SetQuality(quality)
     end;
 }
@@ -766,10 +766,11 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         else
             -- No rewards at all → hide the whole footer (decorations +
             -- Rewards header + grid). _content takes the full scrollChild
-            -- because _footer's height collapses to 0 and its Above()
-            -- anchor pins _content.bottom at scrollChild.bottom.
+            -- because _footer's height collapses and its Above() anchor pins
+            -- _content.bottom at scrollChild.bottom. Not 0: a zero-height
+            -- frame has no top edge for that anchor to resolve against.
             self._footer:Hide()
-            self._footer:SetHeight(0)
+            self._footer:SetHeight(0.1)
             self._contentHeight = contentBlockH
         end
     end;
@@ -863,7 +864,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
                 t:SetReward(PH_XP, BreakUpLargeNumbers(data.xp), nil, nil)
                 t:SetFontSize(11)
             elseif entry.kind == "money" then
-                t:SetReward(PH_COIN, GetCoinTextureString(data.money, 12), nil, nil)
+                t:SetReward(PH_COIN, C_CurrencyInfo.GetCoinTextureString(data.money, 12), nil, nil)
                 t:SetFontSize(11)
             elseif entry.kind == "choice" then
                 local c = entry.item

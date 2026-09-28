@@ -64,7 +64,7 @@ class "TalentGrid" : extends "SpellGrid" {
         local total = UnitLevel("player") - 9
         if total < 0 then total = 0 end
         for tab = 1, 3 do
-            local _, _, _, _, ps, _, pps = GetTalentTabInfo(tab, false, false, group)
+            local _, _, _, _, _, _, ps, _, pps = C_SpecializationInfo.GetSpecializationInfo(tab, false, false, nil, nil, group)
             total = total - (ps or 0) - (pps or 0)
         end
         return total
@@ -77,7 +77,7 @@ class "TalentGrid" : extends "SpellGrid" {
         self._currentSpec = spec
         self._pointsSpent = 0
 
-        local active        = GetActiveTalentGroup()
+        local active        = C_SpecializationInfo.GetActiveSpecGroup()
         local group         = self._group or active
         local isActiveGroup = group == active
 
@@ -86,7 +86,7 @@ class "TalentGrid" : extends "SpellGrid" {
         self._prereqCount = 0
 
         local _, _, classID = UnitClass("player")
-        local _, _, _, _, pointsSpent, _, previewPointsSpent = GetTalentTabInfo(spec, false, false, group)
+        local _, _, _, _, _, _, pointsSpent, _, previewPointsSpent = C_SpecializationInfo.GetSpecializationInfo(spec, false, false, nil, nil, group)
         local color = SPEC_HAZE_COLORS[classID][spec]
 
         -- Effective spent for this tab = real + staged preview. Used for
