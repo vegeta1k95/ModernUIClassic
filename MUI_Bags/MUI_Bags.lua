@@ -465,6 +465,13 @@ object "ModuleBags" : extends "Module" {
         hooksecurefunc("ToggleBackpack", function() self:NormalizeCombined() end)
         hooksecurefunc("ToggleBag",      function() self:NormalizeCombined() end)
 
+        -- Joint mode: swapping a bag on the bar closes its frame (BAG_CLOSED)
+        -- or leaves it at the old slot count; once the change has settled,
+        -- bring it back at the new size.
+        Frame():RegisterEventHandler("BAG_UPDATE_DELAYED", function()
+            for id = 1, NUM_BAG_SLOTS do self:SyncCombinedBag(id) end
+        end)
+
         -- Joint mode: hovering a bottom-bar bag icon lights up that bag's slots
         -- in the joined window (focus texture).
         self.backpack:HookScript("OnEnter", function() self:HighlightBag(0, true) end)
@@ -544,6 +551,12 @@ object "ModuleBags" : extends "Module" {
         -- Cached money frame for re-layout.
         entry.money = Frame(getglobal(name .. "MoneyFrame"))
 
+        -- "Increase backpack size" is anchored to the native backpack layout;
+        -- keep it on the money row, at its left end, in either mode.
+        local addSlots = Button(getglobal(name .. "AddSlotsButton"))
+        addSlots:ClearAllPoints()
+        addSlots:AlignLeft(entry.money, 2)
+
         -- Resize the gold/silver/copper amount text (keep the native number
         -- font face; MoneyFrame_Update only SetTexts, so this sticks).
         local moneyName = entry.money:GetName()
@@ -605,6 +618,7 @@ object "ModuleBags" : extends "Module" {
         -- Drive each slot's ItemIcon from the container data. Blizzard re-shows
         -- its own icon every update, so hide it again before showing ours.
         local size = native.size or 0
+        entry.size = size
         for i = 1, size do
             local slot = entry.slots[i]
             if slot then
@@ -639,13 +653,10 @@ object "ModuleBags" : extends "Module" {
         entry.panel:Show()
         entry.close:Show()
 
-        local size
-        if id == KEYRING_CONTAINER then
-            size = GetKeyRingSize()
-        else
-            size = C_Container.GetContainerNumSlots(id)
-        end
-        if not size or size == 0 then return end
+        -- The generated count, not the container's: the "increase backpack
+        -- size" preview shows four extra slots.
+        local size = entry.size or 0
+        if size == 0 then return end
 
         local item1 = entry.slots[1] and entry.slots[1].button
         if not item1 then return end
@@ -791,6 +802,21 @@ object "ModuleBags" : extends "Module" {
         end
     end;
 
+    -- Reopen bag `id` in the joined window when its frame closed or its slot
+    -- count changed under it (OpenBag with force regenerates the frame).
+    SyncCombinedBag = function(self, id)
+        if not self._combined or not IsBagOpen(0) then return end
+        if type(id) ~= "number" or id < 1 or id > NUM_BAG_SLOTS then return end
+        local size = C_Container.GetContainerNumSlots(id)
+        if not size or size == 0 then return end
+        local idx = IsBagOpen(id)
+        if not idx then
+            OpenBag(id)
+        elseif self._bags[idx].size ~= size then
+            OpenBag(id, true)
+        end
+    end;
+
     SetCombined = function(self, on)
         on = on and true or false
         if self._combined == on then return end
@@ -840,8 +866,7 @@ object "ModuleBags" : extends "Module" {
             local idx = IsBagOpen(id)
             if idx then
                 local e = self._bags[idx]
-                local size = C_Container.GetContainerNumSlots(id) or 0
-                for s = 1, size do
+                for s = 1, e.size or 0 do
                     if e.slots[s] then buttons[#buttons + 1] = e.slots[s].button end
                 end
                 if idx ~= hostIdx then
