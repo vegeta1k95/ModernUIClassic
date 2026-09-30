@@ -366,6 +366,42 @@ class "TooltipBase" : extends "Frame" {
         return left, right
     end;
 
+    -- Left-column text of a line (1-based); nil for an empty slot.
+    GetLineText = function(self, index)
+        local left = self:GetLine(index)
+        local text = left and left:GetText()
+        if text ~= "" then return text end
+    end;
+
+    -- Wrapped left-column FontString of a line (cached), to anchor things to.
+    GetLineWidget = function(self, index)
+        self._lineWidgets = self._lineWidgets or {}
+        local widget = self._lineWidgets[index]
+        if not widget then
+            local left = self:GetLine(index)
+            if not left then return end
+            widget = FontString(left)
+            self._lineWidgets[index] = widget
+        end
+        return widget
+    end;
+
+    -- Overwrite an existing line in place: left column set, right one cleared.
+    -- Follow with Show() to re-lay the tooltip out.
+    SetLine = function(self, index, text, r, g, b, wrap, size)
+        local left, right = self:GetLine(index)
+        if not left then return end
+        left:SetFont(MUI.FONT, size or 10.5, "")
+        if left.SetWordWrap then left:SetWordWrap(wrap and true or false) end
+        left:SetText(text)
+        left:SetTextColor(r or 1, g or 1, b or 1, 1)
+        left:Show()
+        if right then
+            right:SetText(nil)
+            right:Hide()
+        end
+    end;
+
     -- Put text in the RIGHT column of an existing line (1-based). The SetX
     -- populators (SetSpellByID, SetTalent) only fill the left column, so this
     -- adds e.g. the spell rank to the right of the first line. Re-shows so the

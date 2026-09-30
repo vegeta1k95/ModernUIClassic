@@ -41,6 +41,7 @@ MUI_DB\MUI_RecipeDB.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
 MUI_Tooltip\MUI_TooltipHooks.lua
+MUI_Tooltip\MUI_TooltipCompare.lua
 
 MUI_Shared\MUI_Line.lua
 MUI_Shared\MUI_Animation.lua
