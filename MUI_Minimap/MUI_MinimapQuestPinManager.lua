@@ -374,8 +374,16 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local pinName = string.format("MUI_QuestPin_%d_%d_%d_%d",
                 spec.questId, spec.objectiveIdx, spec.targetId, spec.spawnIdx)
         local pin = MinimapPin(pinName, 12)
-        pin:SetIconType(spec.iconType)
+        -- PvP quests get the red-orange turn-in "?".
+        pin:SetIconType((spec.iconType == "QuestTurnIn" and MUI_QuestHelper:IsPvPQuest(spec.questId))
+                        and "QuestTurnInPvP" or spec.iconType)
         pin:SetWorldPosition(spec.uiMapId, spec.normX, spec.normY)
+        -- A grey in-progress "?" sits one level down, so a yellow turn-in "?"
+        -- for another quest at the same NPC draws over it (the base level is
+        -- already the engine's frame-level ceiling, so nothing can go up).
+        if spec.iconType == "QuestCompletable" then
+            pin:SetFrameLevel(MUI_MINIMAP_PIN_FRAME_LEVEL - 1)
+        end
         -- EnableMouse(false) keeps the pin from capturing mouse focus —
         -- WoW auto-hides GameTooltip when the cursor enters a mouse-enabled
         -- frame without an OnEnter handler. Hover detection is purely
@@ -718,13 +726,15 @@ class "MinimapQuestPinManager" : extends "Frame" {
                 g.hasRepeatable = true
             elseif not s.isTrivial then
                 g.hasNormal = true
+                if not MUI_QuestHelper:IsPvPQuest(s.questId) then g.hasNonPvP = true end
             end
             end -- per-surface trivial filter
         end
         for key, g in pairs(groups) do
             local icon
             if g.hasNormal then
-                icon = "QuestAvailable"
+                -- Red-orange "!" only when every normal quest here is PvP.
+                icon = g.hasNonPvP and "QuestAvailable" or "QuestAvailablePvP"
             elseif g.hasRepeatable then
                 icon = "QuestRepeatable"
             else

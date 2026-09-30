@@ -168,6 +168,10 @@ class "QuestLogQuest" : extends "Frame" {
             if button == "RightButton" then
                 self:_ShowContextMenu()
             elseif button == "LeftButton" and self.questId then
+                -- Shift-click with a chat box open links the quest (Questie's format).
+                if IsModifiedClick("CHATLINK") and MUI_ModuleQuestLinks:InsertLink(self.questId) then
+                    return
+                end
                 PlaySound(SOUNDKIT.IG_QUEST_LIST_SELECT or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
                 MUI_ModuleMap:ShowQuestDescription(self.questId)
                 -- Navigate the world map to the zone containing the
@@ -260,7 +264,7 @@ class "QuestLogQuest" : extends "Frame" {
             and MUI_DB.settings.questHelper
             and MUI_DB.settings.questHelper.showQuestLevel
 
-        local title = entry.title or ("quest " .. questId)
+        local title = MUI_QuestHelper:GetQuestDisplayName(questId, entry.title or ("quest " .. questId))
         if showLvl then 
             title = "[".. entry.level .. "] " .. title
         end

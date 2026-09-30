@@ -37,7 +37,7 @@ See `MUI_DB/README.md` for the currently-vendored version.
 | `lua_parser.py` | Tokenizer + recursive-descent parser for the Lua subset Questie uses: table literals, strings, numbers, nil/true/false, identifier chains resolved through an env, arithmetic / comparison / logical operators, comments. |
 | `enums.py` | Extracts all the enum tables Questie corrections reference (`questKeys`, `npcKeys`, `zoneIDs`, `raceKeys`, `classKeys`, `sortKeys`, `Phasing.phases`, `Questie.ICON_TYPE_*`, etc.) into a single env dict. |
 | `base_db.py` | Reads `classic{Quest,Npc,Object,Item}DB.lua` — extracts the `[[return {...}]]` payload and parses it. |
-| `corrections.py` | Parses `classic{Quest,NPC,Object,Item}Fixes.lua` + `Automatic/classicQuestReputationFixes.lua`. Handles the `function ... :Load()` / `:LoadFactionFixes()` / `:LoadMissingQuests()` entry points, extracting either a single `return {...}` table or the faction-specific local tables. |
+| `corrections.py` | Parses `classic{Quest,NPC,Object,Item}Fixes.lua` + `Automatic/classicQuestReputationFixes.lua` + `questTagInfoCorrections.lua` (quest tag ids, baked as `questTag`). Handles the `function ... :Load()` / `:LoadFactionFixes()` / `:LoadMissingQuests()` entry points, extracting either a single `return {...}` table or the faction-specific local tables. |
 | `blacklists.py` | Parses `Questie{Quest,NPC,Item}Blacklist.lua`. Evaluates `Expansions.Current == Expansions.Era`-style conditionals to decide whether each ID is blacklisted for Classic Era. |
 | `zones.py` | Parses `Zones/data/{zoneIds,areaIdToUiMapId,uiMapIdToAreaId,subZoneToParentZone}.lua`. |
 | `quest_xp.py` | Parses `QuestXP/DB/xpDB-classic.lua`. |

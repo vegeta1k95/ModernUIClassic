@@ -153,6 +153,8 @@ object "UnitFrames" : extends "Module" {
                 if evt == "UNIT_POWER_UPDATE" then self.combo:Update() end
             elseif unit == "target" then
                 self.target:UpdateBars()
+                -- Clears the combo bar the moment the target dies.
+                if evt == "UNIT_HEALTH" then self.combo:Update() end
             elseif unit == "pet" then
                 self.pet:UpdateBars()
             elseif unit == "targettarget" then
@@ -196,22 +198,11 @@ object "UnitFrames" : extends "Module" {
             self.combo:Update()
         end)
 
-        -- Combat ended — drop any cached combo points, and re-apply any frame
-        -- layout Blizzard's Edit Mode overwrote while the frames were locked down.
+        -- Combat ended — re-apply any frame layout Blizzard's Edit Mode
+        -- overwrote while the frames were locked down.
         self.eventFrame:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()
-            self.combo:ClearCache()
             for _, unit in ipairs({ self.player, self.target, self.pet }) do
                 if unit.frame.reassertPending then unit.frame:Reassert() end
-            end
-        end)
-
-        -- Tracked combo target died → drop the cache.
-        self.eventFrame:RegisterEventHandler("COMBAT_LOG_EVENT_UNFILTERED", function()
-            if not self.combo.cachedTargetGUID then return end
-            local _, sub, _, _, _, _, _, destGUID = C_CombatLog.GetCurrentEventInfo()
-            if destGUID == self.combo.cachedTargetGUID
-                    and (sub == "UNIT_DIED" or sub == "PARTY_KILL") then
-                self.combo:ClearCache()
             end
         end)
 

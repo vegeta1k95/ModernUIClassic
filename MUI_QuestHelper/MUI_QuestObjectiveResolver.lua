@@ -108,6 +108,20 @@ local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId)
             end
         end
     end
+    -- Vendors selling the item (Questie pins those too), the player's faction
+    -- only; pinned like a drop source.
+    for _, npcId in ipairs(MUI_QuestHelper:GetItemVendors(item)) do
+        local npc = MUI_NpcDB:Get(npcId)
+        _emitSpawnSpecs(out, npc.spawns, {
+            iconType     = "ObjectiveLoot",
+            questId      = questId,
+            objectiveIdx = objectiveIdx,
+            targetId     = npcId,
+            targetKind   = "item-npc",
+            targetName   = itemName .. " <" .. (npc.name or "?") .. ">",
+            sourceItemId = sourceItemId,
+        })
+    end
     if objectDrops then
         for _, objId in ipairs(objectDrops) do
             local obj = MUI_ObjectDB:Get(objId)

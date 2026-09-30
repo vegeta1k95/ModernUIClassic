@@ -451,6 +451,17 @@ object "ModuleMap" : extends "Module" {
     -- width when SetQuest measures them.
     ShowQuestDescription = function(self, questId)
         if not self.questDescriptionTab then return end
+        -- Back to the log once the described quest leaves it (abandon,
+        -- turn-in). Wired on first use: the watcher belongs to QuestHelper.
+        if not self._descriptionRemovalWired then
+            self._descriptionRemovalWired = true
+            MUI_QuestHelper.watcher:RegisterCallback("OnQuestRemoved", function(removedId)
+                if self.questDescriptionTab:IsShown()
+                   and self.questDescriptionTab.questId == removedId then
+                    self:ShowQuestLog()
+                end
+            end)
+        end
         if self.questLogTab then self.questLogTab:Hide() end
         self.questDescriptionTab:Show()
         self.questDescriptionTab:SetQuest(questId)

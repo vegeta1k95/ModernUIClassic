@@ -299,6 +299,11 @@ class "Widget" {
     AlignRight = function(self, other, offset)
         self:SetPoint("RIGHT", other, "RIGHT", -(offset or 0), 0)
     end;
+
+    -- Bottom-right corner on other's, inset by (right, bottom).
+    AlignBottomRight = function(self, other, right, bottom)
+        self:SetPoint("BOTTOMRIGHT", other, "BOTTOMRIGHT", -(right or 0), (bottom or 0))
+    end;
     
 
     -- === Align to sibling edge, centered on the other axis ===

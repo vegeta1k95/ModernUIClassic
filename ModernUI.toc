@@ -104,6 +104,7 @@ MUI_QuestHelper\MUI_QuestObjectiveTooltip.lua
 MUI_QuestHelper\MUI_QuestAvailability.lua
 MUI_QuestHelper\MUI_QuestHelper.lua
 MUI_QuestHelper\MUI_QuestFocusable.lua
+MUI_QuestHelper\MUI_QuestLinks.lua
 
 MUI_Minimap\MUI_MinimapQuestPinManager.lua
 MUI_Minimap\MUI_MinimapBlipAtlasSwapper.lua
@@ -168,5 +169,7 @@ MUI_Chat\MUI_Chat.lua
 MUI_Options\MUI_Options.lua
 
 MUI_Mail\MUI_Mail.lua
+MUI_Gossip\MUI_Gossip.lua
+MUI_Merchant\MUI_Merchant.lua
 
 MUI_Test.lua

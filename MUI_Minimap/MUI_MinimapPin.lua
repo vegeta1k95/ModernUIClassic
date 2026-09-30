@@ -63,6 +63,9 @@ MUI_MinimapPinIcons = {
     ["QuestCompletable"]   = { OBJECTS_ATLAS, 1024, 1024, 759, 790, 32, 32 },
     ["QuestTurnIn"]        = { OBJECTS_ATLAS, 1024, 1024, 556, 791, 32, 32 },
     ["QuestRepeatable"]    = { OBJECTS_ATLAS, 1024, 1024, 556, 689, 32, 32 },
+    -- PvP quests: the yellow "!" / "?" tinted red-orange (SetIconType applies `tint`).
+    ["QuestAvailablePvP"]  = { OBJECTS_ATLAS, 1024, 1024, 863, 131, 64, 64, tint = MUI.PVP_QUEST_TINT },
+    ["QuestTurnInPvP"]     = { OBJECTS_ATLAS, 1024, 1024, 556, 791, 32, 32, tint = MUI.PVP_QUEST_TINT },
 	["ObjectiveGeneric"]   = { OBJECTS_ATLAS, 1024, 1024, 419, 417, 32, 32 },
     ["ObjectiveSlay"]      = { OBJECTS_ATLAS, 1024, 1024, 759, 757, 32, 32 },
     ["ObjectiveLoot"]      = { OBJECTS_ATLAS, 1024, 1024, 792, 757, 32, 32 },
@@ -186,6 +189,11 @@ class "MinimapPin" : extends "Frame" {
             return
         end
         self.icon:SetTextureRegion(spec[1], spec[2], spec[3], spec[4], spec[5], spec[6], spec[7])
+        local tint = spec.tint
+        if tint or self._iconTinted then
+            self.icon:SetVertexColor(tint and tint[1] or 1, tint and tint[2] or 1, tint and tint[3] or 1)
+            self._iconTinted = tint ~= nil
+        end
     end;
 
     -- Arbitrary 7-arg icon override (bypasses the registry).

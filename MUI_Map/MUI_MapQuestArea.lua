@@ -94,6 +94,17 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         -- quest's visibility while the cursor's over the hull). On
         -- leave → reverse both.
         self:SetScript("OnUpdate", function() self:_PollHover() end)
+
+        -- Tooltip cleanup: the cursor may be over the hull when we go hidden
+        -- (focus cleared, solo filter, or the whole map closing, which never
+        -- calls our Hide). OnHide covers all of them; drop the tooltip so it
+        -- doesn't dangle.
+        self:SetScript("OnHide", function()
+            if self._tooltipActive then
+                self._tooltipActive = false
+                MUI_Tooltip:Hide()
+            end
+        end)
     end;
 
     SetHulls = function(self, hulls, continentId)
@@ -296,13 +307,6 @@ class "MapQuestObjectiveArea" : extends "Frame" {
     Hide = function(self)
         Frame.Hide(self)
         self:_HideEdges()
-        -- Tooltip cleanup: cursor may have been over the hull at the
-        -- moment we got hidden (e.g. focus cleared, solo filter
-        -- rejected us). Drop the tooltip so it doesn't dangle.
-        if self._tooltipActive then
-            self._tooltipActive = false
-            MUI_Tooltip:Hide()
-        end
     end;
 
     Destroy = function(self)

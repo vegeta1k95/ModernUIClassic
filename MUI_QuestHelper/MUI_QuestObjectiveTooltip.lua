@@ -121,6 +121,9 @@ class "QuestObjectiveTooltip" {
                 self:_AddIdx(self._npcQuests, npcId, questId)
             end
         end
+        for _, npcId in ipairs(MUI_QuestHelper:GetItemVendors(item)) do
+            self:_AddIdx(self._npcQuests, npcId, questId)
+        end
         if objectDrops then
             for _, objId in ipairs(objectDrops) do
                 self:_IndexObject(objId, questId)
@@ -189,6 +192,7 @@ class "QuestObjectiveTooltip" {
         local npcId = tonumber(idStr)
         if npcId then
             self:_AppendQuestsFor(tt, self._npcQuests[npcId], "npc", npcId)
+            self:_AppendAvailableFor(tt, "npc", npcId)
         end
     end;
 
@@ -223,6 +227,7 @@ class "QuestObjectiveTooltip" {
         local name = GameTooltipTextLeft1 and GameTooltipTextLeft1:GetText()
         if not name or name == "" then return end
         self:_AppendQuestsFor(tt, self._objNameQuests[name], "object-name", name)
+        self:_AppendAvailableFor(tt, "object-name", name)
     end;
 
     _AppendQuestsFor = function(self, tt, questIds, targetKind, targetId)
@@ -233,11 +238,67 @@ class "QuestObjectiveTooltip" {
             local entry = watcher and watcher:GetEntry(questId)
             if entry then
                 local filter = self:_FilterFor(questId, entry, targetKind, targetId)
-                MUI_QuestHelper:FillQuestTooltip(questId, "full", filter)
+                MUI_QuestHelper:FillQuestTooltip(questId, "full", filter,
+                    self:_TurnInIcon(questId, entry, targetKind, targetId))
                 appended = true
             end
         end
         if appended then tt:Show() end  -- recalc tooltip size after additions
+    end;
+
+    -- "?" before a quest whose turn-in is the hovered NPC / object: yellow
+    -- once it can be handed in (quests without objectives count, as on the
+    -- minimap pins), grey while still in progress. nil for other targets.
+    _TurnInIcon = function(self, questId, entry, targetKind, targetId)
+        local q = MUI_QuestDB:Get(questId)
+        if not (q and q.finishedBy and self:_IsListedHere(q.finishedBy, targetKind, targetId)) then
+            return nil
+        end
+        local ready = entry.isComplete or not entry.objectives or #entry.objectives == 0
+        return MUI_QuestHelper:GetQuestIconEscape(ready and "turnIn" or "inProgress", questId)
+    end;
+
+    -- Quests the hovered NPC / object offers right now, as "!" lines after
+    -- the quest-log ones, lowest level first. Low-level quests follow the
+    -- minimap's "show low level quests" setting.
+    _AppendAvailableFor = function(self, tt, targetKind, targetId)
+        local avail = MUI_QuestHelper.availability
+        if not avail then return end
+        local qh = MUI_DB.settings.questHelper
+        local showTrivial = qh and qh.showLowLevelAvailableQuests
+        local found = {}
+        for questId in pairs(avail:GetAll()) do
+            if showTrivial or not avail:IsTrivial(questId) then
+                local q = MUI_QuestDB:Get(questId)
+                if q and q.startedBy and self:_IsListedHere(q.startedBy, targetKind, targetId) then
+                    found[#found + 1] = questId
+                end
+            end
+        end
+        if #found == 0 then return end
+        table.sort(found, function(a, b)
+            return (MUI_QuestDB:Get(a).questLevel or 0) < (MUI_QuestDB:Get(b).questLevel or 0)
+        end)
+        for _, questId in ipairs(found) do
+            MUI_QuestHelper:AddAvailableQuestLine(questId)
+        end
+        tt:Show()
+    end;
+
+    -- Whether a startedBy / finishedBy list ({ {npcIds}, {objectIds} })
+    -- names the hovered target. World objects match by name, as elsewhere here.
+    _IsListedHere = function(self, list, targetKind, targetId)
+        if targetKind == "npc" then
+            for _, id in ipairs(list[1] or {}) do
+                if id == targetId then return true end
+            end
+        elseif targetKind == "object-name" then
+            for _, id in ipairs(list[2] or {}) do
+                local obj = MUI_ObjectDB:Get(id)
+                if obj and obj.name == targetId then return true end
+            end
+        end
+        return false
     end;
 
     -- Build a {idx → true} set of objective indices in `entry.objectives`
@@ -285,6 +346,15 @@ class "QuestObjectiveTooltip" {
                     if npcDrops then
                         for _, nid in ipairs(npcDrops) do
                             if nid == id and item.name then
+                                names[#names + 1] = item.name
+                                break
+                            end
+                        end
+                    end
+                    -- ... or sells (vendor-bought objective items).
+                    if item and item.name then
+                        for _, nid in ipairs(MUI_QuestHelper:GetItemVendors(item)) do
+                            if nid == id then
                                 names[#names + 1] = item.name
                                 break
                             end

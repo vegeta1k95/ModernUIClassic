@@ -52,6 +52,8 @@ object "QuestHelper" : extends "Module" {
 
     __init = function(self)
         Module.__init(self, "QuestHelper")
+        self._questTags  = {}   -- [questId] = tag id | false, see GetQuestTag
+        self._tagAsked   = {}
     end;
 
     OnEnable = function(self)
@@ -349,10 +351,13 @@ object "QuestHelper" : extends "Module" {
     -- separators or intentional repeated lines.
     -- objectiveFilter (optional): { [idx] = true, ... } — when present,
     -- only entry.objectives at those indices are emitted. nil = emit all.
-    FillQuestTooltip = function(self, questId, mode, objectiveFilter)
+    -- titleIcon (optional): inline texture put before the title (see
+    -- GetQuestIconEscape), e.g. the "?" on the quest's turn-in NPC.
+    FillQuestTooltip = function(self, questId, mode, objectiveFilter, titleIcon)
         local entry = self.watcher and self.watcher:GetEntry(questId)
         if not entry then return end
         local title, r, g, b = self:FormatQuestTitle(entry, questId)
+        if titleIcon then title = titleIcon .. " " .. title end
         if not MUI_Tooltip:HasLine(title) then
             MUI_Tooltip:AddLine(title, r, g, b, nil, 13)
         end
@@ -380,6 +385,46 @@ object "QuestHelper" : extends "Module" {
         end
     end;
 
+    -- Inline texture of a quest pin icon for tooltip lines, from the pin
+    -- registries (so it matches the map / minimap). kind: "available" (the
+    -- "!"), "turnIn" (yellow "?"), "inProgress" (grey "?"); repeatable and
+    -- PvP quests get their variants.
+    GetQuestIconEscape = function(self, kind, questId, size)
+        local spec
+        if kind == "available" then
+            spec = (self.availability and self.availability:IsRepeatable(questId)) and MUI_MapPinIcons["QuestRepeatable"]
+                or self:IsPvPQuest(questId) and MUI_MapPinIcons["QuestPvP"]
+                or MUI_MapPinIcons["Quest"]
+        elseif kind == "turnIn" then
+            spec = self:IsPvPQuest(questId) and MUI_MinimapPinIcons["QuestTurnInPvP"]
+                or MUI_MinimapPinIcons["QuestTurnIn"]
+        else
+            spec = MUI_MinimapPinIcons["QuestCompletable"]
+        end
+        size = size or 14
+        local x, y, w, h = spec[4], spec[5], spec[6], spec[7]
+        local escape = string.format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d",
+            spec[1], size, size, spec[2], spec[3], x, x + w, y, y + h)
+        local tint = spec.tint
+        if tint then
+            escape = escape .. string.format(":%d:%d:%d",
+                math.floor(tint[1] * 255), math.floor(tint[2] * 255), math.floor(tint[3] * 255))
+        end
+        return escape .. "|t"
+    end;
+
+    -- One "!" line for a quest available from a hovered NPC / object, in the
+    -- same title format as the quest-log quests above it.
+    AddAvailableQuestLine = function(self, questId)
+        local q = MUI_QuestDB:Get(questId)
+        if not q then return end
+        local title, r, g, b = self:FormatQuestTitle({ title = q.name, level = q.questLevel }, questId)
+        local line = self:GetQuestIconEscape("available", questId) .. " " .. title
+        if not MUI_Tooltip:HasLine(line) then
+            MUI_Tooltip:AddLine(line, r, g, b, nil, 13)
+        end
+    end;
+
     -- Drop sources of an item for the player's faction. The exporter bakes
     -- Alliance sources into npcDrops / objectDrops and adds npcDropsHorde /
     -- objectDropsHorde only where the Horde sources differ.
@@ -389,6 +434,27 @@ object "QuestHelper" : extends "Module" {
                    item.objectDropsHorde or item.objectDrops
         end
         return item.npcDrops, item.objectDrops
+    end;
+
+    -- Questie's NPC faction rule: nil / "AH" friendly to both factions,
+    -- "A" / "H" to one (vendors of the other faction don't sell to you).
+    IsFriendlyToPlayer = function(self, friendlyToFaction)
+        if not friendlyToFaction or friendlyToFaction == "AH" then return true end
+        local faction = UnitFactionGroup("player")
+        return (friendlyToFaction == "A" and faction == "Alliance")
+            or (friendlyToFaction == "H" and faction == "Horde")
+    end;
+
+    -- Vendors selling an item that the player can buy from.
+    GetItemVendors = function(self, item)
+        local out = {}
+        for _, npcId in ipairs(item.vendors or {}) do
+            local npc = MUI_NpcDB:Get(npcId)
+            if npc and self:IsFriendlyToPlayer(npc.friendlyToFaction) then
+                out[#out + 1] = npcId
+            end
+        end
+        return out
     end;
 
     -- Items the quest requires but never lists as a leaderboard objective
@@ -445,12 +511,49 @@ object "QuestHelper" : extends "Module" {
         table.insert(self._trackingListeners, fn)
     end;
 
+    -- Quest tag id (Enum.QuestTag: Group = elite, Dungeon, Raid, PvP …) or
+    -- nil. Questie's per-quest tag corrections are baked into the DB as
+    -- `questTag`; otherwise GetQuestTagInfo answers. It can return nothing
+    -- until the client has the quest cached, so a first empty answer isn't
+    -- cached, and meanwhile a quest filed under a dungeon zone counts as a
+    -- dungeon (raid) quest.
+    GetQuestTag = function(self, questId)
+        local cached = self._questTags[questId]
+        if cached ~= nil then return cached or nil end
+        local q = MUI_QuestDB:Get(questId)
+        local tag = q and q.questTag or GetQuestTagInfo(questId)
+        if not tag then
+            local dungeon = q and q.zoneOrSort and MUI_DungeonDB:GetDungeonEntrance(q.zoneOrSort)
+            local fallback = dungeon and (dungeon.isRaid and Enum.QuestTag.Raid or Enum.QuestTag.Dungeon)
+            if not self._tagAsked[questId] then
+                self._tagAsked[questId] = true
+                return fallback
+            end
+            tag = fallback
+        end
+        self._questTags[questId] = tag or false
+        return tag
+    end;
+
+    IsPvPQuest = function(self, questId)
+        return self:GetQuestTag(questId) == Enum.QuestTag.PvP
+    end;
+
+    -- A quest name as every ModernUI surface shows it: "(Elite)" or
+    -- "(Dungeon)" appended, like Era's quest log tags them.
+    GetQuestDisplayName = function(self, questId, name)
+        local tag = self:GetQuestTag(questId)
+        if tag == Enum.QuestTag.Group then return name .. " (Elite)" end
+        if tag == Enum.QuestTag.Dungeon then return name .. " (Dungeon)" end
+        return name
+    end;
+
     -- Quest title as the objective tooltips (minimap pin / area / arrow,
     -- world-map POI / hull) show it: "[level] " prefix when showQuestLevel
     -- is on, difficulty colour when showQuestDifficultyColor is on, gold
     -- otherwise. Returns text, r, g, b.
     FormatQuestTitle = function(self, entry, questId)
-        local title = entry.title or ("quest " .. questId)
+        local title = self:GetQuestDisplayName(questId, entry.title or ("quest " .. questId))
         local level = entry.level
         local s = MUI_DB and MUI_DB.settings and MUI_DB.settings.questHelper
         if s and s.showQuestLevel and level and level > 0 then

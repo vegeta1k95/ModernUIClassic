@@ -14,6 +14,10 @@ MUI.TEX_BASE  = "Interface\\AddOns\\ModernUI\\assets\\textures\\"
 MUI.TEX_ICON  = "Interface\\AddOns\\ModernUI\\assets\\textures\\icons\\"
 MUI.TEX_SKIN  = MUI.TEX_BASE .. "skin\\"
 
+-- Vertex tint that turns the yellow quest "!" / "?" red-orange for PvP quests
+-- (pin icon registries + tooltip icon escapes).
+MUI.PVP_QUEST_TINT = { 1, 0.35, 0.2 }
+
 -- Print to the default chat frame. Lazy-wraps DEFAULT_CHAT_FRAME on first
 -- use (ChatFrame class is loaded later in the .toc). Use this for all
 -- addon-side logging so module files never touch DEFAULT_CHAT_FRAME directly.

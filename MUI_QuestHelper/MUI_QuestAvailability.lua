@@ -414,6 +414,12 @@ class "QuestAvailability" : extends "Frame" {
         -- Already done or accepted
         if completed(questId) or watched[questId] then return false, false end
 
+        -- Hardcore realms disable battleground / PvP quests (Questie's
+        -- HardcoreBlacklist, baked as hardcoreBlacklisted).
+        if q.hardcoreBlacklisted and C_GameRules.IsHardcoreActive() then
+            return false, false
+        end
+
         -- Race / class bitmasks. 0 or nil = "any".
         if not _hasRace(q.requiredRaces) then return false, false end
         if not _hasClass(q.requiredClasses) then return false, false end

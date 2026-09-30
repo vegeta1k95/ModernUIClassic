@@ -127,14 +127,59 @@ class "CastBar" : extends "Frame" {
         self._spellText:SetFont(MUI.FONT, 9)
         self._spellText:SetTextColor(1, 1, 1, 1)
         self._spellText:SetShadowOffset(1, -1)
+        self._spellText:SetWordWrap(false)
         self._spellText:AlignBottom(self._textbox)
 
-        self.timeText = FontString(self, nil, "OVERLAY")
-        self.timeText:SetFont(MUI.FONT, 9)
-        self.timeText:SetTextColor(1, 1, 1, 1)
-        self.timeText:SetShadowOffset(1, -1)
-        self.timeText:AlignRight(self._textbox, 2)
-        self.timeText:AlignBottom(self._textbox, 0)
+        -- Remaining time, split at the decimal point (see _SetTime). The
+        -- container only lets callers Show / Hide timeText as one; the labels
+        -- anchor to the text box.
+        self.timeText = Frame("Frame", self)
+        self.timeText:FillParent()
+
+        local function timeLabel(justify)
+            local fs = FontString(self.timeText, nil, "OVERLAY")
+            fs:SetFont(MUI.FONT, 9)
+            fs:SetTextColor(1, 1, 1, 1)
+            fs:SetShadowOffset(1, -1)
+            fs:SetJustifyH(justify)
+            return fs
+        end
+        -- ".d" in a fixed-width, left-justified slot starting at the point;
+        -- whole seconds right-aligned against it.
+        self._timeFrac = timeLabel("LEFT")
+        local fracW = 0
+        for d = 0, 9 do
+            self._timeFrac:SetText("." .. d)
+            fracW = math.max(fracW, self._timeFrac:GetStringWidth())
+        end
+        self._timeFrac:SetText("")
+        self._timeFrac:SetWidth(fracW > 0 and math.ceil(fracW) + 1 or 12)
+        self._timeFrac:AlignBottomRight(self._textbox, 2, 0)
+        self._timeInt = timeLabel("RIGHT")
+        self._timeInt:LeftOf(self._timeFrac, 0)
+        -- Room the time takes at the text box's right end: ".d" plus two digits.
+        self._timeWidth = self._timeFrac:GetWidth() + 16
+    end;
+
+    -- The name stays inside the text box, cut with "..." when too long. It is
+    -- centred, so room kept for the time on the right is mirrored on the left.
+    _SetSpellText = function(self, text)
+        local margin = self.timeText:IsShown() and self._timeWidth or 5
+        self._spellText:SetWidth(self._barWidth + 2 - 2 * margin)
+        self._spellText:SetText(text)
+    end;
+
+    -- The point never moves as digits of different widths tick by; one
+    -- centred "0.3" label shifted by half of every width change.
+    _SetTime = function(self, remaining)
+        if not remaining then
+            self._timeInt:SetText("")
+            self._timeFrac:SetText("")
+            return
+        end
+        local whole, frac = string.format("%.1f", remaining):match("^(%d+)(%.%d)$")
+        self._timeInt:SetText(whole or "")
+        self._timeFrac:SetText(frac or "")
     end;
 
     _InitState = function(self)
@@ -180,8 +225,8 @@ class "CastBar" : extends "Frame" {
         if self._casting or self._channeling then return end
         self:_SetFillAtlas("FillingStandard")
         self:_SetProgress(1)
-        self._spellText:SetText(text or "")
-        self.timeText:SetText("")
+        self:_SetSpellText(text or "")
+        self:_SetTime(nil)
         self._spark:Hide()
         self._sparkTrail:Hide()
         self._flash:Hide()
@@ -237,8 +282,8 @@ class "CastBar" : extends "Frame" {
         self._sparkTrail:Show()
         self._startTime = startTime / 1000
         self._maxValue = endTime / 1000
-        self._spellText:SetText(text)
-        self.timeText:SetText("")
+        self:_SetSpellText(text)
+        self:_SetTime(nil)
         self:SetAlpha(1.0)
         self._casting = true
         self._flash:Hide()
@@ -259,8 +304,8 @@ class "CastBar" : extends "Frame" {
         self._sparkTrail:Show()
         self._startTime = startTime / 1000
         self._endTime = endTime / 1000
-        self._spellText:SetText(text)
-        self.timeText:SetText("")
+        self:_SetSpellText(text)
+        self:_SetTime(nil)
         self:SetAlpha(1.0)
         self._channeling = true
         self._flash:Hide()
@@ -306,7 +351,7 @@ class "CastBar" : extends "Frame" {
             if not self:IsShown() then return end
             self._spark:Hide()
             self._sparkTrail:Hide()
-            self.timeText:SetText("")
+            self:_SetTime(nil)
             self._flash:SetAlpha(0)
             self._flash:Show()
             self._flashState = true
@@ -344,8 +389,8 @@ class "CastBar" : extends "Frame" {
                 self._flash:Hide()
                 self._finishFlip:Hide()
                 self._finishing = nil
-                self._spellText:SetText(event == "UNIT_SPELLCAST_FAILED" and FAILED or INTERRUPTED)
-                self.timeText:SetText("")
+                self:_SetSpellText(event == "UNIT_SPELLCAST_FAILED" and FAILED or INTERRUPTED)
+                self:_SetTime(nil)
                 self:SetAlpha(1.0)
                 self._casting = nil
                 self._fadeOut = true
@@ -395,7 +440,7 @@ class "CastBar" : extends "Frame" {
 
             local remaining = self._maxValue - now
             if remaining > 0 then
-                self.timeText:SetText(string.format("%.1f", remaining))
+                self:_SetTime(remaining)
             end
 
         elseif self._channeling then
@@ -414,7 +459,7 @@ class "CastBar" : extends "Frame" {
 
             local remaining = self._endTime - now
             if remaining > 0 then
-                self.timeText:SetText(string.format("%.1f", remaining))
+                self:_SetTime(remaining)
             end
 
         elseif GetTime() < self._holdTime then

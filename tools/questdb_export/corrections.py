@@ -285,6 +285,25 @@ def load_missing_quests(source_path: Path) -> list[int]:
     return ids
 
 
+def load_quest_tag_corrections(questie_root: Path, env: dict) -> dict[int, int]:
+    """Parse `_QuestieDB.questTagCorrections = { [questId] = {tagId, name} }`
+    from questTagInfoCorrections.lua (quests whose GetQuestTagInfo answer is
+    wrong). Expansion-gated entries that evaluate to nil are dropped.
+    Returns {questId: tagId}."""
+    path = questie_root / "Database" / "Corrections" / "questTagInfoCorrections.lua"
+    src = _preprocess(path.read_text(encoding="utf-8"))
+    m = re.search(r"_QuestieDB\.questTagCorrections\s*=\s*\{", src)
+    if not m:
+        raise RuntimeError("questTagCorrections table not found")
+    start = m.end() - 1
+    table = parse_lua_table(src[start:_find_matching_brace(src, start) + 1], env)
+    out = {}
+    for qid, v in (table or {}).items():
+        if isinstance(qid, int) and isinstance(v, list) and v and isinstance(v[0], int):
+            out[qid] = v[0]
+    return out
+
+
 def load_classic_corrections(questie_root: Path, env: dict):
     """Run the classic-era correction pipeline and return a bundle of Python
     dicts ready to merge into the base DB. Also returns faction deltas kept

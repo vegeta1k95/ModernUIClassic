@@ -144,15 +144,19 @@ class "UnitFramePlayer" {
         local attackIcon = Texture(PlayerAttackIcon)
         local restIcon   = Texture(PlayerRestIcon)
         local restGlow   = Texture(PlayerRestGlow)
+        -- Dim red circle behind the attack icon, shown while auto-attacking.
+        local attackBg   = Texture(PlayerAttackBackground)
         attackGlow:SetTexture("")
         attackIcon:SetTexture("")
         restIcon:SetTexture("")
         restGlow:SetTexture("")
+        attackBg:SetTexture("")
         hooksecurefunc("PlayerFrame_UpdateStatus", function()
             attackGlow:SetAlpha(0)
             attackIcon:SetAlpha(0)
             restIcon:SetAlpha(0)
             restGlow:SetAlpha(0)
+            attackBg:SetAlpha(0)
         end)
 		
         self:_BuildOverlays()
@@ -245,6 +249,25 @@ class "UnitFramePlayer" {
         pvpTimer:SetJustifyH("CENTER")
         pvpTimer:Below(pvpIcon, -22, -10)
         pvpTimer:SetFont(MUI.FONT, 9)
+
+        -- Group leader crown where retail has it: on the top edge, just right of
+        -- the portrait. Master looter icon beside it. Blizzard only shows / hides
+        -- them (PlayerFrame_UpdatePartyLeader), so this sticks.
+        self.hitTextFrame:Reparent(PlayerLeaderIcon)
+        local leaderIcon = Texture(PlayerLeaderIcon)
+        leaderIcon:SetTexture(TEX .. "flag-leader")
+        leaderIcon:SetSize(32*0.45)
+        leaderIcon:SetDrawLayer("OVERLAY")
+        leaderIcon:ClearAllPoints()
+        leaderIcon:AlignTop(self.frame, -6.5)
+        leaderIcon:RightOf(self._portrait, 1)
+
+        self.hitTextFrame:Reparent(PlayerMasterIcon)
+        local masterIcon = Texture(PlayerMasterIcon)
+        masterIcon:SetSize(12)
+        masterIcon:SetDrawLayer("OVERLAY")
+        masterIcon:ClearAllPoints()
+        masterIcon:RightOf(leaderIcon, 1)
     end;
 
     UpdateBars = function(self)
@@ -276,8 +299,14 @@ class "UnitFramePlayer" {
         end
     end;
 
+    -- A form change swaps the resource (energy / rage <-> mana): show the new
+    -- one now rather than at its next regen tick, snapping the bar instead of
+    -- playing the drain effect from the old form's amount.
     UpdatePowerType = function(self)
         self.mana:SetFillColor(self.module:GetPowerColor("player"))
+        self.mana:SetMaxValue(UnitPowerMax("player"))
+        self.mana:SetBarValue(UnitPower("player"), true)
+        self:UpdateTexts()
     end;
 
     HasAggro = function(self)

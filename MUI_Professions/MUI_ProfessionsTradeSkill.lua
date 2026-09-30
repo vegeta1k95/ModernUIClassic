@@ -157,6 +157,12 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
             if self._activeNative and self._setupPending then
                 self:_ApplyNativeSetup()
             end
+            -- Finish a close that combat turned into a fade (see _OnClose).
+            if self._hidePending then
+                self._hidePending = false
+                if not self._activeNative then self:Hide() end
+                self:SetAlpha(1)
+            end
         end)
 
         -- Reset the quantity editbox to 1 when the player's current craft
@@ -270,6 +276,10 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
     _OnShow = function(self, nativeFrame)
         if not nativeFrame then return end
 
+        -- Reopened before a combat close could finish: undo its fade.
+        self._hidePending = false
+        self:SetAlpha(1)
+
         self._activeNative = nativeFrame
         -- All read paths into the native (recipe info, reagents, line rank,
         -- selection index, name, close, …) flow through this adapter — no
@@ -358,7 +368,15 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
 
     _OnClose = function(self)
         if self._actionBar then self._actionBar:HideCraftButton() end
-        self:Hide()
+        -- The secure profession tabs make our Hide protected in combat (a
+        -- blocked Hide used to leave the frame stuck open): go invisible now
+        -- and hide for real when combat ends.
+        if InCombatLockdown() then
+            self:SetAlpha(0)
+            self._hidePending = true
+        else
+            self:Hide()
+        end
         self._activeNative     = nil
         self.adapter           = nil
         self._unlearnedSpellID = nil

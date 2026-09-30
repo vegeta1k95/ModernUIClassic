@@ -162,6 +162,37 @@ def _is_horde_only(q):
         and (races & RACE_KEYS["ALL_ALLIANCE"]) == 0
 
 
+def _quest_faction(q):
+    """"A" / "H" for a single-faction quest (requiredRaces), else None."""
+    races = q.get("requiredRaces")
+    if not isinstance(races, int):
+        return None
+    alliance = races & RACE_KEYS["ALL_ALLIANCE"]
+    horde = races & RACE_KEYS["ALL_HORDE"]
+    if alliance and not horde:
+        return "A"
+    if horde and not alliance:
+        return "H"
+    return None
+
+
+def _vendors_for(item, npcs, faction):
+    """NPCs selling `item` that the quest's faction can buy from (Questie's
+    friendlyToFaction rule: nil / "AH" serve both). For a quest open to both
+    factions, only vendors serving both, unless the item has none of those."""
+    vendors = [npcs.get(v) for v in _entries_of(item.get("vendors")) if isinstance(v, int)]
+    vendors = [v for v in vendors if v]
+
+    def serves(npc, fac):
+        f = npc.get("friendlyToFaction")
+        return f is None or f is LUA_NIL or f == "AH" or (fac is not None and f == fac)
+
+    if faction:
+        return [v for v in vendors if serves(v, faction)]
+    neutral = [v for v in vendors if serves(v, None)]
+    return neutral or vendors
+
+
 def _item_drops(item, key, horde):
     """Drop-source ids for `key` ("npcDrops" / "objectDrops"): the Horde
     overlay (emit.add_horde_item_overlay) for Horde-only quests, else the
@@ -400,6 +431,7 @@ def build_all(quests, npcs, objects, items, area_to_ui):
         # [3] item loot — combine ALL source NPCs / objects under the
         # item's name (leaderboard line shows just the item name).
         horde = _is_horde_only(q)
+        faction = _quest_faction(q)
 
         def item_points(item):
             points = []
@@ -413,6 +445,10 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                     obj = objects.get(src_id)
                     if obj:
                         _emit_spawns_into(points, obj.get("spawns"), area_to_ui)
+            # Vendors selling the item, as Questie pins them ("Dry Times":
+            # four drinks bought from four barkeeps, no drop source at all).
+            for npc in _vendors_for(item, npcs, faction):
+                _emit_spawns_into(points, npc.get("spawns"), area_to_ui)
             return points
 
         objective_items = set()

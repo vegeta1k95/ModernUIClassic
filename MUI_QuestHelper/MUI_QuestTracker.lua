@@ -671,6 +671,10 @@ class "QuestTrackerQuest" : extends "Frame" {
         self._titleClick:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT",   0, -TITLE_H - 6)
         self._titleClick.OnClick = function()
             if not self.questId then return end
+            -- Shift-click with a chat box open links the quest (Questie's format).
+            if IsModifiedClick("CHATLINK") and MUI_ModuleQuestLinks:InsertLink(self.questId) then
+                return
+            end
             -- Open the map out of combat. ToggleWorldMap is protected in
             -- combat, so this is silently skipped there — the navigation
             -- below still runs and will be reflected when the player next
@@ -721,7 +725,7 @@ class "QuestTrackerQuest" : extends "Frame" {
             and MUI_DB.settings.questHelper
             and MUI_DB.settings.questHelper.showQuestLevel
 
-        local title = entry.title or ("quest " .. questId)
+        local title = MUI_QuestHelper:GetQuestDisplayName(questId, entry.title or ("quest " .. questId))
         if showLvl then 
             title = "[" .. entry.level .. "] " .. title
         end

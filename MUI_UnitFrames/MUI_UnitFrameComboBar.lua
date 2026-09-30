@@ -4,13 +4,9 @@
 -- ROGUE get one), and additionally hidden for druids whenever they're
 -- not in cat form (Power type 3 = Energy = cat).
 --
--- Combo-point cache: vanilla Classic clears combo points the moment
--- target dies / changes, even when the player can immediately cast on a
--- new target with those points still spent. We cache the last positive
--- count keyed by destination GUID so a "/cleartarget" macro that
--- finishes a finishing move still shows the points until the cached
--- target's death event arrives. Cleared on combat-end and on the
--- tracked target dying.
+-- Count = points on the current target, as Era's ComboFrame reads them:
+-- 0 with no target, so deselecting resets the bar (vanilla behaviour). A
+-- corpse keeps its points in the API; the bar shows 0 for a dead target.
 
 local function _hideVanillaComboFrame()
     -- Hide the native combo point dots that Blizzard renders on the target portrait.
@@ -64,37 +60,6 @@ class "UnitFrameComboBar" {
             self.bar:Hide()
         end
 
-        -- Prefer player-bound API (persists across target changes) → fall back to target-bound.
-        local COMBO_POWER = (Enum and Enum.PowerType and Enum.PowerType.ComboPoints) or 4
-        local count = (UnitPower and UnitPower("player", COMBO_POWER)) or 0
-        if count == 0 then
-            count = (GetComboPoints and GetComboPoints("player", "target")) or 0
-        end
-
-        local hasTarget  = UnitExists("target")
-        local targetDead = hasTarget and UnitIsDead("target")
-
-        if targetDead then
-            count = 0
-            self.cached = 0
-            self.cachedTargetGUID = nil
-        elseif count > 0 then
-            -- Anything positive is worth caching (covers macros that cast + /cleartarget).
-            self.cached = count
-            if hasTarget then self.cachedTargetGUID = UnitGUID("target") end
-        elseif not hasTarget then
-            -- No target and APIs report 0 — fall back to last known value.
-            count = self.cached or 0
-        end
-
-        self.bar:SetCount(count)
-    end;
-
-    -- Clear the combo-point cache (combat end, tracked target dying, etc.).
-    ClearCache = function(self)
-        if not self.bar then return end
-        self.cached           = 0
-        self.cachedTargetGUID = nil
-        self:Update()
+        self.bar:SetCount(UnitIsDead("target") and 0 or GetComboPoints("player", "target"))
     end;
 }

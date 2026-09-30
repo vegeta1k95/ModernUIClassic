@@ -31,6 +31,24 @@ class "ProfessionsTabs" : extends "TabGroup" {
     -- suppresses OnTabSelected casts triggered by AddTab's auto-select-first
     -- and our explicit SelectTab(activeIdx) below.
     Refresh = function(self, activeState)
+        -- The tabs are secure frames, and ones created in combat get no frame
+        -- handle, so their attribute snippet errors ("Invalid 'self' frame
+        -- handle") as soon as they're activated. Rebuild once combat ends.
+        if InCombatLockdown() then
+            self._pendingActive  = activeState
+            self._pendingRefresh = true
+            if not self._regenWired then
+                self._regenWired = true
+                self:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()
+                    if not self._pendingRefresh then return end
+                    self._pendingRefresh = false
+                    self:Refresh(self._pendingActive)
+                end)
+            end
+            return
+        end
+        self._pendingRefresh = false
+
         -- Build the ordered list with nil-checked inserts, NOT a table
         -- constructor: a missing primary leaves a nil hole and ipairs stops
         -- at the first hole (a Cooking + First Aid only char got zero tabs).

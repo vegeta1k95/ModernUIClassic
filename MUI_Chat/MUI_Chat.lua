@@ -95,6 +95,13 @@ object "ModuleChat" : extends "Module" {
             apply()
             self.chat:SetSize(CHAT_WIDTH, CHAT_HEIGHT)
         end)
+
+        -- Classic's frame position management (UIParentPanelManagerOverrides) also
+        -- re-anchors ChatFrame1 while it sits in its Edit Mode default position:
+        -- above the bottom bars, on every bar / status-bar change and after /reload.
+        hooksecurefunc(EditModeManagerFrame, "SetToLayoutAnchor", function(_, frame)
+            if frame == ChatFrame1 then apply() end
+        end)
     end;
 
     -- Pull menu + channel buttons out of the ButtonFrame's LayoutMixin and position manually.

@@ -86,6 +86,17 @@ class "UnitFrameTarget" {
         targetPvpIcon:Below(self._portrait, -26)
         targetPvpIcon:RightOf(self._portrait, -22)
 
+        -- Group leader crown, mirrored from the player frame: top edge, just left
+        -- of the portrait. TargetFrame:Update re-sets the native texture.
+        self.hitTextFrame:Reparent(TargetFrameTextureFrameLeaderIcon)
+        self.leaderIcon = Texture(TargetFrameTextureFrameLeaderIcon)
+        self.leaderIcon:SetTexture(TEX .. "flag-leader")
+        self.leaderIcon:SetSize(32*0.45)
+        self.leaderIcon:SetDrawLayer("OVERLAY")
+        self.leaderIcon:ClearAllPoints()
+        self.leaderIcon:AlignTop(self.frame, -6.5)
+        self.leaderIcon:LeftOf(self._portrait, 1)
+
         self.header = Texture(self.frame, nil, "BORDER")
         self.header:SetTexture(TEX .. "target-frame-header.tga")
         self.header:SetSize(256*0.46, 32*0.46)
@@ -132,6 +143,7 @@ class "UnitFrameTarget" {
             self:UpdateBorder()
         end)
         hooksecurefunc(TargetFrame, "Update", function()
+            self.leaderIcon:SetTexture(TEX .. "flag-leader")
             self:OnTargetChanged()
         end)
 

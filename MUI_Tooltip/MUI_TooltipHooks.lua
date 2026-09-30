@@ -11,7 +11,14 @@ object "TooltipItemHook" {
             MUI_TooltipItemRefComparison2
         }
 
-        MUI_TooltipItemRef:HookScript("OnShow", function() MUI_TooltipItemRef:Hide() end)
+        -- Chat link tooltips show on hover, so the sticky ItemRef tooltip stays
+        -- hidden, except for quest links, which open there on click
+        -- (MUI_QuestLinks). An item set into it while a quest is up hides it too.
+        local function hideUnlessQuest()
+            if not MUI_ModuleQuestLinks:IsItemRefQuest() then MUI_TooltipItemRef:Hide() end
+        end
+        MUI_TooltipItemRef:HookScript("OnShow", hideUnlessQuest)
+        MUI_TooltipItemRef:HookScript("OnTooltipSetItem", hideUnlessQuest)
 
         self._HookCurrentEquipped()
         self._HookChatItemLinks()

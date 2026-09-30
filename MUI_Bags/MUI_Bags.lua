@@ -484,6 +484,15 @@ object "ModuleBags" : extends "Module" {
     -- in per-bag mode each bag is already its own window, nothing to
     -- disambiguate.
     HighlightBag = function(self, id, on)
+        -- Off clears every bag frame: the leave can arrive after the bags
+        -- closed (hotkey while hovering), when IsBagOpen no longer finds the
+        -- frame and its slots would stay lit on the next open.
+        if not on then
+            for _, entry in pairs(self._bags) do
+                for _, slot in pairs(entry.slots) do slot.focus:SetVisible(false) end
+            end
+            return
+        end
         if not self._combined then return end
         local idx = IsBagOpen(id)
         if not idx then return end

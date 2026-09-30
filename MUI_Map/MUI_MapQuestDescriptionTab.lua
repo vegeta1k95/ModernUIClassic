@@ -668,7 +668,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
 
         SelectQuestLogEntry(prevSel)
 
-        self._contentTitle:SetText(title or "")
+        self._contentTitle:SetText(MUI_QuestHelper:GetQuestDisplayName(questId, title or ""))
 
         -- Objectives section (paragraph + leaderboard).
         if objectivesText and objectivesText ~= "" then

@@ -37,12 +37,10 @@ class "ChatFrame" : extends "Frame" {
 	
 	-- ========================
 	
+	-- Never measure by ScrollToTop + restore: that resets every line's fade timer
+	-- and re-texts every visible line, dropping the hyperlink under the cursor.
 	GetMaxScrollLines = function(self)
-		local cur = self:GetScrollOffset()
-		self:ScrollToTop()
-		local mx = self:GetScrollOffset()
-		self:SetScrollOffset(cur)
-		return mx
+		return self._native:GetMaxScrollRange()
 	end;
 
     GetNumMessages = function(self)

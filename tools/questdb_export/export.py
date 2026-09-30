@@ -286,6 +286,32 @@ def main() -> int:
     objects = positional_to_named(base["objects"], env["objectKeys"])
     items   = positional_to_named(base["items"],   env["itemKeys"])
 
+    # Quest tag corrections: GetQuestTagInfo answers wrongly for many quests
+    # (elite / dungeon / raid), so Questie ships per-quest overrides. Baked as
+    # `questTag` (tag id) and preferred over the API at runtime.
+    from corrections import load_quest_tag_corrections
+    n_tag = 0
+    for qid, tag in load_quest_tag_corrections(args.questie, env).items():
+        q = quests.get(qid)
+        if q is not None:
+            q["questTag"] = tag
+            n_tag += 1
+    print(f"  quest tag corrections applied: {n_tag}")
+
+    # Quests disabled on Hardcore realms (battleground / PvP quests): Questie's
+    # HardcoreBlacklist, baked as `hardcoreBlacklisted`; the runtime hides them
+    # when C_GameRules.IsHardcoreActive().
+    from corrections import load_simple
+    hc = load_simple(args.questie / "Database" / "Corrections" / "HardcoreBlacklist.lua",
+                     "Load", env)
+    n_hc = 0
+    for qid in hc:
+        q = quests.get(qid)
+        if q is not None:
+            q["hardcoreBlacklisted"] = True
+            n_hc += 1
+    print(f"  hardcore-blacklisted quests: {n_hc}")
+
     items_horde = positional_to_named(items_horde_pos, env["itemKeys"])
     n_overlay = add_horde_item_overlay(items, items_horde)
     print(f"  items with Horde drop overlay: {n_overlay}")

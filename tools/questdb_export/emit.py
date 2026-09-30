@@ -181,6 +181,23 @@ def _is_singular_count_quest(objectives_text: Any) -> bool:
     return False
 
 
+# A loot item's creature source counts as a unique target when it is a rare,
+# rare elite or boss (Questie rank 2 / 4 / 3), or when it is the item's sole
+# source with at most this many spawn points (roaming named mobs have a few),
+# or a sole elite source the item is named after ("Fang of Bhag'thera").
+# Otherwise the item is generic loot (a Glowing Soul Gem from five kinds of
+# Dark Strand mobs).
+UNIQUE_CARRIER_MAX_SPAWNS = 10
+UNIQUE_RANKS = (2, 3, 4)
+
+
+def _spawn_count(npc: dict | None) -> int:
+    spawns = npc.get("spawns") if npc else None
+    if not isinstance(spawns, dict):
+        return 0
+    return sum(len(list(_entries_of(v))) for v in spawns.values())
+
+
 def build_objective_reverse_index(
     quests:  dict[int, dict],
     npcs:    dict[int, dict],
@@ -196,8 +213,8 @@ def build_objective_reverse_index(
       * objectives[1] creature kills            → npcs
       * objectives[5] killCredit                → npcs
       * objectives[2] object interactions       → objects
-      * objectives[3] item collect, where the item's `npcDrops`
-        references an NPC                       → npcs
+      * objectives[3] item collect, where the item's `npcDrops` source is
+        a unique carrier (see UNIQUE_CARRIER_MAX_SPAWNS) → npcs
       * objectives[3] item collect, where the item's `objectDrops`
         references an object                   → objects
     Finisher NPCs / objects are NOT included (those are turn-in hints,
@@ -244,8 +261,15 @@ def build_objective_reverse_index(
                     continue
                 npc_drops = item.get("npcDrops")
                 if npc_drops is not None and npc_drops is not LUA_NIL:
-                    for src in _entries_of(npc_drops):
-                        if isinstance(src, int):
+                    srcs = [s for s in _entries_of(npc_drops) if isinstance(s, int)]
+                    for src in srcs:
+                        npc = npcs.get(src)
+                        rank = npc.get("rank") if npc else None
+                        sole = len(srcs) == 1
+                        named_after = (sole and rank == 1 and npc.get("name")
+                                       and npc["name"] in (item.get("name") or ""))
+                        if rank in UNIQUE_RANKS or named_after or (
+                                sole and _spawn_count(npc) <= UNIQUE_CARRIER_MAX_SPAWNS):
                             add_npc(src, qid)
                 obj_drops = item.get("objectDrops")
                 if obj_drops is not None and obj_drops is not LUA_NIL:

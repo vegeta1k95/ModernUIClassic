@@ -19,6 +19,12 @@ local OBJECTS_ATLAS = MUI.TEX_BASE .. "objecticonsatlas"
 -- pin types and stays well below the 9000 frame-level cap.
 MUI_MAP_PIN_FRAME_LEVEL = 3000
 
+-- Available-quest and hub pins sit above the landmark pins (flight masters,
+-- transports, dungeons) and below the quest POIs (3010+). Frames sharing one
+-- level can draw in one order and take the mouse in the other, which let a
+-- flight master under a quest "!" swallow its hover.
+MUI_MAP_QUEST_PIN_FRAME_LEVEL = MUI_MAP_PIN_FRAME_LEVEL + 5
+
 -- Click-vs-drag threshold (squared screen pixels). Mouse-up within this
 -- distance of the mouse-down counts as a click; further is a drag attempt
 -- and the click handler doesn't fire. 3px absorbs hand jitter without
@@ -104,6 +110,8 @@ MUI_MapPinIcons = {
 
     -- Quests
     ["Quest"]                 = { OBJECTS_ATLAS, 1024, 1024, 863, 133, 64, 60},
+    -- PvP quests: the yellow "!" tinted red-orange (SetIconType applies `tint`).
+    ["QuestPvP"]              = { OBJECTS_ATLAS, 1024, 1024, 863, 133, 64, 60, tint = MUI.PVP_QUEST_TINT},
     ["QuestRepeatable"]       = { OBJECTS_ATLAS, 1024, 1024, 623, 554, 32, 32},
     ["QuestRepeatableTurnIn"] = { OBJECTS_ATLAS, 1024, 1024, 691, 553, 32, 32},
     ["QuestMeta"]             = { OBJECTS_ATLAS, 1024, 1024, 725, 554, 32, 32},
@@ -244,6 +252,13 @@ class "MapPin" : extends "Frame" {
         end
         self.icon:SetTextureRegion(spec[1], spec[2], spec[3], spec[4], spec[5], spec[6], spec[7])
         self.highlight:SetTextureRegion(spec[1], spec[2], spec[3], spec[4], spec[5], spec[6], spec[7])
+        local tint = spec.tint
+        if tint or self._iconTinted then
+            local r, g, b = tint and tint[1] or 1, tint and tint[2] or 1, tint and tint[3] or 1
+            self.icon:SetVertexColor(r, g, b)
+            self.highlight:SetVertexColor(r, g, b)
+            self._iconTinted = tint ~= nil
+        end
     end;
 
     -- Arbitrary 7-arg icon override (bypasses the registry).

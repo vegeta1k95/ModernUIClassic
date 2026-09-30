@@ -118,7 +118,7 @@ end
 -- coloring setting is off.
 local function _QuestLineFormat(questId)
     local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-    local name  = (q and q.name) or "?"
+    local name  = MUI_QuestHelper:GetQuestDisplayName(questId, (q and q.name) or "?")
     local level = q and q.questLevel
 
     local s = MUI_DB and MUI_DB.settings and MUI_DB.settings.questHelper
@@ -689,6 +689,7 @@ class "MapStaticPinManager" : extends "Frame" {
                         quests        = {},
                         hasNormal     = false,
                         hasRepeatable = false,
+                        hasNonPvP     = false,
                         hasTurnIn     = false,
                         allTurnIn     = true,
                         allTrivial    = true,
@@ -703,10 +704,12 @@ class "MapStaticPinManager" : extends "Frame" {
                 local q = MUI_QuestDB:Get(s.questId)
                 local isTurnIn = q and q.isRepeatableTurnIn and true or false
                 if isTurnIn then g.hasTurnIn = true else g.allTurnIn = false end
+                local isPvP = MUI_QuestHelper:IsPvPQuest(s.questId)
                 if s.isRepeatable then
                     g.hasRepeatable = true
                 elseif not s.isTrivial then
                     g.hasNormal = true
+                    if not isPvP then g.hasNonPvP = true end
                 end
                 -- Per-quest detail used by the hub tooltip's section
                 -- buckets + per-line icon classification.
@@ -715,6 +718,7 @@ class "MapStaticPinManager" : extends "Frame" {
                     isTrivial    = s.isTrivial    and true or false,
                     isRepeatable = s.isRepeatable and true or false,
                     isTurnIn     = isTurnIn,
+                    isPvP        = isPvP,
                 }
                 end -- per-surface trivial filter
             end
@@ -762,7 +766,8 @@ class "MapStaticPinManager" : extends "Frame" {
         local icon
         local dim  = false
         if g.hasNormal then
-            icon = "Quest"
+            -- Red-orange "!" only when every normal quest here is PvP.
+            icon = g.hasNonPvP and "Quest" or "QuestPvP"
         elseif g.hasRepeatable and g.allTurnIn then
             icon = "QuestRepeatableTurnIn"
         elseif g.hasRepeatable then
@@ -799,6 +804,7 @@ class "MapStaticPinManager" : extends "Frame" {
                         .. math.floor(s.normX * 1000) .. "_"
                         .. math.floor(s.normY * 1000)
         local pin = MapPin(pinName, 14)
+        pin:SetFrameLevel(MUI_MAP_QUEST_PIN_FRAME_LEVEL)
         pin._focusKind = "questgiver"
         pin._focusKey  = focusKey
         pin:SetIconType(icon)
@@ -835,7 +841,11 @@ class "MapStaticPinManager" : extends "Frame" {
             for _, q in ipairs(g.quests or {}) do
                 local rank, icon, dim
                 if not q.isRepeatable and not q.isTrivial then
-                    rank, icon, dim = 1, "Quest", false
+                    if q.isPvP then
+                        rank, icon, dim = 1.5, "QuestPvP", false
+                    else
+                        rank, icon, dim = 1, "Quest", false
+                    end
                 elseif not q.isRepeatable then
                     rank, icon, dim = 2, "Quest", true
                 elseif not q.isTurnIn then
@@ -871,6 +881,7 @@ class "MapStaticPinManager" : extends "Frame" {
 
         local pinName = "MUI_MapStaticPin_QuestHub_" .. hub.id
         local pin = MapPin(pinName, 18)
+        pin:SetFrameLevel(MUI_MAP_QUEST_PIN_FRAME_LEVEL)
         pin._focusKind = "questhub"
         pin._focusKey  = hub.id
         pin:SetIconType("Hub")
@@ -912,6 +923,14 @@ class "MapStaticPinManager" : extends "Frame" {
                 "|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d:140:140:140|t",
                 path, size, size, fileW, fileH,
                 x, x + w, y, y + h)
+        end
+        local tint = spec.tint
+        if tint then
+            return string.format(
+                "|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d:%d:%d:%d|t",
+                path, size, size, fileW, fileH,
+                x, x + w, y, y + h,
+                math.floor(tint[1] * 255), math.floor(tint[2] * 255), math.floor(tint[3] * 255))
         end
         return string.format(
             "|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t",
@@ -1007,7 +1026,8 @@ class "MapStaticPinManager" : extends "Frame" {
                 tooltip:AddBlank()
                 tooltip:AddLine("Available quests", 1, 1, 1)
                 for _, q in ipairs(stdPicked) do
-                    local icon = self:_IconEscape("Quest", 19, q.isTrivial)
+                    local icon = self:_IconEscape((q.isPvP and not q.isTrivial) and "QuestPvP" or "Quest",
+                                                  19, q.isTrivial)
                     local text, r, g, b = _QuestLineFormat(q.questId)
                     tooltip:AddLine(icon .. " " .. text, r, g, b)
                 end

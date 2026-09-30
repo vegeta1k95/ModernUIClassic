@@ -152,6 +152,14 @@ class "Texture" : extends "Widget" {
         end
     end;
 
+    -- A Blizzard atlas by name. Returns false, leaving the texture as it was,
+    -- when this client has no such atlas (each flavor ships its own set).
+    SetBlizzardAtlas = function(self, name, useAtlasSize)
+        if not C_Texture.GetAtlasInfo(name) then return false end
+        self._native:SetAtlas(name, useAtlasSize)
+        return true
+    end;
+
     -- Set a round-cropped portrait texture from a file path. Uses a real MaskTexture
     -- anchored to our rect (as Blizzard's portrait templates do): the string form
     -- SetMask(file) samples the mask through the texture's own texcoords, so it
