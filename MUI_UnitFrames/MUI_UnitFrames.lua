@@ -12,7 +12,7 @@
 --   4. targetCastBar   — anchored Below target.auraContainer
 --   5. pet             — anchored Below player.frame
 --   6. tot             — anchored to target.frame
---   7. combo           — anchored Below player.mana
+--   7. combo           — anchored Below player.mana (druids: player.druidMana)
 
 local POWER_COLORS = {
     [0] = { 0.04, 0.5, 1 },  -- Mana
@@ -34,7 +34,7 @@ object "UnitFrames" : extends "Module" {
         self:_SetupTargetCastBar()
         self.pet         = UnitFramePet(self, self.player.frame)
         self.tot         = UnitFrameTargetOfTarget(self, self.target.frame)
-        self.combo       = UnitFrameComboBar(self.player.frame, self.player.mana)
+        self.combo       = UnitFrameComboBar(self.player.frame, self.player.druidMana or self.player.mana)
 
         self:_RegisterEvents()
         self:ApplyStatusTextMode()
@@ -42,8 +42,8 @@ object "UnitFrames" : extends "Module" {
 
     -- ---- shared helpers ----------------------------------------------
 
-    GetPowerColor = function(self, unit)
-        local pt = UnitPowerType(unit)
+    GetPowerColor = function(self, unit, powerType)
+        local pt = powerType or UnitPowerType(unit)
         local c  = POWER_COLORS[pt] or POWER_COLORS[0]
         return c[1], c[2], c[3]
     end;
@@ -108,7 +108,7 @@ object "UnitFrames" : extends "Module" {
     ApplyStatusTextMode = function(self)
         local show = (GetCVar("statusTextDisplay") ~= "NONE")
         local texts = {
-            self.player.healthText, self.player.manaText,
+            self.player.healthText, self.player.manaText, self.player.druidManaText,
             self.target.healthText, self.target.manaText,
         }
         for _, t in ipairs(texts) do

@@ -90,10 +90,13 @@ class "UnitFramePlayer" {
         self._portrait:AlignLeft(self.frame, 1)
         self._portrait:SetDrawLayer("BACKGROUND")
 
+        -- Frame art hangs from the top edge so the taller druid-form variant
+        -- (a third bar row) grows downward without moving the frame.
         self._frameTex = Texture(self.frame)
-        self._frameTex:SetTextureRegion(TEX .. "player-frame", 512, 128, 63, 0, 384, 128)
         self._frameTex:SetDrawLayer("ARTWORK")
-        self._frameTex:FillParentPadding(-2,0,0,0)
+        self._frameTex:AlignParentTopLeft(0, -2)
+        self._frameTex:AlignParentTopRight(0, 0)
+        self:_SetArt(self._frameTex, "", false)
 
         local barLevel = self.frame:GetFrameLevel() + 2
         self.health = AnimatedBar(self.frame, "MUI_PlayerHealth", 114.5, 28)
@@ -116,6 +119,21 @@ class "UnitFramePlayer" {
 
         self.healthText = self.module:CreateBarText(self.frame, self.health, 9)
         self.manaText   = self.module:CreateBarText(self.frame, self.mana,   9, self.health)
+
+        -- Druids: a third bar keeps mana in cat / bear form, where the bar
+        -- above shows the form's energy / rage (UpdateForm).
+        local _, class = UnitClass("player")
+        if class == "DRUID" then
+            self.druidMana = AnimatedBar(self.frame, "MUI_PlayerDruidMana", 114.5, 14)
+            self.druidMana:AlignLeft(self.health)
+            self.druidMana:Below(self.mana, -3.5)
+            self.druidMana:SetFrameLevel(barLevel)
+            self.druidMana:SetFillTexture(TEX .. "player-resource.tga")
+            self.druidMana:SetFillColor(self.module:GetPowerColor("player", 0))
+            self.druidMana:Hide()
+            self.druidManaText = self.module:CreateBarText(self.frame, self.druidMana, 9, self.health)
+            self.druidManaText.frame:Hide()
+        end
 
         local nameFS = FontString(PlayerFrame.name)
         local function anchorPlayerName()
@@ -161,7 +179,43 @@ class "UnitFramePlayer" {
 		
         self:_BuildOverlays()
         self:_BuildHitTextFrame()
+        self:UpdateForm()
         self:UpdateTexts()
+    end;
+
+    -- Frame / glow art: `suffix` is "", "-combat" or "-glow"; the druid-form
+    -- variant is one bar row taller at the same scale.
+    _SetArt = function(self, tex, suffix, druidForm)
+        if druidForm then
+            -- The druid combat glow is painted right / down of where the plain
+            -- one sits on its frame; crop it from there (tuned by eye).
+            local dx, dy = 0, 0
+            if suffix == "-combat" then dx, dy = 1, 7 end
+            tex:SetTextureRegion(TEX .. "player-frame-druid" .. suffix, 512, 256, 63 + dx, dy, 384, 150)
+            tex:SetHeight(68)
+        else
+            tex:SetTextureRegion(TEX .. "player-frame" .. suffix, 512, 128, 63, 0, 384, 128)
+            tex:SetHeight(58)
+        end
+    end;
+
+    -- Cat / bear form shows the form's resource in the second bar and mana in
+    -- the third, on the taller druid art; caster form is the usual frame.
+    UpdateForm = function(self)
+        if not self.druidMana then return end
+        local inForm = UnitPowerType("player") ~= 0
+        if inForm == self._inForm then return end
+        self._inForm = inForm
+        self:_SetArt(self._frameTex, "", inForm)
+        self:_SetArt(self.combatGlowTex, "-combat", inForm)
+        self:_SetArt(self.restingGlowTex, "-glow", inForm)
+        if inForm then
+            self.druidMana:Show()
+            self.druidManaText.frame:Show()
+        else
+            self.druidMana:Hide()
+            self.druidManaText.frame:Hide()
+        end
     end;
 
     _BuildOverlays = function(self)
@@ -169,8 +223,9 @@ class "UnitFramePlayer" {
         self.combatOverlay:FillParent()
         self.combatOverlay:SetFrameStrata("MEDIUM")
         self.combatGlowTex = Texture(self.combatOverlay, nil, "ARTWORK")
-        self.combatGlowTex:SetTextureRegion(TEX .. "player-frame-combat", 512, 128, 63, 0, 384, 128)
-        self.combatGlowTex:FillParent()
+        self.combatGlowTex:AlignParentTopLeft(0, 0)
+        self.combatGlowTex:AlignParentTopRight(0, 0)
+        self:_SetArt(self.combatGlowTex, "-combat", false)
         self.combatGlowTex:SetVertexColor(1, 0, 0)
         self.combatGlowTex:SetAlpha(0)
 
@@ -184,8 +239,9 @@ class "UnitFramePlayer" {
         self.restingOverlay:FillParent()
         self.restingOverlay:SetFrameStrata("MEDIUM")
         self.restingGlowTex = Texture(self.restingOverlay, nil, "OVERLAY")
-        self.restingGlowTex:SetTextureRegion(TEX .. "player-frame-glow", 512, 128, 63, 0, 384, 128)
-        self.restingGlowTex:FillParent()
+        self.restingGlowTex:AlignParentTopLeft(0, 0)
+        self.restingGlowTex:AlignParentTopRight(0, 0)
+        self:_SetArt(self.restingGlowTex, "-glow", false)
         self.restingGlowTex:SetVertexColor(1, 0.82, 0, 1)
         self.restingGlowTex:SetAlpha(0)
 
@@ -281,6 +337,11 @@ class "UnitFramePlayer" {
         self.mana:SetMaxValue(maxMana)
         self.mana:SetBarValue(mana)
 
+        if self.druidMana then
+            self.druidMana:SetMaxValue(UnitPowerMax("player", 0))
+            self.druidMana:SetBarValue(UnitPower("player", 0))
+        end
+
         self:UpdateTexts()
     end;
 
@@ -293,9 +354,14 @@ class "UnitFramePlayer" {
         local maxMana = UnitPowerMax("player")
         self.manaText.value:SetText(self.module:FormatValue(mana, maxMana))
 
+        if self.druidMana then
+            self.druidManaText.value:SetText(self.module:FormatValue(UnitPower("player", 0), UnitPowerMax("player", 0)))
+        end
+
         if GetCVar("statusTextDisplay") == "NONE" then
             self.healthText.value:Hide()
             self.manaText.value:Hide()
+            if self.druidMana then self.druidManaText.value:Hide() end
         end
     end;
 
@@ -306,6 +372,11 @@ class "UnitFramePlayer" {
         self.mana:SetFillColor(self.module:GetPowerColor("player"))
         self.mana:SetMaxValue(UnitPowerMax("player"))
         self.mana:SetBarValue(UnitPower("player"), true)
+        if self.druidMana then
+            self.druidMana:SetMaxValue(UnitPowerMax("player", 0))
+            self.druidMana:SetBarValue(UnitPower("player", 0), true)
+        end
+        self:UpdateForm()
         self:UpdateTexts()
     end;
 
