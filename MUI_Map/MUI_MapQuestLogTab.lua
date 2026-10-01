@@ -331,6 +331,7 @@ class "MapQuestLogTab" : extends "Frame" {
                             text     = text or "",
                             type     = objType,
                             finished = finished and true or false,
+                            failed   = isComplete == -1 and not finished,
                         }
                     end
 
@@ -344,6 +345,7 @@ class "MapQuestLogTab" : extends "Frame" {
                         title      = title or "",
                         level      = level or 0,
                         isComplete = isComplete == 1,
+                        isFailed   = isComplete == -1,
                         objectives = objectives,
                     }
                 end

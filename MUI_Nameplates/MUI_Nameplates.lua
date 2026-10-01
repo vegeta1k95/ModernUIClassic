@@ -39,7 +39,17 @@ object "ModuleNameplates" : extends "Module" {
             self:UpdateLevel(unit)
             self:UpdateHealthText(unit)
             self:UpdateSelection(unit)
+            self:UpdateQuestIcon(unit)
+            self:UpdateRaidIcon(unit)
         end)
+        self.driver:RegisterEventHandler("RAID_TARGET_UPDATE", function() self:UpdateAllRaidIcons() end)
+        -- Quest markers follow the quest log (accept / progress / turn-in)
+        -- and the bags (required source items).
+        local watcher = MUI_QuestHelper.watcher
+        for _, name in ipairs({ "OnQuestAdded", "OnQuestChanged", "OnQuestRemoved" }) do
+            watcher:RegisterCallback(name, function() self:UpdateAllQuestIcons() end)
+        end
+        self.driver:RegisterEventHandler("BAG_UPDATE_DELAYED", function() self:UpdateAllQuestIcons() end)
         self.driver:RegisterEventHandler("NAME_PLATE_UNIT_REMOVED", function(_, _, unit)
             local np = C_NamePlate.GetNamePlateForUnit(unit)
             if np then np._muiUnit = nil end
@@ -238,6 +248,75 @@ object "ModuleNameplates" : extends "Module" {
         deselected:SetFromAtlas(ATLAS2, "Deselected", 12, 4, 12, 4)
         deselected:SetSubpixelRendering(true)
         namePlate._muiDeselected = deselected
+
+        -- Quest objective marker, left of the bar (UpdateQuestIcon).
+        local questIcon = Texture(overlay, nil, "OVERLAY")
+        questIcon:SetSize(10)
+        questIcon:LeftOf(overlay, 3)
+        questIcon:Hide()
+        namePlate._muiQuestIcon = questIcon
+
+        -- Raid target icon, right of the bar (the native one is hidden with
+        -- the rest of the plate's art).
+        local raidIcon = Texture(overlay, nil, "OVERLAY")
+        raidIcon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
+        raidIcon:SetSize(12)
+        raidIcon:RightOf(overlay, 3)
+        raidIcon:Hide()
+        namePlate._muiRaidIcon = raidIcon
+    end;
+
+    -- The icons sit in a 4x4 sheet, index 1..8 row by row.
+    UpdateRaidIcon = function(self, unit)
+        if not unit then return end
+        local np = C_NamePlate.GetNamePlateForUnit(unit)
+        if not np or not np._muiRaidIcon then return end
+        local index = GetRaidTargetIndex(unit)
+        if not index then
+            np._muiRaidIcon:Hide()
+            return
+        end
+        local col, row = (index - 1) % 4, math.floor((index - 1) / 4)
+        np._muiRaidIcon:SetTexCoord(col * 0.25, (col + 1) * 0.25, row * 0.25, (row + 1) * 0.25)
+        np._muiRaidIcon:Show()
+    end;
+
+    UpdateAllRaidIcons = function(self)
+        for _, np in ipairs(C_NamePlate.GetNamePlates()) do
+            if np._muiUnit then self:UpdateRaidIcon(np._muiUnit) end
+        end
+    end;
+
+    -- The attack cursor's sword when an accepted quest still needs this NPC
+    -- killed, the loot cursor's bag when it still needs something the NPC
+    -- drops; nothing otherwise.
+    UpdateQuestIcon = function(self, unit)
+        if not unit then return end
+        local np = C_NamePlate.GetNamePlateForUnit(unit)
+        if not np or not np._muiQuestIcon then return end
+        local kind
+        if MUI_DB.settings.nameplates.questIcons and not UnitIsPlayer(unit) then
+            local guidKind, _, _, _, _, idStr = strsplit("-", UnitGUID(unit) or "")
+            if guidKind == "Creature" or guidKind == "Vehicle" then
+                kind = MUI_QuestHelper.objectiveTooltip:GetNpcObjectiveKind(tonumber(idStr))
+            end
+        end
+        local icon = np._muiQuestIcon
+        if kind == "kill" then
+            icon:SetTexture("Interface\\Cursor\\Attack")
+            icon:Show()
+        elseif kind == "loot" then
+            icon:SetTexture("Interface\\Cursor\\LootAll")
+            icon:Show()
+        else
+            icon:Hide()
+        end
+    end;
+
+    UpdateAllQuestIcons = function(self)
+        for _, np in ipairs(C_NamePlate.GetNamePlates()) do
+            if np._muiUnit then self:UpdateQuestIcon(np._muiUnit) end
+        end
     end;
 
     UpdateName = function(self, unit)
@@ -444,6 +523,19 @@ object "ModuleNameplates" : extends "Module" {
             min = 1, max = 5, step = 1,
             after        = "Show health text",
             onChange     = function() self:UpdateAllScales() end,
+        })
+
+        MUI.InjectOption({
+            categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
+            variable     = "MUI_Nameplate_QuestIcons",
+            type         = "checkbox",
+            label        = "Show quest objective icon",
+            tooltip      = "Mark nameplates of NPCs an accepted quest still needs: swords to kill, a bag to loot.",
+            default      = true,
+            tbl          = MUI_DB.settings.nameplates,
+            key          = "questIcons",
+            after        = "Scale",
+            onChange     = function() self:UpdateAllQuestIcons() end,
         })
     end;
 

@@ -8,6 +8,7 @@ local DEFAULTS = {
             showLevel = false,
             healthText = 0,  -- 0=None, 1=Numerical, 2=Percent, 3=Both
             scale = 1,       -- 1..5 (slider step); mapped to plate scale 1.0..2.0
+            questIcons = true,
         },
         minimapTracker = {
             filters = {

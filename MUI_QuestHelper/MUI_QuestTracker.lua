@@ -394,11 +394,20 @@ class "QuestTrackerObjective" : extends "Frame" {
         if o.finished then
             self.bulletText:Hide()
             self.bulletIcon:SetAtlas(atlas, "TrackerCheck", true)
+            self.bulletIcon:SetSize(BULLET_ICON_SIZE)
+            self.bulletIcon:ClearAllPoints()
+            self.bulletIcon:AlignParentTopLeft(-1.5, -11)
             self.bulletIcon:Show()
             self.text:SetTextColor(0.7, 0.7, 0.7, 1)
         elseif o.failed then
+            -- The "x" reads heavier than the check; draw it smaller, centred
+            -- on the same spot.
+            local size, inset = BULLET_ICON_SIZE - 4, 2
             self.bulletText:Hide()
             self.bulletIcon:SetAtlas(atlas, "ObjectiveFail", true)
+            self.bulletIcon:SetSize(size)
+            self.bulletIcon:ClearAllPoints()
+            self.bulletIcon:AlignParentTopLeft(-1.5 + inset, -11 + inset)
             self.bulletIcon:Show()
             self.text:SetTextColor(0.85, 0.3, 0.3, 1)
         else
@@ -729,6 +738,7 @@ class "QuestTrackerQuest" : extends "Frame" {
         if showLvl then 
             title = "[" .. entry.level .. "] " .. title
         end
+        if entry.isFailed then title = title .. " |cffff2020(Failed)|r" end
         self.title:SetText(title)
 
         -- Quest item: a usable item the quest gave (retail shows it while in

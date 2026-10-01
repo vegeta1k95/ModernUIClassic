@@ -40,21 +40,17 @@ object "SpellbookItemPool" {
 class "SpellButton" : extends "SecureActionButton" {
 
     __init = function(self, parent)
-        SecureActionButton.__init(self, parent)
+        SecureActionButton.__init(self, parent, nil, "SecureHandlerDragTemplate")
         self:SetAttribute("type", "spell")
 
-        -- Drag a known, active spell onto the action bars — pick it up to the
-        -- cursor on drag-start (mirrors Blizzard's spellbook). Passives and
-        -- unlearned spells aren't draggable; pickup is protected in combat,
-        -- where bars can't be rearranged anyway.
+        -- Drag a known, active spell onto the action bars. The pickup runs as
+        -- a secure drag snippet, so it works in combat like Blizzard's own
+        -- spellbook; `spellid` is only set on draggable spells (SetSpell).
         self:RegisterForDrag("LeftButton")
-        self:SetScript("OnDragStart", function()
-            local spell = self._spell
-            if spell and spell.isKnown and not spell.isPassive
-               and spell.spellID and not InCombatLockdown() then
-                PickupSpell(spell.spellID)
-            end
-        end)
+        self:SetAttribute("_ondragstart", [[
+            local id = self:GetAttribute("spellid")
+            if id then return "spell", id end
+        ]])
 
         -- Hover glow.
         local hl = self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
@@ -124,6 +120,7 @@ class "SpellButton" : extends "SecureActionButton" {
 
         local name = spell.name .. "(" .. spell.rank .. ")"
         self:SetAttribute("spell", name)
+        self:SetAttribute("spellid", (spell.isKnown and not spell.isPassive) and spell.spellID or nil)
         self:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             if spell.spellID then
                 tooltip:SetSpellByID(spell.spellID)

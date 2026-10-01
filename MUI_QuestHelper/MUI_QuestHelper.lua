@@ -20,6 +20,10 @@
 local _CHECK_ICON = ("|T%s:10:10:0:0:1024:512:871:909:59:97|t")
     :format(MUI.TEX_SKIN .. "questtracker\\questtracker")
 local _BULLET_ICON = "|TInterface\\COMMON\\Indicator-Yellow:10:10:0:0:16:16:0:16:0:16:100:95:85|t"
+--   _FAIL_ICON   — red ObjectiveFail "x" from the same atlas, drawn a bit
+--                  smaller than the check as the tracker does.
+local _FAIL_ICON = ("|T%s:8:8:1:0:1024:512:937:975:1:39|t")
+    :format(MUI.TEX_SKIN .. "questtracker\\questtracker")
 
 local _LEADER_TYPE = {
     npc             = "monster",
@@ -365,10 +369,15 @@ object "QuestHelper" : extends "Module" {
         for idx, o in ipairs(entry.objectives or {}) do
             if (not objectiveFilter or objectiveFilter[idx])
                 and o.text and o.text ~= "" then
-                local line = (o.finished and _CHECK_ICON or _BULLET_ICON) .. " " .. o.text
+                local icon = (o.finished and _CHECK_ICON) or (o.failed and _FAIL_ICON) or _BULLET_ICON
+                local line = icon .. " " .. o.text
                 if not MUI_Tooltip:HasLine(line) then
-                    local c = o.finished and 0.5 or 1
-                    MUI_Tooltip:AddLine(line, c, c, c)
+                    if o.failed then
+                        MUI_Tooltip:AddLine(line, 0.85, 0.3, 0.3)
+                    else
+                        local c = o.finished and 0.5 or 1
+                        MUI_Tooltip:AddLine(line, c, c, c)
+                    end
                 end
             end
         end
@@ -389,6 +398,11 @@ object "QuestHelper" : extends "Module" {
     -- registries (so it matches the map / minimap). kind: "available" (the
     -- "!"), "turnIn" (yellow "?"), "inProgress" (grey "?"); repeatable and
     -- PvP quests get their variants.
+    -- Inline "x" for a failed objective line in a tooltip.
+    GetFailIconEscape = function(self)
+        return _FAIL_ICON
+    end;
+
     GetQuestIconEscape = function(self, kind, questId, size)
         local spec
         if kind == "available" then
@@ -587,6 +601,8 @@ object "QuestHelper" : extends "Module" {
                         emittedAny = true
                         if o.finished then
                             tip:AddLine("-" .. o.text, 0.4, 0.85, 0.4, true)
+                        elseif o.failed then
+                            tip:AddLine(_FAIL_ICON .. " " .. o.text, 0.85, 0.3, 0.3, true)
                         else
                             tip:AddLine("-" .. o.text, 1, 1, 1, true)
                         end

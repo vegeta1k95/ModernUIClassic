@@ -462,8 +462,8 @@ object "ModuleBags" : extends "Module" {
 
         -- In combined mode, opening any bag opens them all (their item buttons
         -- live in the native frames, so every frame must be shown).
-        hooksecurefunc("ToggleBackpack", function() self:NormalizeCombined() end)
-        hooksecurefunc("ToggleBag",      function() self:NormalizeCombined() end)
+        hooksecurefunc("ToggleBackpack", function() self:NormalizeCombined(0) end)
+        hooksecurefunc("ToggleBag",      function(id) self:NormalizeCombined(id) end)
 
         -- Joint mode: swapping a bag on the bar closes its frame (BAG_CLOSED)
         -- or leaves it at the old slot count; once the change has settled,
@@ -749,6 +749,7 @@ object "ModuleBags" : extends "Module" {
             local frame = Frame(getglobal(frameName))
             frame:ClearAllPoints()
             frame:SetToplevel(true)   -- restore (combined mode disables it)
+            frame:SetFrameStrata("MEDIUM")
             if index == 1 then
                 self:_AnchorToBar(frame)
                 columnAnchor = getglobal(frameName)
@@ -789,14 +790,19 @@ object "ModuleBags" : extends "Module" {
     -- every button into one grid hosted by the backpack's frame.
     -- ===================================================================
 
-    -- Opening any bag opens the whole set (every frame must be shown for its
-    -- buttons to render); closing the backpack closes the set.
-    NormalizeCombined = function(self)
-        if not self._combined then return end
-        if IsBagOpen(0) then
-            for id = 1, NUM_BAG_SLOTS do
+    -- Toggling any bag toggles the whole set: the bag just opened pulls the
+    -- others open (every frame must be shown for its buttons to render), the
+    -- bag just closed closes them all. The keyring stays separate.
+    NormalizeCombined = function(self, toggledId)
+        if not self._combined or toggledId == KEYRING_CONTAINER then return end
+        if IsBagOpen(toggledId) then
+            for id = 0, NUM_BAG_SLOTS do
                 if not IsBagOpen(id) then OpenBag(id) end
             end
+            -- Blizzard raises each frame after its OnShow (where our anchor
+            -- pass ran), so a backpack opened last ends up above the bag
+            -- frames whose slots sit in its grid; pin the levels again.
+            self:AnchorCombined()
         else
             CloseAllBags()
         end
@@ -924,13 +930,13 @@ object "ModuleBags" : extends "Module" {
         if not hostIdx then return end
         local host = self._bags[hostIdx].frame
         self:_AnchorToBar(host)
-        -- ContainerFrames are toplevel, so clicking a backpack slot would raise
-        -- the host to the top of its strata — above the (off-screen) bag frames
-        -- whose buttons live in the host grid, burying those slots behind the
-        -- panel. Disable toplevel on the whole set so the open-time stacking
-        -- (host lowest, bags above) holds. Keeps them all in MEDIUM, so the
-        -- joined window still layers correctly under spellbook etc.
+        -- The host body must sit below the other frames' buttons that live in
+        -- its grid, or it swallows their clicks and hovers. Frame levels
+        -- alone don't order it under them (a backpack opened after a bag
+        -- stayed on top at a lower level), so the host drops a strata: LOW
+        -- under the bags' MEDIUM. AnchorContainers restores MEDIUM.
         host:SetToplevel(false)
+        host:SetFrameStrata("LOW")
         for id = 1, NUM_BAG_SLOTS do
             local idx = IsBagOpen(id)
             if idx then
@@ -938,6 +944,7 @@ object "ModuleBags" : extends "Module" {
                 f:ClearAllPoints()
                 f:SetPoint("TOPRIGHT", UIParent, "BOTTOMLEFT", -500, -500)
                 f:SetToplevel(false)
+                f:SetFrameStrata("MEDIUM")
             end
         end
 

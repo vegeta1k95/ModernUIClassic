@@ -86,6 +86,15 @@ class "UnitFrameTarget" {
         targetPvpIcon:Below(self._portrait, -26)
         targetPvpIcon:RightOf(self._portrait, -22)
 
+        -- Raid target icon where retail has it: centred on the portrait's top
+        -- edge. Blizzard only shows / hides it and sets its texcoords.
+        self.hitTextFrame:Reparent(TargetFrameTextureFrameRaidTargetIcon)
+        local raidIcon = Texture(TargetFrameTextureFrameRaidTargetIcon)
+        raidIcon:SetSize(20)
+        raidIcon:SetDrawLayer("OVERLAY")
+        raidIcon:ClearAllPoints()
+        raidIcon:CenterAt(self._portrait, 0, 27)
+
         -- Group leader crown, mirrored from the player frame: top edge, just left
         -- of the portrait. TargetFrame:Update re-sets the native texture.
         self.hitTextFrame:Reparent(TargetFrameTextureFrameLeaderIcon)

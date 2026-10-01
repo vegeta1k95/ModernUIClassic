@@ -158,6 +158,62 @@ class "QuestObjectiveTooltip" {
         end
     end;
 
+    -- ---- queries -------------------------------------------------------
+
+    -- "kill" when an accepted quest still needs this NPC slain, "loot" when
+    -- it still needs an item the NPC drops or sells (unfinished objective
+    -- or a required source item not yet in the bags), nil otherwise. Kill
+    -- wins over loot. Used for the nameplate marker.
+    GetNpcObjectiveKind = function(self, npcId)
+        local questIds = npcId and self._npcQuests[npcId]
+        if not questIds then return nil end
+        local npc = MUI_NpcDB:Get(npcId)
+        local npcName = npc and npc.name
+        local kind
+        for _, questId in ipairs(questIds) do
+            local entry = self.watcher:GetEntry(questId)
+            local q = MUI_QuestDB:Get(questId)
+            if entry and q and not entry.isComplete then
+                local names = self:_TargetNames(questId, "npc", npcId)
+                for _, o in ipairs(entry.objectives or {}) do
+                    if not o.finished and o.text and o.text ~= "" then
+                        for _, n in ipairs(names) do
+                            if n ~= "" and o.text:find(n, 1, true) then
+                                if n == npcName then
+                                    if self:_IsKillTarget(q, npcId) then return "kill" end
+                                else
+                                    kind = "loot"
+                                end
+                            end
+                        end
+                    end
+                end
+                for _, src in ipairs(MUI_QuestHelper:GetSourceItemObjectives(questId)) do
+                    if not src.finished and self:_DropsItem(npcId, src.itemId) then kind = "loot" end
+                end
+            end
+        end
+        return kind
+    end;
+
+    _IsKillTarget = function(self, q, npcId)
+        for _, cat in ipairs({ 1, 5 }) do
+            for _, e in ipairs(q.objectives and q.objectives[cat] or {}) do
+                if e and e[1] == npcId then return true end
+            end
+        end
+        return false
+    end;
+
+    _DropsItem = function(self, npcId, itemId)
+        local item = MUI_ItemDB:Get(itemId)
+        local npcDrops = item and MUI_QuestHelper:GetItemDrops(item)
+        for _, nid in ipairs(npcDrops or {}) do
+            if nid == npcId then return true end
+        end
+        return false
+    end;
+
     -- ---- tooltip hooks -------------------------------------------------
 
     _HookGameTooltip = function(self)

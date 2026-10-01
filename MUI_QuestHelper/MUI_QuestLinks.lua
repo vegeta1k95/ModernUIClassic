@@ -205,8 +205,12 @@ object "ModuleQuestLinks" : extends "Module" {
             tip:AddLine("Your progress:", 1, 1, 1)
             for _, o in ipairs(entry.objectives) do
                 if o.text and o.text ~= "" then
-                    local c = o.finished and GREEN or { 1, 1, 1 }
-                    tip:AddLine(" - " .. o.text, c[1], c[2], c[3])
+                    if o.failed then
+                        tip:AddLine(" " .. MUI_QuestHelper:GetFailIconEscape() .. " " .. o.text, RED[1], RED[2], RED[3])
+                    else
+                        local c = o.finished and GREEN or { 1, 1, 1 }
+                        tip:AddLine(" - " .. o.text, c[1], c[2], c[3])
+                    end
                 end
             end
         elseif entry then

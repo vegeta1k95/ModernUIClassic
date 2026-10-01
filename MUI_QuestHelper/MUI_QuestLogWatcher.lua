@@ -41,6 +41,7 @@ local function _readQuestEntry(logIndex, questId)
     questId = questId or qid
     if not questId or questId == 0 then return nil end
 
+    local isFailed = isComplete == -1
     local objectives = {}
     local numObj = GetNumQuestLeaderBoards(logIndex) or 0
     for i = 1, numObj do
@@ -48,6 +49,8 @@ local function _readQuestEntry(logIndex, questId)
         objectives[i] = {
             type = objType,       -- "monster" | "object" | "item" | "event" | "reputation"
             finished = finished and true or false,
+            -- A failed quest (escort lost, timer ran out) marks what's left undone.
+            failed = isFailed and not finished,
             text = text or "",
         }
     end
@@ -60,6 +63,7 @@ local function _readQuestEntry(logIndex, questId)
         -- isComplete can be 1 (all objectives done) or nil (in progress).
         -- Normalise to boolean.
         isComplete  = isComplete == 1,
+        isFailed    = isFailed,
         objectives  = objectives,
     }
 end
@@ -202,6 +206,10 @@ class "QuestLogWatcher" : extends "Frame" {
         if prev.isComplete ~= cur.isComplete then
             diff = diff or {}
             diff.becameComplete = cur.isComplete
+        end
+        if prev.isFailed ~= cur.isFailed then
+            diff = diff or {}
+            diff.failedChanged = true
         end
         if prev.title ~= cur.title then
             diff = diff or {}

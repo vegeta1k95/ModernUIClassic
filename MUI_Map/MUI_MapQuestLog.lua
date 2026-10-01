@@ -217,6 +217,8 @@ class "QuestLogQuest" : extends "Frame" {
                     if o.text and o.text ~= "" then
                         if o.finished then
                             tooltip:AddLine("-" .. o.text, 0.4, 0.85, 0.4, true)
+                        elseif o.failed then
+                            tooltip:AddLine(MUI_QuestHelper:GetFailIconEscape() .. " " .. o.text, 0.85, 0.3, 0.3, true)
                         else
                             tooltip:AddLine("-" .. o.text, 1, 1, 1, true)
                         end
@@ -268,6 +270,7 @@ class "QuestLogQuest" : extends "Frame" {
         if showLvl then 
             title = "[".. entry.level .. "] " .. title
         end
+        if entry.isFailed then title = title .. " |cffff2020(Failed)|r" end
         self.title:SetText(title)
 
         if not showObjs then
