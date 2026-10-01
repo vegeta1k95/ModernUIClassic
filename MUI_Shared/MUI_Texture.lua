@@ -129,6 +129,28 @@ class "Texture" : extends "Widget" {
     -- whose SetPoint offsets update at fractional-pixel precision each
     -- frame — otherwise the engine rounds to the nearest pixel and motion
     -- looks jagged.
+    -- Draw the texture as an arbitrary quad. Each corner is an offset from
+    -- the parent's TOPLEFT (x right, y up, so on-screen points have y <= 0):
+    -- the texture's upper-left, lower-left, upper-right and lower-right. The
+    -- base rect is the quad's bounding box, so culling sees its true extent;
+    -- vertex offsets then pull every corner onto its target. Two corners may
+    -- coincide to make a triangle.
+    SetQuad = function(self, ulx, uly, llx, lly, urx, ury, lrx, lry)
+        local left   = math.min(ulx, llx, urx, lrx)
+        local top    = math.max(uly, lly, ury, lry)
+        local width  = math.max(math.max(ulx, llx, urx, lrx) - left, 1)
+        local height = math.max(top - math.min(uly, lly, ury, lry), 1)
+        local right, bottom = left + width, top - height
+        local n = self._native
+        n:ClearAllPoints()
+        n:SetPoint("TOPLEFT", left, top)
+        n:SetSize(width, height)
+        n:SetVertexOffset(UPPER_LEFT_VERTEX,  ulx - left,  uly - top)
+        n:SetVertexOffset(LOWER_LEFT_VERTEX,  llx - left,  lly - bottom)
+        n:SetVertexOffset(UPPER_RIGHT_VERTEX, urx - right, ury - top)
+        n:SetVertexOffset(LOWER_RIGHT_VERTEX, lrx - right, lry - bottom)
+    end;
+
     SetSubpixelRendering = function(self, enable)
         if self._native.SetTexelSnappingBias then
             self._native:SetTexelSnappingBias(enable and 0 or 0.5)

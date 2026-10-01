@@ -85,7 +85,7 @@ class "ProfessionsRankBar" : extends "Frame" {
 
         -- Rank text (centred).
         self._rankText = FontString(self, nil, "OVERLAY")
-        self._rankText:SetFont(MUI.FONT, 10, "")
+        self._rankText:SetFont(MUI.FONT, 10, "OUTLINE")
         self._rankText:SetShadowOffset(1, -1)
         self._rankText:SetDrawLayer("OVERLAY", 7)
         self._rankText:CenterInParent()

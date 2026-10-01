@@ -22,6 +22,25 @@ local rawSetFrameLevel  = UIParent.SetFrameLevel
 local rawSetScale       = UIParent.SetScale
 local function doNothing () end
 
+-- SetPropagateMouseClicks / Motion are blocked for addon code in combat.
+-- Calls made then are queued and applied when it ends.
+local deferredPropagate = {}
+local propagateDriver = CreateFrame("Frame")
+propagateDriver:RegisterEvent("PLAYER_REGEN_ENABLED")
+propagateDriver:SetScript("OnEvent", function()
+    for _, call in ipairs(deferredPropagate) do
+        call[1][call[2]](call[1], call[3])
+    end
+    wipe(deferredPropagate)
+end)
+local function setPropagate(native, method, propagate)
+    if InCombatLockdown() then
+        deferredPropagate[#deferredPropagate + 1] = { native, method, propagate }
+    else
+        native[method](native, propagate)
+    end
+end
+
 class "Frame" : extends {"Widget", "ScriptObject"} {
 
     __init = function(self, typeOrNative, parent, name, template)
@@ -171,11 +190,17 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
     end;
 
     SetPropagateMouseClicks = function(self, propagate)
-        self._native:SetPropagateMouseClicks(propagate)
+        setPropagate(self._native, "SetPropagateMouseClicks", propagate)
     end;
 
     SetPropagateMouseMotion = function(self, propagate)
-        self._native:SetPropagateMouseMotion(propagate)
+        setPropagate(self._native, "SetPropagateMouseMotion", propagate)
+    end;
+
+    -- Whether Show / Hide / SetPoint on this frame are blocked in combat
+    -- (it is secure, or has a secure frame under it or anchored to it).
+    IsProtected = function(self)
+        return self._native:IsProtected()
     end;
 
     SetMovable = function(self, movable)

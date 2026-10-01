@@ -11,7 +11,7 @@ end
 -- circle around each stray point so single-target quests still get a
 -- visible area overlay (with hover tooltip). Radius is picked for "clearly
 -- localised marker" rather than geographic accuracy.
-local STRAY_CIRCLE_YARDS = 26
+local STRAY_CIRCLE_YARDS = 16   -- the area's outline padding adds another 10
 
 -- Hotzone cluster radius for objective pins (world yards). Matches Questie's
 -- `clusterLevelHotzone` default — merges nearby spawns of the same target
@@ -752,9 +752,15 @@ class "MinimapQuestPinManager" : extends "Frame" {
         pin:SetWorldPosition(spec.uiMapId, spec.normX, spec.normY)
         pin:EnableMouse(false)
 
-        -- Resolve the questgiver's own name once; the tooltip shows just
-        -- this. Quest names / descriptions come from the giver's in-game
-        -- gossip when the player actually interacts.
+        -- The tooltip is the questgiver's name, then the quests offered
+        -- there, lowest level first (as the NPC hover tooltip lists them).
+        local sorted = {}
+        for i, questId in ipairs(questIds) do sorted[i] = questId end
+        table.sort(sorted, function(a, b)
+            local qa, qb = MUI_QuestDB:Get(a), MUI_QuestDB:Get(b)
+            return (qa and qa.questLevel or 0) < (qb and qb.questLevel or 0)
+        end)
+
         local giverName
         if spec.kind == "npc" then
             local npc = MUI_NpcDB:Get(spec.targetId)
@@ -777,6 +783,9 @@ class "MinimapQuestPinManager" : extends "Frame" {
             build = function()
                 if giverName and not MUI_Tooltip:HasLine(giverName) then
                     MUI_Tooltip:AddTitle(giverName)
+                end
+                for _, questId in ipairs(sorted) do
+                    MUI_QuestHelper:AddAvailableQuestLine(questId)
                 end
             end,
         })

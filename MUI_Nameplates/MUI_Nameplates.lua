@@ -11,7 +11,9 @@ local TEXT_HPPERC_W = 20
 -- healthText mode values (match dropdown option values)
 local HP_NONE, HP_NUMERIC, HP_PERCENT, HP_BOTH = 0, 1, 2, 3
 
--- Slider index (1..5) → plate scale multiplier
+-- nameplateSize CVar (1..5: Small, Medium, Large, Extra Large, Huge) → plate
+-- scale. Wider than Blizzard's own factors (0.8 .. 1.6), which left our
+-- plates too small: Small is our base size and each step adds a quarter.
 local SCALE_STEPS = { 1.0, 1.25, 1.5, 1.75, 2.0 }
 local BAR_SCALE = 0.34
 
@@ -43,6 +45,9 @@ object "ModuleNameplates" : extends "Module" {
             self:UpdateRaidIcon(unit)
         end)
         self.driver:RegisterEventHandler("RAID_TARGET_UPDATE", function() self:UpdateAllRaidIcons() end)
+        self.driver:RegisterEventHandler("CVAR_UPDATE", function(_, _, cvar)
+            if cvar == "nameplateSize" then self:UpdateAllScales() end
+        end)
         -- Quest markers follow the quest log (accept / progress / turn-in)
         -- and the bags (required source items).
         local watcher = MUI_QuestHelper.watcher
@@ -462,12 +467,13 @@ object "ModuleNameplates" : extends "Module" {
         end
     end;
 
-    -- 1.15.9 dropped the engine's nameplateGlobalScale CVar, so scale our own visuals.
+    -- Our visuals follow Blizzard's Nameplates > Size slider (the nameplateSize
+    -- CVar, 1..5), which only resizes the native plate we've hidden.
     UpdateScale = function(self, unit)
         if not unit then return end
         local np = C_NamePlate.GetNamePlateForUnit(unit)
         if not np or not np._muiBarBG then return end
-        local scale = SCALE_STEPS[MUI_DB.settings.nameplates.scale] or 1.0
+        local scale = SCALE_STEPS[tonumber(GetCVar("nameplateSize"))] or 1.0
         np._muiBarBG:SetScale(BAR_SCALE * scale)
         np._muiOverlay:SetScale(scale)
     end;
@@ -513,20 +519,6 @@ object "ModuleNameplates" : extends "Module" {
 
         MUI.InjectOption({
             categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
-            variable     = "MUI_Nameplate_Scale",
-            type         = "slider",
-            label        = "Scale",
-            tooltip      = "Nameplate size multiplier: 1 = normal, 5 = largest.",
-            default      = 1,
-            tbl          = MUI_DB.settings.nameplates,
-            key          = "scale",
-            min = 1, max = 5, step = 1,
-            after        = "Show health text",
-            onChange     = function() self:UpdateAllScales() end,
-        })
-
-        MUI.InjectOption({
-            categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
             variable     = "MUI_Nameplate_QuestIcons",
             type         = "checkbox",
             label        = "Show quest objective icon",
@@ -534,7 +526,7 @@ object "ModuleNameplates" : extends "Module" {
             default      = true,
             tbl          = MUI_DB.settings.nameplates,
             key          = "questIcons",
-            after        = "Scale",
+            after        = "Show health text",
             onChange     = function() self:UpdateAllQuestIcons() end,
         })
     end;

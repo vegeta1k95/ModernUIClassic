@@ -60,6 +60,10 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
         self:_CreateRankBar()
 
         MUI_ModuleProfessions:Subscribe(function() self:_Refresh() end)
+        self:HookScript("OnUpdate", function()
+            self:_FollowNative()
+            self:_SyncTabs()
+        end)
 
         -- Blizzard's *Frame_Update re-Shows the recipe-row buttons (Craft1..8,
         -- TradeSkillSkill1..8) on every refresh — so HideAllChildren in
@@ -157,6 +161,7 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
             if self._activeNative and self._setupPending then
                 self:_ApplyNativeSetup()
             end
+            self:_SyncTabs()
             -- Finish a close that combat turned into a fade (see _OnClose).
             if self._hidePending then
                 self._hidePending = false
@@ -265,9 +270,13 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
     end;
 
     _CreateTabs = function(self)
-        self._tabGroup = ProfessionsTabs(self)
-        self._tabGroup:Below(self, -1)
-        self._tabGroup:AlignLeft(self, 23)
+        -- The tabs are secure frames. Parented or anchored to this window
+        -- they made it protected, so it could not be shown, hidden or moved
+        -- in combat. The row is therefore its own root frame, seated on the
+        -- window's bottom edge by screen position (_SyncTabs).
+        self._tabGroup = ProfessionsTabs(nil)
+        self._tabGroup:SetFrameStrata("HIGH")
+        self._tabGroup:Hide()
         self._tabGroup.OnSelect = function()
             if self._recipePane then self._recipePane:HideReagentsHeader() end
         end
@@ -279,6 +288,7 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
         -- Reopened before a combat close could finish: undo its fade.
         self._hidePending = false
         self:SetAlpha(1)
+        self._tabGroup:SetAlpha(1)
 
         self._activeNative = nativeFrame
         -- All read paths into the native (recipe info, reagents, line rank,
@@ -288,6 +298,7 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
         self.adapter = MUI_ProfessionsNativeAdapter:For(nativeFrame)
 
         self._frame = Frame(nativeFrame)
+        self._nativeLeft, self._nativeTop = nil, nil
         -- The native UIPanel setup (SetSize / UIPanelLayout-width / strata)
         -- is protected — defer until out of combat if needed. SetSize and
         -- the attribute are idempotent and only need to be applied once per
@@ -336,6 +347,46 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
         end
     end;
 
+    -- Keep the overlay on the native panel, which the panel manager moves
+    -- between slots (a vendor or the character frame open beside it). By
+    -- screen position rather than by anchoring to it, so the two frames stay
+    -- independent. Should the window be protected after all, a move made in
+    -- combat is picked up on the first frame after.
+    -- The offset is where the overlay always sat relative to the left slot.
+    _FollowNative = function(self)
+        if not self._activeNative then return end
+        if InCombatLockdown() and self:IsProtected() then return end
+        local left, top = self._frame:GetLeft(), self._frame:GetTop()
+        if not left or (left == self._nativeLeft and top == self._nativeTop) then return end
+        self._nativeLeft, self._nativeTop = left, top
+        local ratio = self._frame:GetEffectiveScale() / self:GetEffectiveScale()
+        self:ClearAllPoints()
+        self:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left * ratio + 42.5, top * ratio - 2)
+    end;
+
+    -- Seat the tab row under the window's bottom-left corner and match its
+    -- visibility. Secure frames, so only out of combat: a window opened in
+    -- combat gets its tabs when the fight ends, and one closed in combat
+    -- fades them at once (_OnClose) and hides them here afterwards.
+    _SyncTabs = function(self)
+        if InCombatLockdown() then return end
+        local tabs = self._tabGroup
+        if not self._activeNative then
+            tabs:Hide()
+            return
+        end
+        local left, bottom = self:GetLeft(), self:GetBottom()
+        if not left then return end
+        if left ~= self._tabsLeft or bottom ~= self._tabsBottom then
+            self._tabsLeft, self._tabsBottom = left, bottom
+            local ratio = self:GetEffectiveScale() / tabs:GetEffectiveScale()
+            tabs:ClearAllPoints()
+            tabs:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left * ratio + 23, bottom * ratio + 1)
+        end
+        tabs:SetAlpha(1)
+        tabs:Show()
+    end;
+
     -- Hide every Blizzard-side widget and region under the currently-active
     -- native (TradeSkillFrame or CraftFrame). Recursive so we catch widgets
     -- nested inside scroll frames / containers, not just direct children.
@@ -368,14 +419,21 @@ object "ProfessionsTradeSkillFrame" : extends "PanelPortrait" {
 
     _OnClose = function(self)
         if self._actionBar then self._actionBar:HideCraftButton() end
-        -- The secure profession tabs make our Hide protected in combat (a
-        -- blocked Hide used to leave the frame stuck open): go invisible now
-        -- and hide for real when combat ends.
-        if InCombatLockdown() then
+        -- A protected frame can't be hidden in combat (a blocked Hide used
+        -- to leave the window stuck open): go invisible now and hide for
+        -- real when combat ends. With the tabs detached the window is no
+        -- longer protected, so this is only a fallback.
+        if InCombatLockdown() and self:IsProtected() then
             self:SetAlpha(0)
             self._hidePending = true
         else
             self:Hide()
+        end
+        -- The tab row can't be hidden in combat; fade it until it can.
+        if InCombatLockdown() then
+            self._tabGroup:SetAlpha(0)
+        else
+            self._tabGroup:Hide()
         end
         self._activeNative     = nil
         self.adapter           = nil

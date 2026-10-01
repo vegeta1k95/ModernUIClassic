@@ -1,8 +1,9 @@
 -- MapQuestObjectiveArea + MapQuestAreaManager: world-map equivalent of
 -- MUI_MinimapQuestObjectiveArea. Renders the precomputed objective convex
--- hulls of a quest as polygon outlines on the WorldMap canvas. One area
--- per tracked quest with non-empty clusters; the manager creates/destroys
--- them with the watcher and toggles visibility on focus/hover changes.
+-- hulls of a quest as retail-style blobs on the WorldMap canvas: each hull
+-- rounded into a smooth outline, filled, with a soft glow band around it.
+-- One area per tracked quest with non-empty clusters; the manager creates /
+-- destroys them with the watcher and toggles visibility on focus / hover.
 --
 -- Visibility rule (per user spec):
 --   focused              → show
@@ -38,44 +39,27 @@ local MUI_MAP_QUEST_AREA_FRAME_LEVEL = 2700
 -- like garbage at those zooms — same convention as static pins).
 local ZONE_MAP_TYPE = 3
 
--- Halo + core thickness (in canvas pixels). Mirrors the minimap area
--- renderer so both surfaces look like the same widget family.
-local GLOW_THICK = 5
-local CORE_THICK = 30
+-- Blob look: a light-blue fill and a band around it that fades outward
+-- from near-white at the fill's edge (the colours of the old outline).
+local FILL_COLOR   = { 0.45, 0.62, 1.00, 0.35 }
+local BORDER_INNER = CreateColor(0.70, 0.90, 1.00, 0.90)   -- at the fill's edge
+local BORDER_OUTER = CreateColor(0.35, 0.40, 1.00, 0.00)   -- outer rim
+local BORDER_WIDTH = 9      -- band width, canvas px
+local BORDER_INSET = 1      -- of which this much sits inside the fill's edge
+local BLOB_PAD     = 8      -- least margin between a hull vertex and the outline, canvas px
 
--- Stray-point circle radius (world yards). Larger than the minimap's 26 so a
--- lone camp still reads as an area at zone-map scale (~9 px on Darkshore).
-local STRAY_CIRCLE_YARDS = 60
-
--- Per-hull adaptive core thickness. The core gradient extends INWARD
--- from each edge by CORE_THICK pixels; on a hull narrower than 2x
--- CORE_THICK the cores from opposing edges overlap and add up into a
--- bright blob. Cap the per-hull core thickness at half the polygon's
--- narrowest projected dimension. Bounding-box min-side is a lower
--- bound on the true min width and good enough — the exact min-width
--- of a convex polygon is O(n) but unnecessarily precise here.
-local function _AdaptiveCoreThick(proj, W, H)
-    local minX, maxX =  math.huge, -math.huge
-    local minY, maxY =  math.huge, -math.huge
-    for _, p in ipairs(proj) do
-        local px, py = p[1] * W, p[2] * H
-        if px < minX then minX = px end
-        if px > maxX then maxX = px end
-        if py < minY then minY = py end
-        if py > maxY then maxY = py end
-    end
-    local minWidthPx = math.min(maxX - minX, maxY - minY)
-    return math.max(0, math.min(CORE_THICK, minWidthPx * 0.5))
-end
+-- Stray-point circle radius (world yards). Small: BLOB_PAD already grows a
+-- lone point into a blob that reads at zone-map scale.
+local STRAY_CIRCLE_YARDS = 15
 
 class "MapQuestObjectiveArea" : extends "Frame" {
     __init = function(self, name, questId)
         -- Field init MUST come before self:Hide() — our Hide override
-        -- calls _HideEdges() which iterates the line pools.
+        -- calls _HideEdges() which iterates the texture pools.
         self._hulls           = {}
         self._continent       = nil
-        self._halos           = {}
-        self._cores           = {}
+        self._fills           = { used = 0 }
+        self._borders         = { used = 0 }
         self._projectedHulls  = nil       -- hulls in normalized [0,1] map coords
         self._questId         = questId   -- needed for tooltip + hover push/pop
         self._tooltipActive   = false
@@ -85,7 +69,6 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         self:SetAllPoints(canvas and canvas._native or nil)
         self:SetFrameStrata("MEDIUM")
         self:SetFrameLevel(MUI_MAP_QUEST_AREA_FRAME_LEVEL)
-        self:SetAlpha(0.8)
         self:Hide()
 
         -- Hover detection: poll IsMouseOver each frame the area is shown
@@ -133,42 +116,29 @@ class "MapQuestObjectiveArea" : extends "Frame" {
             self:_HideEdges(); return
         end
 
-        local edgeIdx = 0
+        self._fills.used, self._borders.used = 0, 0
         local projected = {}
         for _, hull in ipairs(self._hulls) do
-            local proj = {}
-            local ok = true
+            local proj, pts = {}, {}
+            local ok = #hull >= 1
             for i, v in ipairs(hull) do
                 local nx, ny = MUI_MapMath:WorldToMap(
                     uiMapId, v[1], v[2], self._continent)
                 if not nx then ok = false; break end
                 proj[i] = { nx, ny }
+                pts[i]  = { nx * W, -ny * H }
             end
             if ok then
                 projected[#projected + 1] = proj
-                -- Cap core thickness at half the polygon's narrowest
-                -- projected dimension so opposing-edge cores can't blob
-                -- together on thin hulls.
-                local coreThick = _AdaptiveCoreThick(proj, W, H)
-                local n = #proj
-                for i = 1, n do
-                    local a = proj[i]
-                    local b = proj[(i % n) + 1]
-                    edgeIdx = edgeIdx + 1
-                    self:_DrawEdge(edgeIdx, coreThick,
-                        a[1] * W, -a[2] * H,
-                        b[1] * W, -b[2] * H)
-                end
+                self:_DrawBlob(MUI_BlobOutline:Round(pts, BLOB_PAD))
             end
         end
         -- Cache projected hulls in normalized [0,1] map coords for the
         -- per-frame hover test in _PollHover / IsMouseOver.
         self._projectedHulls = projected
 
-        for i = edgeIdx + 1, #self._halos do
-            self._halos[i]:Hide()
-            if self._cores[i] then self._cores[i]:Hide() end
-        end
+        for i = self._fills.used + 1, #self._fills do self._fills[i]:Hide() end
+        for i = self._borders.used + 1, #self._borders do self._borders[i]:Hide() end
     end;
 
     -- True if the cursor is inside ANY projected hull. Cursor is
@@ -241,62 +211,63 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         -- cursor is still inside the polygon.
     end;
 
-    -- Same halo/core dual-line treatment as MinimapQuestObjectiveArea: a
-    -- thick gradient halo (transparent → near-white outward) plus a thin
-    -- core (near-white → transparent inward), offset perpendicular to
-    -- the edge direction so the gradient bands sit cleanly on either
-    -- side of the hull edge. Endpoints are anchored to self's TOPLEFT
-    -- because (ax, ay) come in already as canvas-pixel offsets.
-    _DrawEdge = function(self, index, coreThick, ax, ay, bx, by)
-        local dx, dy = bx - ax, by - ay
-        local len = math.sqrt(dx * dx + dy * dy)
-        if len < 1e-6 then return end
-        local nx =  dy / len
-        local ny = -dx / len
-        local hx, hy = nx * GLOW_THICK * 0.5, ny * GLOW_THICK * 0.5
-        local cx, cy = nx * coreThick * 0.5, ny * coreThick * 0.5
-
-        local halo = self._halos[index]
-        if not halo then
-            halo = Line(self, nil, "ARTWORK")
-            halo:SetSubpixelRendering(true)
-            halo:SetColorTexture(1, 1, 1, 1)
-            halo:SetThickness(GLOW_THICK)
-            halo:SetGradient("VERTICAL",
-                CreateColor(0.35, 0.40, 1.00, 0.00),    -- outer: transparent light-blue
-                CreateColor(0.70, 0.90, 1.00, 1.00))    -- hull edge: near-white
-            self._halos[index] = halo
-        end
-        halo:SetStartPoint("TOPLEFT", self, ax + hx, ay + hy)
-        halo:SetEndPoint("TOPLEFT",   self, bx + hx, by + hy)
-        halo:Show()
-
-        -- Skip core entirely on hulls so narrow the adaptive thickness
-        -- is essentially zero — the line would be invisible anyway.
-        if coreThick < 0.5 then
-            if self._cores[index] then self._cores[index]:Hide() end
-            return
+    -- One rounded hull: a triangle fan from the centroid for the fill (the
+    -- quad's two lower corners collapse there), and a quad per segment along
+    -- per-vertex outward normals for the glow band, its opaque edge on the
+    -- fill's. Neighbouring quads share their vertices, so both are
+    -- seamless.
+    _DrawBlob = function(self, pts, cx, cy)
+        local n = #pts
+        local nx, ny = {}, {}
+        for i = 1, n do
+            local p, q = pts[(i - 2) % n + 1], pts[i % n + 1]
+            local tx, ty = q[1] - p[1], q[2] - p[2]
+            local len = math.sqrt(tx * tx + ty * ty)
+            local ax, ay = 0, 0
+            if len > 0 then ax, ay = ty / len, -tx / len end
+            if ax * (pts[i][1] - cx) + ay * (pts[i][2] - cy) < 0 then ax, ay = -ax, -ay end
+            nx[i], ny[i] = ax, ay
         end
 
-        local core = self._cores[index]
-        if not core then
-            core = Line(self, nil, "OVERLAY")
-            core:SetSubpixelRendering(true)
-            core:SetColorTexture(1, 1, 1, 1)
-            core:SetGradient("VERTICAL",
-                CreateColor(0.80, 1.00, 1.00, 1.00),    -- hull edge: near-white
-                CreateColor(0.35, 0.40, 1.00, 0.00))    -- inward: transparent
-            self._cores[index] = core
+        local outer = BORDER_WIDTH - BORDER_INSET
+        for i = 1, n do
+            local j = i % n + 1
+            local a, b = pts[i], pts[j]
+            self:_Piece(self._fills, 1)
+                :SetQuad(a[1], a[2], cx, cy, b[1], b[2], cx, cy)
+            self:_Piece(self._borders, 2)
+                :SetQuad(
+                    a[1] - nx[i] * BORDER_INSET, a[2] - ny[i] * BORDER_INSET,
+                    a[1] + nx[i] * outer,        a[2] + ny[i] * outer,
+                    b[1] - nx[j] * BORDER_INSET, b[2] - ny[j] * BORDER_INSET,
+                    b[1] + nx[j] * outer,        b[2] + ny[j] * outer)
         end
-        core:SetThickness(coreThick)
-        core:SetStartPoint("TOPLEFT", self, ax - cx, ay - cy)
-        core:SetEndPoint("TOPLEFT",   self, bx - cx, by - cy)
-        core:Show()
+    end;
+
+    -- Next texture of a pool (`used` counts this refresh's pieces). A band
+    -- piece is a vertical gradient: its top edge lies on the fill's edge.
+    _Piece = function(self, pool, subLevel)
+        pool.used = pool.used + 1
+        local tex = pool[pool.used]
+        if not tex then
+            tex = Texture(self, nil, "ARTWORK")
+            tex:SetDrawLayer("ARTWORK", subLevel)
+            if pool == self._fills then
+                tex:SetColorTexture(FILL_COLOR[1], FILL_COLOR[2], FILL_COLOR[3], FILL_COLOR[4])
+            else
+                tex:SetColorTexture(1, 1, 1, 1)
+                tex:SetGradient("VERTICAL", BORDER_OUTER, BORDER_INNER)
+            end
+            tex:SetSubpixelRendering(true)
+            pool[pool.used] = tex
+        end
+        tex:Show()
+        return tex
     end;
 
     _HideEdges = function(self)
-        for _, l in ipairs(self._halos) do l:Hide() end
-        for _, l in ipairs(self._cores) do l:Hide() end
+        for _, t in ipairs(self._fills) do t:Hide() end
+        for _, t in ipairs(self._borders) do t:Hide() end
     end;
 
     Show = function(self)

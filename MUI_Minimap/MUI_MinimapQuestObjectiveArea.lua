@@ -23,6 +23,10 @@
 local GLOW_THICK = 3
 local CORE_THICK = 1
 
+-- The drawn outline is the hull rounded into a blob (MUI_BlobOutline, as on
+-- the world map), kept this many world yards outside every hull point.
+local OUTLINE_PAD_YARDS = 10
+
 -- Hull edges are clipped to (minimap radius − this) so the halo's
 -- perpendicular overhang at the termination point doesn't poke past the
 -- minimap border. Tunable per-instance via :SetEdgePadding(px).
@@ -77,6 +81,7 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         -- Hulls in UnitPosition-space world yards, fed externally.
         -- self._hulls[i] = { {wx, wy}, {wx, wy}, ... } (CCW vertices)
         self._hulls       = {}
+        self._outlines    = {}
         self._worldCont   = nil
         self._edgePadding = DEFAULT_EDGE_PADDING_PX
 
@@ -106,6 +111,12 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
     SetHulls = function(self, hulls, continentId)
         self._hulls     = hulls or {}
         self._worldCont = continentId
+        -- The outline is rigid in world space: round each hull once here,
+        -- and only project its points per frame.
+        self._outlines = {}
+        for i, hull in ipairs(self._hulls) do
+            self._outlines[i] = MUI_BlobOutline:Round(hull, OUTLINE_PAD_YARDS)
+        end
     end;
 
     Destroy = function(self)
@@ -183,14 +194,12 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
             cosF, sinF = math.cos(facing), math.sin(facing)
         end
 
-        local drawn = 0
-        local projectedHulls = {}
-        for hIdx, hull in ipairs(self._hulls) do
-            -- Project hull vertices to minimap pixel space. MinimapPin axis
-            -- convention: UnitPosition returns (Y, X) where Y is N-S (+north)
-            -- and X is E-W (+west).
+        -- Project world-yard vertices to minimap pixel space. MinimapPin axis
+        -- convention: UnitPosition returns (Y, X) where Y is N-S (+north)
+        -- and X is E-W (+west).
+        local function project(points)
             local proj = {}
-            for i, v in ipairs(hull) do
+            for i, v in ipairs(points) do
                 local east  = playerX - v[2]
                 local north = v[1]    - playerY
                 if rotate then
@@ -198,7 +207,16 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
                 end
                 proj[i] = { east * scale, north * scale }
             end
-            projectedHulls[hIdx] = proj
+            return proj
+        end
+
+        local drawn = 0
+        local projectedHulls = {}
+        for hIdx, hull in ipairs(self._hulls) do
+            -- The hull itself is what the hover test runs against; the
+            -- rounded outline around it is what gets drawn.
+            projectedHulls[hIdx] = project(hull)
+            local proj = project(self._outlines[hIdx])
 
             for i = 1, #proj do
                 local a = proj[i]

@@ -77,6 +77,7 @@ MUI_Shared\MUI_ButtonSimple.lua
 MUI_Shared\MUI_CloseButton.lua
 MUI_Shared\MUI_Tab.lua
 MUI_Shared\MUI_TabGroup.lua
+MUI_Shared\MUI_BlobOutline.lua
 
 MUI_Core\MUI_PositionDebugger.lua
 MUI_EditMode\MUI_EditMode.lua
