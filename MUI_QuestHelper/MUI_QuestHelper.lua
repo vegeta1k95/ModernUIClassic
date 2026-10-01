@@ -406,7 +406,10 @@ object "QuestHelper" : extends "Module" {
     GetQuestIconEscape = function(self, kind, questId, size)
         local spec
         if kind == "available" then
-            spec = (self.availability and self.availability:IsRepeatable(questId)) and MUI_MapPinIcons["QuestRepeatable"]
+            -- Same precedence as the pins: repeatable, then low-level (grey), then PvP.
+            local avail = self.availability
+            spec = (avail and avail:IsRepeatable(questId)) and MUI_MapPinIcons["QuestRepeatable"]
+                or (avail and avail:IsTrivial(questId)) and MUI_MinimapPinIcons["QuestLowLevel"]
                 or self:IsPvPQuest(questId) and MUI_MapPinIcons["QuestPvP"]
                 or MUI_MapPinIcons["Quest"]
         elseif kind == "turnIn" then

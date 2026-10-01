@@ -702,6 +702,23 @@ object "ModuleMap" : extends "Module" {
                 if dp.SetUnitPinSize then
                     dp:SetUnitPinSize("player", 18)  -- default 16
                 end
+                -- Group members as retail draws them: a white circle tinted
+                -- with the member's class colour, instead of Era's party
+                -- icon. The pin re-sets the old icon on every roster update.
+                local function _groupBlips()
+                    for _, unitType in ipairs({ "party", "raid" }) do
+                        dp.pin:SetPinTexture(unitType, "WhiteCircle-RaidBlips")
+                        dp.pin:SetUseClassColor(unitType, true)
+                    end
+                end
+                _groupBlips()
+                hooksecurefunc(dp.pin, "UpdateAppearanceData", _groupBlips)
+                -- The circle fills its texture (the old icon was mostly
+                -- padding), so it needs a much smaller pin than the default 16.
+                if dp.SetUnitPinSize then
+                    dp:SetUnitPinSize("party", 6)
+                    dp:SetUnitPinSize("raid", 5.25)
+                end
                 -- Force the player arrow above every MUI pin layer.
                 -- MUI_MAP_PIN_FRAME_LEVEL = 3000 (flight masters), POI
                 -- counter starts at 3010 and inflates per pin. We bump
