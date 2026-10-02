@@ -448,6 +448,24 @@ MUI_AtlasRegistry = {
 		DotsBrown  = { w = 32, h = 32, l = 0.003906, r = 0.253906, t = 0.007812, b = 0.507812 },
 	}),
 
+	-- Quest type glyphs for the POI button (log / tracker) and the quest
+	-- log's row tag.
+	QuestPoiGlyphs = TextureAtlas("skin\\questtracker\\poi-glyphs", 512, 64, 512, 64, {
+		Elite      = { w = 64, h = 64, l = 0.000000, r = 0.125000, t = 0.000000, b = 1.000000 },
+		Dungeon    = { w = 50, h = 50, l = 0.128906, r = 0.226562, t = 0.000000, b = 0.781250 },
+		Kill       = { w = 32, h = 32, l = 0.230469, r = 0.292969, t = 0.000000, b = 0.500000 },
+		Loot       = { w = 32, h = 32, l = 0.296875, r = 0.359375, t = 0.000000, b = 0.500000 },
+		TagDungeon = { w = 18, h = 18, l = 0.363281, r = 0.398438, t = 0.000000, b = 0.281250 },
+		TagGroup   = { w = 18, h = 18, l = 0.402344, r = 0.437500, t = 0.000000, b = 0.281250 },
+		TagPvP     = { w = 18, h = 18, l = 0.441406, r = 0.476562, t = 0.000000, b = 0.281250 },
+		TagRaid    = { w = 18, h = 18, l = 0.480469, r = 0.515625, t = 0.000000, b = 0.281250 },
+		Dragon     = { w = 64, h = 64, l = 0.519531, r = 0.644531, t = 0.000000, b = 1.000000 },
+		Boss       = { w = 32, h = 32, l = 0.648438, r = 0.710938, t = 0.000000, b = 0.500000 },
+		SwirlDungeon = { w = 16, h = 17, l = 0.714844, r = 0.746094, t = 0.000000, b = 0.265625 },
+		SwirlRaid    = { w = 16, h = 17, l = 0.750000, r = 0.781250, t = 0.000000, b = 0.265625 },
+		FocusRing    = { w = 64, h = 64, l = 0.812500, r = 0.937500, t = 0.000000, b = 1.000000 },
+	}),
+
 	TalentsAnimationParticles = TextureAtlas("skin\\talents\\talents-animations", 2048, 2048, 2048, 2048, {
 		Particles = { w = 1308, h = 774, l = 0.000488, r = 0.639160, t = 0.379395, b = 0.757324 },
 	})

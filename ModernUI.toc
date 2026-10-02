@@ -149,6 +149,7 @@ MUI_Map\MUI_MapQuestArea.lua
 MUI_Map\MUI_MapQuestLog.lua
 MUI_Map\MUI_MapQuestLogTab.lua
 MUI_Map\MUI_MapQuestDescriptionTab.lua
+MUI_Map\MUI_MapLegendTab.lua
 MUI_Map\MUI_Map.lua
 
 MUI_MicroMenu\MUI_MicroMenu.lua

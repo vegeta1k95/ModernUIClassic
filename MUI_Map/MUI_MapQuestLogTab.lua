@@ -209,6 +209,17 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
+                label   = "Quest type icons",
+                checked = MUI_DB.settings.questHelper.questTypeIcons,
+                OnChanged = function(_, checked)
+                    MUI_DB.settings.questHelper.questTypeIcons = checked
+                    self:Refresh()
+                    MUI_QuestHelper.tracker:Rebuild()
+                    MUI_ModuleMap.questPoiManager:Rebuild()
+                end,
+            },
+            {
+                type    = "checkbox",
                 label   = "Auto-collapse categories",
                 checked = MUI_DB.settings.questHelper.autoCollapseQuestCategories,
                 OnChanged = function(_, checked)

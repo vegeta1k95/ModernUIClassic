@@ -161,6 +161,9 @@ object "ModuleMap" : extends "Module" {
         self.questLogTab = MapQuestLogTab(self._tabHolder)
         self.questDescriptionTab = MapQuestDescriptionTab(self._tabHolder)
         self.questDescriptionTab:Hide()
+        self.legendTab = MapLegendTab(self._tabHolder)
+        self.legendTab:Hide()
+        self:_BuildSideTabs()
 
         self:RedirectQuestLog()
 
@@ -444,6 +447,41 @@ object "ModuleMap" : extends "Module" {
         end)
     end;
 
+    -- Retail's side tabs off the panel's right edge: quest log / map legend.
+    _BuildSideTabs = function(self)
+        self._questsSideTab = MapSideTab(self._tabHolder, "MUI_MapSideTabQuests", 619, 256, 678, 256)
+        self._questsSideTab:SetScale(0.6)
+        self._questsSideTab:AlignParentTopRight(40, -41)
+        self._questsSideTab:SetTooltip("ANCHOR_RIGHT", function(tooltip)
+            tooltip:AddLine("Quests", 1, 1, 1, false, 13)
+        end)
+        self._questsSideTab.OnClick = function() self:ShowQuestLog() end
+
+        self._legendSideTab = MapSideTab(self._tabHolder, "MUI_MapSideTabLegend", 747, 211, 747, 271)
+        self._legendSideTab:SetScale(0.6)
+        self._legendSideTab:Below(self._questsSideTab, 3)
+        self._legendSideTab:SetTooltip("ANCHOR_RIGHT", function(tooltip)
+            tooltip:AddLine("Map Legend", 1, 1, 1, false, 13)
+        end)
+        self._legendSideTab.OnClick = function() self:ShowLegend() end
+
+        self:_SyncSideTabs()
+    end;
+
+    _SyncSideTabs = function(self)
+        local legend = self.legendTab:IsShown()
+        self._questsSideTab:SetSelected(not legend)
+        self._legendSideTab:SetSelected(legend)
+    end;
+
+    -- Switch the right-side panel to the map legend.
+    ShowLegend = function(self)
+        self:ShowQuestLog()     -- leaves the description view cleanly
+        self.questLogTab:Hide()
+        self.legendTab:Show()
+        self:_SyncSideTabs()
+    end;
+
     -- Switch the right-side panel to the quest-description tab and
     -- populate it for the given questId. Hides the quest-log tab.
     -- Show the description tab BEFORE SetQuest so its scroll/anchor
@@ -463,6 +501,8 @@ object "ModuleMap" : extends "Module" {
             end)
         end
         if self.questLogTab then self.questLogTab:Hide() end
+        self.legendTab:Hide()
+        self:_SyncSideTabs()
         self.questDescriptionTab:Show()
         self.questDescriptionTab:SetQuest(questId)
         -- Solo-mode the world-map POIs AND hulls: hide every other
@@ -489,6 +529,8 @@ object "ModuleMap" : extends "Module" {
     -- Switch the right-side panel back to the quest-log tab.
     ShowQuestLog = function(self)
         if self.questDescriptionTab then self.questDescriptionTab:Hide() end
+        self.legendTab:Hide()
+        self:_SyncSideTabs()
         if self.questLogTab then
             self.questLogTab:Show()
             self.questLogTab:Refresh()

@@ -161,10 +161,25 @@ class "QuestTrackerCollapseBtn" : extends "Frame" {
 --   outerGlow BACKGROUND  — halo (2× ring size)
 --   ring      ARTWORK     — Bg / BgFocused / BgPressed /
 --                            BgFocusedPressed / TurnIn (when complete)
---   dots      OVERLAY     — DotsYellow / DotsBrown, hidden on complete
+--   dots      OVERLAY     — DotsYellow / DotsBrown, hidden on complete;
+--                            a quest type glyph instead after SetGlyph
 --   innerGlow HIGHLIGHT   — auto-shown on mouseover
 -- Recurring quests swap to QuestPoiRecurring atlas family.
 -- ---------------------------------------------------------------------
+-- Quest type glyphs (SetGlyph): atlas region and size as a fraction of
+-- the button. `underlay` is a region drawn behind the ring (the elite
+-- dragon, as around retail's elite quest POIs), so the ring keeps showing
+-- the focused / pressed state. A glyph that covers the whole disc hides its
+-- gold, so a `focusRing` glyph gets a gold ring drawn around it while focused.
+local POI_GLYPHS = {
+    elite   = { region = "Boss",    scale = 0.5, underlay = "Dragon" },
+    dungeon = { region = "SwirlDungeon", scale = 0.6, focusRing = true },
+    kill    = { region = "Kill",    scale = 0.55 },
+    loot    = { region = "Loot",    scale = 0.55 },
+    pvp     = { region = "TagPvP",  scale = 0.72 },
+    raid    = { region = "SwirlRaid", scale = 0.6, focusRing = true },
+}
+
 class "QuestPoiButton" : extends "Frame" {
     __init = function(self, parent, name, size)
         Frame.__init(self, "Frame", parent, name)
@@ -183,6 +198,13 @@ class "QuestPoiButton" : extends "Frame" {
         self.outerGlow:ClearAllPoints()
         self.outerGlow:CenterInParent()
 
+        self.underlay = Texture(self, nil, "BORDER")
+        self.underlay:SetSize(self:GetWidth(), self:GetHeight())
+		self.underlay:SetSubpixelRendering(true)
+        self.underlay:ClearAllPoints()
+        self.underlay:CenterInParent()
+        self.underlay:Hide()
+
         self.ring = Texture(self, nil, "ARTWORK")
         self.ring:SetSize(self:GetWidth(), self:GetHeight())
 		self.ring:SetSubpixelRendering(true)
@@ -195,6 +217,15 @@ class "QuestPoiButton" : extends "Frame" {
         self.dots:ClearAllPoints()
         self.dots:CenterInParent()
 
+        -- Gold frame over a disc-covering glyph while focused (see POI_GLYPHS).
+        self.focusRing = Texture(self, nil, "OVERLAY")
+        self.focusRing:SetDrawLayer("OVERLAY", 1)
+        self.focusRing:SetAtlas(MUI_AtlasRegistry.QuestPoiGlyphs, "FocusRing", true)
+		self.focusRing:SetSubpixelRendering(true)
+        self.focusRing:SetAllPoints(self.ring)
+        self.focusRing:SetVertexColor(0.82, 0.82, 0.82, 1)
+        self.focusRing:Hide()
+
         -- innerGlow doesn't pulse (it's the hover highlight); stays
         -- pinned to the POI rect so it matches the button bounds.
         self.innerGlow = Texture(self, nil, "OVERLAY")
@@ -206,6 +237,8 @@ class "QuestPoiButton" : extends "Frame" {
         self._focused   = false
         self._pressed   = false
         self._complete  = false
+        self._legendGlow = false
+        self._dotScale  = 1
 
         self:SetScript("OnMouseDown", function()
             self:_SetPressed(true) end)
@@ -241,7 +274,16 @@ class "QuestPoiButton" : extends "Frame" {
     _Resize = function(self)
         if self.outerGlow then self.outerGlow:SetSize(self:GetWidth()*2, self:GetHeight()*2) end
         if self.ring then self.ring:SetSize(self:GetWidth(), self:GetHeight()) end
-        if self.dots then self.dots:SetSize(self:GetWidth(), self:GetHeight()) end
+        if self.underlay then self.underlay:SetSize(self:GetWidth(), self:GetHeight()) end
+        if self.dots then self.dots:SetSize(self:GetWidth() * self._dotScale, self:GetHeight() * self._dotScale) end
+    end;
+
+    -- Quest type glyph shown in place of the in-progress dots: "elite",
+    -- "dungeon", "kill", "loot", "pvp", "raid"; nil for the plain dots.
+    SetGlyph = function(self, glyph)
+        if self._glyph == glyph then return end
+        self._glyph = glyph
+        self:_Refresh()
     end;
 
     SetRecurring = function(self, rec)
@@ -279,7 +321,7 @@ class "QuestPoiButton" : extends "Frame" {
         self.outerGlow:SetAtlas(family, "GlowOuter", true)
         self.innerGlow:SetAtlas(family, "GlowInner", true)
 		
-		if self._focused then 
+		if self._focused or self._legendGlow then
 			self.outerGlow:Show()
 		else
 			self.outerGlow:Hide()
@@ -293,13 +335,46 @@ class "QuestPoiButton" : extends "Frame" {
 		end
 		self.ring:SetAtlas(family, ringRegion, true)
 
+        local glyph = not self._complete and POI_GLYPHS[self._glyph]
+        self._dotScale = glyph and glyph.scale or 1
+        self.dots:SetSize(self:GetWidth() * self._dotScale, self:GetHeight() * self._dotScale)
+        if glyph and glyph.underlay then
+            self.underlay:SetAtlas(MUI_AtlasRegistry.QuestPoiGlyphs, glyph.underlay, true)
+            self.underlay:Show()
+        else
+            self.underlay:Hide()
+        end
+
         if self._complete then
 			self.dots:SetTextureRegion(MUI.TEX_SKIN .. "questtracker\\poi-checkmark", 32, 32, 0, 0, 32, 32)
+		elseif glyph then
+			self.dots:SetAtlas(MUI_AtlasRegistry.QuestPoiGlyphs, glyph.region, true)
 		else
 			self.dots:SetAtlas(MUI_AtlasRegistry.QuestPoiInProgress,
 				self._focused and "DotsBrown" or "DotsYellow", true)
 		end
+
+        if glyph and glyph.focusRing and self._focused then
+            self.focusRing:Show()
+        else
+            self.focusRing:Hide()
+        end
         
+    end;
+
+    -- What the map legend calls this pin: "turnin", the quest type glyph
+    -- it shows, or "inprogress" for the plain dots.
+    GetLegendKind = function(self)
+        if self._complete then return "turnin" end
+        return POI_GLYPHS[self._glyph] and self._glyph or "inprogress"
+    end;
+
+    -- Outer glow while the pin's map legend row is hovered.
+    SetLegendGlow = function(self, on)
+        on = on and true or false
+        if self._legendGlow == on then return end
+        self._legendGlow = on
+        self:_Refresh()
     end;
 
     -- Hover highlight driven from outside the button: the quest-log row
@@ -317,7 +392,8 @@ class "QuestPoiButton" : extends "Frame" {
         local layers = {
             { tex = self.outerGlow, w = self:GetWidth()*2, h = self:GetHeight()*2 },
             { tex = self.ring,      w = self:GetWidth(),   h = self:GetHeight() },
-            { tex = self.dots,      w = self:GetWidth(),   h = self:GetHeight() },
+            { tex = self.underlay,  w = self:GetWidth(),   h = self:GetHeight() },
+            { tex = self.dots,      w = self:GetWidth() * self._dotScale, h = self:GetHeight() * self._dotScale },
         }
         local function setAll(s)
             for _, L in ipairs(layers) do L.tex:SetSize(L.w * s, L.h * s) end
@@ -728,6 +804,7 @@ class "QuestTrackerQuest" : extends "Frame" {
 
         self.poi:SetRecurring(_isRepeatable(questId))
         self.poi:SetComplete(entry.isComplete and true or false)
+        self.poi:SetGlyph(MUI_QuestHelper:GetQuestGlyph(questId, entry))
         self:RefreshFocus()
 
         local showLvl = MUI_DB and MUI_DB.settings

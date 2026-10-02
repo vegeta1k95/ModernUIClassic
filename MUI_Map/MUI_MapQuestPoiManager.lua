@@ -311,9 +311,14 @@ class "MapQuestPoiManager" : extends "Frame" {
         return poi
     end;
 
+    ForEachButton = function(self, fn)
+        for questId, poi in pairs(self._buttons) do fn(poi, questId) end
+    end;
+
     _SyncStateInline = function(self, poi, questId, entry)
         poi:SetRecurring(_isRepeatable(questId))
         poi:SetComplete(entry and entry.isComplete and true or false)
+        poi:SetGlyph(MUI_QuestHelper:GetQuestGlyph(questId, entry))
         poi:SetFocused(MUI_FocusManager:IsFocused("quest", questId))
         poi:SetHighlighted(MUI_QuestHelper:IsQuestHovered(questId))
     end;

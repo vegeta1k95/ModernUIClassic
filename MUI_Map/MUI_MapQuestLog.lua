@@ -80,6 +80,15 @@ local function _findQuestLogIndex(questId)
     return nil
 end
 
+-- Quest tag -> row tag icon (QuestPoiGlyphs region), right of the title.
+local TAG_ICONS = {
+    [Enum.QuestTag.Group]   = "TagGroup",
+    [Enum.QuestTag.Dungeon] = "TagDungeon",
+    [Enum.QuestTag.Raid]    = "TagRaid",
+    [Enum.QuestTag.PvP]     = "TagPvP",
+}
+local TAG_ICON_SIZE = 16
+
 class "QuestLogQuest" : extends "Frame" {
     __init = function(self, parent, name)
         Frame.__init(self, "Frame", parent, name)
@@ -125,7 +134,13 @@ class "QuestLogQuest" : extends "Frame" {
         self.title:SetTextColor(1, 0.82, 0, 1)
         self.title:SetJustifyH("LEFT")
         self.title:RightOf(self.poi, -2, 0.5)
-        self.title:LeftOf(self.tracking)
+
+        -- Quest type (group / dungeon / raid / PvP) icon beside the checkbox;
+        -- collapsed to nothing for an untagged quest so the title keeps the room.
+        self.tag = Texture(self, nil, "ARTWORK")
+        self.tag:SetSize(0.1, TAG_ICON_SIZE)
+        self.tag:LeftOf(self.tracking, 1)
+        self.title:LeftOf(self.tag, 2)
 
         self.titleHover = Texture(self, nil, "ARTWORK")
         self.titleHover:SetTextureRegion(MUI.TEX_SKIN .. "worldmap\\questlog", 1024, 1024, 0, 692, 616, 105)
@@ -248,8 +263,19 @@ class "QuestLogQuest" : extends "Frame" {
 
         self.poi:SetRecurring(_isRepeatable(questId))
         self.poi:SetComplete(entry.isComplete and true or false)
+        self.poi:SetGlyph(MUI_QuestHelper:GetQuestGlyph(questId, entry))
         self:RefreshFocus()
         self:RefreshTracking()
+
+        local tagIcon = TAG_ICONS[MUI_QuestHelper:GetQuestTag(questId)]
+        if tagIcon then
+            self.tag:SetAtlas(MUI_AtlasRegistry.QuestPoiGlyphs, tagIcon, true)
+            self.tag:SetSize(TAG_ICON_SIZE, TAG_ICON_SIZE)
+            self.tag:Show()
+        else
+            self.tag:SetSize(0.1, TAG_ICON_SIZE)
+            self.tag:Hide()
+        end
 
         for _, row in ipairs(self.objectives) do row:Hide() end
 

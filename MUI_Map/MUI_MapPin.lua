@@ -71,6 +71,10 @@ object "MapPinScaleTracker" {
         self._pins[pin] = nil
     end;
 
+    ForEachPin = function(self, fn)
+        for pin in pairs(self._pins) do fn(pin) end
+    end;
+
     _CurrentScale = function(self)
         local sc = WorldMapFrame and WorldMapFrame.ScrollContainer
         if sc and sc.GetCanvasScale then return sc:GetCanvasScale() end
@@ -250,6 +254,7 @@ class "MapPin" : extends "Frame" {
             MUI.Print("|cffff4040MUI_MapPin|r unknown icon type: " .. tostring(typeName))
             return
         end
+        self.iconType = typeName
         self.icon:SetTextureRegion(spec[1], spec[2], spec[3], spec[4], spec[5], spec[6], spec[7])
         self.highlight:SetTextureRegion(spec[1], spec[2], spec[3], spec[4], spec[5], spec[6], spec[7])
         local tint = spec.tint
@@ -258,6 +263,20 @@ class "MapPin" : extends "Frame" {
             self.icon:SetVertexColor(r, g, b)
             self.highlight:SetVertexColor(r, g, b)
             self._iconTinted = tint ~= nil
+        end
+    end;
+
+    -- Glow behind the pin while its map legend row is hovered.
+    SetLegendGlow = function(self, on)
+        if on and not self.legendGlow then
+            self.legendGlow = Texture(self, nil, "BACKGROUND")
+            self.legendGlow:SetAtlas(MUI_AtlasRegistry.QuestPoiDefault, "GlowOuter", true)
+            self.legendGlow:ClearAllPoints()
+            self.legendGlow:SetSubpixelRendering(true)
+            self.legendGlow:FillParent(-25)
+        end
+        if self.legendGlow then
+            if on then self.legendGlow:Show() else self.legendGlow:Hide() end
         end
     end;
 

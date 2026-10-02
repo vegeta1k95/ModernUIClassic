@@ -42,6 +42,7 @@ local DEFAULTS = {
             showQuestDifficultyColor         = false,
             showLowLevelAvailableQuestsOnMap = false,  -- world-map pins
             showDungeonsOnMap                = true,
+            questTypeIcons                   = true,   -- POI glyph by quest type (map / log / tracker)
             autoCollapseQuestCategories      = false,
 
             -- Custom tracker state (see QuestTracker). Opt-out: every

@@ -552,6 +552,72 @@ object "QuestHelper" : extends "Module" {
         return tag
     end;
 
+    -- Quest type glyph for the POI button of a quest in progress (map pin,
+    -- quest log and tracker): "elite" / "dungeon" / "pvp" / "raid" by quest
+    -- tag, else "kill" when an open objective is one named mob, "loot" when
+    -- it is something picked up in the world; nil for the plain dots, as
+    -- always with the map's "Quest type icons" setting off.
+    GetQuestGlyph = function(self, questId, entry)
+        if not MUI_DB.settings.questHelper.questTypeIcons then return nil end
+        if entry and entry.isComplete then return nil end
+        local tag = self:GetQuestTag(questId)
+        if tag == Enum.QuestTag.Group   then return "elite" end
+        if tag == Enum.QuestTag.Dungeon then return "dungeon" end
+        if tag == Enum.QuestTag.PvP     then return "pvp" end
+        if tag == Enum.QuestTag.Raid    then return "raid" end
+
+        local q = MUI_QuestDB:Get(questId)
+        local objs = q and q.objectives
+        if not objs then return nil end
+
+        -- The Nth DB objective of a type is the Nth leaderboard line of
+        -- that type; finished ones no longer count.
+        local boards = {}
+        for _, o in ipairs(entry and entry.objectives or {}) do
+            if o.type then
+                boards[o.type] = boards[o.type] or {}
+                table.insert(boards[o.type], o)
+            end
+        end
+        local function open(kind, pos)
+            local line = boards[kind] and boards[kind][pos]
+            return not (line and line.finished)
+        end
+
+        local loot = false
+        for pos, target in ipairs(objs[1] or {}) do
+            if open("monster", pos) and self:_IsUniqueMob(target[1]) then return "kill" end
+        end
+        for pos, target in ipairs(objs[3] or {}) do
+            local item = open("item", pos) and MUI_ItemDB:Get(target[1])
+            if item then
+                local npcDrops, objectDrops = self:GetItemDrops(item)
+                if objectDrops and #objectDrops > 0 then
+                    -- From a chest / ground object only: a world pickup.
+                    if not (npcDrops and #npcDrops > 0) then loot = true end
+                elseif npcDrops and #npcDrops == 1 and self:_IsUniqueMob(npcDrops[1]) then
+                    return "kill"
+                end
+            end
+        end
+        for pos in ipairs(objs[2] or {}) do
+            if open("object", pos) then loot = true end
+        end
+        return loot and "loot" or nil
+    end;
+
+    -- A named mob: it stands in one place (a few patrol points at most),
+    -- where a common mob has dozens of spawns.
+    _IsUniqueMob = function(self, npcId)
+        local npc = npcId and MUI_NpcDB:Get(npcId)
+        if not (npc and npc.spawns) then return false end
+        local count = 0
+        for _, coords in pairs(npc.spawns) do
+            count = count + #coords
+        end
+        return count > 0 and count <= 4
+    end;
+
     IsPvPQuest = function(self, questId)
         return self:GetQuestTag(questId) == Enum.QuestTag.PvP
     end;
