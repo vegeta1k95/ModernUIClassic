@@ -622,12 +622,13 @@ object "QuestHelper" : extends "Module" {
         return self:GetQuestTag(questId) == Enum.QuestTag.PvP
     end;
 
-    -- A quest name as every ModernUI surface shows it: "(Elite)" or
-    -- "(Dungeon)" appended, like Era's quest log tags them.
+    -- A quest name as every ModernUI surface shows it: "(Elite)",
+    -- "(Dungeon)" or "(Raid)" appended, like Era's quest log tags them.
     GetQuestDisplayName = function(self, questId, name)
         local tag = self:GetQuestTag(questId)
         if tag == Enum.QuestTag.Group then return name .. " (Elite)" end
         if tag == Enum.QuestTag.Dungeon then return name .. " (Dungeon)" end
+        if tag == Enum.QuestTag.Raid then return name .. " (Raid)" end
         return name
     end;
 

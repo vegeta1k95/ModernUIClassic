@@ -102,6 +102,7 @@ object "ModuleMinimap" : extends "Module" {
         self:SkinTracker()
 		self:SkinMail()
         self.blipSwapper = MinimapBlipAtlasSwapper(MUI_Minimap)
+        self.groupBlips = MinimapGroupBlips()
         self:AddButtonBin()
     end;
 

@@ -110,6 +110,7 @@ MUI_QuestHelper\MUI_QuestLinks.lua
 
 MUI_Minimap\MUI_MinimapQuestPinManager.lua
 MUI_Minimap\MUI_MinimapBlipAtlasSwapper.lua
+MUI_Minimap\MUI_MinimapGroupBlips.lua
 
 MUI_GameMenu\MUI_GameMenu.lua
 
