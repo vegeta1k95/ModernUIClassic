@@ -258,8 +258,37 @@ class "MapQuestLogTab" : extends "Frame" {
         self._searchBox = SearchBox(self, "MUI_QuestLogSeachBox")
         self._searchBox:SetHint("Search in the quest list")
         self._searchBox:SetScale(0.6)
-        self._searchBox:SetWidth(197 / 0.6)
-        self._searchBox:LeftOf(self._settingsBtn, 4, -1)
+        self._searchBox:SetWidth(164 / 0.6)
+
+        -- Quests in the log / log capacity, between the search box and the
+        -- gear, framed like the search box beside it.
+        self._countCard = Frame("Frame", self)
+        self._countCard:SetScale(0.6)
+        self._countCard:SetSize(52, 22)
+        self._countCard:LeftOf(self._settingsBtn, 4, -1)
+        local cardBorder = NineSlice(self._countCard)
+        cardBorder:SetFromTextureRegion("editbox-search", 256, 64, 0, 0, 256, 40, 18, 14, 40, 14, 0.5)
+        cardBorder:FillParent()
+        -- The border is a child frame, so it draws over the card's own
+        -- regions; the icon and text go on a frame above it.
+        local cardContent = Frame("Frame", self._countCard)
+        cardContent:FillParent()
+        cardContent:SetFrameLevel(cardBorder:GetFrameLevel() + 1)
+        local cardIcon = Texture(cardContent, nil, "ARTWORK")
+        cardIcon:SetTextureRegion(LOG_TEX, 1024, 1024, 636, 259, 23, 52)
+        cardIcon:SetSize(5.5, 12.5)
+        cardIcon:AlignParentLeft(9)
+        self._countText = FontString(cardContent, nil, "ARTWORK")
+        self._countText:SetFont(MUI.FONT, 10)
+        self._countText:SetShadowOffset(1, -1)
+        self._countText:CenterInParent(4, 0)
+        self._countCard:SetTooltip("ANCHOR_RIGHT", function(tooltip)
+            local _, numQuests = GetNumQuestLogEntries()
+            tooltip:AddLine("Quest Log", 1, 1, 1, false, 13)
+            tooltip:AddLine(numQuests .. " of " .. C_QuestLog.GetMaxNumQuestsCanAccept() .. " quests", 1, 0.82, 0)
+        end)
+
+        self._searchBox:LeftOf(self._countCard, 3, 0)
 
         -- SearchBox already sets OnTextChanged for its own clear-button
         -- logic. Chain ours after it so both run.
@@ -323,6 +352,16 @@ class "MapQuestLogTab" : extends "Frame" {
         local zone = "Misc"
         local filter      = (self._filter or ""):lower()
         local hasAnyQuest = false   -- any quest in the log, ignoring the filter
+
+        local _, numQuests = GetNumQuestLogEntries()
+        local maxQuests = C_QuestLog.GetMaxNumQuestsCanAccept()
+        self._countText:SetText(numQuests .. "/" .. maxQuests)
+        if numQuests >= maxQuests then
+            self._countText:SetTextColor(1, 0.25, 0.25, 1)
+        else
+            self._countText:SetTextColor(1, 0.82, 0, 1)
+        end
+
         for i = 1, GetNumQuestLogEntries() do
             local title, level, _, isHeader, _, isComplete, _, questID
                 = GetQuestLogTitle(i)

@@ -53,10 +53,11 @@ end
 
 -- ---------------------------------------------------------------------
 -- MapSideTab: retail's side tab (plate + icon, glow when hovered /
--- selected). iconX/Y and inactiveX/Y are the 58px icon cells on LOG_TEX.
+-- selected). iconX/Y and inactiveX/Y are the 58px icon cells on LOG_TEX;
+-- iconOffsetX centres an icon whose art sits off-centre in its cell.
 -- ---------------------------------------------------------------------
 class "MapSideTab" : extends "Frame" {
-    __init = function(self, parent, name, iconX, iconY, inactiveX, inactiveY)
+    __init = function(self, parent, name, iconX, iconY, inactiveX, inactiveY, iconOffsetX)
         Frame.__init(self, "Frame", parent, name)
         self:SetSize(43, 55)
         self:EnableMouse(true)
@@ -71,7 +72,7 @@ class "MapSideTab" : extends "Frame" {
 
         self._icon = Texture(self, nil, "ARTWORK")
         self._icon:SetSize(29, 29)
-        self._icon:CenterInParent(-2, 0)
+        self._icon:CenterInParent(iconOffsetX, 0)
 
         self._select = Texture(self, nil, "OVERLAY")
         self._select:SetTextureRegion(LOG_TEX, 1024, 1024, 823, 0, 102, 122)

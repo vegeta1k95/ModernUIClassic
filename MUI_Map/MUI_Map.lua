@@ -449,15 +449,15 @@ object "ModuleMap" : extends "Module" {
 
     -- Retail's side tabs off the panel's right edge: quest log / map legend.
     _BuildSideTabs = function(self)
-        self._questsSideTab = MapSideTab(self._tabHolder, "MUI_MapSideTabQuests", 619, 256, 678, 256)
+        self._questsSideTab = MapSideTab(self._tabHolder, "MUI_MapSideTabQuests", 619, 256, 678, 256, -0.3)
         self._questsSideTab:SetScale(0.6)
-        self._questsSideTab:AlignParentTopRight(40, -41)
+        self._questsSideTab:AlignParentTopRight(40, -44.3)
         self._questsSideTab:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             tooltip:AddLine("Quests", 1, 1, 1, false, 13)
         end)
         self._questsSideTab.OnClick = function() self:ShowQuestLog() end
 
-        self._legendSideTab = MapSideTab(self._tabHolder, "MUI_MapSideTabLegend", 747, 211, 747, 271)
+        self._legendSideTab = MapSideTab(self._tabHolder, "MUI_MapSideTabLegend", 747, 211, 747, 271, -1.2)
         self._legendSideTab:SetScale(0.6)
         self._legendSideTab:Below(self._questsSideTab, 3)
         self._legendSideTab:SetTooltip("ANCHOR_RIGHT", function(tooltip)
