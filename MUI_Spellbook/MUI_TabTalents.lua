@@ -178,8 +178,12 @@ class "TabTalents" : extends "SecureFrame" {
         end)
         self:RegisterEventHandler("PLAYER_ENTERING_WORLD", function()
 
-            self:_CreateSpecView()
-            self:_CreateFullView()
+            -- Fires on every loading screen, not just login: build the views
+            -- once, or each teleport stacks another set on top of the old one.
+            if not self._containerFull then
+                self:_CreateSpecView()
+                self:_CreateFullView()
+            end
             self:SetPreviewGroup(C_SpecializationInfo.GetActiveSpecGroup())
 
             local className, _, classID = UnitClass("player")

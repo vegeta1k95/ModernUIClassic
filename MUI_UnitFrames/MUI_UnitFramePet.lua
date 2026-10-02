@@ -119,6 +119,7 @@ class "UnitFramePet" {
         if not UnitExists("pet") then return end
         self.health:SetMaxValue(UnitHealthMax("pet"))
         self.health:SetBarValue(UnitHealth("pet"))
+        self.health:SetPrediction(self.module:GetIncomingHeals("pet"))
         local maxMana = UnitPowerMax("pet")
         if maxMana > 0 then
             self.mana:Show()

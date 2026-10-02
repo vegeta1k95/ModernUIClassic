@@ -176,9 +176,25 @@ object "ModuleMinimap" : extends "Module" {
         self.arrowTex:SetTexture(TEX .. "player-arrow.tga")
         self.arrowTex:FillParent()
 
+        -- GetPlayerFacing() returns nil inside instances, where our overlay
+        -- could only freeze. There the engine draws the arrow itself, with
+        -- our art (it rotates its own); the overlay comes back outside.
         self.arrowFrame:SetScript("OnUpdate", function()
-            local facing = GetPlayerFacing and GetPlayerFacing()
-            if facing then
+            local facing = GetPlayerFacing()
+            if not facing then
+                if not self._engineArrow then
+                    self._engineArrow = true
+                    self.arrowTex:Hide()
+                    MUI_Minimap:SetPlayerTexture(TEX .. "player-arrow.tga")
+                end
+                return
+            end
+            if self._engineArrow then
+                self._engineArrow = false
+                MUI_Minimap:SetPlayerTexture("")
+                self.arrowTex:Show()
+            end
+            do
                 local cos = math.cos(facing)
                 local sin = math.sin(facing)
                 local ULx, ULy = 0.5 + (sin - cos) * 0.5,  0.5 - (sin + cos) * 0.5

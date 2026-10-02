@@ -331,6 +331,7 @@ class "UnitFramePlayer" {
         local maxHealth = UnitHealthMax("player")
         self.health:SetMaxValue(maxHealth)
         self.health:SetBarValue(health)
+        self.health:SetPrediction(self.module:GetIncomingHeals("player"))
 
         local mana    = UnitPower("player")
         local maxMana = UnitPowerMax("player")

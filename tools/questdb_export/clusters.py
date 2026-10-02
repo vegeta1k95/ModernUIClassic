@@ -8,7 +8,7 @@ Mirrors the runtime logic that lived in:
 Output schema, keyed by questId:
     {
         objectives = [
-            { kind, name,
+            { kind, name, pos,
               clusters = [
                 { uiMapId, hull = [[nx, ny], ...],
                   centroid = [nx, ny], count },
@@ -338,8 +338,12 @@ def _build_uimap_clusters(points):
 
 def _bake_target_groups(target_groups):
     """Cluster each target group's points (per-uiMap) and produce the
-    output rows. Filters out targets with no resolvable spawns."""
+    output rows. Filters out targets with no resolvable spawns. A row whose
+    leaderboard slot (`slot`, position among the quest's objectives of its
+    type) differs from its position among the emitted rows of that kind —
+    an earlier objective had no spawns — carries it as `pos`."""
     out = []
+    emitted = {}
     for tg in target_groups:
         points = tg["points"]
         if not points:
@@ -367,6 +371,9 @@ def _bake_target_groups(target_groups):
         if not target_clusters and not target_stray:
             continue
         row = {"kind": tg["kind"], "name": tg["name"]}
+        emitted[tg["kind"]] = emitted.get(tg["kind"], 0) + 1
+        if "slot" in tg and tg["slot"] != emitted[tg["kind"]]:
+            row["pos"] = tg["slot"]
         if "itemId" in tg:
             row["itemId"] = tg["itemId"]
         if target_clusters:
@@ -389,11 +396,13 @@ def build_all(quests, npcs, objects, items, area_to_ui):
 
         # [1] creature kills + [5] killCredit — both creature-shaped, both
         # match leaderboard type "monster".
+        slot = 0
         for cat_idx in (1, 5):
             cat = _objectives_category(objs, cat_idx)
             if not cat:
                 continue
             for entry in _entries_of(cat):
+                slot += 1
                 cid = _entry_target_id(entry)
                 if not cid:
                     continue
@@ -405,6 +414,7 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                 if points:
                     target_groups.append({
                         "kind":   "npc",
+                        "slot":   slot,
                         "name":   npc.get("name") or "?",
                         "points": points,
                     })
@@ -412,7 +422,9 @@ def build_all(quests, npcs, objects, items, area_to_ui):
         # [2] object interacts
         cat = _objectives_category(objs, 2)
         if cat:
+            slot = 0
             for entry in _entries_of(cat):
+                slot += 1
                 oid = _entry_target_id(entry)
                 if not oid:
                     continue
@@ -424,6 +436,7 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                 if points:
                     target_groups.append({
                         "kind":   "object",
+                        "slot":   slot,
                         "name":   obj.get("name") or "?",
                         "points": points,
                     })
@@ -454,7 +467,9 @@ def build_all(quests, npcs, objects, items, area_to_ui):
         objective_items = set()
         cat = _objectives_category(objs, 3)
         if cat:
+            slot = 0
             for entry in _entries_of(cat):
+                slot += 1
                 iid = _entry_target_id(entry)
                 if not iid:
                     continue
@@ -466,6 +481,7 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                 if points:
                     target_groups.append({
                         "kind":   "item",
+                        "slot":   slot,
                         "name":   item.get("name") or "?",
                         "points": points,
                     })

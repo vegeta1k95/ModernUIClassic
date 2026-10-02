@@ -142,6 +142,13 @@ object "UnitFrames" : extends "Module" {
         end
     end;
 
+    -- Heals being cast on the unit right now, when Blizzard's "Incoming
+    -- Heals for Unit Frames" option is on; 0 otherwise.
+    GetIncomingHeals = function(self, unit)
+        if not GetCVarBool("unitFramesDisplayIncomingHeals") then return 0 end
+        return UnitGetIncomingHeals(unit) or 0
+    end;
+
     -- ---- events ------------------------------------------------------
 
     _RegisterEvents = function(self)
@@ -166,6 +173,7 @@ object "UnitFrames" : extends "Module" {
         self.eventFrame:RegisterEventHandler("UNIT_MAXHEALTH",  unitBars)
         self.eventFrame:RegisterEventHandler("UNIT_POWER_UPDATE", unitBars)
         self.eventFrame:RegisterEventHandler("UNIT_MAXPOWER",   unitBars)
+        self.eventFrame:RegisterEventHandler("UNIT_HEAL_PREDICTION", unitBars)
 
         local function onEnteringWorld()
             self.player:UpdateBars()
@@ -213,6 +221,8 @@ object "UnitFrames" : extends "Module" {
         self.eventFrame:RegisterEventHandler("CVAR_UPDATE", function(_, _, cvar)
             if cvar == "STATUS_TEXT_DISPLAY" or cvar == "statusTextDisplay" then
                 self:ApplyStatusTextMode()
+            elseif cvar == "unitFramesDisplayIncomingHeals" then
+                onEnteringWorld()
             end
         end)
     end;

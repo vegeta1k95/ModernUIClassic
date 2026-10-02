@@ -12,6 +12,7 @@ local PULSE_CURVE = 0.7
 local PULSE_SCALE = 1.05
 local CUTOUT_DURATION = 0.3
 local CUTOUT_ALPHA = 1
+local PREDICTION_ALPHA = 0.45
 
 -- Single ticker drives every AnimatedBar's animation state in one OnUpdate.
 -- The three tables (animations / pulses / cutouts) live on the singleton, not
@@ -137,6 +138,35 @@ class "AnimatedBar" : extends "Frame" {
             self._fill:SetTexCoord(0, pct, 0, 1)
         end
         self._fill:SetSize(w * pct, h)
+
+        -- Predicted gain: the next stretch of the bar past the fill, capped
+        -- at the bar's end.
+        local predict = self._predict
+        if not predict then return end
+        local span = math.min(self._predictVal / self._maxVal, 1 - pct)
+        if span <= 0 then
+            predict:Hide()
+            return
+        end
+        local from = (self._fillDir == "RIGHT") and (1 - pct - span) or pct
+        predict:SetTexCoord(from, from + span, 0, 1)
+        predict:ClearAllPoints()
+        predict:AlignParentTopLeft(0, w * from)
+        predict:SetSize(w * span, h)
+        predict:SetVertexColor(self._baseColor[1], self._baseColor[2], self._baseColor[3], PREDICTION_ALPHA)
+        predict:Show()
+    end;
+
+    -- Show `amount` more of the bar as a translucent stretch after the fill
+    -- (incoming heals). 0 hides it.
+    SetPrediction = function(self, amount)
+        if not self._predict then
+            if amount <= 0 then return end
+            self._predict = Texture(self, nil, "ARTWORK")
+            self._predict:SetTexture(self._cutoutTexturePath)
+        end
+        self._predictVal = amount
+        self:_UpdateFill()
     end;
 
     SetBarValue = function(self, val, instant)
@@ -215,6 +245,7 @@ class "AnimatedBar" : extends "Frame" {
     SetFillTexture = function(self, path)
         self._fill:SetTexture(path)
         self._cutoutTexturePath = path
+        if self._predict then self._predict:SetTexture(path) end
     end;
 
     SetBgTexture = function(self, path)

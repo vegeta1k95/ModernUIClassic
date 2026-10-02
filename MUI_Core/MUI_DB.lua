@@ -5,8 +5,7 @@
 local DEFAULTS = {
     settings = {
         nameplates = {
-            showLevel = false,
-            healthText = 0,  -- 0=None, 1=Numerical, 2=Percent, 3=Both
+            showLevel = true,
             questIcons = true,
         },
         minimapTracker = {

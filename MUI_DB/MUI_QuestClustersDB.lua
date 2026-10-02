@@ -7758,6 +7758,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Daggerspine Scale",
+                    pos = 2,
                 },
                 {
                     clusters = {
@@ -7770,6 +7771,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Torn Fin Eye",
+                    pos = 3,
                 },
             },
         },
@@ -8779,6 +8781,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Fine Thread",
+                    pos = 2,
                     stray = {
                         {normX = 0.2913, normY = 0.4732, uiMapId = 1433},
                         {normX = 0.2718, normY = 0.45539999999999997, uiMapId = 1433},
@@ -8846,6 +8849,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Yeti Fur",
+                    pos = 4,
                 },
             },
         },
@@ -9617,6 +9621,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Junglevine Wine",
+                    pos = 2,
                     stray = {
                         {normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444},
                         {normX = 0.2704, normY = 0.7717, uiMapId = 1434},
@@ -9840,6 +9845,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Field Testing Kit",
+                    pos = 4,
                     stray = {
                         {normX = 0.5861, normY = 0.5468, uiMapId = 1458},
                         {normX = 0.5861, normY = 0.5468, uiMapId = 1458},
@@ -11666,6 +11672,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Coarse Thread",
+                    pos = 2,
                     stray = {
                         {normX = 0.44770000000000004, normY = 0.5663, uiMapId = 1435},
                         {normX = 0.2646, normY = 0.3147, uiMapId = 1435},
@@ -14217,11 +14224,13 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Gem of Pythas",
+                    pos = 3,
                     stray = {{normX = 0.46, normY = 0.365, uiMapId = 1413}},
                 },
                 {
                     kind = "item",
                     name = "Gem of Serpentis",
+                    pos = 4,
                     stray = {{normX = 0.46, normY = 0.365, uiMapId = 1413}},
                 },
             },
@@ -19121,6 +19130,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Jordan's Smithing Hammer",
+                    pos = 3,
                     stray = {{normX = 0.44799999999999995, normY = 0.6779999999999999, uiMapId = 1421}},
                 },
             },
@@ -19454,6 +19464,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Bloodscalp Tusk",
+                    pos = 2,
                 },
                 {
                     clusters = {
@@ -19911,6 +19922,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Vial of Phlogiston",
+                    pos = 4,
                     stray = {{normX = 0.429, normY = 0.902, uiMapId = 1413}},
                 },
             },
@@ -20151,6 +20163,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Charged Rift Gem",
+                    pos = 2,
                 },
             },
         },
@@ -20226,6 +20239,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Bolt Charged Bramble",
+                    pos = 2,
                     stray = {{normX = 0.52, normY = 0.508, uiMapId = 1417}},
                 },
                 {
@@ -20399,6 +20413,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Dalaran Mana Gem",
+                    pos = 2,
                 },
             },
         },
@@ -22204,6 +22219,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Clara's Fresh Apple",
+                    pos = 2,
                     stray = {{normX = 0.3395, normY = 0.5716, uiMapId = 1429}},
                 },
             },
@@ -22412,6 +22428,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Sharp Claw",
+                    pos = 3,
                     stray = {
                         {normX = 0.6975, normY = 0.5607, uiMapId = 1433},
                         {normX = 0.23800000000000002, normY = 0.3521, uiMapId = 1433},
@@ -22695,6 +22712,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Truesilver Bar",
+                    pos = 2,
                     stray = {
                         {normX = 0.1764, normY = 0.38079999999999997, uiMapId = 1427},
                         {normX = 0.6227, normY = 0.626, uiMapId = 1427},
@@ -25191,6 +25209,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Explosive Sheep",
+                    pos = 3,
                     stray = {{normX = 0.2708, normY = 0.45549999999999996, uiMapId = 1433}},
                 },
             },
@@ -26503,6 +26522,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Gold Bar",
+                    pos = 2,
                     stray = {
                         {normX = 0.3921, normY = 0.1183, uiMapId = 1413},
                         {normX = 0.40020000000000006, normY = 0.1598, uiMapId = 1413},
@@ -26779,6 +26799,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Truesilver Bar",
+                    pos = 3,
                     stray = {
                         {normX = 0.1764, normY = 0.38079999999999997, uiMapId = 1427},
                         {normX = 0.6227, normY = 0.626, uiMapId = 1427},
@@ -29298,6 +29319,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Giant Silver Vein",
+                    pos = 2,
                     stray = {
                         {normX = 0.2844, normY = 0.5009, uiMapId = 1447},
                         {normX = 0.16820000000000002, normY = 0.5381, uiMapId = 1447},
@@ -29306,6 +29328,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Nagmara's Filled Vial",
+                    pos = 3,
                     stray = {{normX = 0.3196, normY = 0.4963, uiMapId = 1449}},
                 },
             },
@@ -30733,6 +30756,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Libram of Rumination",
+                    pos = 4,
                     stray = {
                         {normX = 0.48229999999999995, normY = 0.9428, uiMapId = 1448},
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
@@ -31070,6 +31094,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Libram of Constitution",
+                    pos = 3,
                     stray = {
                         {normX = 0.4122, normY = 0.14429999999999998, uiMapId = 1419},
                         {normX = 0.4338, normY = 0.10640000000000001, uiMapId = 1419},
@@ -31424,6 +31449,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Eye of Kajal",
+                    pos = 4,
                 },
             },
         },
@@ -31563,6 +31589,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Burning Essence",
+                    pos = 3,
                 },
                 {
                     clusters = {
@@ -31749,6 +31776,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Libram of Resilience",
+                    pos = 4,
                     stray = {
                         {normX = 0.4122, normY = 0.14429999999999998, uiMapId = 1419},
                         {normX = 0.4338, normY = 0.10640000000000001, uiMapId = 1419},
@@ -38083,6 +38111,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Frayed Abomination Stitching",
+                    pos = 2,
                     stray = {
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
@@ -38093,6 +38122,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Enchanted Scarlet Thread",
+                    pos = 4,
                     stray = {{normX = 0.313, normY = 0.157, uiMapId = 1423}},
                 },
             },
@@ -38139,6 +38169,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Frayed Abomination Stitching",
+                    pos = 2,
                     stray = {
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
@@ -38149,6 +38180,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Frostwhisper's Embalming Fluid",
+                    pos = 4,
                     stray = {{normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422}},
                 },
             },
@@ -38159,6 +38191,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Frayed Abomination Stitching",
+                    pos = 2,
                     stray = {
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
@@ -38169,6 +38202,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Skin of Shadow",
+                    pos = 4,
                     stray = {
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
@@ -38513,6 +38547,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Fire",
+                    pos = 3,
                     stray = {
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
@@ -38584,6 +38619,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Worn Dragonscale",
+                    pos = 3,
                     stray = {{normX = 0.9405, normY = 0.3709, uiMapId = 1440}},
                 },
             },
@@ -38783,6 +38819,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Core of Earth",
+                    pos = 3,
                     stray = {
                         {normX = 0.2601, normY = 0.4578, uiMapId = 1418},
                         {normX = 0.6262, normY = 0.3406, uiMapId = 1417},
@@ -38836,6 +38873,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Breath of Wind",
+                    pos = 4,
                     stray = {
                         {normX = 0.8031999999999999, normY = 0.6214, uiMapId = 1416},
                         {normX = 0.5957, normY = 0.5815, uiMapId = 1446},
@@ -38866,6 +38904,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Worn Dragonscale",
+                    pos = 3,
                     stray = {{normX = 0.9405, normY = 0.3709, uiMapId = 1440}},
                 },
             },
@@ -39061,6 +39100,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Core of Earth",
+                    pos = 3,
                     stray = {
                         {normX = 0.2601, normY = 0.4578, uiMapId = 1418},
                         {normX = 0.6262, normY = 0.3406, uiMapId = 1417},
@@ -39114,6 +39154,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Breath of Wind",
+                    pos = 4,
                     stray = {
                         {normX = 0.8031999999999999, normY = 0.6214, uiMapId = 1416},
                         {normX = 0.5957, normY = 0.5815, uiMapId = 1446},
@@ -39376,6 +39417,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Brilliant Chromatic Scale",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
                 {
@@ -39431,10 +39473,12 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Blood of Heroes",
+                    pos = 3,
                 },
                 {
                     kind = "item",
                     name = "Frayed Abomination Stitching",
+                    pos = 4,
                     stray = {
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
@@ -39450,6 +39494,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Brilliant Chromatic Scale",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
                 {
@@ -39505,10 +39550,12 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Blood of Heroes",
+                    pos = 3,
                 },
                 {
                     kind = "item",
                     name = "Skin of Shadow",
+                    pos = 4,
                     stray = {
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
@@ -39993,6 +40040,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Vial of Dire Water",
+                    pos = 3,
                     stray = {{normX = 0.5893999999999999, normY = 0.35969999999999996, uiMapId = 1444}},
                 },
             },
@@ -41115,6 +41163,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Rune Thread",
+                    pos = 3,
                     stray = {
                         {normX = 0.7445999999999999, normY = 0.7951, uiMapId = 1433},
                         {normX = 0.45890000000000003, normY = 0.35700000000000004, uiMapId = 1413},
@@ -41136,6 +41185,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Ogre Tannin",
+                    pos = 4,
                     stray = {
                         {normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444},
                         {normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444},
@@ -41157,6 +41207,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Rune Thread",
+                    pos = 3,
                     stray = {
                         {normX = 0.7445999999999999, normY = 0.7951, uiMapId = 1433},
                         {normX = 0.45890000000000003, normY = 0.35700000000000004, uiMapId = 1413},
@@ -41178,6 +41229,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Ogre Tannin",
+                    pos = 4,
                     stray = {
                         {normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444},
                         {normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444},
@@ -44574,6 +44626,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Lunar Fungus",
+                    pos = 2,
                 },
             },
         },
@@ -44638,6 +44691,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Kodo Horn",
+                    pos = 2,
                 },
             },
         },
@@ -47594,6 +47648,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Blood of Heroes",
+                    pos = 4,
                 },
             },
         },
@@ -47655,6 +47710,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Skin of Shadow",
+                    pos = 4,
                     stray = {
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
@@ -47710,6 +47766,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Frayed Abomination Stitching",
+                    pos = 4,
                     stray = {
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
                         {normX = 0.313, normY = 0.157, uiMapId = 1423},
@@ -48047,6 +48104,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Dark Iron Ore",
+                    pos = 2,
                 },
             },
         },
@@ -48261,6 +48319,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Blessed Arcanite Barding",
+                    pos = 2,
                     stray = {
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
                         {normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444},
@@ -48603,6 +48662,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Coal",
+                    pos = 3,
                     stray = {
                         {normX = 0.2897, normY = 0.7506, uiMapId = 1434},
                         {normX = 0.2907, normY = 0.7548, uiMapId = 1434},
@@ -48671,16 +48731,19 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Essence of the Firelord",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
                 {
                     kind = "item",
                     name = "Bindings of the Windseeker",
+                    pos = 3,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
                 {
                     kind = "item",
                     name = "Bindings of the Windseeker",
+                    pos = 4,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -50431,6 +50494,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Coal",
+                    pos = 3,
                     stray = {
                         {normX = 0.2897, normY = 0.7506, uiMapId = 1434},
                         {normX = 0.2907, normY = 0.7548, uiMapId = 1434},
@@ -50470,6 +50534,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Coal",
+                    pos = 3,
                     stray = {
                         {normX = 0.2897, normY = 0.7506, uiMapId = 1434},
                         {normX = 0.2907, normY = 0.7548, uiMapId = 1434},
@@ -51390,6 +51455,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Abyssal Crest",
+                    pos = 2,
                     stray = {
                         {normX = 0.2046, normY = 0.8615999999999999, uiMapId = 1451},
                         {normX = 0.18230000000000002, normY = 0.8112, uiMapId = 1451},
@@ -51425,6 +51491,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Abyssal Crest",
+                    pos = 2,
                     stray = {
                         {normX = 0.2046, normY = 0.8615999999999999, uiMapId = 1451},
                         {normX = 0.18230000000000002, normY = 0.8112, uiMapId = 1451},
@@ -51460,6 +51527,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Abyssal Signet",
+                    pos = 2,
                     stray = {
                         {normX = 0.3763, normY = 0.44799999999999995, uiMapId = 1451},
                         {normX = 0.3763, normY = 0.44799999999999995, uiMapId = 1451},
@@ -54641,6 +54709,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Deeprock Salt",
+                    pos = 2,
                     stray = {
                         {normX = 0.6468, normY = 0.44770000000000004, uiMapId = 1416},
                         {normX = 0.3292, normY = 0.8826999999999999, uiMapId = 1434},
@@ -55767,6 +55836,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Elementium Ore",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -56080,6 +56150,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Enchanted Leather",
+                    pos = 2,
                     stray = {
                         {normX = 0.364, normY = 0.3803, uiMapId = 1412},
                         {normX = 0.41200000000000003, normY = 0.6990000000000001, uiMapId = 1429},
@@ -56110,6 +56181,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Flask of Big Mojo",
+                    pos = 2,
                     stray = {
                         {normX = 0.6990000000000001, normY = 0.535, uiMapId = 1435},
                         {normX = 0.6990000000000001, normY = 0.535, uiMapId = 1435},
@@ -56148,6 +56220,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Powerful Mojo",
+                    pos = 3,
                     stray = {
                         {normX = 0.2747, normY = 0.8486, uiMapId = 1423},
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
@@ -56236,6 +56309,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Enchanted Leather",
+                    pos = 2,
                     stray = {
                         {normX = 0.364, normY = 0.3803, uiMapId = 1412},
                         {normX = 0.41200000000000003, normY = 0.6990000000000001, uiMapId = 1429},
@@ -56695,6 +56769,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Volcanic Ash",
+                    pos = 4,
                 },
             },
         },
@@ -56781,6 +56856,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wildheart Gloves",
+                    pos = 2,
                     stray = {
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
@@ -56800,6 +56876,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wildheart Gloves",
+                    pos = 2,
                     stray = {
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
                         {normX = 0.348, normY = 0.853, uiMapId = 1427},
@@ -56831,6 +56908,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Beaststalker's Gloves",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -56841,6 +56919,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Magister's Gloves",
+                    pos = 2,
                     stray = {
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
@@ -56854,6 +56933,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Lightforge Gauntlets",
+                    pos = 2,
                     stray = {{normX = 0.313, normY = 0.157, uiMapId = 1423}},
                 },
             },
@@ -56864,6 +56944,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Devout Gloves",
+                    pos = 2,
                     stray = {{normX = 0.313, normY = 0.157, uiMapId = 1423}},
                 },
             },
@@ -56874,6 +56955,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Shadowcraft Gloves",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -56885,6 +56967,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Gauntlets of Valor",
+                    pos = 2,
                     stray = {{normX = 0.313, normY = 0.157, uiMapId = 1423}},
                 },
             },
@@ -56895,6 +56978,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Beaststalker's Gloves",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -56905,6 +56989,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Magister's Gloves",
+                    pos = 2,
                     stray = {
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
                         {normX = 0.6970000000000001, normY = 0.732, uiMapId = 1422},
@@ -56918,6 +57003,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Devout Gloves",
+                    pos = 2,
                     stray = {{normX = 0.313, normY = 0.157, uiMapId = 1423}},
                 },
             },
@@ -56928,6 +57014,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Shadowcraft Gloves",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -56938,6 +57025,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Gauntlets of Elements",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
             },
@@ -56949,6 +57037,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Gauntlets of Valor",
+                    pos = 2,
                     stray = {{normX = 0.313, normY = 0.157, uiMapId = 1423}},
                 },
             },
@@ -56970,6 +57059,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Enchanted Leather",
+                    pos = 2,
                     stray = {
                         {normX = 0.364, normY = 0.3803, uiMapId = 1412},
                         {normX = 0.41200000000000003, normY = 0.6990000000000001, uiMapId = 1429},
@@ -57192,11 +57282,13 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Ember of Emberseer",
+                    pos = 2,
                     stray = {{normX = 0.348, normY = 0.853, uiMapId = 1427}},
                 },
                 {
                     kind = "item",
                     name = "Cinder of Cynders",
+                    pos = 3,
                     stray = {
                         {normX = 0.3763, normY = 0.44799999999999995, uiMapId = 1451},
                         {normX = 0.247, normY = 0.3265, uiMapId = 1451},
@@ -57206,6 +57298,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Hallowed Brazier",
+                    pos = 4,
                     stray = {
                         {normX = 0.8326, normY = 0.6814, uiMapId = 1420},
                         {normX = 0.42840000000000006, normY = 0.8371999999999999, uiMapId = 1422},
@@ -58020,6 +58113,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58068,6 +58162,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58116,6 +58211,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58278,6 +58374,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58440,6 +58537,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58488,6 +58586,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58536,6 +58635,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58698,6 +58798,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Plate Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58906,6 +59007,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -58954,6 +59056,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59002,6 +59105,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59164,6 +59268,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59327,6 +59432,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59375,6 +59481,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59423,6 +59530,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59585,6 +59693,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Chain Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59747,6 +59856,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59795,6 +59905,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -59843,6 +59954,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60005,6 +60117,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60167,6 +60280,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60215,6 +60329,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60263,6 +60378,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60425,6 +60541,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Leather Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60587,6 +60704,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60635,6 +60753,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60683,6 +60802,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -60845,6 +60965,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61007,6 +61128,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61055,6 +61177,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61103,6 +61226,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61265,6 +61389,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61427,6 +61552,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61475,6 +61601,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61523,6 +61650,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -61685,6 +61813,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Wartorn Cloth Scrap",
+                    pos = 2,
                     stray = {
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
                         {normX = 0.39899999999999997, normY = 0.258, uiMapId = 1423},
@@ -62081,6 +62210,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 4,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62146,6 +62276,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 4,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62211,6 +62342,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 4,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62276,6 +62408,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62341,6 +62474,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62406,6 +62540,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62471,6 +62606,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62755,6 +62891,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62820,6 +62957,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62885,6 +63023,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Essence of Water",
+                    pos = 3,
                     stray = {{normX = 0.5920000000000001, normY = 0.451, uiMapId = 1444}},
                 },
             },
@@ -62943,6 +63082,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Red Dye",
+                    pos = 2,
                     stray = {
                         {normX = 0.7445999999999999, normY = 0.7951, uiMapId = 1433},
                         {normX = 0.45890000000000003, normY = 0.35700000000000004, uiMapId = 1413},
@@ -62969,6 +63109,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Coal",
+                    pos = 2,
                     stray = {
                         {normX = 0.2897, normY = 0.7506, uiMapId = 1434},
                         {normX = 0.2907, normY = 0.7548, uiMapId = 1434},
@@ -62996,6 +63137,7 @@ object "QuestClustersDB" {
                 {
                     kind = "item",
                     name = "Empty Vial",
+                    pos = 2,
                     stray = {
                         {normX = 0.3824, normY = 0.3887, uiMapId = 1416},
                         {normX = 0.8612000000000001, normY = 0.7958, uiMapId = 1416},
@@ -63040,6 +63182,7 @@ object "QuestClustersDB" {
                     },
                     kind = "item",
                     name = "Strong Flux",
+                    pos = 2,
                     stray = {
                         {normX = 0.6252, normY = 0.6265, uiMapId = 1421},
                         {normX = 0.6252, normY = 0.6265, uiMapId = 1421},

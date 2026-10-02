@@ -1,11 +1,14 @@
 -- FontString: Wraps a font string — either creates new or wraps existing
--- Create: FontString(parentCFrame, name, layer)
+-- Create: FontString(parentCFrame, name, layer[, fontObject])
+--         With a Blizzard font object name the string inherits that font and
+--         gets no font of ours. (A string given our SetFont first and
+--         SetFontObject later came out without the object's outline.)
 -- Wrap:   FontString(existingNativeFontString)
 
 local DEFAULT_FONT_SIZE = 12
 
 class "FontString" : extends {"Widget", "ScriptObject"} {
-    __init = function(self, parentOrNative, name, layer)
+    __init = function(self, parentOrNative, name, layer, fontObject)
         Widget.__init(self)
 
         if IsNativeObject(parentOrNative, "FontString") then
@@ -13,8 +16,10 @@ class "FontString" : extends {"Widget", "ScriptObject"} {
             self._native = parentOrNative
         else
             -- CREATE new fontstring on parent
-            self._native = parentOrNative._native:CreateFontString(name, layer or "OVERLAY")
-            self._native:SetFont(MUI.FONT, DEFAULT_FONT_SIZE, "")
+            self._native = parentOrNative._native:CreateFontString(name, layer or "OVERLAY", fontObject)
+            if not fontObject then
+                self._native:SetFont(MUI.FONT, DEFAULT_FONT_SIZE, "")
+            end
         end
     end;
 
@@ -78,6 +83,22 @@ class "FontString" : extends {"Widget", "ScriptObject"} {
 
     SetTextHeight = function(self, height)
         self._native:SetTextHeight(height)
+    end;
+
+    -- Take face, size and flags from a Blizzard font object (by name or object).
+    SetFontObject = function(self, fontObject)
+        self._native:SetFontObject(fontObject)
+    end;
+
+    -- With smooth scaling the text height isn't snapped to whole numbers when
+    -- the string is scaled (Blizzard's nameplate texts use it).
+    SetSmoothScaling = function(self, smooth)
+        self._native:SetSmoothScaling(smooth)
+    end;
+
+    -- Height of one line in the current font (after SetTextHeight scaling).
+    GetLineHeight = function(self)
+        return self._native:GetLineHeight()
     end;
 
     GetStringHeight = function(self)

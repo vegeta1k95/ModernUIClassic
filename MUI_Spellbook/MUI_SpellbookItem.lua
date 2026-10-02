@@ -238,13 +238,17 @@ class "SpellbookRankGroup" : extends "SecureFrame" {
         -- in some pooled spellReq is the prereq of a known spell — a replaced
         -- lower rank — so skip it. Unrelated spells in a conflated group (e.g.
         -- different portals) never match another's spellReq, so they stay.
+        -- Since 1.15.9 the trainer names the prereq without its rank ("Claw",
+        -- was "Claw (Rank 1)"), so a requirement that is exactly the spell's
+        -- name counts too: every lower rank of that name was replaced.
         local pool, keep = {}, {}
         for i = #spells, 1, -1 do
             local spell = spells[i]
             keep[i] = true
             if not spell.isKnown and spell.name and spell.rank then
                 for _, req in ipairs(pool) do
-                    if string.find(req, spell.name, 1, true) and string.find(req, spell.rank, 1, true) then
+                    if req == spell.name
+                            or (string.find(req, spell.name, 1, true) and string.find(req, spell.rank, 1, true)) then
                         keep[i] = false
                         break
                     end

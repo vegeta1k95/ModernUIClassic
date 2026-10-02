@@ -259,6 +259,7 @@ class "UnitFrameTarget" {
 
         self.health:SetMaxValue(maxHealth)
         self.health:SetBarValue(health, instant)
+        self.health:SetPrediction(self.module:GetIncomingHeals("target"))
         self.healthText.value:SetText(self.module:FormatValue(health, maxHealth, "target", true))
         if isNone then self.healthText.value:Hide() end
 

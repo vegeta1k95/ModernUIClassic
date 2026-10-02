@@ -24,7 +24,10 @@
 -- walks q.objectives, so the Nth row of `kind="npc"` corresponds to the
 -- Nth leaderboard entry of `type="monster"`. SetData walks `precomputed`
 -- and `entry.objectives` in lockstep by type-position, dropping targets
--- whose leaderboard entry has `finished == true`. This stays accurate
+-- whose leaderboard entry has `finished == true`. An objective without
+-- any spawn data has no row (the Silk Cloth of "Items of Some
+-- Consequence"), which would shift every later row of its kind one slot
+-- up; such rows carry their real slot as `pos`. This stays accurate
 -- for "kill X, Y, Z" quests as individual targets complete (the others'
 -- clusters keep contributing; finished targets drop out).
 --
@@ -104,7 +107,7 @@ class "QuestObjectiveCluster" {
                     local typeStr = _KIND_TO_LEADER_TYPE[target.kind]
                     if typeStr then
                         typeIdx[typeStr] = (typeIdx[typeStr] or 0) + 1
-                        local pos      = typeIdx[typeStr]
+                        local pos      = target.pos or typeIdx[typeStr]
                         local board    = boards[typeStr]
                         local boardEnt = board and board[pos]
                         include = not (boardEnt and boardEnt.finished)
