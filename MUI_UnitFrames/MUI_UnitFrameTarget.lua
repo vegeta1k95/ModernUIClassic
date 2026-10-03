@@ -55,7 +55,8 @@ class "UnitFrameTarget" {
 
         self.borderFrame = Frame("Frame", self.frame, "MUI_TargetBorderFrame")
         self.borderFrame:Fill(self._portrait)
-        self.borderFrame:SetFrameLevel(self.frame:GetFrameLevel() + 4)
+        -- One above the combat glow (+5): the elite dragon stays in front of it.
+        self.borderFrame:SetFrameLevel(self.frame:GetFrameLevel() + 6)
         self.border = Texture(self.borderFrame, nil, "ARTWORK")
         self.border:FillParentPadding(-6, -8, -12, -8)
 

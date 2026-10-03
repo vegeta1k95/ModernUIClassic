@@ -80,6 +80,7 @@ MUI_MinimapPinIcons = {
     ["Repair"]             = { OBJECTS_ATLAS, 1024, 1024, 555, 927, 32, 32 },
     ["Innkeeper"]          = { OBJECTS_ATLAS, 1024, 1024, 521, 451, 32, 32 },
 	["Stablemaster"]	   = { OBJECTS_ATLAS, 1024, 1024, 963, 588, 32, 32 },
+    ["Battlemaster"]       = { OBJECTS_ATLAS, 1024, 1024, 385, 927, 32, 32 },
     ["FlightMaster"]       = { OBJECTS_ATLAS, 1024, 1024, 419, 451, 32, 32 },
     ["Mailbox"]            = { OBJECTS_ATLAS, 1024, 1024, 453, 519, 32, 32 },
     ["Banker"]             = { OBJECTS_ATLAS, 1024, 1024, 385, 859, 32, 32 },

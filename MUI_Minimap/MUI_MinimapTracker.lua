@@ -30,7 +30,9 @@ local NPC_FLAG_FLIGHTMASTER = 8
 local NPC_FLAG_TRAINER      = 16
 local NPC_FLAG_INNKEEPER    = 128
 local NPC_FLAG_BANKER       = 256
+local NPC_FLAG_BATTLEMASTER = 2048
 local NPC_FLAG_AUCTIONEER   = 4096
+local NPC_FLAG_STABLEMASTER = 8192
 local NPC_FLAG_REPAIR       = 16384
 
 local function hasFlag(mask, flag)
@@ -127,6 +129,16 @@ local FILTERS = {
         source = "npcs",
         icon   = "Banker",
         match  = function(e) return hasFlag(e.npcFlags, NPC_FLAG_BANKER) end,
+    },
+    Battlemaster = {
+        source = "npcs",
+        icon   = "Battlemaster",
+        match  = function(e) return hasFlag(e.npcFlags, NPC_FLAG_BATTLEMASTER) end,
+    },
+    Stablemaster = {
+        source = "npcs",
+        icon   = "Stablemaster",
+        match  = function(e) return hasFlag(e.npcFlags, NPC_FLAG_STABLEMASTER) end,
     },
     Innkeeper = {
         source = "npcs",

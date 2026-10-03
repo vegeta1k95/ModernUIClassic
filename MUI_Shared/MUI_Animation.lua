@@ -111,6 +111,11 @@ class "AnimationGroup" {
         self._native:SetLooping(mode)
     end;
 
+    -- Keep the alpha the last Alpha animation ended on instead of reverting.
+    SetToFinalAlpha = function(self, final)
+        self._native:SetToFinalAlpha(final)
+    end;
+
     SetScript = function(self, name, func)
         self._native:SetScript(name, func)
     end;

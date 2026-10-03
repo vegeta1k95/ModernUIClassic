@@ -208,6 +208,7 @@ object "ModuleMap" : extends "Module" {
 
         self.staticPinManager = MapStaticPinManager()
         self.questPoiManager  = MapQuestPoiManager()
+        self.dungeonView      = MapDungeonView(self.map)
 
         self.filterButton = MapCornerButton(self.map, "MUI_MapFilterButton")
         self.filterButton.icon:SetTextureRegion(MUI.TEX_SKIN .. "worldmap\\button-filter", 128, 64, 51, 1, 48, 48)

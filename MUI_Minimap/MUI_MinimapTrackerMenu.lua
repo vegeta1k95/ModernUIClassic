@@ -97,12 +97,14 @@ class "MinimapTrackerMenu" {
               OnClick = function() self:ClearAll() end },
             self:_FilterItem("Auctioneer",         "Auctioneer",            385, 757, 32, 32),
             self:_FilterItem("Banker",             "Banker",                385, 859, 32, 32),
+            self:_FilterItem("Battlemaster",       "Battlemaster",          385, 927, 32, 32),
             self:_FilterItem("Innkeeper",          "Innkeeper",             521, 451, 32, 32),
             -- Flight Master intentionally omitted: always shown regardless
             -- of this menu (see MinimapTracker:Rebuild — builds the
             -- FlightMaster filter unconditionally).
             self:_FilterItem("Repair",             "Repair",                555, 927, 32, 32),
             self:_FilterItem("Mailbox",            "Mailbox",               453, 519, 32, 32),
+            self:_FilterItem("Stable Master",      "Stablemaster",          963, 588, 32, 32),
             self:_FilterItem("Profession Trainer", "ProfessionTrainer",     864, 521, 29, 29),
             self:_FilterItem("Class Trainer",      "ClassTrainer",          487, 416, 32, 32),
             self:_QuestItem("Quest Objectives",    "showMinimapObjectivePins",     759, 757, 32, 32),

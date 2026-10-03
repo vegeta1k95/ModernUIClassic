@@ -213,6 +213,11 @@ class "Texture" : extends "Widget" {
         SetPortraitTexture(self._native, unit)
     end;
 
+    -- Round portrait of a creature model, by display id.
+    SetPortraitFromCreatureDisplayID = function(self, displayId)
+        SetPortraitTextureFromCreatureDisplayID(self._native, displayId)
+    end;
+
     SetDesaturated = function(self, desaturated)
         if self._native.SetDesaturated then
             self._native:SetDesaturated(desaturated)

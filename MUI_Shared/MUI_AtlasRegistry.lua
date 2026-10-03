@@ -466,6 +466,24 @@ MUI_AtlasRegistry = {
 		FocusRing    = { w = 64, h = 64, l = 0.812500, r = 0.937500, t = 0.000000, b = 1.000000 },
 	}),
 
+	-- Retail's level-up banner sheet (file 4000331): lines, shadows, glow,
+	-- dot and the unlock sub-icons.
+	LevelUp = TextureAtlas("skin\\levelup\\levelup", 1024, 512, 1024, 512, {
+		ShadowLower = { w = 284, h = 296, l = 0.000977, r = 0.278320, t = 0.001953, b = 0.580078 },
+		ShadowUpper = { w = 326, h = 103, l = 0.280273, r = 0.598633, t = 0.001953, b = 0.203125 },
+		BarGold     = { w = 418, h = 7,   l = 0.500977, r = 0.909180, t = 0.207031, b = 0.220703 },
+		BarGreen    = { w = 418, h = 7,   l = 0.500977, r = 0.909180, t = 0.224609, b = 0.238281 },
+		BarWhite    = { w = 418, h = 7,   l = 0.500977, r = 0.909180, t = 0.242188, b = 0.255859 },
+		GlowGold    = { w = 224, h = 115, l = 0.000977, r = 0.219727, t = 0.583984, b = 0.808594 },
+		GlowGreen   = { w = 224, h = 115, l = 0.280273, r = 0.499023, t = 0.207031, b = 0.431641 },
+		DotGold     = { w = 21,  h = 22,  l = 0.252930, r = 0.273438, t = 0.662109, b = 0.705078 },
+		DotGreen    = { w = 21,  h = 22,  l = 0.252930, r = 0.273438, t = 0.734375, b = 0.777344 },
+		IconBook    = { w = 40,  h = 38,  l = 0.221680, r = 0.260742, t = 0.583984, b = 0.658203 },
+		IconLock    = { w = 30,  h = 35,  l = 0.221680, r = 0.250977, t = 0.662109, b = 0.730469 },
+		IconArrow   = { w = 30,  h = 34,  l = 0.221680, r = 0.250977, t = 0.734375, b = 0.800781 },
+		IconBag     = { w = 29,  h = 34,  l = 0.000977, r = 0.029297, t = 0.812500, b = 0.878906 },
+	}),
+
 	TalentsAnimationParticles = TextureAtlas("skin\\talents\\talents-animations", 2048, 2048, 2048, 2048, {
 		Particles = { w = 1308, h = 774, l = 0.000488, r = 0.639160, t = 0.379395, b = 0.757324 },
 	})

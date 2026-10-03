@@ -1406,7 +1406,7 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         elseif MUI_ModuleActionBars.bars.MULTIBAR3:IsShown() then
             self:LeftOf(MUI_ModuleActionBars.bars.MULTIBAR3, 8, 0)
         else
-            self:AlignParentRight(-14, 0)
+            self:AlignParentRight(14, 0)
         end
     end;
 
