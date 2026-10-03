@@ -153,6 +153,24 @@ class "ProfessionsRecipePane" : extends "Frame" {
             end
         end)
 
+        -- Retail's "Track Recipe" (ProfessionsRecipeSchematicForm): a
+        -- checkbox with a grey label, here in the pane's bottom-left corner.
+        -- Ticking it puts the recipe into the quest tracker's Profession
+        -- category.
+        self._trackCheck = CheckBox(self._recipeFrame, "MUI_ProfessionsTrackRecipe", "Track Recipe")
+        self._trackCheck.label:SetFontSize(11)
+        self._trackCheck.label:SetTextColor(0.7, 0.7, 0.7, 1)
+        self._trackCheck:SetWidth(30 + 6 + self._trackCheck.label:GetStringWidth() + 2)
+        self._trackCheck:AlignParentBottomLeft(10, 12)
+        self._trackCheck:Hide()
+        self._trackCheck.OnChanged = function(_, checked)
+            MUI_RecipeTracker:SetTracked(self._trackSpellID, checked, self._trackSnapshot)
+        end
+        -- Untracked from the tracker itself while the window is open.
+        MUI_RecipeTracker:RegisterCallback(function(spellID, tracked)
+            if spellID == self._trackSpellID then self._trackCheck:SetChecked(tracked) end
+        end)
+
         self._reagentsHeader = FontString(self._recipeFrame)
         self._reagentsHeader:AlignLeft(self._recipeDescription)
         self._reagentsHeader:Below(self._recipeUnknown, 10)
@@ -221,6 +239,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
             self._reagentsHeader:Hide()
             self._recipeSource = nil
             self._recipeOrange = nil
+            self._trackCheck:Hide()
             self:_ClearReagentRows()
             return
         end
@@ -273,14 +292,15 @@ class "ProfessionsRecipePane" : extends "Frame" {
         -- Source + orange-skill threshold — both hand-authored on the
         -- recipe's MUI_RecipeDB entry; walk profession meta for the entry
         -- whose spell ID resolves to the currently-selected recipe's name.
-        local source, orange
+        local source, orange, spellID
         local recipeMeta = MUI_RecipeDB and self._activeProfKey
                        and MUI_RecipeDB:Get(self._activeProfKey)
         if recipeMeta and name then
             for sid, entry in pairs(recipeMeta) do
                 if GetSpellInfo(sid) == name then
-                    source = entry.source
-                    orange = entry.skillrange and entry.skillrange[1]
+                    source  = entry.source
+                    orange  = entry.skillrange and entry.skillrange[1]
+                    spellID = sid
                     break
                 end
             end
@@ -291,6 +311,29 @@ class "ProfessionsRecipePane" : extends "Frame" {
         self._recipeUnknown:Hide()
 
         self:_BuildReagentRows(idx, numReagents)
+
+        -- Snapshot for tracking: the reagents as the window reports them.
+        local reagents = {}
+        for i = 1, numReagents do
+            local rName, _, rCount = adapter:GetReagentInfo(idx, i)
+            local rLink = adapter:GetReagentItemLink(idx, i)
+            reagents[i] = { itemID = rLink and tonumber(string.match(rLink, "item:(%d+)")), count = rCount, name = rName }
+        end
+        self:_RefreshTrackCheck(spellID, name, reagents)
+    end;
+
+    -- The track checkbox for the recipe on display. The tracker needs the
+    -- recipe's spell id (the DB key) to remember it by; a recipe the DB
+    -- doesn't know can't be tracked.
+    _RefreshTrackCheck = function(self, spellID, name, reagents)
+        if not spellID then
+            self._trackCheck:Hide()
+            return
+        end
+        self._trackSpellID  = spellID
+        self._trackSnapshot = { spellID = spellID, name = name, reagents = reagents }
+        self._trackCheck:SetChecked(MUI_RecipeTracker:IsTracked(spellID))
+        self._trackCheck:Show()
     end;
 
     -- DB-only render path used when an "Unlearned" row is selected. Pulls
@@ -310,6 +353,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
             self._recipeUnknown:Hide()
             self._recipeSource = nil
             self._recipeOrange = nil
+            self._trackCheck:Hide()
             self:_ClearReagentRows()
             return
         end
@@ -356,6 +400,12 @@ class "ProfessionsRecipePane" : extends "Frame" {
         self._recipeOrange = entry.skillrange and entry.skillrange[1]
 
         self:_BuildReagentRowsFromDB(entry.reagents or {})
+
+        local reagents = {}
+        for i, r in ipairs(entry.reagents or {}) do
+            reagents[i] = { itemID = r[1], count = r[2], name = C_Item.GetItemInfo(r[1]) }
+        end
+        self:_RefreshTrackCheck(spellID, name, reagents)
     end;
 
     -- Reagent rows built from a DB entry's `reagents` list ({itemId, count}).

@@ -75,6 +75,10 @@ local DEFAULTS = {
         },
     },
     data = {
+        -- Recipes ticked "Track Recipe" in the profession window, as the
+        -- quest tracker shows them: { spellID, name, reagents = { { itemID,
+        -- count, name } } } (MUI_RecipeTracker).
+        trackedRecipes = {},
         spells = {
             general = {},
             class = {

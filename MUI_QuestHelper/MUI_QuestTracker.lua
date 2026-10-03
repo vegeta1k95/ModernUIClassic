@@ -9,8 +9,9 @@
 --     │         Can Turn In.                 ← grey line replaces
 --     │                                        objectives when
 --     │                                        entry.isComplete
---     └── … (future categories here, e.g. "Local Quests"
---           = quests that auto-start inside specific zones)
+--     └── Category "Profession"       [▼]   ← recipes ticked "Track Recipe"
+--           Recipe Name
+--               - 3/5 Linen Cloth              ← reagents, from the bags
 --
 -- Retail conventions respected:
 --   * Only categories have expander buttons, not individual quests.
@@ -665,6 +666,50 @@ class "QuestTrackerItemButton" : extends "SecureActionButton" {
     end;
 }
 
+-- Header glow bar that sweeps across a block's title (quest accept, recipe
+-- tracked) — Blizzard_ObjectiveTrackerAnimTemplates.xml's HeaderGlow block:
+--   • Alpha 0→1 at t=0 instantly (duration 0).
+--   • Scale (origin LEFT) scaleX 0→1 over 0.31s starting at t=0.15.
+--       Creates the left-to-right "reveal" sweep — texture width
+--       visually grows from 0 to full.
+--   • Alpha 1→0 over 0.41s starting at t=0.33. Fades the bar while
+--       the sweep is still finishing.
+-- `block` needs a `shine` texture anchored to its title.
+local function PlayShineSweep(block)
+    if block._shineAnim and block._shineAnim:IsPlaying() then
+        block._shineAnim:Stop()
+    end
+    block.shine:Show()
+    block.shine:SetAlpha(0)
+
+    local ag = AnimationGroup(block)
+
+    local aIn = ag:CreateAnimation("Alpha")
+    aIn:SetTarget(block.shine)
+    aIn:SetFromAlpha(0)
+    aIn:SetToAlpha(1)
+    aIn:SetDuration(0)
+
+    local sweep = ag:CreateAnimation("Scale")
+    sweep:SetTarget(block.shine)
+    sweep:SetScaleFrom(0, 1)
+    sweep:SetScaleTo(1, 1)
+    sweep:SetDuration(0.31)
+    sweep:SetStartDelay(0.15)
+    sweep:SetOrigin("LEFT", 0, 0)
+
+    local aOut = ag:CreateAnimation("Alpha")
+    aOut:SetTarget(block.shine)
+    aOut:SetFromAlpha(1)
+    aOut:SetToAlpha(0)
+    aOut:SetDuration(0.41)
+    aOut:SetStartDelay(0.33)
+
+    ag:SetScript("OnFinished", function() block.shine:Hide() end)
+    ag:Play()
+    block._shineAnim = ag
+end
+
 class "QuestTrackerQuest" : extends "Frame" {
     __init = function(self, parent, name)
         Frame.__init(self, "Frame", parent, name)
@@ -934,55 +979,15 @@ class "QuestTrackerQuest" : extends "Frame" {
         for _, row in ipairs(flipped) do row:PlayCompleteAnim() end
     end;
 
-    -- AddAnim — mirrors Blizzard_ObjectiveTrackerAnimTemplates.xml
-    -- HeaderGlow block:
-    --   • Alpha 0→1 at t=0 instantly (duration 0).
-    --   • Scale (origin LEFT) scaleX 0→1 over 0.31s starting at t=0.15.
-    --       Creates the left-to-right "reveal" sweep — texture width
-    --       visually grows from 0 to full.
-    --   • Alpha 1→0 over 0.41s starting at t=0.33. Fades the bar while
-    --       the sweep is still finishing.
+    -- AddAnim — the shine sweep (shared with recipe blocks) plus the POI
+    -- pulse: brief linear scale-up + scale-back centred on the POI button.
+    -- Plays only on accept (retail behaviour). Done via manual OnUpdate
+    -- interpolation rather than two back-to-back Scale animations because
+    -- WoW releases a Scale animation's transform when it ends — pulseUp →
+    -- pulseDown in the same group caused a 1-frame snap back to scale 1.0
+    -- between the two. Driving the scale directly avoids that gap entirely.
     PlayAddAnim = function(self)
-        if self._shineAnim and self._shineAnim:IsPlaying() then
-            self._shineAnim:Stop()
-        end
-        self.shine:Show()
-        self.shine:SetAlpha(0)
-
-        local ag = AnimationGroup(self)
-
-        local aIn = ag:CreateAnimation("Alpha")
-        aIn:SetTarget(self.shine)
-        aIn:SetFromAlpha(0)
-        aIn:SetToAlpha(1)
-        aIn:SetDuration(0)
-
-        local sweep = ag:CreateAnimation("Scale")
-        sweep:SetTarget(self.shine)
-        sweep:SetScaleFrom(0, 1)
-        sweep:SetScaleTo(1, 1)
-        sweep:SetDuration(0.31)
-        sweep:SetStartDelay(0.15)
-        sweep:SetOrigin("LEFT", 0, 0)
-
-        local aOut = ag:CreateAnimation("Alpha")
-        aOut:SetTarget(self.shine)
-        aOut:SetFromAlpha(1)
-        aOut:SetToAlpha(0)
-        aOut:SetDuration(0.41)
-        aOut:SetStartDelay(0.33)
-
-        ag:SetScript("OnFinished", function() self.shine:Hide() end)
-        ag:Play()
-        self._shineAnim = ag
-
-        -- POI pulse: brief linear scale-up + scale-back centred on the
-        -- POI button. Plays only on accept (retail behaviour). Done via
-        -- manual OnUpdate interpolation rather than two back-to-back
-        -- Scale animations because WoW releases a Scale animation's
-        -- transform when it ends — pulseUp → pulseDown in the same
-        -- group caused a 1-frame snap back to scale 1.0 between the
-        -- two. Driving the scale directly avoids that gap entirely.
+        PlayShineSweep(self)
         self.poi:PlayPulse()
     end;
 
@@ -1058,12 +1063,110 @@ class "QuestTrackerQuest" : extends "Frame" {
 
 
 -- ---------------------------------------------------------------------
--- QuestTrackerCategory: SecondaryHeader strip + list of quest rows.
--- Supplies quests via SetQuests({entry,…}); collapse hides quest body.
+-- QuestTrackerRecipe: a tracked profession recipe (retail's
+-- ProfessionsRecipeTracker block) — the recipe's name over one line per
+-- reagent, "have/need Name", checked once the bags hold enough. Same
+-- shape as a quest row so the category lays it out the same way; the
+-- title stands where quest titles do, past the POI column. Right-click
+-- untracks.
+-- ---------------------------------------------------------------------
+class "QuestTrackerRecipe" : extends "Frame" {
+    __init = function(self, parent, name)
+        Frame.__init(self, "Frame", parent, name)
+        self:EnableMouse(true)
+
+        -- Stands in for a quest row's POI button, so the title lines up.
+        self.anchor = Frame("Frame", self)
+        self.anchor:SetSize(29, 29)
+        self.anchor:AlignParentTopLeft(0, 6)
+
+        self.title = FontString(self, nil, "ARTWORK")
+        self.title:SetFont(MUI.FONT, 10.5)
+        self.title:SetShadowOffset(1, -1)
+        self.title:SetTextColor(1, 0.82, 0, 1)
+        self.title:SetJustifyH("LEFT")
+        self.title:SetWordWrap(false)
+        self.title:RightOf(self.anchor, 2, -0.5)
+        self.title:SetWidth(WIDTH - 29 - 2)
+
+        self.shine = Texture(self, nil, "OVERLAY")
+        self.shine:SetAtlas(MUI_AtlasRegistry.QuestTracker, "AnimBarGlow", true)
+        self.shine:SetBlendMode("ADD")
+        self.shine:SetSize(200, TITLE_H + 6)
+        self.shine:ClearAllPoints()
+        self.shine:SetPoint("LEFT", self.title, "LEFT", -2, 0)
+        self.shine:SetAlpha(0)
+        self.shine:Hide()
+
+        self.objContainer = Frame("Frame", self)
+        self.objContainer:ClearAllPoints()
+        self.objContainer:SetPoint("TOPLEFT",  self.title, "BOTTOMLEFT", 0, -4)
+        self.objContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+
+        self.objectives = {}
+
+        self:SetScript("OnEnter", function() self:_SyncHover(true) end)
+        self:SetScript("OnLeave", function() self:_SyncHover(false) end)
+        self:SetScript("OnMouseUp", function(_, button)
+            if button == "RightButton" and self.questId then
+                MUI_RecipeTracker:SetTracked(self.questId, false)
+            end
+        end)
+    end;
+
+    -- `entry` = { title, objectives = { { text, finished } } }; `spellID`
+    -- plays the quest id's part for the category's bookkeeping.
+    SetQuest = function(self, spellID, entry)
+        self.questId = spellID
+        self:SetAlpha(1)    -- a pooled block may still sit faded from its removal
+        self.title:SetText(entry.title)
+
+        for _, row in ipairs(self.objectives) do row:Hide() end
+        local y = 0
+        for i, o in ipairs(entry.objectives) do
+            local row = self.objectives[i]
+            if not row then
+                row = QuestTrackerObjective(self.objContainer)
+                self.objectives[i] = row
+            end
+            row:ClearAllPoints()
+            row:AlignParentTop(y)
+            row:FillWidth()
+            row:SetObjective(o)
+            row:Show()
+            y = y + (row:GetHeight() or OBJECTIVE_H) + OBJECTIVE_GAP
+        end
+        self.objContainer:SetHeight(y == 0 and 1 or (y - OBJECTIVE_GAP))
+
+        local body = self.objContainer:GetHeight() or 0
+        self:SetHeight(math.max(self.anchor:GetHeight(), TITLE_H + 2 + body + 4))
+    end;
+
+    RefreshFocus = function(self) end;
+
+    -- Tracked: the shine sweep. Untracked: the quest turn-in farewell.
+    PlayAddAnim = function(self)
+        PlayShineSweep(self)
+    end;
+
+    PlayTurnInAnim = QuestTrackerQuest.PlayTurnInAnim;
+
+    _SyncHover = function(self, isOver)
+        self.title:SetTextColor(1, 0.82, 0, isOver and 1 or 0.75)
+        self.objContainer:SetAlpha(isOver and 1 or 0.85)
+    end;
+}
+
+
+-- ---------------------------------------------------------------------
+-- QuestTrackerCategory: SecondaryHeader strip + list of rows. Supplies
+-- rows via SetQuests({entry,…}); collapse hides the body. `rowClass`
+-- (default QuestTrackerQuest) is what each entry is shown with.
 -- ---------------------------------------------------------------------
 class "QuestTrackerCategory" : extends "Frame" {
-    __init = function(self, parent, name, label)
+    __init = function(self, parent, name, label, rowClass)
         Frame.__init(self, "Frame", parent, name)
+        self._rowClass = rowClass or QuestTrackerQuest
 
         self.header = Frame("Frame", self)
         self.header:SetHeight(SECONDARY_H)
@@ -1112,7 +1215,7 @@ class "QuestTrackerCategory" : extends "Frame" {
         for i, entry in ipairs(entries or {}) do
             local row = self.quests[i]
             if not row then
-                row = QuestTrackerQuest(self.body)
+                row = self._rowClass(self.body)
                 self.quests[i] = row
             end
             row:ClearAllPoints()
@@ -1290,6 +1393,30 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
             "MUI_QuestTracker_Quests", "Quests")
         self.questsCategory._OnLayoutChanged = function() self:_Restack() end
 
+        -- Tracked recipes: redrawn on every bag change for the reagent counts.
+        self.professionCategory = QuestTrackerCategory(self,
+            "MUI_QuestTracker_Profession", "Profession", QuestTrackerRecipe)
+        self.professionCategory._OnLayoutChanged = function() self:_Restack() end
+        -- A newly tracked recipe gets the add shine, an untracked one the
+        -- farewell sweep + fade before its block goes.
+        self._pendingRecipeAnim = {}
+        MUI_RecipeTracker:RegisterCallback(function(spellID, tracked)
+            if tracked then
+                self._pendingRecipeAnim[spellID] = true
+            else
+                local block = self.professionCategory:FindBlock(spellID)
+                if block then
+                    block:PlayTurnInAnim(function() self:Rebuild() end)
+                    return
+                end
+            end
+            self:Rebuild()
+        end)
+        self:RegisterEventHandler("BAG_UPDATE_DELAYED", function()
+            self:_RebuildRecipes()
+            self:_Restack()
+        end)
+
         -- Quest IDs accepted live (via QUEST_ACCEPTED → watcher's `isNew`)
         -- that haven't yet played their add-shine. Consumed by
         -- QuestTrackerCategory:SetQuests on the next Rebuild. /reload
@@ -1433,33 +1560,58 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         end)
 
         self.questsCategory:SetQuests(tracked, self._pendingAddAnim)
+        self:_RebuildRecipes()
         self._itemsDirty = true
         self:_Restack()
     end;
 
+    -- Tracked recipes as rows: one objective per reagent, met when the bags
+    -- hold enough (retail: "have/need Name", checked when met).
+    _RebuildRecipes = function(self)
+        local entries = {}
+        for _, recipe in ipairs(MUI_RecipeTracker:GetAll()) do
+            local objectives = {}
+            for i, reagent in ipairs(recipe.reagents) do
+                local have = reagent.itemID and C_Item.GetItemCount(reagent.itemID) or 0
+                local need = reagent.count or 0
+                local name = reagent.name or (reagent.itemID and C_Item.GetItemInfo(reagent.itemID)) or ""
+                objectives[i] = { text = string.format("%d/%d %s", have, need, name), finished = have >= need }
+            end
+            entries[#entries + 1] = { questId = recipe.spellID, title = recipe.name, objectives = objectives }
+        end
+        self.professionCategory:SetQuests(entries, self._pendingRecipeAnim)
+    end;
+
+    -- Stack the non-empty categories under the primary header.
     _Restack = function(self)
-        local n = 0
+        local n = #MUI_RecipeTracker:GetAll()
         for _, entry in pairs(self.watcher:GetWatched()) do
             if MUI_QuestHelper:IsTracked(entry.questId) then n = n + 1 end
         end
         if n == 0 then self:Hide(); return end
 
         self:Show()
+        local categories = { self.questsCategory, self.professionCategory }
         if self._collapsed then
-            self.questsCategory:Hide()
+            for _, category in ipairs(categories) do category:Hide() end
             self:SetHeight(PRIMARY_H)
             return
         end
 
-        self.questsCategory:Show()
-        self.questsCategory:ClearAllPoints()
-		self.questsCategory:Below(self.primary, CATEGORY_GAP)
-		self.questsCategory:SetWidth(WIDTH)		
-
-        local h = PRIMARY_H + CATEGORY_GAP
-                  + (self.questsCategory:GetHeight() or 0)
-                  + OUTER_PAD
-        self:SetHeight(h)
+        local h, last = PRIMARY_H, self.primary
+        for _, category in ipairs(categories) do
+            if category:IsEmpty() then
+                category:Hide()
+            else
+                category:Show()
+                category:ClearAllPoints()
+                category:Below(last, CATEGORY_GAP)
+                category:SetWidth(WIDTH)
+                h = h + CATEGORY_GAP + (category:GetHeight() or 0)
+                last = category
+            end
+        end
+        self:SetHeight(h + OUTER_PAD)
     end;
 
     -- One pooled item button per visible block with a quest item, top to
