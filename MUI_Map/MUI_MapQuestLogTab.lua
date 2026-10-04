@@ -109,6 +109,13 @@ class "MapQuestLogTab" : extends "Frame" {
         self._notFound:AlignParentTop(20)
         self._notFound:SetText("Results not found")
         self._notFound:Hide()
+
+        -- Zone story banner for the displayed zone, above the categories.
+        self.story = QuestLogStory(self.scrollChild)
+        self.story:AlignParentTop(10)
+        self.story:FillWidth(-6)
+        self.story:Hide()
+        self.story.OnLayoutChanged = function() self:_RecalcHeight() end
     end;
 
     -- Slider <-> ScrollFrame wiring. Mouse wheel anywhere in the
@@ -220,6 +227,15 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
+                label   = "Zone story",
+                checked = MUI_DB.settings.questHelper.showZoneStory,
+                OnChanged = function(_, checked)
+                    MUI_DB.settings.questHelper.showZoneStory = checked
+                    self:Refresh()
+                end,
+            },
+            {
+                type    = "checkbox",
                 label   = "Auto-collapse categories",
                 checked = MUI_DB.settings.questHelper.autoCollapseQuestCategories,
                 OnChanged = function(_, checked)
@@ -320,13 +336,14 @@ class "MapQuestLogTab" : extends "Frame" {
             self:_ApplyMapAwareCollapse()
         end)
 
-        -- Re-apply auto-collapse whenever the displayed map changes.
-        -- The POI manager rebuilds on the same hook; our projection
+        -- Rebuild whenever the displayed map changes: the zone story
+        -- banner follows the map, and Refresh ends with the auto-collapse
+        -- pass. The POI manager rebuilds on the same hook; our projection
         -- check is independent of the POI manager's state, so order
         -- doesn't matter.
         if WorldMapFrame and WorldMapFrame.OnMapChanged then
             hooksecurefunc(WorldMapFrame, "OnMapChanged", function()
-                self:_ApplyMapAwareCollapse()
+                self:Refresh()
             end)
         end
 
@@ -398,10 +415,13 @@ class "MapQuestLogTab" : extends "Frame" {
             end
         end
 
-        -- Chain-anchor categories: first one to TOP, each subsequent
-        -- to the previous category's BOTTOM. When a category collapses
-        -- or expands, the ones below auto-flow because their TOP
-        -- anchor stays attached to the previous category's BOTTOM.
+        local storyShown = self:_RefreshStory()
+
+        -- Chain-anchor categories: first one to TOP (or under the zone
+        -- story banner), each subsequent to the previous category's
+        -- BOTTOM. When a category collapses or expands, the ones below
+        -- auto-flow because their TOP anchor stays attached to the
+        -- previous category's BOTTOM.
         local n = 0
         local prev
 
@@ -419,6 +439,8 @@ class "MapQuestLogTab" : extends "Frame" {
                 cat:ClearAllPoints()
                 if prev then
                     cat:Below(prev, CATEGORIES_GAP)
+                elseif storyShown then
+                    cat:Below(self.story, CATEGORIES_GAP)
                 else
                     cat:AlignParentTop(10)
                 end
@@ -442,10 +464,32 @@ class "MapQuestLogTab" : extends "Frame" {
         --   * filter matches at least one quest → both hidden, list visible
         local filtered = (self._filter or "") ~= "" and n == 0
         self._empty:SetVisible(not hasAnyQuest)
+        self._empty:ClearAllPoints()
+        self._empty:FillWidth(30, 46)
+        if storyShown then
+            self._empty:Below(self.story, 30)
+        end
         self._notFound:SetVisible(filtered)
         self._bg:SetTextureRegion(LOG_BG_TEX, 2048, 1024, hasAnyQuest and 616 or 0, 0, 616, 1022)
         self:_ApplyMapAwareCollapse()
         self:_RecalcHeight()
+    end;
+
+    -- Zone story banner: shown for a zone map that has curated chapters,
+    -- while the setting is on and no search filter is active. Returns
+    -- whether it is shown.
+    _RefreshStory = function(self)
+        local shown = false
+        if MUI_DB.settings.questHelper.showZoneStory and (self._filter or "") == "" then
+            local mapId = WorldMapFrame and WorldMapFrame:GetMapID()
+            local areaId = mapId and MUI_ZoneDB:GetAreaForUiMap(mapId)
+            if areaId then
+                local info = C_Map.GetMapInfo(mapId)
+                shown = self.story:SetZone(areaId, info and info.name)
+            end
+        end
+        self.story:SetVisible(shown)
+        return shown
     end;
 
     -- Auto-collapse rule (opt-in via the Quest Log settings checkbox
@@ -517,6 +561,9 @@ class "MapQuestLogTab" : extends "Frame" {
     _RecalcHeight = function(self)
         local h = 0
         local count = 0
+        if self.story:IsShown() then
+            h = (self.story:GetHeight() or 0) + CATEGORIES_GAP
+        end
         for _, cat in ipairs(self._categories) do
             if cat:IsShown() then
                 h = h + (cat:GetHeight() or 0) + CATEGORIES_GAP

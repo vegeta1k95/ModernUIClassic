@@ -45,6 +45,8 @@ local DEFAULTS = {
             showLowLevelAvailableQuestsOnMap = false,  -- world-map pins
             showDungeonsOnMap                = true,
             questTypeIcons                   = true,   -- POI glyph by quest type (map / log / tracker)
+            showZoneStory                    = true,   -- zone story banner atop the map quest log
+            zoneStoryCollapsed               = false,
             autoCollapseQuestCategories      = false,
 
             -- Custom tracker state (see QuestTracker). Opt-out: every

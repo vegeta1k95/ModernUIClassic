@@ -58,6 +58,7 @@ file; there is no separate "data global" sibling file.
 | `MUI_TransportDB.lua`     | Transport-network DB (hand-written). |
 | `MUI_DungeonDB.lua`       | Dungeon-entrance DB (hand-written). |
 | `MUI_QuestHubDB.lua`      | Quest-hub DB (hand-written). |
+| `MUI_StorylineDB.lua`     | Zone story chapters, baked from `tools/storylines/chapters.py` by `tools/storylines/export.py`. |
 | `MUI_RecipeDB.lua`        | Per-profession recipe metadata, keyed by spellID (hand-written). |
 
 ## Regenerating the DB

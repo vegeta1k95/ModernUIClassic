@@ -569,6 +569,15 @@ class "QuestAvailability" : extends "Frame" {
         return self._available[questId] and true or false
     end;
 
+    -- Race / class gate alone: whether the quest exists for this character
+    -- at all, done or not (the zone story drops the steps that never will).
+    IsForPlayer = function(self, questId)
+        local q = MUI_QuestDB:Get(questId)
+        if not q then return false end
+        _ensurePlayerFlags()
+        return _hasRace(q.requiredRaces) and _hasClass(q.requiredClasses)
+    end;
+
     -- Returns a list of quest-starter spec records for every available
     -- quest whose starter NPC / object has a spawn in `areaId`:
     --   { questId, name, kind = "npc"|"object", targetId,

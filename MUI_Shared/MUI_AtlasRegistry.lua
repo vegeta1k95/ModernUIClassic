@@ -468,6 +468,14 @@ MUI_AtlasRegistry = {
 
 	-- Retail's level-up banner sheet (file 4000331): lines, shadows, glow,
 	-- dot and the unlock sub-icons.
+	-- Retail's zone story header (questmaplogatlas StoryHeader-BG, the
+	-- questlogframe2x divider, Scenarios\ScenarioIcon-Check), 2x art.
+	StoryHeader = TextureAtlas("skin\\worldmap\\storyheader", 1024, 256, 1024, 256, {
+		Banner  = { w = 304, h = 69, l = 0.000000, r = 0.593750, t = 0.000000, b = 0.539063 },
+		Divider = { w = 93,  h = 15, l = 0.597656, r = 0.779297, t = 0.000000, b = 0.117188 },
+		Check   = { w = 16,  h = 16, l = 0.597656, r = 0.613281, t = 0.156250, b = 0.218750 },
+	}),
+
 	LevelUp = TextureAtlas("skin\\levelup\\levelup", 1024, 512, 1024, 512, {
 		ShadowLower = { w = 284, h = 296, l = 0.000977, r = 0.278320, t = 0.001953, b = 0.580078 },
 		ShadowUpper = { w = 326, h = 103, l = 0.280273, r = 0.598633, t = 0.001953, b = 0.203125 },

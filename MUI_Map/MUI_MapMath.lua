@@ -30,6 +30,7 @@ object "MapMath" {
         -- world bounds cache used by WorldToMap. Populated lazily on first
         -- query for any uiMap (zone OR continent).
         self._mapBoundsCache = {}
+        self._worldLevel = {}  -- uiMapId -> true for a Cosmic / World map
     end;
 
     -- Return (worldX, worldY, continentId) for a point at normalised (nx, ny)
@@ -136,7 +137,23 @@ object "MapMath" {
     -- world corners with GetWorldPosFromMapPos (which IS reliable) and
     -- linear-interpolating. Returns nil when the map can't be resolved
     -- or when the requested continent doesn't match the map's continent.
+    -- A world-level map (Azeroth) has no single world rect: the point goes
+    -- through the continent child that holds it, then that child's rect
+    -- on the parent.
     WorldToMap = function(self, uiMapId, worldX, worldY, continentId)
+        if self:_IsWorldLevel(uiMapId) then
+            local continents = C_Map.GetMapChildrenInfo(uiMapId, 2)
+            for _, c in ipairs(continents or {}) do
+                local nx, ny = self:WorldToMap(c.mapID, worldX, worldY, continentId)
+                if nx and ny and nx >= 0 and nx <= 1 and ny >= 0 and ny <= 1 then
+                    local minX, maxX, minY, maxY = C_Map.GetMapRectOnMap(c.mapID, uiMapId)
+                    if minX then
+                        return minX + nx * (maxX - minX), minY + ny * (maxY - minY)
+                    end
+                end
+            end
+            return nil
+        end
         local b = self:_GetMapBounds(uiMapId)
         if not b then return nil end
         if continentId and b.continentId
@@ -149,6 +166,17 @@ object "MapMath" {
         local nx = (b.tlY - worldY) / widthEW
         local ny = (b.tlX - worldX) / heightNS
         return nx, ny
+    end;
+
+    -- Cosmic / World map types (0 / 1) span continents; cached per uiMapId.
+    _IsWorldLevel = function(self, uiMapId)
+        local known = self._worldLevel[uiMapId]
+        if known == nil then
+            local info = C_Map.GetMapInfo(uiMapId)
+            known = (info ~= nil and info.mapType <= 1)
+            self._worldLevel[uiMapId] = known
+        end
+        return known
     end;
 
     -- Probe the map's TL (vec00) and BR (vec11) corners to learn its

@@ -688,6 +688,13 @@ object "ModuleMap" : extends "Module" {
 		
     end;
 
+    -- "Name (min-max)" with the range in the difficulty colour of its top
+    -- level, as the zone hover label shows it; a single level for a raid.
+    FormatLevelRange = function(self, name, minLevel, maxLevel)
+        local range = (minLevel == maxLevel) and tostring(maxLevel) or (minLevel .. "-" .. maxLevel)
+        return name .. " |cFF" .. DifficultyHex(maxLevel) .. "(" .. range .. ")|r"
+    end;
+
     TweakZoneLabel = function(self)
         if not WorldMapFrame.dataProviders then return end
         local dp
@@ -730,8 +737,7 @@ object "ModuleMap" : extends "Module" {
         label.SetLabel = function(lbl, areaLabelType, name, description, ...)
             if name and ZONE_LEVELS[name] then
                 local r = ZONE_LEVELS[name]
-                local hex = DifficultyHex(r[2])
-                name = name .. " |cFF" .. hex .. "(" .. r[1] .. "-" .. r[2] .. ")|r"
+                name = self:FormatLevelRange(name, r[1], r[2])
             end
             return origSetLabel(lbl, areaLabelType, name, description, ...)
         end

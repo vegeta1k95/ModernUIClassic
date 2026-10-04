@@ -159,6 +159,7 @@ class "MapStaticPinManager" : extends "Frame" {
         self.transportPins      = {}
         self.dungeonPins        = {}
         self.availableQuestPins = {}
+        self.travelPin          = nil
         -- Per-kind world-coord caches keyed by stable identifier. Populated
         -- as we build pins for each zone the user navigates to. Persist
         -- across map switches so the focus arrow can keep pointing at a
@@ -295,7 +296,10 @@ class "MapStaticPinManager" : extends "Frame" {
 
         -- Toggle the per-pin "focused" badge as focus changes. Cheap:
         -- walks at most a few dozen pins across all kinds per zone.
-        MUI_FocusManager:RegisterChangeListener(function() self:_RefreshFocusStates() end)
+        MUI_FocusManager:RegisterChangeListener(function()
+            self:_RefreshFocusStates()
+            self:_RebuildTravelPin()
+        end)
 
         -- Available-quest pins: rebuild when the availability set
         -- shifts (level-up, accept, turn-in, trivial-toggle). After the
@@ -318,6 +322,9 @@ class "MapStaticPinManager" : extends "Frame" {
 
         local uiMapId = WorldMapFrame:GetMapID()
         if not uiMapId then return end
+        -- The travel waypoint stands for the focus, so it shows at every
+        -- map level; the rest is zone-level only.
+        self:_BuildTravelPin(uiMapId)
         local info = C_Map.GetMapInfo(uiMapId)
         if not info or info.mapType ~= ZONE_MAP_TYPE then return end
 
@@ -325,6 +332,84 @@ class "MapStaticPinManager" : extends "Frame" {
         self:_BuildTransportPins(uiMapId)
         self:_BuildDungeonPins(uiMapId)
         self:_BuildAvailableQuestPins(uiMapId)
+    end;
+
+    -- The travel waypoint alone, on a focus change.
+    _RebuildTravelPin = function(self)
+        if self.travelPin then
+            self.travelPin:Destroy()
+            self.travelPin = nil
+        end
+        local uiMapId = WorldMapFrame:GetMapID()
+        if uiMapId then self:_BuildTravelPin(uiMapId) end
+    end;
+
+    -- Travel waypoint (retail's Style.Waypoint pin): when the focused
+    -- target lies on another continent, the focus arrow already aims at the
+    -- boat or zeppelin that gets you there — this drops the matching pin at
+    -- that boarding point, on whichever map shows it, zone to world level,
+    -- above every other pin. Hovering names the crossing, clicking opens
+    -- the zone it lands in.
+    _BuildTravelPin = function(self, uiMapId)
+        if not MUI_TransportDB or not MUI_MapMath then return end
+        local kind, key = MUI_FocusManager:GetFocus()
+        if not kind then return end
+        local there = MUI_FocusManager:PickTarget(kind, key, true)
+        local here  = MUI_FocusManager:PickTarget(kind, key, false)
+        if not there or not here or here.continent == there.continent then return end
+        local nx, ny = MUI_MapMath:WorldToMap(uiMapId, here.wx, here.wy, here.continent)
+        if not nx or not ny or nx < 0 or nx > 1 or ny < 0 or ny > 1 then return end
+
+        local ep
+        for _, e in ipairs(MUI_TransportDB:FindEndpointsToContinent(here.continent, there.continent)) do
+            if e.wx == here.wx and e.wy == here.wy then
+                ep = e
+                break
+            end
+        end
+        if not ep then return end
+
+        local vehicle = (ep.type == "zeppelin") and "Zeppelin" or "Boat"
+        local destUi = MUI_ZoneDB:GetUiMapForArea(ep.otherAreaId)
+        local destInfo = destUi and C_Map.GetMapInfo(destUi)
+        local destZone = destInfo and destInfo.name or "?"
+        local labelText = vehicle .. " to " .. (ep.otherName or "?") .. " (" .. destZone .. ")"
+
+        -- Retail's waypoint POI: the super-tracked disc with the travel arrow on it.
+        local pin = MapPin("MUI_MapStaticPin_Travel", 26)
+        pin:SetFrameLevel(MUI_MAP_QUEST_PIN_FRAME_LEVEL + 5)
+        pin:SetDisc(MUI_AtlasRegistry.QuestPoiDefault, "BgFocused")
+        pin:SetIconType("TravelArrow")
+        pin:SetIconSize(15, 18)
+        pin:SetMapPosition(uiMapId, nx, ny)
+        -- The halo ties it to the focus; the badge is for focus targets.
+        pin.focusedBadge:SetVertexColor(0, 0, 0, 0)
+        pin:SetFocused(true)
+        pin:SetOnClick(function()
+            if destUi then WorldMapFrame:SetMapID(destUi) end
+        end)
+        pin:SetScript("OnEnter", function()
+            _EnsureLabelHook()
+            _hoveredOverride = labelText
+            MUI_ModuleMap.zoneLabelName:SetText(labelText)
+            MUI_ModuleMap.zoneSubLabel:SetText("Travel Waypoint")
+            MUI_ModuleMap.zoneLabel:Show()
+        end)
+        pin:SetScript("OnLeave", function()
+            _hoveredOverride = nil
+            MUI_ModuleMap.zoneLabelName:SetText("")
+            MUI_ModuleMap.zoneSubLabel:SetText("")
+        end)
+        pin:SetTooltip("ANCHOR_RIGHT", function(tooltip)
+            local adapter = MUI_FocusManager:GetAdapter(kind)
+            if adapter and adapter.FillTooltip then
+                adapter:FillTooltip(key, "title")
+            end
+            tooltip:AddLine(string.format("Take the %s from %s to %s.", vehicle:lower(), ep.name or "here", ep.otherName or "?"), 1, 1, 1, true)
+            tooltip:AddBlank()
+            tooltip:AddLine("<Click to view " .. destZone .. ">", 0, 1, 0)
+        end)
+        self.travelPin = pin
     end;
 
     -- If the currently-focused pin isn't present in the rebuilt pin set,
@@ -1081,6 +1166,9 @@ class "MapStaticPinManager" : extends "Frame" {
 
     _WireDungeonHover = function(self, pin, d)
         local label = d.name or "?"
+        if d.minLevel then
+            label = MUI_ModuleMap:FormatLevelRange(label, d.minLevel, d.maxLevel)
+        end
         local sublabel = d.isRaid and "Raid" or "Dungeon"
         pin:SetScript("OnEnter", function()
             _EnsureLabelHook()
@@ -1110,5 +1198,9 @@ class "MapStaticPinManager" : extends "Frame" {
         self.availableQuestPins = {}
         for _, pin in ipairs(self.dungeonPins)        do pin:Destroy() end
         self.dungeonPins = {}
+        if self.travelPin then
+            self.travelPin:Destroy()
+            self.travelPin = nil
+        end
     end;
 }

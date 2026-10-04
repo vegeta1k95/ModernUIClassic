@@ -111,6 +111,7 @@ MUI_MapPinIcons = {
     -- Custom waypoint
     ["Waypoint"]              = { OBJECTS_ATLAS, 1024, 1024, 901, 729, 21, 21 },
     ["WaypointFocused"]       = { OBJECTS_ATLAS, 1024, 1024, 867, 729, 21, 21 },
+    ["TravelArrow"]           = { OBJECTS_ATLAS, 1024, 1024, 269, 305, 36, 44 },   -- retail's poi-traveldirections-arrow2 (our sheet predates the small variant)
 
     -- Quests
     ["Quest"]                 = { OBJECTS_ATLAS, 1024, 1024, 863, 133, 64, 60},
@@ -147,6 +148,7 @@ class "MapPin" : extends "Frame" {
     __init = function(self, name, size)
         Frame.__init(self, "Frame", _Canvas(), name)
         size = size or 32
+        self._nominalSize = size   -- the size at canvas scale 1; zoom resizes the frame
         self:SetSize(size, size)
         self:SetFrameStrata("MEDIUM")
         self:SetFrameLevel(MUI_MAP_PIN_FRAME_LEVEL)
@@ -201,6 +203,7 @@ class "MapPin" : extends "Frame" {
 
     SetSize = function(self, w, h)
         Frame.SetSize(self, w, h)
+        if self._iconFrac then self:_RefreshIconAnchor() end
         if self.focusedBadge then self.focusedBadge:SetSize((w-1)*0.6, h*0.6) end
         if self.indicator then
             self.indicator:SetSize(w * 0.5, h * 0.5)
@@ -215,12 +218,34 @@ class "MapPin" : extends "Frame" {
     _RefreshIconAnchor = function(self)
         local dx, dy = 0, 0
         if self._pressed then dx, dy = 1, -1 end
-        self.icon:ClearAllPoints()
-        self.icon:SetPoint("TOPLEFT",     self, "TOPLEFT",     dx, dy)
-        self.icon:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", dx, dy)
-        self.highlight:ClearAllPoints()
-        self.highlight:SetPoint("TOPLEFT",     self, "TOPLEFT",     dx, dy)
-        self.highlight:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", dx, dy)
+        for _, tex in ipairs({ self.icon, self.highlight }) do
+            tex:ClearAllPoints()
+            if self._iconFrac then
+                tex:SetSize(self:GetWidth() * self._iconFrac[1], self:GetHeight() * self._iconFrac[2])
+                tex:SetPoint("CENTER", self, "CENTER", dx, dy)
+            else
+                tex:SetPoint("TOPLEFT",     self, "TOPLEFT",     dx, dy)
+                tex:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", dx, dy)
+            end
+        end
+    end;
+
+    -- An icon of `w` x `h` (at canvas scale 1) centred in the pin instead
+    -- of filling it: for a glyph drawn over a disc, or art that is not
+    -- square. Kept as a share of the pin so it zooms with the pin.
+    SetIconSize = function(self, w, h)
+        self._iconFrac = { w / self._nominalSize, h / self._nominalSize }
+        self:_RefreshIconAnchor()
+    end;
+
+    -- A disc under the icon filling the pin (a quest POI background).
+    SetDisc = function(self, atlas, regionName)
+        if not self.disc then
+            self.disc = Texture(self, nil, "BORDER")
+            self.disc:SetSubpixelRendering(true)
+            self.disc:FillParent()
+        end
+        self.disc:SetAtlas(atlas, regionName, true)
     end;
 
     _SetPressed = function(self, pressed)

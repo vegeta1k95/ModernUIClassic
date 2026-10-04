@@ -47,6 +47,7 @@ local function LegendCategories()
             { pin = "FlightMaster" .. faction, pinPrefix = "FlightMaster", label = "Flight Point" },
             { pin = "Transport" .. faction,    pinPrefix = "Transport",    label = "Transport" },
             { pin = "Waypoint",                pinPrefix = "Waypoint",     label = "Waypoint" },
+            { pin = "TravelArrow",                                         label = "Travel Waypoint" },
         } },
     }
 end

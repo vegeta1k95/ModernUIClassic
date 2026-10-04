@@ -38,6 +38,7 @@ MUI_DB\MUI_TransportDB.lua
 MUI_DB\MUI_DungeonDB.lua
 MUI_DB\MUI_DungeonMapDB.lua
 MUI_DB\MUI_QuestHubDB.lua
+MUI_DB\MUI_StorylineDB.lua
 MUI_DB\MUI_RecipeDB.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
@@ -150,6 +151,7 @@ MUI_Map\MUI_MapWaypoint.lua
 MUI_Map\MUI_MapQuestPoiManager.lua
 MUI_Map\MUI_MapQuestArea.lua
 MUI_Map\MUI_MapQuestLog.lua
+MUI_Map\MUI_MapQuestLogStory.lua
 MUI_Map\MUI_MapQuestLogTab.lua
 MUI_Map\MUI_MapQuestDescriptionTab.lua
 MUI_Map\MUI_MapLegendTab.lua

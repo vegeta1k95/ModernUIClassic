@@ -70,11 +70,13 @@ object "TransportDB" {
                         out[#out + 1] = {
                             wx = res.a[1], wy = res.a[2],
                             name = route.a.name, type = route.type,
+                            otherName = route.b.name, otherAreaId = route.b.areaId,
                         }
                     elseif res.b[3] == fromCont and res.a[3] == toCont then
                         out[#out + 1] = {
                             wx = res.b[1], wy = res.b[2],
                             name = route.b.name, type = route.type,
+                            otherName = route.a.name, otherAreaId = route.a.areaId,
                         }
                     end
                 end
