@@ -233,6 +233,10 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         self._native:SetBackdropColor(r, g, b, a)
     end;
 
+    SetBackdropBorderColor = function(self, r, g, b, a)
+        self._native:SetBackdropBorderColor(r, g, b, a)
+    end;
+
 
     -- ====================== Events =================================
 
@@ -242,6 +246,10 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
 
     UnregisterEvent = function(self, event)
         self._native:UnregisterEvent(event)
+    end;
+
+    IsEventRegistered = function(self, event)
+        return self._native:IsEventRegistered(event)
     end;
 
     RegisterEventHandler = function(self, event, handler)
@@ -257,6 +265,12 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
             self._eventObserverAdded = true
         end
         self._native:RegisterEvent(event)
+    end;
+
+    -- RegisterEventHandler for a unit event delivered only for `unit`.
+    RegisterUnitEventHandler = function(self, event, unit, handler)
+        self:RegisterEventHandler(event, handler)
+        self._native:RegisterUnitEvent(event, unit)
     end;
 
     UnregisterEventHandler = function(self, event)

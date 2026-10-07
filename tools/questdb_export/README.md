@@ -41,6 +41,7 @@ See `MUI_DB/README.md` for the currently-vendored version.
 | `blacklists.py` | Parses `Questie{Quest,NPC,Item}Blacklist.lua`. Evaluates `Expansions.Current == Expansions.Era`-style conditionals to decide whether each ID is blacklisted for Classic Era. |
 | `zones.py` | Parses `Zones/data/{zoneIds,areaIdToUiMapId,uiMapIdToAreaId,subZoneToParentZone}.lua`. |
 | `quest_xp.py` | Parses `QuestXP/DB/xpDB-classic.lua`. |
+| `map_sizes.py` | Width / height in yards of every zone map, from the client's `UiMapAssignment` table. The cluster pass measures spawn distances with it. |
 | `emit.py` | Merges base DB + corrections + faction fixes, applies the faction auto-patch (assign `requiredRaces` from starter NPC faction), drops blacklisted IDs, converts positional arrays to named-field dicts, and serializes as Lua table literals. |
 | `export.py` | CLI entry — wires the whole pipeline together. Also holds the pinned `EXPECTED_*_KEYS` layout for the key-stability check. |
 

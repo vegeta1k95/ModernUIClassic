@@ -470,6 +470,22 @@ class "TooltipBase" : extends "Frame" {
         end
     end;
 
+    -- The item sitting in the auction house's sell slot.
+    SetAuctionSellItem = function(self)
+        self._native:SetAuctionSellItem()
+    end;
+
+    -- An inventory slot of `unit`: equipment, a bag slot, a bank slot.
+    -- Returns whether an item is in it.
+    SetInventoryItem = function(self, unit, slot)
+        return self._native:SetInventoryItem(unit, slot)
+    end;
+
+    -- The equipped-item comparison beside this tooltip, as item buttons show it.
+    ShowCompareItem = function(self)
+        GameTooltip_ShowCompareItem(self._native)
+    end;
+
     -- ===== Owner =====
 
     SetOwner = function(self, owner, anchor)

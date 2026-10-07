@@ -357,7 +357,9 @@ object "QuestHelper" : extends "Module" {
     -- only entry.objectives at those indices are emitted. nil = emit all.
     -- titleIcon (optional): inline texture put before the title (see
     -- GetQuestIconEscape), e.g. the "?" on the quest's turn-in NPC.
-    FillQuestTooltip = function(self, questId, mode, objectiveFilter, titleIcon)
+    -- sourceItemFilter (optional, with objectiveFilter): { [itemId] = true },
+    -- the required source items a filtered block still lists.
+    FillQuestTooltip = function(self, questId, mode, objectiveFilter, titleIcon, sourceItemFilter)
         local entry = self.watcher and self.watcher:GetEntry(questId)
         if not entry then return end
         local title, r, g, b = self:FormatQuestTitle(entry, questId)
@@ -381,15 +383,18 @@ object "QuestHelper" : extends "Module" {
                 end
             end
         end
-        -- Required source items have no leaderboard line, so a target
-        -- filter can never name them: only the unfiltered block lists them.
-        if objectiveFilter then return end
+        -- Required source items have no leaderboard line, so an objective
+        -- filter cannot name them: the unfiltered block lists them all, a
+        -- filtered one those of sourceItemFilter.
+        if objectiveFilter and not sourceItemFilter then return end
         for _, s in ipairs(self:GetSourceItemObjectives(questId)) do
-            local line = (s.finished and _CHECK_ICON or _BULLET_ICON) .. " "
-                      .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
-            if not MUI_Tooltip:HasLine(line) then
-                local c = s.finished and 0.5 or 1
-                MUI_Tooltip:AddLine(line, c, c, c)
+            if not objectiveFilter or sourceItemFilter[s.itemId] then
+                local line = (s.finished and _CHECK_ICON or _BULLET_ICON) .. " "
+                          .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
+                if not MUI_Tooltip:HasLine(line) then
+                    local c = s.finished and 0.5 or 1
+                    MUI_Tooltip:AddLine(line, c, c, c)
+                end
             end
         end
     end;
@@ -657,7 +662,10 @@ object "QuestHelper" : extends "Module" {
     -- (e.g. talk-to-NPC quests). Anchor frame is whatever owns the hover
     -- — passed through so MUI_Tooltip can dismiss correctly when the
     -- frame hides mid-hover.
-    ShowMapQuestTooltip = function(self, anchorFrame, questId)
+    -- objectives / sourceItems (optional): { [idx] = true } over
+    -- entry.objectives and { [itemId] = true }. Given by a hull, whose area
+    -- is for those targets only: the other lines are left out. nil = all.
+    ShowMapQuestTooltip = function(self, anchorFrame, questId, objectives, sourceItems)
         local entry = self.watcher:GetEntry(questId)
         if not entry then return end
         MUI_Tooltip:ShowFor(anchorFrame, "ANCHOR_CURSOR", function(tip)
@@ -666,8 +674,8 @@ object "QuestHelper" : extends "Module" {
             tip:AddLine(title, r, g, b, true, 13)
             local emittedAny = false
             if entry.objectives then
-                for _, o in ipairs(entry.objectives) do
-                    if o.text and o.text ~= "" then
+                for idx, o in ipairs(entry.objectives) do
+                    if (not objectives or objectives[idx]) and o.text and o.text ~= "" then
                         emittedAny = true
                         if o.finished then
                             tip:AddLine("-" .. o.text, 0.4, 0.85, 0.4, true)
@@ -680,12 +688,14 @@ object "QuestHelper" : extends "Module" {
                 end
             end
             for _, s in ipairs(self:GetSourceItemObjectives(questId)) do
-                emittedAny = true
-                local line = "-" .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
-                if s.finished then
-                    tip:AddLine(line, 0.4, 0.85, 0.4, true)
-                else
-                    tip:AddLine(line, 1, 1, 1, true)
+                if not sourceItems or sourceItems[s.itemId] then
+                    emittedAny = true
+                    local line = "-" .. s.name .. ": " .. (s.finished and "1/1" or "0/1")
+                    if s.finished then
+                        tip:AddLine(line, 0.4, 0.85, 0.4, true)
+                    else
+                        tip:AddLine(line, 1, 1, 1, true)
+                    end
                 end
             end
             if not emittedAny then

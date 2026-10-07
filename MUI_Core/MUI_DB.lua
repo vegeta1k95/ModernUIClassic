@@ -81,6 +81,22 @@ local DEFAULTS = {
         -- quest tracker shows them: { spellID, name, reagents = { { itemID,
         -- count, name } } } (MUI_RecipeTracker).
         trackedRecipes = {},
+        -- Achievement progress (MUI_AchievementEngine): what is earned and
+        -- when, the trackers' tallies, kills and quests found, battleground
+        -- columns, what is on the objective tracker.
+        achievements = {
+            earned     = {},
+            counters   = {},
+            sets       = {},
+            tallies    = {},
+            kills      = {},
+            lockout    = {},
+            qdone      = {},
+            bg         = {},
+            day        = { stamp = "", n = 0, best = 0 },
+            tracked    = {},
+            backfilled = false,
+        },
         spells = {
             general = {},
             class = {
@@ -90,6 +106,15 @@ local DEFAULTS = {
             },
             trainerServiceCount = 0,
         },
+        -- Auction house (MUI_AuctionHouse): items starred in the browse list,
+        -- keyed by item id, and the duration last used to post an auction.
+        auctionHouse = {
+            favorites    = {},
+            sellDuration = 2,
+        },
+        -- Equipment sets (MUI_CharacterEquipment), in the order made:
+        -- { name, icon, items = { [slot] = link }, ignored = { [slot] = true } }.
+        equipmentSets = {},
         -- [nodeID] = true for every taxi node the player has discovered.
         -- C_TaxiMap.GetTaxiNodesForMap doesn't expose discovery state in
         -- Classic Era (isUndiscovered is always false), so MapStaticPinManager

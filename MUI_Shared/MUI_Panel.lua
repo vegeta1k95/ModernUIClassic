@@ -116,4 +116,22 @@ class "PanelPortrait" : extends "Frame" {
         end
         self._portrait:SetTexture(texture)
     end;
+
+    -- The portrait of a live unit ("npc" for a vendor-style window) in the
+    -- ring. Its own texture: a unit portrait comes round from the client,
+    -- and SetPortrait's mask is for square icon files.
+    SetPortraitFromUnit = function(self, unit, size)
+        if not self._unitPortrait then
+            self._unitPortrait = Texture(self._border, nil, "ARTWORK")
+            self._unitPortrait:SetDrawLayer("ARTWORK", 2)
+            if self._small then
+                self._unitPortrait:SetPoint("CENTER", self, "TOPLEFT", 16.5, -13)
+            else
+                self._unitPortrait:SetPoint("CENTER", self, "TOPLEFT", 26.5, -18)
+            end
+        end
+        local default = self._small and 32 or 55
+        self._unitPortrait:SetSize(size or default, size or default)
+        self._unitPortrait:SetPortraitFromUnit(unit)
+    end;
 }

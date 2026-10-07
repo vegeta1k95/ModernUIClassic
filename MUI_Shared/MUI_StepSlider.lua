@@ -61,4 +61,8 @@ class "StepSlider" : extends "Frame" {
     SetValueStep = function(self, step)
         self._slider:SetValueStep(step)
     end;
+
+    SetObeyStepOnDrag = function(self, obey)
+        self._slider:SetObeyStepOnDrag(obey)
+    end;
 }

@@ -7,6 +7,29 @@
 
 local DEFAULT_FONT_SIZE = 12
 
+-- Font objects by size: this client renders a shadow set on a Font object
+-- where the same setters on the string itself can leave it unrendered (the
+-- achievement panel's labels). One object per size and shadow choice —
+-- Friz, a black (1, -1) shadow unless `shadow` is false, white text for the
+-- caller to colour. Returns the object's global name, which is what
+-- CreateFontString and SetFontObject take.
+local fontsBySize = {}
+MUI.FontBySize = function(size, shadow)
+    shadow = shadow ~= false
+    local key = size .. (shadow and "" or "/plain")
+    local name = fontsBySize[key]
+    if not name then
+        name = "MUI_Font_" .. (key:gsub("[^%w]", "_"))
+        local font = CreateFont(name)
+        font:SetFont(MUI.FONT, size, "")
+        font:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
+        font:SetShadowColor(0, 0, 0, 1)
+        font:SetTextColor(1, 1, 1, 1)
+        fontsBySize[key] = name
+    end
+    return name
+end
+
 class "FontString" : extends {"Widget", "ScriptObject"} {
     __init = function(self, parentOrNative, name, layer, fontObject)
         Widget.__init(self)
@@ -71,6 +94,18 @@ class "FontString" : extends {"Widget", "ScriptObject"} {
 
     SetShadowColor = function(self, r, g, b, a)
         self._native:SetShadowColor(r, g, b, a or 1)
+    end;
+
+    GetShadowOffset = function(self)
+        return self._native:GetShadowOffset()
+    end;
+
+    GetShadowColor = function(self)
+        return self._native:GetShadowColor()
+    end;
+
+    GetStringHeight = function(self)
+        return self._native:GetStringHeight()
     end;
 
     -- Natural single-line width of the full text. The native GetStringWidth is bounded

@@ -132,7 +132,7 @@ object "ModuleMinimap" : extends "Module" {
         local kills = {
             "MinimapBorder", "MinimapToggleButton",
             "GameTimeFrame", "TimeManagerClockButton", "TimeManagerFrame",
-            "MiniMapLFGFrame", "LFGMinimapFrame", "QueueStatusButton",
+            "MiniMapLFGFrame", "QueueStatusButton",
             "QueueStatusMinimapButton", "QueueStatusFrame",
             "MinimapShopFrame",
             "MinimapNorthTag", "MinimapCompassTexture",
@@ -143,6 +143,12 @@ object "ModuleMinimap" : extends "Module" {
             local f = getglobal(name)
             if f then Frame(f):Kill() end
         end
+
+        -- The LFG eye stays alive, only unseen: the micro menu's Group Finder button
+        -- forwards its click to it
+        local eye = Frame(LFGMinimapFrame)
+        eye:SetAlpha(0)
+        eye:EnableMouse(false)
     end;
 
     AddBorder = function(self)

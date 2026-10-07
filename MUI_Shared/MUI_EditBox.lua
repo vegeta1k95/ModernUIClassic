@@ -5,12 +5,34 @@
 -- on Frame, which stays generic-Frame-only.
 
 class "EditBox" : extends "Frame" {
-    __init = function(self, parentOrNative, name)
+    __init = function(self, parentOrNative, name, template)
         local objType = type(parentOrNative) == "table" and parentOrNative.GetObjectType and parentOrNative:GetObjectType()
         if objType == "EditBox" then
             -- WRAP existing edit box: just adopt the native, no styling overlays.
             Frame.__init(self, parentOrNative)
             self._focused = false
+            return
+        end
+
+        -- CREATE from a Blizzard template: its own art and scripts, with
+        -- our callbacks hooked on after them.
+        if template then
+            Frame.__init(self, "EditBox", parentOrNative, name, template)
+            self._focused = false
+            self:HookScript("OnEditFocusGained", function()
+                self._focused = true
+                if self.OnFocusGained then self:OnFocusGained() end
+            end)
+            self:HookScript("OnEditFocusLost", function()
+                self._focused = false
+                if self.OnFocusLost then self:OnFocusLost() end
+            end)
+            self:HookScript("OnTextChanged", function()
+                if self.OnTextChanged then self:OnTextChanged(self:GetText()) end
+            end)
+            self:HookScript("OnEnterPressed", function()
+                if self.OnEnterPressed then self:OnEnterPressed(self:GetText()) end
+            end)
             return
         end
 
@@ -100,6 +122,14 @@ class "EditBox" : extends "Frame" {
         self._native:ClearFocus()
     end;
 
+    SetFocus = function(self)
+        self._native:SetFocus()
+    end;
+
+    HasFocus = function(self)
+        return self._native:HasFocus()
+    end;
+
     SetMaxLetters = function(self, n)
         self._native:SetMaxLetters(n)
     end;
@@ -116,9 +146,14 @@ class "EditBox" : extends "Frame" {
         self._native:SetFont(font, size, flags)
     end;
 
+    SetJustifyH = function(self, align)
+        self._native:SetJustifyH(align)
+    end;
+
     -- ===== Hint helpers =====
 
     _UpdateHint = function(self)
+        if not self._hint then return end
         local text = self:GetText()
         if (not text or text == "") and not self._focused then
             self._hint:Show()

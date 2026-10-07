@@ -578,13 +578,74 @@ class "QuestAvailability" : extends "Frame" {
         return _hasRace(q.requiredRaces) and _hasClass(q.requiredClasses)
     end;
 
+    -- A quest ruled out for good: one of the quests it excludes (the other
+    -- Scepter path) is already completed, or it is a breadcrumb and the
+    -- quest it leads to has been taken, which withdraws it.
+    IsRuledOut = function(self, questId)
+        if C_QuestLog.IsQuestFlaggedCompleted(questId) then return false end
+        local q = MUI_QuestDB:Get(questId)
+        if not q then return false end
+        for _, other in ipairs(q.exclusiveTo or {}) do
+            if C_QuestLog.IsQuestFlaggedCompleted(math.abs(other)) then return true end
+        end
+        local target = q.breadcrumbForQuestId
+        return target ~= nil and (C_QuestLog.IsQuestFlaggedCompleted(target) or C_QuestLog.IsOnQuest(target))
+    end;
+
+    -- A zone's story chapters (MUI_StorylineDB) for this character, with
+    -- their completion from the quest flags — what the map's zone story
+    -- banner shows and the zone quest achievements require:
+    --   { name, steps = { { ids = { questId, ... }, any, complete }, ... },
+    --     done, total, complete }
+    -- A step keeps the DB step's quests this character can take: the parts
+    -- of a same-named chain, each counted on its own, or exclusive variants
+    -- (`any`, while more than one is still possible), counted once and done
+    -- once any is. Quests this character can never take, or that a
+    -- completed quest has ruled out, are left out; a chapter left with no
+    -- steps is dropped. Nil when the zone has no chapters.
+    GetZoneChapters = function(self, areaId)
+        local data = MUI_StorylineDB:GetChapters(areaId)
+        if not data then return nil end
+        local out = {}
+        for _, ch in ipairs(data) do
+            local steps, done, total = {}, 0, 0
+            for _, ids in ipairs(ch.steps) do
+                local mine, n = {}, 0
+                for _, id in ipairs(ids) do
+                    if self:IsForPlayer(id) and not self:IsRuledOut(id) then
+                        mine[#mine + 1] = id
+                        if C_QuestLog.IsQuestFlaggedCompleted(id) then n = n + 1 end
+                    end
+                end
+                if #mine > 0 then
+                    local any = ids.any == true and #mine > 1
+                    local complete
+                    if any then
+                        complete = n > 0
+                        total = total + 1
+                        if complete then done = done + 1 end
+                    else
+                        complete = n == #mine
+                        total = total + #mine
+                        done = done + n
+                    end
+                    steps[#steps + 1] = { ids = mine, any = any, complete = complete }
+                end
+            end
+            if #steps > 0 then
+                out[#out + 1] = { name = ch.name, steps = steps, done = done, total = total, complete = done == total }
+            end
+        end
+        return out
+    end;
+
     -- Returns a list of quest-starter spec records for every available
     -- quest whose starter NPC / object has a spawn in `areaId`:
     --   { questId, name, kind = "npc"|"object", targetId,
     --     uiMapId, normX, normY }
-    -- Item-starters (quest triggered by looting an item) are skipped: the
-    -- loot source could be anywhere, and the pin would misleadingly plant
-    -- at the quest-giver instead. Can be added in a later pass.
+    -- A quest started by an item (a journal, a letter) is marked at the
+    -- objects the item is looted from, as "object" starters. Creatures that
+    -- drop such an item are not marked: they could be anywhere.
     GetStartersInArea = function(self, areaId)
         if not areaId then return {} end
         local quests = MUI_QuestDB:GetAll()
@@ -636,6 +697,34 @@ class "QuestAvailability" : extends "Frame" {
                                     isTrivial    = trivial,
                                     isRepeatable = repeatable,
                                 }
+                            end
+                        end
+                    end
+                end
+                local items = q.startedBy[3]
+                if items then
+                    for _, itemId in ipairs(items) do
+                        local item = MUI_ItemDB:Get(itemId)
+                        local sources = item and select(2, MUI_QuestHelper:GetItemDrops(item))
+                        if sources then
+                            for _, objId in ipairs(sources) do
+                                local obj = MUI_ObjectDB:Get(objId)
+                                if obj and obj.spawns and obj.spawns[areaId] then
+                                    for _, c in ipairs(obj.spawns[areaId]) do
+                                        out[#out + 1] = {
+                                            questId      = questId,
+                                            name         = q.name,
+                                            kind         = "object",
+                                            targetId     = objId,
+                                            areaId       = areaId,
+                                            uiMapId      = uiMapId,
+                                            normX        = c[1] / 100,
+                                            normY        = c[2] / 100,
+                                            isTrivial    = trivial,
+                                            isRepeatable = repeatable,
+                                        }
+                                    end
+                                end
                             end
                         end
                     end

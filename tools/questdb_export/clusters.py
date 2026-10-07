@@ -35,23 +35,23 @@ runtime drops their groups and the remaining cluster centroid stays
 accurate (vs. the old per-category scheme which kept the centroid
 averaged across all three until ALL completed).
 
-Clustering runs in normalized per-uiMap coords with a fixed threshold
-(~0.07). Trade-off: small zones cluster too tightly, large zones too
-loosely. Per-zone world bounds aren't shipped in any data we have access
-to offline; this approximation works fine for typical "kill 10 X in
-this camp" objectives.
+Clustering measures distance in world yards (map_sizes.py holds each
+zone map's size), so one threshold means the same thing in every zone.
+It used to be a fraction of the map: 0.07 was ~200 yards in Elwynn but
+~450 in Stranglethorn, where it chained three separate tiger packs into
+a single hull across the north of the zone.
 """
 from __future__ import annotations
 import math
 
 from lua_parser import LUA_NIL
 from enums import RACE_KEYS
+from map_sizes import UIMAP_SIZE_YARDS
 
 
-# Single-linkage threshold in normalized space (0-1). 0.07 ≈ 200 yards in
-# a typical 3000-yard zone — same neighborhood as the runtime's old
-# CLUSTER_RADIUS_YARDS constant.
-CLUSTER_THRESHOLD = 0.07
+# Single-linkage threshold in world yards — same neighborhood as the
+# runtime's old CLUSTER_RADIUS_YARDS constant.
+CLUSTER_THRESHOLD = 200.0
 MIN_CLUSTER_SIZE  = 3
 
 # Under-sized groups are folded into their nearest group only when that
@@ -235,7 +235,9 @@ def _emit_spawns_into(out_list, spawns_table, area_to_ui):
 
 # -------- clustering --------
 
-def _cluster_points(points, threshold=CLUSTER_THRESHOLD):
+def _cluster_points(points, size, threshold=CLUSTER_THRESHOLD):
+    """Single-linkage groups of normalized `points` on a map of `size`
+    (width, height) yards; `threshold` is in yards."""
     n = len(points)
     parent = list(range(n))
     def find(i):
@@ -246,8 +248,8 @@ def _cluster_points(points, threshold=CLUSTER_THRESHOLD):
     r2 = threshold * threshold
     for i in range(n):
         for j in range(i + 1, n):
-            dx = points[i][0] - points[j][0]
-            dy = points[i][1] - points[j][1]
+            dx = (points[i][0] - points[j][0]) * size[0]
+            dy = (points[i][1] - points[j][1]) * size[1]
             if dx * dx + dy * dy < r2:
                 ri, rj = find(i), find(j)
                 if ri != rj:
@@ -259,7 +261,7 @@ def _cluster_points(points, threshold=CLUSTER_THRESHOLD):
     return list(groups.values())
 
 
-def _merge_small(clusters, min_size=MIN_CLUSTER_SIZE, merge_threshold=MERGE_THRESHOLD):
+def _merge_small(clusters, size, min_size=MIN_CLUSTER_SIZE, merge_threshold=MERGE_THRESHOLD):
     """Fold under-sized groups into their nearest neighbour, smallest first.
     Groups with no neighbour within merge_threshold are left as they are;
     the caller turns them into stray points."""
@@ -283,7 +285,7 @@ def _merge_small(clusters, min_size=MIN_CLUSTER_SIZE, merge_threshold=MERGE_THRE
                 continue
             for p in small:
                 for q in other:
-                    dx, dy = p[0] - q[0], p[1] - q[1]
+                    dx, dy = (p[0] - q[0]) * size[0], (p[1] - q[1]) * size[1]
                     d = dx * dx + dy * dy
                     if d < nearest_d:
                         nearest_d = d
@@ -316,12 +318,12 @@ def _convex_hull(points):
     return lower[:-1] + upper[:-1]
 
 
-def _build_uimap_clusters(points):
-    """Cluster points in a single uiMap. Returns (clusters, stray)."""
+def _build_uimap_clusters(points, size):
+    """Cluster points in a single uiMap of `size` yards. Returns (clusters, stray)."""
     if len(points) < MIN_CLUSTER_SIZE:
         return [], list(points)
     clusters, stray = [], []
-    for g in _merge_small(_cluster_points(points)):
+    for g in _merge_small(_cluster_points(points, size), size):
         hull = _convex_hull(g) if len(g) >= MIN_CLUSTER_SIZE else []
         if len(hull) < 3:
             stray.extend(g)
@@ -354,7 +356,7 @@ def _bake_target_groups(target_groups):
         target_clusters = []
         target_stray = []
         for ui_map, ui_points in by_map.items():
-            clusters, stray = _build_uimap_clusters(ui_points)
+            clusters, stray = _build_uimap_clusters(ui_points, UIMAP_SIZE_YARDS[ui_map])
             for c in clusters:
                 target_clusters.append({
                     "uiMapId":  ui_map,

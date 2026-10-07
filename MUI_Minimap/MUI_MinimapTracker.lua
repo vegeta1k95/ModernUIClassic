@@ -40,6 +40,21 @@ local function hasFlag(mask, flag)
     return (mask % (flag * 2)) >= flag   -- bitwise AND without bit-lib
 end
 
+-- Which side a faction template is friendly to ("A", "H", "AH"), learnt from
+-- the NPCs that carry it. An object (a mailbox) has only the template.
+local _templateSides
+local function templateSide(factionID)
+    if not _templateSides then
+        _templateSides = {}
+        for _, npc in pairs(MUI_NpcDB:GetAll()) do
+            if npc.factionID and npc.friendlyToFaction then
+                _templateSides[npc.factionID] = npc.friendlyToFaction
+            end
+        end
+    end
+    return _templateSides[factionID]
+end
+
 
 -- Class-trainer NPC IDs for Classic Era, per class, ported verbatim from
 -- Questie's Modules/QuestieMenu/ClassTrainers.lua (Classic branch). Keyed
@@ -275,7 +290,10 @@ object "MinimapTracker" : extends "Module" {
         if not dbTable then return end
 
         for id, entry in pairs(dbTable) do
-            if spec.match(entry, id) then
+            -- Only what serves the player's faction: the other side's
+            -- innkeeper, flight master or mailbox is of no use.
+            if spec.match(entry, id)
+               and MUI_QuestHelper:IsFriendlyToPlayer(entry.friendlyToFaction or templateSide(entry.factionID)) then
                 local spawns = entry.spawns and entry.spawns[areaId]
                 if spawns then
                     for i, coord in ipairs(spawns) do

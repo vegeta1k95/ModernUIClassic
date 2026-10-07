@@ -47,16 +47,6 @@ local _CHECK_ICON = ("|T%s:16:16:0:0:1024:256:612:628:40:56|t")
 
 local _GREEN = { 0.1, 1, 0.1 }    -- GREEN_FONT_COLOR, retail's completed chapter
 
--- A quest ruled out for good: one of the quests it excludes (the other
--- Scepter path, the quest a breadcrumb leads to) is already completed.
-local function _RuledOut(id)
-    if C_QuestLog.IsQuestFlaggedCompleted(id) then return false end
-    local q = MUI_QuestDB:Get(id)
-    for _, other in ipairs(q and q.exclusiveTo or {}) do
-        if C_QuestLog.IsQuestFlaggedCompleted(math.abs(other)) then return true end
-    end
-    return false
-end
 local _GOLD  = { 1, 0.82, 0 }
 local _GREY  = { 0.6, 0.6, 0.6 }
 
@@ -362,7 +352,8 @@ class "QuestLogStory" : extends "Frame" {
     end;
 
     SetZone = function(self, areaId, zoneName)
-        local data = MUI_StorylineDB:GetChapters(areaId)
+        local avail = MUI_QuestHelper and MUI_QuestHelper.availability
+        local data = avail and avail:GetZoneChapters(areaId)
         if not data then return false end
         local chapters = self:_Compute(data)
         if #chapters == 0 then return false end
@@ -380,54 +371,40 @@ class "QuestLogStory" : extends "Frame" {
         return true
     end;
 
-    -- DB chapters → display chapters for this character: one step per quest
-    -- the player can take, with completion from the quest flags and the
-    -- quest log. Same-named parts of a chain each get a numbered step;
-    -- exclusive variants of one quest stay a single step, done once any of
-    -- them is. A quest a completed one has ruled out (the path not taken, a
-    -- skipped breadcrumb) is left out rather than counted as undone.
+    -- The character's chapters (QuestAvailability:GetZoneChapters) as
+    -- display chapters: a named step per quest, with what is on the quest
+    -- log. Same-named parts of a chain are numbered; the exclusive variants
+    -- of a step share one line.
     _Compute = function(self, data)
-        local avail = MUI_QuestHelper and MUI_QuestHelper.availability
-        if not avail then return {} end
         local out = {}
         for _, ch in ipairs(data) do
-            local steps, doneQuests, allDone = {}, 0, true
-            for _, ids in ipairs(ch.steps) do
-                local mine = {}
-                for _, id in ipairs(ids) do
-                    if avail:IsForPlayer(id) and not _RuledOut(id) then mine[#mine + 1] = id end
-                end
-                if ids.any and #mine > 1 then
-                    local complete, onQuest = false, nil
-                    for _, id in ipairs(mine) do
-                        if C_QuestLog.IsQuestFlaggedCompleted(id) then complete = true end
+            local steps = {}
+            for _, step in ipairs(ch.steps) do
+                if step.any then
+                    local onQuest
+                    for _, id in ipairs(step.ids) do
                         if not onQuest and C_QuestLog.IsOnQuest(id) then onQuest = id end
                     end
-                    local step = self:_Step(mine[1], self:_JoinNames(mine), complete, onQuest)
-                    step.any = true
-                    steps[#steps + 1] = step
+                    local row = self:_Step(step.ids[1], self:_JoinNames(step.ids), step.complete, onQuest)
+                    row.any = true
+                    steps[#steps + 1] = row
                 else
-                    for k, id in ipairs(mine) do
+                    for k, id in ipairs(step.ids) do
                         local name = MUI_QuestDB:LocalizeQuestName(id) or ""
-                        if #mine > 1 then name = string.format("%s (%d)", name, k) end
+                        if #step.ids > 1 then name = string.format("%s (%d)", name, k) end
                         steps[#steps + 1] = self:_Step(id, name,
                             C_QuestLog.IsQuestFlaggedCompleted(id),
                             C_QuestLog.IsOnQuest(id) and id or nil)
                     end
                 end
             end
-            for _, step in ipairs(steps) do
-                if step.complete then doneQuests = doneQuests + 1 else allDone = false end
-            end
-            if #steps > 0 then
-                out[#out + 1] = {
-                    name     = ch.name,
-                    steps    = steps,
-                    done     = doneQuests,
-                    total    = #steps,
-                    complete = allDone,
-                }
-            end
+            out[#out + 1] = {
+                name     = ch.name,
+                steps    = steps,
+                done     = ch.done,
+                total    = ch.total,
+                complete = ch.complete,
+            }
         end
         return out
     end;

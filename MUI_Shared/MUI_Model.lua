@@ -121,4 +121,9 @@ class "PlayerModel" : extends "Model" {
     SetCreature = function(self, creatureId, displayId)
         self._native:SetCreature(creatureId, displayId)
     end;
+
+    -- The model of a live unit ("player", "pet").
+    SetUnit = function(self, unit)
+        self._native:SetUnit(unit)
+    end;
 }

@@ -731,12 +731,13 @@ object "ModuleBags" : extends "Module" {
     -- The first bag anchors to the bag bar / right action bars; the rest stack
     -- upward with BAG_STACK_GAP, and once a column fills past SCREEN_MARGIN_Y
     -- the next column sits to its left. Defers to Blizzard while the bank is
-    -- open (bank bags anchor next to the bank frame).
+    -- open (bank bags anchor next to the bank frame), unless MUI_Bank has it:
+    -- there the bank bags are part of the bank window.
     AnchorContainers = function(self)
         local bags = ContainerFrame1 and ContainerFrame1.bags
         if not bags or not bags[1] then return end
         local bank = _G.BankFrame
-        if bank and Frame(bank):IsShown() then return end
+        if bank and Frame(bank):IsShown() and not MUI_ModuleBank.window then return end
         if self._combined then self:AnchorCombined(); return end
 
         local scale = Frame(getglobal(bags[1])):GetScale()

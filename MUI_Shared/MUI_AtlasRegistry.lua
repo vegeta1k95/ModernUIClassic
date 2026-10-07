@@ -476,6 +476,24 @@ MUI_AtlasRegistry = {
 		Check   = { w = 16,  h = 16, l = 0.597656, r = 0.613281, t = 0.156250, b = 0.218750 },
 	}),
 
+	-- Retail's search art: preview rows, selection, result highlight, icon frame.
+	Search = TextureAtlas("skin\\common-search", 512, 128, 512, 128, {
+		RowBg          = { w = 64,  h = 27, l = 0.000000, r = 0.125000, t = 0.007812, b = 0.218750 },
+		Select         = { w = 126, h = 27, l = 0.505859, r = 0.751953, t = 0.234375, b = 0.445312 },
+		Highlight      = { w = 126, h = 27, l = 0.001953, r = 0.248047, t = 0.617188, b = 0.828125 },
+		HighlightLarge = { w = 256, h = 47, l = 0.001953, r = 0.501953, t = 0.234375, b = 0.601562 },
+		IconFrameLarge = { w = 38,  h = 38, l = 0.755859, r = 0.830078, t = 0.234375, b = 0.531250 },
+	}),
+
+	-- Retail's achievement alert sheet (the "Achievement Earned!" toast).
+	AchievementAlert = TextureAtlas("achievements\\achievement-alerts-sheet", 1024, 1024, 1024, 1024, {
+		Background = { w = 310, h = 101, l = 0.625000, r = 0.927734, t = 0.169922, b = 0.268555 },
+		Glow       = { w = 400, h = 171, l = 0.000977, r = 0.391602, t = 0.000977, b = 0.167969 },
+		Shine      = { w = 67,  h = 85,  l = 0.000977, r = 0.066406, t = 0.845703, b = 0.928711 },
+		IconFrame  = { w = 74,  h = 74,  l = 0.107422, r = 0.179688, t = 0.505859, b = 0.578125 },
+		Shield     = { w = 63,  h = 56,  l = 0.925781, r = 0.987305, t = 0.304688, b = 0.359375 },
+	}),
+
 	LevelUp = TextureAtlas("skin\\levelup\\levelup", 1024, 512, 1024, 512, {
 		ShadowLower = { w = 284, h = 296, l = 0.000977, r = 0.278320, t = 0.001953, b = 0.580078 },
 		ShadowUpper = { w = 326, h = 103, l = 0.280273, r = 0.598633, t = 0.001953, b = 0.203125 },
@@ -490,6 +508,70 @@ MUI_AtlasRegistry = {
 		IconLock    = { w = 30,  h = 35,  l = 0.221680, r = 0.250977, t = 0.662109, b = 0.730469 },
 		IconArrow   = { w = 30,  h = 34,  l = 0.221680, r = 0.250977, t = 0.734375, b = 0.800781 },
 		IconBag     = { w = 29,  h = 34,  l = 0.000977, r = 0.029297, t = 0.812500, b = 0.878906 },
+	}),
+
+	-- Retail's auction house art (Blizzard_AuctionHouseUI): the chrome sheet
+	-- (Interface\AuctionFrame\AuctionHouse, 3046538) and the panel backgrounds
+	-- (AuctionHouseBackgrounds, 3054898). w / h are the atlas members' own sizes;
+	-- much of the chrome is 2x art, so callers size the pieces themselves.
+	AuctionHouse = TextureAtlas("skin\\auctionhouse\\auctionhouse", 1024, 1024, 1024, 1024, {
+		ItemHeaderFrame             = { w = 342, h =  72, l = 0.000977, r = 0.668945, t = 0.000977, b = 0.141602 },
+		ItemIconEmpty               = { w = 100, h = 100, l = 0.135742, r = 0.233398, t = 0.833008, b = 0.930664 },
+		ItemIconBorderGray          = { w = 136, h = 136, l = 0.135742, r = 0.268555, t = 0.428711, b = 0.561523 },
+		ItemIconBorderWhite         = { w = 136, h = 136, l = 0.135742, r = 0.268555, t = 0.698242, b = 0.831055 },
+		ItemIconBorderGreen         = { w = 136, h = 136, l = 0.000977, r = 0.133789, t = 0.563477, b = 0.696289 },
+		ItemIconBorderBlue          = { w = 136, h = 136, l = 0.000977, r = 0.133789, t = 0.428711, b = 0.561523 },
+		ItemIconBorderPurple        = { w = 136, h = 136, l = 0.000977, r = 0.133789, t = 0.698242, b = 0.831055 },
+		ItemIconBorderOrange        = { w = 136, h = 136, l = 0.135742, r = 0.268555, t = 0.563477, b = 0.696289 },
+		ItemIconSmallBorder         = { w =  32, h =  32, l = 0.095703, r = 0.126953, t = 0.967773, b = 0.999023 },
+		NavButton                   = { w = 272, h =  64, l = 0.635742, r = 0.901367, t = 0.143555, b = 0.206055 },
+		NavButtonHighlight          = { w = 264, h =  42, l = 0.547852, r = 0.805664, t = 0.209961, b = 0.250977 },
+		NavButtonSelect             = { w = 264, h =  42, l = 0.286133, r = 0.543945, t = 0.274414, b = 0.315430 },
+		NavButtonSecondary          = { w = 266, h =  64, l = 0.286133, r = 0.545898, t = 0.209961, b = 0.272461 },
+		NavButtonSecondaryHighlight = { w = 244, h =  42, l = 0.545898, r = 0.784180, t = 0.274414, b = 0.315430 },
+		NavButtonSecondarySelect    = { w = 244, h =  42, l = 0.286133, r = 0.524414, t = 0.317383, b = 0.358398 },
+		FilterLine                  = { w =   5, h =  11, l = 0.270508, r = 0.275391, t = 0.468750, b = 0.479492 },
+		RowHighlight                = { w = 116, h =  18, l = 0.547852, r = 0.661133, t = 0.252930, b = 0.270508 },
+		RowSelect                   = { w = 116, h =  18, l = 0.807617, r = 0.920898, t = 0.209961, b = 0.227539 },
+		SortArrow                   = { w =   9, h =   9, l = 0.987305, r = 0.996094, t = 0.025391, b = 0.034180 },
+		SellTabLeft                 = { w =   9, h =  23, l = 0.987305, r = 0.996094, t = 0.000977, b = 0.023438 },
+		SellTabMiddle               = { w =  95, h =  23, l = 0.000977, r = 0.093750, t = 0.967773, b = 0.990234 },
+		SellTabRight                = { w =   9, h =  23, l = 0.270508, r = 0.279297, t = 0.428711, b = 0.451172 },
+		IconFavorite                = { w =  40, h =  36, l = 0.940430, r = 0.979492, t = 0.047852, b = 0.083008 },
+		IconFavoriteOff             = { w =  40, h =  36, l = 0.940430, r = 0.979492, t = 0.084961, b = 0.120117 },
+		CoinGold                    = { w =  20, h =  20, l = 0.961914, r = 0.981445, t = 0.122070, b = 0.141602 },
+		CoinSilver                  = { w =  20, h =  20, l = 0.931641, r = 0.951172, t = 0.143555, b = 0.163086 },
+		CoinCopper                  = { w =  20, h =  20, l = 0.940430, r = 0.959961, t = 0.122070, b = 0.141602 },
+		InputFieldLeft              = { w =   8, h =  33, l = 0.235352, r = 0.250977, t = 0.833008, b = 0.897461 },
+		InputFieldMiddle            = { w = 178, h =  33, l = 0.286133, r = 0.633789, t = 0.143555, b = 0.208008 },
+		InputFieldRight             = { w =   8, h =  33, l = 0.252930, r = 0.268555, t = 0.833008, b = 0.897461 },
+		LoadingSpinner              = { w = 290, h = 290, l = 0.000977, r = 0.284180, t = 0.143555, b = 0.426758 },
+	}),
+
+	AuctionHouseBackgrounds = TextureAtlas("skin\\auctionhouse\\auctionhouse-backgrounds", 2048, 1024, 2048, 1024, {
+		Index       = { w = 595, h = 413, l = 0.180664, r = 0.471191, t = 0.390625, b = 0.793945 },
+		Categories  = { w = 138, h = 433, l = 0.845215, r = 0.912598, t = 0.390625, b = 0.813477 },
+		SellLeft    = { w = 357, h = 437, l = 0.000488, r = 0.174805, t = 0.389648, b = 0.816406 },
+		SellRight   = { w = 399, h = 418, l = 0.540527, r = 0.735352, t = 0.390625, b = 0.798828 },
+		BuyHeader   = { w = 617, h =  81, l = 0.180664, r = 0.481934, t = 0.309570, b = 0.388672 },
+		BuyMarket   = { w = 595, h = 277, l = 0.472168, r = 0.762695, t = 0.000977, b = 0.271484 },
+		SummaryList = { w = 138, h = 433, l = 0.472168, r = 0.539551, t = 0.390625, b = 0.813477 },
+		Auctions    = { w = 595, h = 314, l = 0.180664, r = 0.471191, t = 0.000977, b = 0.307617 },
+	}),
+
+	-- Retail's bank window (BankPanelEdgeShadowTemplate): the shadow the item
+	-- area's edges cast inward. The corners and the horizontal band share one
+	-- sheet (5782246), the vertical bands have their own (5779392); a band is
+	-- uniform along its length and is stretched over it.
+	BankShadows = TextureAtlas("skin\\bank\\bank-frame-shadows", 256, 256, 256, 256, {
+		CornerBottomLeft  = { w =  46, h = 46, l = 0.003906, r = 0.183594, t = 0.683594, b = 0.863281 },
+		CornerBottomRight = { w =  46, h = 46, l = 0.218750, r = 0.398438, t = 0.261719, b = 0.441406 },
+		Bottom            = { w = 256, h = 17, l = 0.000000, r = 1.000000, t = 0.007813, b = 0.074219 },
+	}),
+
+	BankShadowsVertical = TextureAtlas("skin\\bank\\bank-frame-shadows-vert", 128, 256, 128, 256, {
+		Right = { w = 17, h = 256, l = 0.015625, r = 0.148438, t = 0.000000, b = 1.000000 },
+		Left  = { w = 17, h = 256, l = 0.164063, r = 0.296875, t = 0.000000, b = 1.000000 },
 	}),
 
 	TalentsAnimationParticles = TextureAtlas("skin\\talents\\talents-animations", 2048, 2048, 2048, 2048, {

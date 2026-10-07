@@ -5,8 +5,14 @@
 
 class "Cooldown" : extends "Frame" {
 
-    __init = function(self, parent, name)
-        Frame.__init(self, "Cooldown", parent, name, "CooldownFrameTemplate")
+    -- Create: Cooldown(parent, name)
+    -- Wrap:   Cooldown(existingNativeCooldown), e.g. an item button template's
+    __init = function(self, parentOrNative, name)
+        if IsNativeObject(parentOrNative, "Cooldown") then
+            Frame.__init(self, parentOrNative)
+        else
+            Frame.__init(self, "Cooldown", parentOrNative, name, "CooldownFrameTemplate")
+        end
     end;
 
     -- start / duration are GetTime()-based seconds. Clears (no swipe) when the

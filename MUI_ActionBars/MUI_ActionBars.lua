@@ -3,6 +3,7 @@
 local BUTTON_TYPES = {
     "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
     "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton",
+    "MultiBar5Button", "MultiBar6Button", "MultiBar7Button",
     "StanceButton", "PetActionButton"
 }
 
@@ -20,6 +21,9 @@ object "ModuleActionBars" : extends "Module" {
             MULTIBAR2 = ActionBarEditable("horizontal", "IconFrameBG",   nil, "MUI_MultiBar2"),
             MULTIBAR3 = ActionBarEditable("vertical",	"IconFrameBG",   nil, "MUI_MultiBar3"),
             MULTIBAR4 = ActionBarEditable("vertical", 	"IconFrameBG",   nil, "MUI_MultiBar4"),
+            MULTIBAR5 = ActionBarEditable("horizontal", "IconFrameBG",   nil, "MUI_MultiBar5"),
+            MULTIBAR6 = ActionBarEditable("horizontal", "IconFrameBG",   nil, "MUI_MultiBar6"),
+            MULTIBAR7 = ActionBarEditable("horizontal", "IconFrameBG",   nil, "MUI_MultiBar7"),
             PET       = ActionBarEditable("horizontal", "IconFrameBG",   nil, "MUI_PetBar"),
             STANCE    = ActionBarEditable("horizontal", "IconFrameBG",   nil, "MUI_StanceBar")
         }
@@ -58,18 +62,16 @@ object "ModuleActionBars" : extends "Module" {
     _SetupEditMode = function(self)
 
         local main = self.bars.MAIN1
-        local mb1 = self.bars.MULTIBAR1
-        local mb2 = self.bars.MULTIBAR2
-        local mb3 = self.bars.MULTIBAR3
-        local mb4 = self.bars.MULTIBAR4
         local pet = self.bars.PET
         local stance = self.bars.STANCE
+        -- Action Bars 2-8, in Blizzard's order.
+        local multi = {}
+        for i = 1, 7 do multi[i] = self.bars["MULTIBAR" .. i] end
 
         main:EditModeSetLabel("Action Bar 1")
-        mb1:EditModeSetLabel("Action Bar 2")
-        mb2:EditModeSetLabel("Action Bar 3")
-        mb3:EditModeSetLabel("Action Bar 4", math.pi/2)
-        mb4:EditModeSetLabel("Action Bar 5", math.pi/2)
+        for i, bar in ipairs(multi) do
+            bar:EditModeSetLabel("Action Bar " .. (i + 1), bar.orientation == "vertical" and math.pi / 2 or 0)
+        end
         pet:EditModeSetLabel("Pet Bar")
         stance:EditModeSetLabel("Stance Bar")
 
@@ -82,39 +84,31 @@ object "ModuleActionBars" : extends "Module" {
         stance:EditModeEnabled(STANCE_CLASSES[class] and true or false)
         pet:EditModeEnabled(PET_CLASSES[class] and true or false)
 
-
+        -- Retail's settings: the layout for every bar, the number of icons
+        -- for bars 1-8 and "Always Show Buttons" for 2-8.
         main:EditModeSetupSettings(function(content)
-            
+            main:EditModeAddLayoutSettings(content, true)
         end)
 
-        mb1:EditModeSetupSettings(function(content)
-            mb1:EditModeAddAlwaysShowButtons(content)
-        end)
-
-        mb2:EditModeSetupSettings(function(content)
-            mb2:EditModeAddAlwaysShowButtons(content)
-        end)
-
-        mb3:EditModeSetupSettings(function(content)
-            mb3:EditModeAddAlwaysShowButtons(content)
-        end)
-
-        mb4:EditModeSetupSettings(function(content)
-            mb4:EditModeAddAlwaysShowButtons(content)
-        end)
+        for _, bar in ipairs(multi) do
+            bar:EditModeSetupSettings(function(content)
+                bar:EditModeAddLayoutSettings(content, true)
+                bar:EditModeAddAlwaysShowButtons(content)
+            end)
+        end
 
         pet:EditModeSetupSettings(function(content)
-            
+            pet:EditModeAddLayoutSettings(content)
         end)
 
         stance:EditModeSetupSettings(function(content)
-
+            stance:EditModeAddLayoutSettings(content)
         end)
 
         -- "Restore default position" must re-run the real, state-dependent layout
         -- (mb3 → right edge, mb4 → left of mb3, stance/pet → above whichever
         -- bottom bar is shown), not replay a captured snapshot.
-        for _, bar in ipairs({ main, mb1, mb2, mb3, mb4, pet, stance }) do
+        for _, bar in ipairs({ main, pet, stance, unpack(multi) }) do
             bar:EditModeSetDefaultPosition(function(b) self:_ApplyBarDefault(b) end)
         end
 
@@ -126,6 +120,7 @@ object "ModuleActionBars" : extends "Module" {
     _ApplyBarDefault = function(self, bar)
         local main, mb1, mb2 = self.bars.MAIN1, self.bars.MULTIBAR1, self.bars.MULTIBAR2
         local mb3, mb4 = self.bars.MULTIBAR3, self.bars.MULTIBAR4
+        local mb5, mb6, mb7 = self.bars.MULTIBAR5, self.bars.MULTIBAR6, self.bars.MULTIBAR7
         local stance, pet = self.bars.STANCE, self.bars.PET
 
         local show2 = MultiBar1_IsVisible and MultiBar1_IsVisible() and true or false
@@ -143,6 +138,14 @@ object "ModuleActionBars" : extends "Module" {
             bar:AlignParentRight(6.5, -70)
         elseif bar == mb4 then
             bar:LeftOf(mb3, 9)
+        -- Bars 6-8 start where Blizzard's presets put them: mid-screen, the
+        -- first with its top edge on the centre, the others 50 px apart below.
+        elseif bar == mb5 then
+            bar:CenterInParent(0, -18)
+        elseif bar == mb6 then
+            bar:CenterInParent(0, -68)
+        elseif bar == mb7 then
+            bar:CenterInParent(0, -118)
         elseif bar == stance or bar == pet then
             local ref = show3 and mb2 or (show2 and mb1 or main)
             local gap = (show2 or show3) and 2.5 or 4
@@ -280,6 +283,13 @@ object "ModuleActionBars" : extends "Module" {
         self.bgMiddle:FillBetweenH(self.bgLeft, self.bgRight, 0)
         self.bgMiddle:SetHeight(48)
 
+        -- The same plate as a nine-slice, for a bar set to more than one row
+        -- or made vertical: the strip above is one row high.
+        self.bgGrid = NineSlice(mainBar1.bgFrame)
+        self.bgGrid:SetFromTextureRegion("skin\\actionbars\\actionbar-main-bg", 128, 128, 2, 2, 102, 104, 18, 18, 18, 18, 0.5)
+        self.bgGrid:Fill(mainBar1, -6, -6, -6, -6)
+        self.bgGrid:Hide()
+
         -- Gryphons/Wyverns
         local faction = UnitFactionGroup("player")
         local dir = MUI.TEX_SKIN .. "actionbars\\"
@@ -301,10 +311,12 @@ object "ModuleActionBars" : extends "Module" {
         self.rightGryphon:SetTexCoord(1, 0, 0, 1)
 
         -- Dividers between buttons
+        self._dividers = {}
         for i = 1, 11 do
             local ab = getglobal("ActionButton" .. i)
 
             local div = Frame("Frame", mainBar1, "MUI_Divider" .. i)
+            self._dividers[i] = div
             div:SetSize(6, 0)
             div:RightOf(Frame(ab), 0.5)
             div:AlignTop(mainBar1, -0.5)
@@ -397,6 +409,38 @@ object "ModuleActionBars" : extends "Module" {
         self.pageWatcher:RegisterEventHandler("ACTIONBAR_PAGE_CHANGED",  refresh)
         self.pageWatcher:RegisterEventHandler("UPDATE_SHAPESHIFT_FORM",  refresh)
         self.pageWatcher:RegisterEventHandler("UPDATE_BONUS_ACTIONBAR",  refresh)
+
+        mainBar1.OnLayoutChanged = function() self:_UpdateMainBarArt() end
+    end;
+
+    -- Bar 1's art was drawn for one row; it follows another layout by
+    -- Blizzard's rules for its own main bar (MainActionBarMixin): dividers
+    -- only along a single row at the default padding and between the buttons
+    -- in use, the gryphons moved out past the ends of a taller grid.
+    _UpdateMainBarArt = function(self)
+        local bar = self.bars.MAIN1
+        local row = bar.orientation == "horizontal" and bar.numRows == 1
+        local count = bar:GetLaidOutCount()
+
+        self.bgLeft:SetVisible(row)
+        self.bgMiddle:SetVisible(row)
+        self.bgRight:SetVisible(row)
+        self.bgGrid:SetVisible(not row)
+
+        local divided = row and bar.iconPadding == bar.MIN_ICON_PADDING
+        for i, div in ipairs(self._dividers) do
+            div:SetVisible(divided and i < count)
+        end
+
+        self.leftGryphon:ClearAllPoints()
+        self.rightGryphon:ClearAllPoints()
+        if row then
+            self.leftGryphon:AlignParentBottomLeft(-46, -98)
+            self.rightGryphon:AlignParentBottomRight(-46, -96)
+        else
+            self.leftGryphon:AlignParentBottomLeft(-46, -134)
+            self.rightGryphon:AlignParentBottomRight(-46, -132)
+        end
     end;
 
     _UpdatePageNum = function(self)
@@ -416,12 +460,18 @@ object "ModuleActionBars" : extends "Module" {
             mb2:AddButton(getglobal("MultiBarBottomRightButton" .. i))
             mb3:AddButton(getglobal("MultiBarRightButton" .. i))
             mb4:AddButton(getglobal("MultiBarLeftButton" .. i))
+            for n = 5, 7 do
+                self.bars["MULTIBAR" .. n]:AddButton(getglobal("MultiBar" .. n .. "Button" .. i))
+            end
         end
 
         mb1:Above(main, 8.5)
         mb2:Above(mb1, 9)
         mb3:AlignParentRight(6.5, -70)
         mb4:LeftOf(mb3, 9)
+        for n = 5, 7 do
+            self:_ApplyBarDefault(self.bars["MULTIBAR" .. n])
+        end
 
 		hooksecurefunc("MultiActionBar_Update", function()
 			self:_UpdateBarsVisibility()
@@ -437,6 +487,7 @@ object "ModuleActionBars" : extends "Module" {
             self:_UpdateSlotsVisibility()
         end)
         self.slotChangeWatcher:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()
+            for _, bar in pairs(self.bars) do bar:ApplyPendingLayout() end
             if self._pendingBarsVisibility then
                 self:_UpdateBarsVisibility()
             end
@@ -452,7 +503,8 @@ object "ModuleActionBars" : extends "Module" {
 		-- Update is a mixin method copied onto every action button, so hook each button.
 		local actionButtons = {
 			"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
-			"MultiBarRightButton", "MultiBarLeftButton"
+			"MultiBarRightButton", "MultiBarLeftButton",
+			"MultiBar5Button", "MultiBar6Button", "MultiBar7Button"
 		}
 		for _, buttonType in ipairs(actionButtons) do
 			for i = 1, 12 do
@@ -494,12 +546,20 @@ object "ModuleActionBars" : extends "Module" {
             end
         end
 
+        self:_UpdateStanceCount()
         hooksecurefunc(StanceBar, "UpdateState", function()
+            self:_UpdateStanceCount()
             stanceBar:UpdateSlotVisibility()
             stanceBar:RaiseBorders()
         end)
 
         stanceBar:UpdateSlotVisibility()
+    end;
+
+    -- Only the stances the class has take part in the stance bar's layout,
+    -- as on Blizzard's bar: its rows are counted over the buttons shown.
+    _UpdateStanceCount = function(self)
+        self.bars.STANCE:SetNumIcons(math.max(GetNumShapeshiftForms(), 1))
     end;
 
     _SetupPetBar = function(self)
@@ -611,10 +671,17 @@ object "ModuleActionBars" : extends "Module" {
         local show4 = MultiBar3_IsVisible and MultiBar3_IsVisible() and true or false
         local show5 = MultiBar4_IsVisible and MultiBar4_IsVisible() and true or false
 
-        if show2 then mb1:Show() else mb1:Hide() end
-        if show3 then mb2:Show() else mb2:Hide() end
-        if show4 then mb3:Show() else mb3:Hide() end
-        if show5 then mb4:Show() else mb4:Hide() end
+        -- Bars 6-8 (MultiBar5-7, pages 13-15) are the ones 1.15.9 added. A bar
+        -- that is switched off is out of edit mode too.
+        local shown = { show2, show3, show4, show5,
+            MultiBar5_IsVisible() and true or false,
+            MultiBar6_IsVisible() and true or false,
+            MultiBar7_IsVisible() and true or false }
+        for i, show in ipairs(shown) do
+            local bar = self.bars["MULTIBAR" .. i]
+            bar:SetVisible(show)
+            bar:EditModeEnabled(show)
+        end
 		
         -- Re-dock guard: a bar the user has moved in edit mode (EditModeIsMoved)
         -- keeps its custom/saved position instead of being snapped back here.
@@ -650,8 +717,8 @@ object "ModuleActionBars" : extends "Module" {
 	
 	-- Empty slots show while dragging; the per-bar "Always Show Buttons" choice lives on the bar.
 	_UpdateSlotsVisibility = function(self)
-        for _, key in ipairs({"MULTIBAR1", "MULTIBAR2", "MULTIBAR3", "MULTIBAR4"}) do
-            self.bars[key]:SetShowEmptySlots(self.cursorDragging)
+        for i = 1, 7 do
+            self.bars["MULTIBAR" .. i]:SetShowEmptySlots(self.cursorDragging)
         end
 	end;
 }

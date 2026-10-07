@@ -284,8 +284,8 @@ class "Widget" {
 
     -- === Align edges with a sibling ===
 
-    AlignTop = function(self, other, offset)
-        self:SetPoint("TOP", other, "TOP", 0, -(offset or 0))
+    AlignTop = function(self, other, offset, offsetX)
+        self:SetPoint("TOP", other, "TOP", (offsetX or 0), -(offset or 0))
     end;
 
     AlignBottom = function(self, other, offset)
@@ -354,6 +354,12 @@ class "Widget" {
 
     Reparent = function(self, nativeFrame)
         nativeFrame:SetParent(self._native)
+    end;
+
+    -- Move this widget under another of ours, a native frame, or nothing.
+    SetParent = function(self, parent)
+        if parent ~= nil and parent._native then parent = parent._native end
+        self._native:SetParent(parent)
     end;
     
 }

@@ -1,6 +1,10 @@
 
 local ACTIVE_SETTING_PANEL = nil
 
+-- Width of the label column in a settings panel: the panel's own Scale row
+-- and the rows an editable adds under it line up on it.
+local SETTING_LABEL_WIDTH = 86
+
 class "Editable" {
 
     __init = function(self)
@@ -334,6 +338,9 @@ class "Editable" {
     -- Reset changes: revert position + tracked settings to this session's start
     -- (i.e. the last saved state).
     EditModeResetChanges = function(self)
+        -- Never shown in edit mode (EditModeEnabled(false) since login):
+        -- there is no baseline to go back to.
+        if not self._sessionPoints then return end
         self:_EditModeApplyPoints(self._sessionPoints)
         self._posCustomized = self._sessionPosCustomized
         if self._revertList then
@@ -402,7 +409,7 @@ class "EditModePanelSettings" : extends "DiamondBorder" {
         local labelScale = FontString(self)
         labelScale:Below(self._label, 20)
         labelScale:AlignParentLeft(20)
-        labelScale:SetSize(70, 10)
+        labelScale:SetSize(SETTING_LABEL_WIDTH, 10)
         labelScale:SetText("Scale")
         labelScale:SetJustifyH("LEFT")
 
@@ -506,6 +513,111 @@ class "EditModePanelSettings" : extends "DiamondBorder" {
 
         local offset = self:GetTop() - self._btnResetPosition:GetBottom()
         self:SetHeight(offset + 18)
+    end;
+}
+
+-- A labelled slider for an editable's settings (the builder passed to
+-- EditModeSetupSettings), laid out like the panel's Scale row: label,
+-- stepper slider, value. Whole numbers.
+--   row.OnChanged(row, value)    the user moved it
+--   row:SetValue(value)          show a value set elsewhere; OnChanged stays quiet
+class "EditModeSliderRow" : extends "Frame" {
+    __init = function(self, parent, text, min, max)
+        Frame.__init(self, "Frame", parent)
+        self:SetHeight(20)
+        self:FillWidth(0)
+        self.value = min
+
+        self._label = FontString(self)
+        self._label:SetSize(SETTING_LABEL_WIDTH, 10)
+        self._label:SetJustifyH("LEFT")
+        self._label:AlignParentLeft(0)
+        self._label:SetText(text)
+
+        self._readout = FontString(self)
+        self._readout:SetFontSize(10.5)
+        self._readout:SetTextColor(1, 0.82, 0)
+        self._readout:SetSize(30, 10)
+        self._readout:SetJustifyH("RIGHT")
+        self._readout:AlignParentRight(0)
+        self._readout:SetText(min)
+
+        self._slider = StepSlider(self)
+        self._slider:SetHeight(20)
+        self._slider:RightOf(self._label, 10)
+        self._slider:LeftOf(self._readout, 10)
+        self._slider:SetMinMax(min, max)
+        self._slider:SetValueStep(1)
+        self._slider:SetObeyStepOnDrag(true)
+        self._slider:SetValue(min)
+        self._slider.OnValueChanged = function(_, value)
+            value = math.floor(value + 0.5)
+            self._readout:SetText(value)
+            if value ~= self.value then
+                self.value = value
+                if self.OnChanged then self:OnChanged(value) end
+            end
+        end
+    end;
+
+    SetValue = function(self, value)
+        self.value = value
+        self._slider:SetValue(value)
+        self._readout:SetText(value)
+    end;
+
+    SetLabel = function(self, text)
+        self._label:SetText(text)
+    end;
+}
+
+-- A labelled dropdown for an editable's settings. `options` is a list of
+-- { value = ..., text = ... }.
+--   row.OnChanged(row, value)    the user picked another one
+--   row:SetValue(value)          show a value set elsewhere; OnChanged stays quiet
+class "EditModeDropdownRow" : extends "Frame" {
+    __init = function(self, parent, text, options)
+        Frame.__init(self, "Frame", parent)
+        self:SetHeight(22)
+        self:FillWidth(0)
+        self._options = options
+
+        self._label = FontString(self)
+        self._label:SetSize(SETTING_LABEL_WIDTH, 10)
+        self._label:SetJustifyH("LEFT")
+        self._label:AlignParentLeft(0)
+        self._label:SetText(text)
+
+        self._button = DropdownSimple(self)
+        self._button:SetHeight(22)
+        self._button:RightOf(self._label, 10)
+        self._button:AlignParentRight(0)
+
+        -- The menu's popup is a root frame in the panels' own strata: lift it
+        -- over them before its rows are made.
+        self._menu = DropdownMenu(self._button, nil, self._button)
+        self._menu.popup:SetFrameLevel(200)
+        self._menu:SetMenuWidth(150)
+        local items = {}
+        for i, option in ipairs(options) do
+            items[i] = { label = option.text, OnClick = function()
+                if option.value ~= self.value then
+                    self:SetValue(option.value)
+                    if self.OnChanged then self:OnChanged(option.value) end
+                end
+            end }
+        end
+        self._menu:SetItems(items)
+        self._button.OnClick = function() self._menu:Toggle() end
+
+        self:SetValue(options[1].value)
+    end;
+
+    SetValue = function(self, value)
+        self.value = value
+        for _, option in ipairs(self._options) do
+            if option.value == value then self._button:SetText(option.text) end
+        end
     end;
 }
 

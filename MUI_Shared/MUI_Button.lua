@@ -55,6 +55,10 @@ class "Button" : extends "Frame" {
         return self._native:GetText()
     end;
 
+    SetNativeText = function(self, text)
+        self._native:SetText(text)
+    end;
+
     SetNormalTexture = function(self, path, hWrap, vWrap)
         self._native:SetNormalTexture(path, hWrap, vWrap)
         return self:GetNormalTexture()
@@ -187,6 +191,11 @@ class "Button" : extends "Frame" {
     -- slot, etc.) via Blizzard's SetItemButtonTexture helper.
     SetItemButtonTexture = function(self, path)
         SetItemButtonTexture(self._native, path)
+    end;
+
+    -- Stack count of an item button, in its template's Count text.
+    SetItemButtonCount = function(self, count)
+        SetItemButtonCount(self._native, count)
     end;
 
     -- Resolve the action-page-aware action ID for an ActionButton-style

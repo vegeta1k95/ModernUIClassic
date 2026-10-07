@@ -15,6 +15,9 @@
 --                                            sharing a key merge; the
 --                                            highest `priority` wins.
 --   priority  = number (default 0)
+--   state     = function() -> value      -- optional; what the source would
+--                                            show now. A change of it rebuilds
+--                                            the tooltip while still hovered.
 --
 -- Blip tooltip integration: when GameTooltip is already owned by
 -- Minimap (Classic's native herb/ore/treasure tooltip), the coordinator
@@ -64,7 +67,7 @@ object "MinimapTooltip" : extends "Frame" {
                 local prio = src.priority or 0
                 local existing = groups[key]
                 if not existing or existing.priority < prio then
-                    groups[key] = { id = id, source = src, priority = prio }
+                    groups[key] = { id = id, source = src, priority = prio, state = src.state and src.state() }
                 end
             end
         end
@@ -73,11 +76,12 @@ object "MinimapTooltip" : extends "Frame" {
 
     -- True if `prev` and `now` describe the same set of winning sources.
     -- Compares both the key set and the chosen source id per key — a pin
-    -- overriding an arrow within the same dedup group counts as a change.
+    -- overriding an arrow within the same dedup group counts as a change —
+    -- and what each source said it would show.
     _SameGroups = function(self, prev, now)
         if not prev then return next(now) == nil end
         for k, v in pairs(now) do
-            if not prev[k] or prev[k].id ~= v.id then return false end
+            if not prev[k] or prev[k].id ~= v.id or prev[k].state ~= v.state then return false end
         end
         for k in pairs(prev) do
             if not now[k] then return false end

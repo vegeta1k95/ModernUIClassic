@@ -213,9 +213,12 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         local drawn = 0
         local projectedHulls = {}
         for hIdx, hull in ipairs(self._hulls) do
-            -- The hull itself is what the hover test runs against; the
-            -- rounded outline around it is what gets drawn.
-            projectedHulls[hIdx] = project(hull)
+            -- The hull itself is what the hover test runs against (it keeps
+            -- the target it is for); the rounded outline around it is what
+            -- gets drawn.
+            local projected = project(hull)
+            projected.objective, projected.itemId = hull.objective, hull.itemId
+            projectedHulls[hIdx] = projected
             local proj = project(self._outlines[hIdx])
 
             for i = 1, #proj do
@@ -287,21 +290,38 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         self._projectedHulls = nil
     end;
 
-    -- True if the cursor is inside ANY projected hull of this area. Uses
-    -- the CCW point-in-convex test against the last projected hulls cached
-    -- by Refresh(). Cheap: O(Σ hullSize) per call.
+    -- True if the cursor is inside ANY projected hull of this area. What
+    -- those hulls are for is kept for GetHoveredTargets.
     IsMouseOver = function(self)
+        self._hoverKey, self._hoverObjectives, self._hoverItems = self:_HoveredTargets()
+        return self._hoverKey ~= nil
+    end;
+
+    -- What the last IsMouseOver found under the cursor, nil when nothing:
+    -- a key naming the targets of the hulls the cursor is inside, and those
+    -- targets as two sets, objective lines (indices into the quest's
+    -- leaderboard) and required source items. Hulls of different objectives
+    -- overlap, so it can be several. A hull that names no target stands for
+    -- the whole quest: the key is then "" and there are no sets.
+    GetHoveredTargets = function(self)
+        return self._hoverKey, self._hoverObjectives, self._hoverItems
+    end;
+
+    -- Uses the CCW point-in-convex test against the last projected hulls
+    -- cached by Refresh(). Cheap: O(Σ hullSize) per call.
+    _HoveredTargets = function(self)
         local hulls = self._projectedHulls
-        if not hulls or #hulls == 0 then return false end
-        if not MUI_Minimap:IsMouseOver() then return false end
+        if not hulls or #hulls == 0 then return nil end
+        if not MUI_Minimap:IsMouseOver() then return nil end
 
         local scale = MUI_Minimap:GetEffectiveScale()
         local mx, my = GetCursorPosition()
         mx, my = mx / scale, my / scale
         local cx, cy = MUI_Minimap:GetCenter()
-        if not cx then return false end
+        if not cx then return nil end
         local px, py = mx - cx, my - cy
 
+        local key, objectives, items, whole
         for _, hull in ipairs(hulls) do
             local n = #hull
             local inside = n >= 3
@@ -314,9 +334,26 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
                     break
                 end
             end
-            if inside then return true end
+            if inside then
+                key = key or ""
+                objectives, items = objectives or {}, items or {}
+                if hull.objective then
+                    if not objectives[hull.objective] then
+                        objectives[hull.objective] = true
+                        key = key .. "o" .. hull.objective
+                    end
+                elseif hull.itemId then
+                    if not items[hull.itemId] then
+                        items[hull.itemId] = true
+                        key = key .. "i" .. hull.itemId
+                    end
+                else
+                    whole = true
+                end
+            end
         end
-        return false
+        if whole then return "" end
+        return key, objectives, items
     end;
 
     -- Lazily allocate and reuse pool lines. Endpoints are anchored to

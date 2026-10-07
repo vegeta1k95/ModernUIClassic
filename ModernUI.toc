@@ -39,6 +39,8 @@ MUI_DB\MUI_DungeonDB.lua
 MUI_DB\MUI_DungeonMapDB.lua
 MUI_DB\MUI_QuestHubDB.lua
 MUI_DB\MUI_StorylineDB.lua
+MUI_DB\MUI_AchievementDB.lua
+MUI_DB\MUI_StatisticsDB.lua
 MUI_DB\MUI_RecipeDB.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
@@ -160,7 +162,13 @@ MUI_Map\MUI_Map.lua
 
 MUI_MicroMenu\MUI_MicroMenu.lua
 MUI_XPBar\MUI_XPBar.lua
+MUI_Toasts\MUI_AchievementToast.lua
 MUI_Toasts\MUI_Toasts.lua
+MUI_Achievements\MUI_AchievementEngine.lua
+MUI_Achievements\MUI_AchievementTrackers.lua
+MUI_Achievements\MUI_StatisticsTrackers.lua
+MUI_Achievements\MUI_AchievementFrame.lua
+MUI_Achievements\MUI_Achievements.lua
 MUI_Bags\MUI_Bags.lua
 MUI_Bags\MUI_BagsSorting.lua
 MUI_BuffBar\MUI_BuffBar.lua
@@ -181,5 +189,32 @@ MUI_Options\MUI_Options.lua
 MUI_Mail\MUI_Mail.lua
 MUI_Gossip\MUI_Gossip.lua
 MUI_Merchant\MUI_Merchant.lua
+MUI_AuctionHouse\MUI_AuctionHouseStyle.lua
+MUI_AuctionHouse\MUI_AuctionHouseScan.lua
+MUI_AuctionHouse\MUI_AuctionHouseWidgets.lua
+MUI_AuctionHouse\MUI_AuctionHouseList.lua
+MUI_AuctionHouse\MUI_AuctionHouseCategories.lua
+MUI_AuctionHouse\MUI_AuctionHouseBrowse.lua
+MUI_AuctionHouse\MUI_AuctionHouseBuy.lua
+MUI_AuctionHouse\MUI_AuctionHouseSell.lua
+MUI_AuctionHouse\MUI_AuctionHouseAuctions.lua
+MUI_AuctionHouse\MUI_AuctionHouseFrame.lua
+MUI_AuctionHouse\MUI_AuctionHouse.lua
+MUI_Bank\MUI_BankGrid.lua
+MUI_Bank\MUI_BankTabs.lua
+MUI_Bank\MUI_BankFrame.lua
+MUI_Bank\MUI_Bank.lua
+MUI_Character\MUI_CharacterFrame.lua
+MUI_Character\MUI_CharacterModel.lua
+MUI_Character\MUI_CharacterStats.lua
+MUI_Character\MUI_CharacterEquipment.lua
+MUI_Character\MUI_CharacterSidebar.lua
+MUI_Character\MUI_CharacterPaperDoll.lua
+MUI_Character\MUI_CharacterPet.lua
+MUI_Character\MUI_CharacterReputation.lua
+MUI_Character\MUI_CharacterSkills.lua
+MUI_Character\MUI_CharacterHonor.lua
+MUI_Character\MUI_Character.lua
+MUI_Taxi\MUI_Taxi.lua
 
 MUI_Test.lua

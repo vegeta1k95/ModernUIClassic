@@ -517,9 +517,14 @@ class "MinimapQuestPinManager" : extends "Frame" {
         MUI_MinimapTooltip:Register("questarea:" .. questId, {
             isHovered = function() return area:IsMouseOver() end,
             dedupKey  = "quest:" .. questId,
-            priority  = 10,   -- same as pins; either's full block works
+            priority  = 10,   -- same as pins
+            -- What the hulls under the cursor are for: the block lists
+            -- those objectives only, and is built again when the cursor
+            -- moves onto another objective's hull.
+            state     = function() return (area:GetHoveredTargets()) end,
             build     = function()
-                MUI_QuestHelper:FillQuestTooltip(questId, "full")
+                local _, objectives, items = area:GetHoveredTargets()
+                MUI_QuestHelper:FillQuestTooltip(questId, "full", objectives, nil, items)
             end,
         })
 

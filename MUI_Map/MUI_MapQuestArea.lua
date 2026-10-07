@@ -63,6 +63,7 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         self._projectedHulls  = nil       -- hulls in normalized [0,1] map coords
         self._questId         = questId   -- needed for tooltip + hover push/pop
         self._tooltipActive   = false
+        self._tooltipKey      = nil       -- the targets the tooltip up now lists
 
         local canvas = _Canvas()
         Frame.__init(self, "Frame", canvas, name)
@@ -85,6 +86,7 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         self:SetScript("OnHide", function()
             if self._tooltipActive then
                 self._tooltipActive = false
+                self._tooltipKey = nil
                 MUI_Tooltip:Hide()
             end
         end)
@@ -119,7 +121,7 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         self._fills.used, self._borders.used = 0, 0
         local projected = {}
         for _, hull in ipairs(self._hulls) do
-            local proj, pts = {}, {}
+            local proj, pts = { objective = hull.objective, itemId = hull.itemId }, {}
             local ok = #hull >= 1
             for i, v in ipairs(hull) do
                 local nx, ny = MUI_MapMath:WorldToMap(
@@ -141,30 +143,42 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         for i = self._borders.used + 1, #self._borders do self._borders[i]:Hide() end
     end;
 
-    -- True if the cursor is inside ANY projected hull. Cursor is
-    -- normalized to [0,1] map coords (matching _projectedHulls), then
-    -- a sign-agnostic point-in-convex test runs per hull. Sign-
+    -- True if the cursor is inside ANY projected hull.
+    IsMouseOver = function(self)
+        return self:_HoveredTargets() ~= nil
+    end;
+
+    -- What the cursor is over, nil when it is inside no projected hull:
+    -- a key naming the targets of the hulls it is inside, and those
+    -- targets as two sets, objective lines (indices into the quest's
+    -- leaderboard) and required source items. Hulls of different
+    -- objectives overlap, so it can be several. A hull that names no
+    -- target (no leaderboard yet) stands for the whole quest: the key is
+    -- then "" and there are no sets.
+    -- Cursor is normalized to [0,1] map coords (matching _projectedHulls),
+    -- then a sign-agnostic point-in-convex test runs per hull. Sign-
     -- agnostic so we don't have to track winding direction (the
     -- exporter's CCW-in-yards becomes CW-in-y-down here).
-    IsMouseOver = function(self)
-        if not self:IsShown() then return false end
+    _HoveredTargets = function(self)
+        if not self:IsShown() then return nil end
         local hulls = self._projectedHulls
-        if not hulls or #hulls == 0 then return false end
+        if not hulls or #hulls == 0 then return nil end
         local W, H = self:GetWidth(), self:GetHeight()
-        if not W or not H or W <= 0 or H <= 0 then return false end
+        if not W or not H or W <= 0 or H <= 0 then return nil end
 
         local scale = self:GetEffectiveScale()
-        if not scale or scale == 0 then return false end
+        if not scale or scale == 0 then return nil end
         local mx, my = GetCursorPosition()
-        if not mx then return false end
+        if not mx then return nil end
         mx, my = mx / scale, my / scale
 
         local left, top = self:GetLeft(), self:GetTop()
-        if not left or not top then return false end
+        if not left or not top then return nil end
         local px = (mx - left) / W
         local py = (top - my) / H
-        if px < 0 or px > 1 or py < 0 or py > 1 then return false end
+        if px < 0 or px > 1 or py < 0 or py > 1 then return nil end
 
+        local key, objectives, items, whole
         for _, hull in ipairs(hulls) do
             local n = #hull
             if n >= 3 then
@@ -182,26 +196,46 @@ class "MapQuestObjectiveArea" : extends "Frame" {
                         break
                     end
                 end
-                if inside then return true end
+                if inside then
+                    key = key or ""
+                    objectives, items = objectives or {}, items or {}
+                    if hull.objective then
+                        if not objectives[hull.objective] then
+                            objectives[hull.objective] = true
+                            key = key .. "o" .. hull.objective
+                        end
+                    elseif hull.itemId then
+                        if not items[hull.itemId] then
+                            items[hull.itemId] = true
+                            key = key .. "i" .. hull.itemId
+                        end
+                    else
+                        whole = true
+                    end
+                end
             end
         end
-        return false
+        if whole then return "" end
+        return key, objectives, items
     end;
 
     _PollHover = function(self)
         if not self._questId then return end
-        local over = self:IsMouseOver()
-        if over then
+        local key, objectives, items = self:_HoveredTargets()
+        if key then
             self._tooltipActive = true
             -- Re-assert tooltip when something else has hidden it
             -- while our cursor is still inside the hull (concrete case:
             -- cursor moves POI → hull, POI:OnLeave hid the tooltip).
-            -- Cheap — only rebuilds when it isn't already up.
-            if not MUI_Tooltip:IsShown() then
-                MUI_QuestHelper:ShowMapQuestTooltip(self, self._questId)
+            -- Cheap — only rebuilds when it isn't already up, or when the
+            -- cursor has moved onto another objective's hull.
+            if key ~= self._tooltipKey or not MUI_Tooltip:IsShown() then
+                self._tooltipKey = key
+                MUI_QuestHelper:ShowMapQuestTooltip(self, self._questId, objectives, items)
             end
         elseif self._tooltipActive then
             self._tooltipActive = false
+            self._tooltipKey = nil
             MUI_Tooltip:Hide()
         end
         -- Intentionally NO PushQuestHover/PopQuestHover here. The hull's

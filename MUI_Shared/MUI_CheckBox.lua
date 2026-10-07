@@ -47,6 +47,7 @@ class "CheckBox" : extends "Frame" {
         self._check:SetAtlas(atlas, "CheckMark")
         self._check:ClearAllPoints()
         self._check:FillParentPadding(-0.5,-0.5,-2, 0.5)
+        self._check:Hide()
         
         self._disabledCheck = Texture(self._box, nil, "OVERLAY")
         self._disabledCheck:SetAtlas(atlas, "CheckMarkDisabled")

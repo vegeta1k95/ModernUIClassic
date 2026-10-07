@@ -9,6 +9,9 @@
 --     │         Can Turn In.                 ← grey line replaces
 --     │                                        objectives when
 --     │                                        entry.isComplete
+--     ├── Category "Achievements"     [▼]   ← achievements ticked "Track"
+--     │     Achievement Name
+--     │         - 12/50 Quests completed      ← unfinished criteria
 --     └── Category "Profession"       [▼]   ← recipes ticked "Track Recipe"
 --           Recipe Name
 --               - 3/5 Linen Cloth              ← reagents, from the bags
@@ -47,6 +50,10 @@ local BULLET_ICON_SIZE    = 14
 -- right; rightEdgeFrameSpacing 2).
 local ITEM_BTN_SIZE       = 22
 local ITEM_BTN_GAP        = 2
+
+-- An achievement block lists this many unfinished criteria, then "..."
+-- (retail's MAX_CRITERIA_PER_ACHIEVEMENT).
+local MAX_ACHIEVEMENT_CRITERIA = 5
 
 -- specialFlags bit 0 = repeatable (Questie's QuestieDB.IsRepeatable).
 local function _isRepeatable(questId)
@@ -489,7 +496,7 @@ class "QuestTrackerObjective" : extends "Frame" {
             self.text:SetTextColor(0.85, 0.3, 0.3, 1)
         else
             self.bulletIcon:Hide()
-            self.bulletText:Show()
+            self.bulletText:SetVisible(not o.noDash)
             self.bulletText:SetTextColor(0.95, 0.95, 0.95, 1)
             self.text:SetTextColor(0.95, 0.95, 0.95, 1)
         end
@@ -867,18 +874,9 @@ class "QuestTrackerQuest" : extends "Frame" {
         -- progress, or when complete if the item is flagged for that). The
         -- tracker's pooled buttons render it; the block records what to bind
         -- and reserves the right-edge room so text can't run under it.
-        local link, icon, _, showWhenComplete
-        if entry.logIndex then
-            link, icon, _, showWhenComplete = GetQuestLogSpecialItemInfo(entry.logIndex)
-        end
         self.logIndex = entry.logIndex
-        self.itemLink = (link and (not entry.isComplete or showWhenComplete)) and link or nil
-        self.itemIcon = icon
-        local inset = self.itemLink and (ITEM_BTN_SIZE + ITEM_BTN_GAP) or 0
-        self.title:SetWidth(WIDTH - self.poi:GetWidth() - 2 - inset)
-        self.objContainer:ClearAllPoints()
-        self.objContainer:SetPoint("TOPLEFT",  self.title, "BOTTOMLEFT", 0, -4)
-        self.objContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", -inset, 0)
+        self.isComplete = entry.isComplete and true or false
+        self:RefreshItem()
 
         -- "All objectives complete" transition → replay the add anim so
         -- the row visually celebrates the milestone the same way it
@@ -1043,6 +1041,26 @@ class "QuestTrackerQuest" : extends "Frame" {
         self._shineAnim = ag
     end;
 
+    -- The quest's usable item, read at the quest's live log index: indices
+    -- shift whenever a quest is added or removed, so the watcher's copy can
+    -- be a slot behind and name another quest's item.
+    RefreshItem = function(self)
+        local logIndex = GetQuestLogIndexByID(self.questId)
+        if not logIndex or logIndex == 0 then logIndex = self.logIndex end
+        self.logIndex = logIndex
+        local link, icon, _, showWhenComplete
+        if logIndex and logIndex > 0 then
+            link, icon, _, showWhenComplete = GetQuestLogSpecialItemInfo(logIndex)
+        end
+        self.itemLink = (link and (not self.isComplete or showWhenComplete)) and link or nil
+        self.itemIcon = icon
+        local inset = self.itemLink and (ITEM_BTN_SIZE + ITEM_BTN_GAP) or 0
+        self.title:SetWidth(WIDTH - self.poi:GetWidth() - 2 - inset)
+        self.objContainer:ClearAllPoints()
+        self.objContainer:SetPoint("TOPLEFT",  self.title, "BOTTOMLEFT", 0, -4)
+        self.objContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", -inset, 0)
+    end;
+
     RefreshFocus = function(self)
         if not self.questId then return end
         self.poi:SetFocused(MUI_QuestHelper:IsFocused(self.questId))
@@ -1068,7 +1086,7 @@ class "QuestTrackerQuest" : extends "Frame" {
 -- reagent, "have/need Name", checked once the bags hold enough. Same
 -- shape as a quest row so the category lays it out the same way; the
 -- title stands where quest titles do, past the POI column. Right-click
--- untracks.
+-- untracks (Untrack); a left click is Open, nothing for a recipe.
 -- ---------------------------------------------------------------------
 class "QuestTrackerRecipe" : extends "Frame" {
     __init = function(self, parent, name)
@@ -1108,10 +1126,19 @@ class "QuestTrackerRecipe" : extends "Frame" {
         self:SetScript("OnEnter", function() self:_SyncHover(true) end)
         self:SetScript("OnLeave", function() self:_SyncHover(false) end)
         self:SetScript("OnMouseUp", function(_, button)
-            if button == "RightButton" and self.questId then
-                MUI_RecipeTracker:SetTracked(self.questId, false)
+            if not self.questId or not self:IsMouseOver() then return end
+            if button == "RightButton" then
+                self:Untrack()
+            elseif button == "LeftButton" then
+                self:Open()
             end
         end)
+    end;
+
+    Open = function(self) end;
+
+    Untrack = function(self)
+        MUI_RecipeTracker:SetTracked(self.questId, false)
     end;
 
     -- `entry` = { title, objectives = { { text, finished } } }; `spellID`
@@ -1154,6 +1181,27 @@ class "QuestTrackerRecipe" : extends "Frame" {
     _SyncHover = function(self, isOver)
         self.title:SetTextColor(1, 0.82, 0, isOver and 1 or 0.75)
         self.objContainer:SetAlpha(isOver and 1 or 0.85)
+    end;
+}
+
+
+-- ---------------------------------------------------------------------
+-- QuestTrackerAchievement: a tracked achievement (retail's
+-- AchievementObjectiveTracker block) — its name over its unfinished
+-- criteria, shaped like a recipe block. A click opens it in the
+-- achievement panel; right-click untracks.
+-- ---------------------------------------------------------------------
+class "QuestTrackerAchievement" : extends "QuestTrackerRecipe" {
+    __init = function(self, parent, name)
+        QuestTrackerRecipe.__init(self, parent, name)
+    end;
+
+    Open = function(self)
+        MUI_ModuleAchievements:Open(self.questId)
+    end;
+
+    Untrack = function(self)
+        MUI_ModuleAchievements.engine:Untrack(self.questId)
     end;
 }
 
@@ -1393,6 +1441,13 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
             "MUI_QuestTracker_Quests", "Quests")
         self.questsCategory._OnLayoutChanged = function() self:_Restack() end
 
+        -- Tracked achievements: fed once the achievement engine is up
+        -- (SetAchievementEngine), redrawn as its tallies move.
+        self.achievementCategory = QuestTrackerCategory(self,
+            "MUI_QuestTracker_Achievements", "Achievements", QuestTrackerAchievement)
+        self.achievementCategory._OnLayoutChanged = function() self:_Restack() end
+        self._pendingAchievementAnim = {}
+
         -- Tracked recipes: redrawn on every bag change for the reagent counts.
         self.professionCategory = QuestTrackerCategory(self,
             "MUI_QuestTracker_Profession", "Profession", QuestTrackerRecipe)
@@ -1490,6 +1545,7 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         local function markItemsDirty() self._itemsDirty = true end
         self._itemDriver:RegisterEventHandler("BAG_UPDATE",           markItemsDirty)
         self._itemDriver:RegisterEventHandler("PLAYER_REGEN_ENABLED", markItemsDirty)
+        self._itemDriver:RegisterEventHandler("QUEST_LOG_UPDATE",     markItemsDirty)
         -- Cooldowns stay live in combat: the swipe isn't protected, unlike the
         -- re-binding the dirty pass does out of combat. SPELL_UPDATE_COOLDOWN
         -- adds the global cooldown, as on the action bars.
@@ -1537,6 +1593,36 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         end
     end;
 
+    -- The achievement engine comes up after the tracker; from here on it
+    -- feeds the Achievements category. A newly tracked achievement gets the
+    -- add shine, an untracked one the farewell before its block goes, and
+    -- the lines redraw a moment after the engine's progress moves.
+    SetAchievementEngine = function(self, engine)
+        self.achievementEngine = engine
+        engine:RegisterTrackListener(function(id, tracked)
+            if tracked then
+                self._pendingAchievementAnim[id] = true
+            elseif id then
+                local block = self.achievementCategory:FindBlock(id)
+                if block then
+                    block:PlayTurnInAnim(function() self:Rebuild() end)
+                    return
+                end
+            end
+            self:Rebuild()
+        end)
+        engine:RegisterDirty(function()
+            if self._achievementsQueued then return end
+            self._achievementsQueued = true
+            C_Timer.After(0.2, function()
+                self._achievementsQueued = false
+                self:_RebuildAchievements()
+                self:_Restack()
+            end)
+        end)
+        self:Rebuild()
+    end;
+
     Rebuild = function(self)
         local tracked = {}
         for _, entry in pairs(self.watcher:GetWatched()) do
@@ -1560,9 +1646,39 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         end)
 
         self.questsCategory:SetQuests(tracked, self._pendingAddAnim)
+        self:_RebuildAchievements()
         self:_RebuildRecipes()
         self._itemsDirty = true
         self:_Restack()
+    end;
+
+    -- Tracked achievements as rows (retail's AchievementObjectiveTracker):
+    -- the unfinished criteria, a bar as "cur/max label", five at most and
+    -- then "...", or the description when there is nothing to list.
+    _RebuildAchievements = function(self)
+        local engine = self.achievementEngine
+        local entries = {}
+        for _, id in ipairs(engine and engine:GetTracked() or {}) do
+            local _, name, _, _, _, _, _, desc = engine:GetInfo(id)
+            local rows = engine:GetCriteria(id) or {}
+            local objectives, shown = {}, 0
+            for _, row in ipairs(rows) do
+                if row.done or shown > MAX_ACHIEVEMENT_CRITERIA then
+                    -- not shown
+                elseif shown == MAX_ACHIEVEMENT_CRITERIA and #rows > MAX_ACHIEVEMENT_CRITERIA + 1 then
+                    objectives[#objectives + 1] = { text = "...", noDash = true }
+                    shown = shown + 1
+                else
+                    local text = row.label
+                    if row.bar then text = row.bar.text:gsub(" / ", "/") .. " " .. text end
+                    objectives[#objectives + 1] = { text = text }
+                    shown = shown + 1
+                end
+            end
+            if #objectives == 0 then objectives[1] = { text = desc } end
+            entries[#entries + 1] = { questId = id, title = name, objectives = objectives }
+        end
+        self.achievementCategory:SetQuests(entries, self._pendingAchievementAnim)
     end;
 
     -- Tracked recipes as rows: one objective per reagent, met when the bags
@@ -1585,13 +1701,14 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
     -- Stack the non-empty categories under the primary header.
     _Restack = function(self)
         local n = #MUI_RecipeTracker:GetAll()
+        if self.achievementEngine then n = n + #self.achievementEngine:GetTracked() end
         for _, entry in pairs(self.watcher:GetWatched()) do
             if MUI_QuestHelper:IsTracked(entry.questId) then n = n + 1 end
         end
         if n == 0 then self:Hide(); return end
 
         self:Show()
-        local categories = { self.questsCategory, self.professionCategory }
+        local categories = { self.questsCategory, self.achievementCategory, self.professionCategory }
         if self._collapsed then
             for _, category in ipairs(categories) do category:Hide() end
             self:SetHeight(PRIMARY_H)
@@ -1625,6 +1742,8 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         if self:IsVisible() then
             local scale = self:GetScale()
             for _, row in ipairs(self.questsCategory.quests) do
+                -- a dirty pass re-reads each item at the quest's live log index
+                if self._itemsDirty and not locked and row:IsVisible() then row:RefreshItem() end
                 if row.itemLink and row:IsVisible() then
                     used = used + 1
                     local btn = self._itemButtons[used]

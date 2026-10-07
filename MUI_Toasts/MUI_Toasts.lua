@@ -6,7 +6,9 @@
 -- after another. Art is retail's levelup sheet; geometry and cadence are
 -- retail's.
 --
--- Toasts so far: the level-up ("You've Reached" / "Level N").
+-- Toasts so far: the level-up ("You've Reached" / "Level N") in the banner,
+-- and the achievement earned plate (MUI_AchievementToast), its own frame at
+-- the bottom of the screen with its own queue.
 
 local WIDTH, HEIGHT = 418, 72
 local TOP_OFFSET    = 190
@@ -60,6 +62,7 @@ object "ModuleToasts" : extends "Module" {
         self._queue = {}
         self:_BuildBanner()
         self:_BuildLevelToast()
+        self.achievementToast = AchievementToast(function(id) MUI_ModuleAchievements:Open(id) end)
 
         self.driver = Frame("Frame", nil, "MUI_ToastsDriver")
         self.driver:RegisterEventHandler("PLAYER_LEVEL_UP", function(_, _, level)
@@ -80,8 +83,16 @@ object "ModuleToasts" : extends "Module" {
             local kind, arg = string.match(msg or "", "^%s*(%S*)%s*(.-)%s*$")
             if kind == "" or kind == "levelup" then
                 self:Queue({ kind = "level", level = tonumber(arg) or UnitLevel("player") })
+            elseif kind == "achievement" then
+                self:ShowAchievement({ name = arg ~= "" and arg or "Level 10", pts = 10,
+                    icon = MUI.TEX_BASE .. "achievementicons\\236562" })
             end
         end)
+    end;
+
+    -- data = { id, name, pts, icon }: the "Achievement Earned!" plate.
+    ShowAchievement = function(self, data)
+        self.achievementToast:Present(data)
     end;
 
     -- ---- banner --------------------------------------------------------

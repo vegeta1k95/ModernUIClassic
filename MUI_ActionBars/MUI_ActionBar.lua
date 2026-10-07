@@ -17,6 +17,9 @@ local KEYBIND_PREFIX_MAP = {
     ["MultiBarBottomRightButton"] = "MULTIACTIONBAR2BUTTON",
     ["MultiBarRightButton"]       = "MULTIACTIONBAR3BUTTON",
     ["MultiBarLeftButton"]        = "MULTIACTIONBAR4BUTTON",
+    ["MultiBar5Button"]           = "MULTIACTIONBAR5BUTTON",
+    ["MultiBar6Button"]           = "MULTIACTIONBAR6BUTTON",
+    ["MultiBar7Button"]           = "MULTIACTIONBAR7BUTTON",
     ["StanceButton"]              = "SHAPESHIFTBUTTON",
     ["PetActionButton"]           = "BONUSACTIONBUTTON",
 }
@@ -40,13 +43,27 @@ local function ParseButtonName(name)
     return prefix, tonumber(idx)
 end
 
+-- The range of retail's Icon Padding setting. Its lowest value stands for
+-- the bar's own spacing.
+local MIN_ICON_PADDING, MAX_ICON_PADDING = 2, 10
+
 class "ActionBar" : extends "Frame" {
+
+    MIN_ICON_PADDING = MIN_ICON_PADDING,
+
     __init = function(self, orientation, slotBGRegion, parent, name)
         Frame.__init(self, "Frame", parent, name)
         self.orientation = orientation or "horizontal"
         self.slotBGRegion = slotBGRegion or "IconFrameSlot"
         self.spacing = 6.3
         self.slotPad = 2.5
+
+        -- The grid, in the terms of retail's Edit Mode: lines across the
+        -- orientation (rows, or the columns of a vertical bar), how many
+        -- buttons take part (nil = all of them) and the icon padding.
+        self.numRows = 1
+        self.numIcons = nil
+        self.iconPadding = MIN_ICON_PADDING
 
         self.showEmptySlots = false
         self.alwaysShowButtons = false
@@ -85,6 +102,39 @@ class "ActionBar" : extends "Frame" {
         self.slotPad = pad
     end;
 
+    -- ---- layout --------------------------------------------------------
+    -- Each of these lays the buttons out again (see Relayout).
+
+    SetOrientation = function(self, orientation)
+        if self.orientation == orientation then return end
+        self.orientation = orientation
+        self:Relayout()
+    end;
+
+    SetNumRows = function(self, rows)
+        if self.numRows == rows then return end
+        self.numRows = rows
+        self:Relayout()
+    end;
+
+    SetNumIcons = function(self, icons)
+        if self.numIcons == icons then return end
+        self.numIcons = icons
+        self:Relayout()
+    end;
+
+    SetIconPadding = function(self, padding)
+        if self.iconPadding == padding then return end
+        self.iconPadding = padding
+        self:Relayout()
+    end;
+
+    -- How many buttons the layout holds; the others are kept off screen.
+    GetLaidOutCount = function(self)
+        local count = table.getn(self.slots)
+        return math.min(self.numIcons or count, count)
+    end;
+
     AddButton = function(self, nativeButton)
         local idx = table.getn(self.slots) + 1
         local bw = nativeButton:GetWidth()
@@ -93,25 +143,11 @@ class "ActionBar" : extends "Frame" {
         -- Do NOT reparent: keeps the button's original secure parent chain intact so
         -- `actionpage` stays on a Blizzard-owned frame (not addon-modified), preventing
         -- self-cast / protected-action taint during combat.
+        -- Placed by _Layout below, by SetPoint relative to our ActionBar
+        -- (anchoring works cross-parent).
         local btn = Button(nativeButton)
         btn:ClearAllPoints()
         btn:SetFrameLevel(self:GetFrameLevel())
-
-        -- Position by SetPoint relative to our ActionBar (anchoring works cross-parent).
-        if idx == 1 then
-            if self.orientation == "horizontal" then
-                btn:SetPoint("LEFT", self, "LEFT", 0, 0)
-            else
-                btn:SetPoint("TOP", self, "TOP", 0, 0)
-            end
-        else
-            local prevBtn = self.slots[idx - 1].button
-            if self.orientation == "horizontal" then
-                btn:SetPoint("LEFT", prevBtn, "RIGHT", self.spacing, 0)
-            else
-                btn:SetPoint("TOP", prevBtn, "BOTTOM", 0, -self.spacing)
-            end
-        end
         btn:Show()
 
         -- Slot background
@@ -184,58 +220,72 @@ class "ActionBar" : extends "Frame" {
         self._slotByName = self._slotByName or {}
         self._slotByName[btn:GetName()] = self.slots[idx]
 
-        -- Update container size
-        self:UpdateSize()
+        self:_Layout()
 
         return self.slots[idx]
     end;
 
-    UpdateSize = function(self)
-        local count = table.getn(self.slots)
+    -- Lay the buttons out again. Moving them, and sizing the frame they are
+    -- anchored to, is protected in combat: asked for then, it is done when
+    -- combat ends (ApplyPendingLayout).
+    --
+    -- This is also what undoes Era's own anchoring: at UI-scale transitions
+    -- (the global UI Scale slider) native code re-runs it on the multibar
+    -- buttons and the new anchors stack with ours, clipping the vertical bars.
+    Relayout = function(self)
+        if InCombatLockdown() then
+            self._layoutPending = true
+            return
+        end
+        self._layoutPending = false
+        self:_Layout()
+        self:UpdateSlotVisibility()
+    end;
+
+    ApplyPendingLayout = function(self)
+        if self._layoutPending then self:Relayout() end
+    end;
+
+    -- The grid, as Blizzard's ActionBarMixin:UpdateGridLayout builds it: the
+    -- buttons fill lines of `stride`, as few lines as numRows allows. A
+    -- horizontal bar fills rows left to right and stacks them upward, a
+    -- vertical bar fills columns top to bottom and adds them to the right.
+    -- Each button is anchored to the bar by the edge its line starts from and
+    -- the lines are centred across the bar, which for a single line is the
+    -- row or column this bar always was. Buttons past the count are parked
+    -- off screen: they are secure, so they cannot be hidden from here.
+    _Layout = function(self)
+        local count = self:GetLaidOutCount()
         if count == 0 then return end
 
         local first = self.slots[1].button
-        local bw = first:GetWidth()
-        local bh = first:GetHeight()
+        local bw, bh = first:GetWidth(), first:GetHeight()
+        local gap = self.spacing + self.iconPadding - MIN_ICON_PADDING
+        local stride = math.ceil(count / self.numRows)
+        local lines = math.ceil(count / stride)
+        local middle = (lines - 1) / 2
+        local horizontal = self.orientation == "horizontal"
 
-        if self.orientation == "horizontal" then
-            local totalW = count * bw + (count - 1) * self.spacing + 0
-            self:SetSize(totalW, bh + 0)
-        else
-            local totalH = count * bh + (count - 1) * self.spacing + 0
-            self:SetSize(bw + 0, totalH)
-        end
-    end;
-
-    -- Re-apply our SetPoint anchors on every existing button. Needed
-    -- because at UI-scale transitions (the global UI Scale slider), Era
-    -- native code re-runs its own anchoring on multibar buttons and the
-    -- new anchors stack with ours — causing visible clipping/overlap on
-    -- the vertical bars (MULTIBAR3 / MULTIBAR4) where slot pitch is
-    -- tighter. Wiping with ClearAllPoints + re-anchoring restores our
-    -- single, intended anchor per button.
-    Relayout = function(self)
         for i, slot in ipairs(self.slots) do
             local btn = slot.button
-            if btn then
-                btn:ClearAllPoints()
-                if i == 1 then
-                    if self.orientation == "horizontal" then
-                        btn:SetPoint("LEFT", self, "LEFT", 0, 0)
-                    else
-                        btn:SetPoint("TOP", self, "TOP", 0, 0)
-                    end
-                else
-                    local prev = self.slots[i - 1].button
-                    if self.orientation == "horizontal" then
-                        btn:SetPoint("LEFT", prev, "RIGHT", self.spacing, 0)
-                    else
-                        btn:SetPoint("TOP",  prev, "BOTTOM", 0, -self.spacing)
-                    end
-                end
+            local along, across = (i - 1) % stride, math.floor((i - 1) / stride)
+            btn:ClearAllPoints()
+            if i > count then
+                btn:SetPoint("TOPRIGHT", MUI_Root, "BOTTOMLEFT", -500, -500)
+            elseif horizontal then
+                btn:SetPoint("LEFT", self, "LEFT", along * (bw + gap), (across - middle) * (bh + gap))
+            else
+                btn:SetPoint("TOP", self, "TOP", (across - middle) * (bw + gap), -along * (bh + gap))
             end
         end
-        self:UpdateSize()
+
+        if horizontal then
+            self:SetSize(stride * bw + (stride - 1) * gap, lines * bh + (lines - 1) * gap)
+        else
+            self:SetSize(lines * bw + (lines - 1) * gap, stride * bh + (stride - 1) * gap)
+        end
+
+        if self.OnLayoutChanged then self:OnLayoutChanged() end
     end;
 
     -- Update hotkey text on all buttons in this bar
@@ -258,7 +308,8 @@ class "ActionBar" : extends "Frame" {
 
     -- Show/hide empty slots based on showEmptySlots flag
     UpdateSlotVisibility = function(self)
-		
+        local count = self:GetLaidOutCount()
+
         for i, slot in ipairs(self.slots) do
 
             local name = slot.button:GetName()
@@ -273,7 +324,7 @@ class "ActionBar" : extends "Frame" {
                 filled = C_ActionBar.HasAction(slot.button:GetActionID())
             end
 
-			local isOn = self.showEmptySlots or self.alwaysShowButtons or filled
+            local isOn = i <= count and (self.showEmptySlots or self.alwaysShowButtons or filled)
 
             -- Do NOT toggle slot.button — it's a secure button, and Hide/Show from
             -- addon code taints its Update → blocks combat actions. Blizzard drives
@@ -340,6 +391,108 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
     __init = function(self, orientation, slotBGRegion, parent, name)
         ActionBar.__init(self, orientation, slotBGRegion, parent, name)
         Editable.__init(self)
+        self._defaultOrientation = self.orientation
+    end;
+
+    -- The overlay's label reads along the bar's long side.
+    _Layout = function(self)
+        ActionBar._Layout(self)
+        self._editLabel:SetRotation(self:GetHeight() > self:GetWidth() and math.pi / 2 or 0)
+    end;
+
+    -- The layout setters also keep the settings panel showing what they set:
+    -- a saved layout is applied after the panel is built.
+    SetOrientation = function(self, orientation)
+        ActionBar.SetOrientation(self, orientation)
+        if self._rowOrientation then
+            self._rowOrientation:SetValue(orientation)
+            self._rowRows:SetLabel(self:_RowsLabel())
+        end
+    end;
+
+    SetNumRows = function(self, rows)
+        ActionBar.SetNumRows(self, rows)
+        if self._rowRows then self._rowRows:SetValue(rows) end
+    end;
+
+    SetNumIcons = function(self, icons)
+        ActionBar.SetNumIcons(self, icons)
+        if self._rowIcons then self._rowIcons:SetValue(self:GetLaidOutCount()) end
+    end;
+
+    SetIconPadding = function(self, padding)
+        ActionBar.SetIconPadding(self, padding)
+        if self._rowPadding then self._rowPadding:SetValue(padding) end
+    end;
+
+    -- Retail names the lines setting after the orientation.
+    _RowsLabel = function(self)
+        return self.orientation == "vertical" and HUD_EDIT_MODE_SETTING_ACTION_BAR_NUM_COLUMNS
+            or HUD_EDIT_MODE_SETTING_ACTION_BAR_NUM_ROWS
+    end;
+
+    -- Settings controls stack down the panel in the order they are added.
+    _EditModePlaceSetting = function(self, control)
+        if self._settingsTail then
+            control:Below(self._settingsTail, 8)
+        else
+            control:AlignParentTop(0)
+        end
+        self._settingsTail = control
+    end;
+
+    -- Adds retail's layout settings to this bar's edit-mode settings panel:
+    -- orientation, rows (columns, when vertical), icon padding and, with
+    -- `withIcons`, the number of icons. Icon size is the panel's Scale.
+    EditModeAddLayoutSettings = function(self, content, withIcons)
+        self._rowOrientation = EditModeDropdownRow(content, HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION, {
+            { value = "horizontal", text = HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION_HORIZONTAL },
+            { value = "vertical",   text = HUD_EDIT_MODE_SETTING_ACTION_BAR_ORIENTATION_VERTICAL },
+        })
+        self._rowOrientation:SetValue(self.orientation)
+        self._rowOrientation.OnChanged = function(_, value)
+            self:SetOrientation(value)
+            self:EditModeNotifyChanged()
+        end
+        self:_EditModePlaceSetting(self._rowOrientation)
+        self:EditModeTrackSetting(
+            function() return self.orientation end,
+            function(v) self:SetOrientation(v) end)
+
+        self._rowRows = EditModeSliderRow(content, self:_RowsLabel(), 1, 4)
+        self._rowRows:SetValue(self.numRows)
+        self._rowRows.OnChanged = function(_, value)
+            self:SetNumRows(value)
+            self:EditModeNotifyChanged()
+        end
+        self:_EditModePlaceSetting(self._rowRows)
+        self:EditModeTrackSetting(
+            function() return self.numRows end,
+            function(v) self:SetNumRows(v) end)
+
+        if withIcons then
+            self._rowIcons = EditModeSliderRow(content, HUD_EDIT_MODE_SETTING_ACTION_BAR_NUM_ICONS, 6, table.getn(self.slots))
+            self._rowIcons:SetValue(self:GetLaidOutCount())
+            self._rowIcons.OnChanged = function(_, value)
+                self:SetNumIcons(value)
+                self:EditModeNotifyChanged()
+            end
+            self:_EditModePlaceSetting(self._rowIcons)
+            self:EditModeTrackSetting(
+                function() return self:GetLaidOutCount() end,
+                function(v) self:SetNumIcons(v) end)
+        end
+
+        self._rowPadding = EditModeSliderRow(content, HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_PADDING, MIN_ICON_PADDING, MAX_ICON_PADDING)
+        self._rowPadding:SetValue(self.iconPadding)
+        self._rowPadding.OnChanged = function(_, value)
+            self:SetIconPadding(value)
+            self:EditModeNotifyChanged()
+        end
+        self:_EditModePlaceSetting(self._rowPadding)
+        self:EditModeTrackSetting(
+            function() return self.iconPadding end,
+            function(v) self:SetIconPadding(v) end)
     end;
 
     -- The buttons keep their native parents (not children of this bar), so the
@@ -368,7 +521,8 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         self._chkAlwaysShow.label:SetFontSize(12)
         self._chkAlwaysShow:SetSize(200, 29)
         self._chkAlwaysShow:SetBoxSize(24, 24)
-        self._chkAlwaysShow:AlignParentTopLeft(0, 0)
+        self._chkAlwaysShow:AlignParentLeft(0)
+        self:_EditModePlaceSetting(self._chkAlwaysShow)
         self._chkAlwaysShow.OnChanged = function(_, checked)
             self:SetAlwaysShowButtons(checked)
             self:EditModeNotifyChanged()
@@ -380,22 +534,36 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
             function(v) self:SetAlwaysShowButtons(v) end)
     end;
 
-    -- The setting rides along with the saved layout. Only the non-default (off)
-    -- is stored, like scale.
+    -- The settings ride along with the saved layout. Only what differs from
+    -- the default is stored, like scale.
     EditModeGetLayout = function(self)
         local data = Editable.EditModeGetLayout(self)
-        if self._chkAlwaysShow and not self.alwaysShowButtons then
+        local function keep(key, value)
             data = data or {}
-            data.alwaysShowButtons = false
+            data[key] = value
+        end
+        if self._chkAlwaysShow and not self.alwaysShowButtons then
+            keep("alwaysShowButtons", false)
+        end
+        if self._rowOrientation then
+            if self.orientation ~= self._defaultOrientation then keep("orientation", self.orientation) end
+            if self.numRows ~= 1 then keep("numRows", self.numRows) end
+            if self.iconPadding ~= MIN_ICON_PADDING then keep("iconPadding", self.iconPadding) end
+        end
+        if self._rowIcons and self:GetLaidOutCount() ~= table.getn(self.slots) then
+            keep("numIcons", self.numIcons)
         end
         return data
     end;
 
     EditModeApplyLayout = function(self, data)
         Editable.EditModeApplyLayout(self, data)
-        if data and data.alwaysShowButtons == false then
-            self:SetAlwaysShowButtons(false)
-        end
+        if not data then return end
+        if data.alwaysShowButtons == false then self:SetAlwaysShowButtons(false) end
+        if data.orientation then self:SetOrientation(data.orientation) end
+        if data.numRows then self:SetNumRows(data.numRows) end
+        if data.numIcons then self:SetNumIcons(data.numIcons) end
+        if data.iconPadding then self:SetIconPadding(data.iconPadding) end
     end;
 
 }

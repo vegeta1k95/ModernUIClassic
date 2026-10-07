@@ -81,6 +81,12 @@ class "Slider" : extends "Frame" {
         return self._native:GetValueStep()
     end;
 
+    -- Hold the thumb to whole steps while it is dragged too, not only when
+    -- it is nudged by the wheel or the arrows.
+    SetObeyStepOnDrag = function(self, obey)
+        self._native:SetObeyStepOnDrag(obey)
+    end;
+
     SetMinMaxValues = function(self, min, max)
         self._native:SetMinMaxValues(min, max)
     end;

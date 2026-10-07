@@ -38,6 +38,9 @@
 -- cluster and stray point carries its continent (a required source item
 -- can sit across the sea from the rest of the quest); the accessors take
 -- an optional continentId filter and GetContinents lists what's present.
+-- Every hull and stray point also names its target, for a tooltip over its
+-- area: `objective`, the line's index in entry.objectives, or `itemId` for
+-- a required source item.
 
 -- Maps our target `kind` to the quest log leaderboard `type` string.
 -- Stable across locales — Blizzard's leaderboard `type` is fixed
@@ -80,13 +83,14 @@ class "QuestObjectiveCluster" {
         -- Bucket leaderboard entries by `type` for O(1) per-position
         -- lookup. Skip entirely when the quest is complete (we won't
         -- consult the buckets) or when no entry was passed.
-        local boards = {}
+        local boards, lineOf = {}, {}
         if not allDone and entry and entry.objectives then
-            for _, o in ipairs(entry.objectives) do
+            for i, o in ipairs(entry.objectives) do
                 if o and o.type then
                     local arr = boards[o.type]
                     if not arr then arr = {}; boards[o.type] = arr end
                     arr[#arr + 1] = o
+                    lineOf[o] = i
                 end
             end
         end
@@ -98,11 +102,13 @@ class "QuestObjectiveCluster" {
             local typeIdx = {}
             for _, target in ipairs(precomputed.objectives) do
                 local include = false
+                local objective, itemId
                 if target.kind == "sourceitem" then
                     -- Required source item: no leaderboard line, done once
                     -- the item is in the bags.
                     include = target.itemId ~= nil
                           and C_Item.GetItemCount(target.itemId) == 0
+                    itemId = target.itemId
                 else
                     local typeStr = _KIND_TO_LEADER_TYPE[target.kind]
                     if typeStr then
@@ -111,6 +117,7 @@ class "QuestObjectiveCluster" {
                         local board    = boards[typeStr]
                         local boardEnt = board and board[pos]
                         include = not (boardEnt and boardEnt.finished)
+                        objective = boardEnt and lineOf[boardEnt]
                     end
                 end
                 if include then
@@ -118,6 +125,7 @@ class "QuestObjectiveCluster" {
                         for _, c in ipairs(target.clusters) do
                             local rec = self:_ConvertCluster(c)
                             if rec then
+                                rec.hull.objective, rec.hull.itemId = objective, itemId
                                 self._clusters[#self._clusters + 1] = rec
                                 self._continent = self._continent or rec._continent
                             end
@@ -128,7 +136,8 @@ class "QuestObjectiveCluster" {
                             local wx, wy, cont = MUI_MapMath:MapToWorld(
                                 s.uiMapId, s.normX, s.normY)
                             if wx and wy then
-                                self._points[#self._points + 1] = { wx, wy, cont }
+                                self._points[#self._points + 1] =
+                                    { wx, wy, cont, objective = objective, itemId = itemId }
                                 self._continent = self._continent or cont
                             end
                         end
@@ -192,7 +201,7 @@ class "QuestObjectiveCluster" {
         local hulls = {}
         local step = 2 * math.pi / STRAY_CIRCLE_VERTICES
         for _, p in ipairs(self:GetPoints(continentId)) do
-            local hull = {}
+            local hull = { objective = p.objective, itemId = p.itemId }
             for v = 1, STRAY_CIRCLE_VERTICES do
                 local a = (v - 1) * step
                 hull[v] = { p[1] + radiusYards * math.cos(a), p[2] + radiusYards * math.sin(a) }

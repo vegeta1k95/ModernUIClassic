@@ -197,15 +197,26 @@ object "ModuleMicroMenu" : extends "Module" {
         self._btnCollections:LeftOf(self._btnAdventureGuide, BUTTON_SPACING)
         self._btnCollections:SetEnabled(false)
 
-        -- Group Finder → Era's "Looking For Group" panel. The native minimap LFG
-        -- eye (LFGMinimapFrame) toggles LFGParentFrame via ToggleLFGParentFrame;
-        -- we kill that eye in the minimap, so drive the same function from here.
-        self._btnGroupFinder = MicroButtonToggle(self._container, "GroupFinder", "GroupFinder")
+        -- Group Finder → Era's "Looking For Group" panel. It is a UIPanel, which addon
+        -- code can't show or hide in combat, so the click goes to the native minimap LFG
+        -- eye (kept alive, unseen, by the minimap) and Blizzard's own toggle runs securely.
+        self._btnGroupFinder = MicroButtonMacro(self._container, "GroupFinder", "GroupFinder")
         self._btnGroupFinder:LeftOf(self._btnCollections, BUTTON_SPACING)
-        self._btnGroupFinder:HookScript("OnClick", function() self:ToggleGroupFinder() end)
+        self._btnGroupFinder:SetMacroText("/click LFGMinimapFrame")
+        -- The eye's handler calls into a load-on-demand addon
+        self._btnGroupFinder:SetScript("PreClick", function()
+            if not ToggleLFGParentFrame then
+                C_AddOns.LoadAddOn("Blizzard_GroupFinder_VanillaStyle")
+            end
+        end)
         if LFGParentFrame then
             self._btnGroupFinder:HookFrameVisibility(LFGParentFrame)
-            self._groupFinderHooked = true
+        else
+            self._container:RegisterEventHandler("ADDON_LOADED", function(_, _, addon)
+                if addon == "Blizzard_GroupFinder_VanillaStyle" then
+                    self._btnGroupFinder:HookFrameVisibility(LFGParentFrame)
+                end
+            end)
         end
 
         -- Guild
@@ -238,7 +249,7 @@ object "ModuleMicroMenu" : extends "Module" {
         nativeMap:CenterAt(self._btnQuestLog)
         self._btnQuestLog:PutInfront(nativeMap)
 
-        -- Achievements
+        -- Achievements: enabled once MUI_Achievements hands over its panel (WireAchievements)
         self._btnAchievements = MicroButtonToggle(self._container, "Achievements", "Achievements")
         self._btnAchievements:LeftOf(self._btnQuestLog, BUTTON_SPACING)
         self._btnAchievements:SetEnabled(false)
@@ -358,28 +369,18 @@ object "ModuleMicroMenu" : extends "Module" {
         tip(self._btnGuild,          "Guild",                 "TOGGLEGUILDTAB")
         tip(self._btnSpellbook,      "Spellbook & Abilities", "TOGGLESPELLBOOK")
         tip(self._btnQuestLog,       "Quest Log",             "TOGGLEQUESTLOG")
-        --tip(self._btnAchievements,   "Achievements",          "TOGGLEACHIEVEMENT")
+        tip(self._btnAchievements,   "Achievements")
         tip(self._btnTalents,        "Talents",               "TOGGLETALENTS")
         tip(self._btnProfessions,    "Professions")
     end;
 
-    -- Era's group finder lives in a load-on-demand addon. Ensure it's loaded,
-    -- mirror the native eye's left-click (ToggleLFGParentFrame), and lazily wire
-    -- the pushed-state visual once the panel frame exists.
-    ToggleGroupFinder = function(self)
-        if not ToggleLFGParentFrame then
-            if C_AddOns and C_AddOns.LoadAddOn then
-                C_AddOns.LoadAddOn("Blizzard_GroupFinder_VanillaStyle")
-            elseif UIParentLoadAddOn then
-                UIParentLoadAddOn("Blizzard_GroupFinder_VanillaStyle")
-            end
-        end
-        if not ToggleLFGParentFrame then return end
-        if not self._groupFinderHooked and LFGParentFrame then
-            self._groupFinderHooked = true
-            self._btnGroupFinder:HookFrameVisibility(LFGParentFrame)
-        end
-        ToggleLFGParentFrame()
+    -- Our achievements panel (Era has none of its own): the button toggles it.
+    -- From plain Lua, not a secure snippet: the panel is not a protected
+    -- frame, and a snippet may not touch one in combat.
+    WireAchievements = function(self, frame)
+        self._btnAchievements:HookFrameVisibility(frame)
+        self._btnAchievements:HookScript("OnClick", function() frame:Toggle() end)
+        self._btnAchievements:SetEnabled(true)
     end;
 
     HookGameMenu = function(self)
