@@ -157,6 +157,11 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         self._native:SetFrameLevel(other:GetFrameLevel() + (level or 1))
     end;
 
+    -- To the top of its strata, over the frames already there.
+    Raise = function(self)
+        self._native:Raise()
+    end;
+
     -- When true, frame's pixel size is independent of UIParent's scale
     -- (the global UI Scale option). XML attribute `ignoreParentScale`
     -- on a frame definition has the same effect; this lets you flip it

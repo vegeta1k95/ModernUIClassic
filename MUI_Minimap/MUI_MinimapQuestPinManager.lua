@@ -6,6 +6,14 @@ local function _isFinisherIcon(iconType)
     return iconType == "QuestTurnIn" or iconType == "QuestCompletable"
 end
 
+-- One spawn of a questgiver, as a key: the available-quest pin of that spawn
+-- and a finisher pin standing on it come to the same one.
+local function _spotKey(kind, targetId, normX, normY)
+    return kind .. ":" .. targetId
+           .. "@" .. math.floor(normX * 1000)
+           .. "_" .. math.floor(normY * 1000)
+end
+
 -- Quests whose surviving objective points number fewer than QuestObjective-
 -- Cluster's MIN_CLUSTER_SIZE don't form a cluster hull. Render a small
 -- circle around each stray point so single-target quests still get a
@@ -368,6 +376,7 @@ class "MinimapQuestPinManager" : extends "Frame" {
             -- pins respect the focus state on creation (not just on toggle).
             self:_ApplyFocusDimming(questId)
         end
+        if isFinisher then self:_YieldAvailablePins() end
     end;
 
     _CreatePinEntry = function(self, spec)
@@ -438,6 +447,7 @@ class "MinimapQuestPinManager" : extends "Frame" {
         if not predicate then
             for _, e in ipairs(bucket) do _killEntry(e) end
             self.pins[questId] = nil
+            self:_YieldAvailablePins()
             return
         end
         local keep = {}
@@ -449,6 +459,7 @@ class "MinimapQuestPinManager" : extends "Frame" {
             end
         end
         self.pins[questId] = (#keep > 0) and keep or nil
+        self:_YieldAvailablePins()
     end;
 
     -- ---- area overlay ----------------------------------------------------
@@ -715,9 +726,7 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local groups = {}
         for _, s in ipairs(starters) do
             if not (s.isTrivial and not includeTrivial) then
-            local key = s.kind .. ":" .. s.targetId
-                        .. "@" .. math.floor(s.normX * 1000)
-                        .. "_" .. math.floor(s.normY * 1000)
+            local key = _spotKey(s.kind, s.targetId, s.normX, s.normY)
             local g = groups[key]
             if not g then
                 g = { spec = s, questIds = {},
@@ -746,6 +755,27 @@ class "MinimapQuestPinManager" : extends "Frame" {
                 icon = "QuestLowLevel"
             end
             self:_SpawnAvailablePin(key, g.spec, g.questIds, icon)
+        end
+        self:_YieldAvailablePins()
+    end;
+
+    -- A giver with a quest ready to turn in shows its yellow `?` alone:
+    -- the `!` for what it also offers stays out of sight, and out of the
+    -- tooltip, for as long as the `?` stands there. The two pins sit on
+    -- the same spot at the same frame level: nothing settles which draws
+    -- over the other, and the one under shows through the one on top.
+    _YieldAvailablePins = function(self)
+        local ready = {}
+        for _, bucket in pairs(self.pins) do
+            for _, e in ipairs(bucket) do
+                local s = e.spec
+                if s.iconType == "QuestTurnIn" then
+                    ready[_spotKey(s.targetKind, s.targetId, s.normX, s.normY)] = true
+                end
+            end
+        end
+        for key, entry in pairs(self.availablePins) do
+            entry.pin:SetDimFactor(ready[key] and 0 or 1)
         end
     end;
 

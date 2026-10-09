@@ -42,6 +42,7 @@ MUI_DB\MUI_StorylineDB.lua
 MUI_DB\MUI_AchievementDB.lua
 MUI_DB\MUI_StatisticsDB.lua
 MUI_DB\MUI_RecipeDB.lua
+MUI_DB\MUI_EncounterJournalDB.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
 MUI_Tooltip\MUI_TooltipHooks.lua
@@ -216,5 +217,16 @@ MUI_Character\MUI_CharacterSkills.lua
 MUI_Character\MUI_CharacterHonor.lua
 MUI_Character\MUI_Character.lua
 MUI_Taxi\MUI_Taxi.lua
+MUI_Loot\MUI_Loot.lua
+MUI_AdventureGuide\MUI_AdventureGuideStyle.lua
+MUI_AdventureGuide\MUI_AdventureGuideWidgets.lua
+MUI_AdventureGuide\MUI_AdventureGuideInstances.lua
+MUI_AdventureGuide\MUI_AdventureGuideSections.lua
+MUI_AdventureGuide\MUI_AdventureGuideLoot.lua
+MUI_AdventureGuide\MUI_AdventureGuideModel.lua
+MUI_AdventureGuide\MUI_AdventureGuideEncounter.lua
+MUI_AdventureGuide\MUI_AdventureGuideSearch.lua
+MUI_AdventureGuide\MUI_AdventureGuideFrame.lua
+MUI_AdventureGuide\MUI_AdventureGuide.lua
 
 MUI_Test.lua

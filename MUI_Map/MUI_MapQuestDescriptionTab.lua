@@ -500,16 +500,13 @@ class "MapQuestDescriptionTab" : extends "Frame" {
             self._npcModel:SetFacing(self._npcFacing or 0)
         end)
 
-        -- Cold-start fix: the very first SetCreature(...) of a session
-        -- is a no-op if the Model frame isn't yet visible (the engine
-        -- skips the async file load while hidden). Re-issue it on every
-        -- show — this call fires while the frame is on screen, so the model
-        -- loads, which in turn fires OnModelLoaded (above) and applies the
-        -- camera. _RefreshNpcModel stashes the creature for us.
+        -- The creature is set whenever the wing comes on screen, and again
+        -- for as long as the model stays empty (_LoadNpcModel). Loading
+        -- fires OnModelLoaded (above), which applies the camera.
+        -- _RefreshNpcModel stashes the creature for us.
         self._npcModelContainer:HookScript("OnShow", function()
-            local cid = self._npcModelLastCreature
-            if cid then
-                self._npcModel:SetCreature(cid)
+            if self._npcModelLastCreature then
+                self:_LoadNpcModel(15)
             end
         end)
 
@@ -548,12 +545,32 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         end)
     end;
 
+    -- Put the stashed creature in the model, then look again shortly, up
+    -- to `tries` times in all: a model still without a file did not take
+    -- it. The first SetCreature for a creature can leave the model empty
+    -- where a later one fills it (seen on first opens of the tab).
+    _LoadNpcModel = function(self, tries)
+        local creatureID = self._npcModelLastCreature
+        self._npcModel:SetCreature(creatureID)
+        if tries <= 1 then return end
+        C_Timer.After(0.2, function()
+            if self._npcModelLastCreature == creatureID
+               and self._npcModelContainer:IsVisible()
+               and (self._npcModel:GetModelFileID() or 0) == 0 then
+                self:_LoadNpcModel(tries - 1)
+            end
+        end)
+    end;
+
     -- Show the NPC model + portrait border for `creatureID`, or hide the
     -- whole wing if `creatureID` is nil. Called from SetQuest after a
     -- quest is selected.
     _RefreshNpcModel = function(self, creatureID)
         if creatureID then
-            self._npcModel:SetCreature(creatureID)
+            -- Emptied first: a model still holding the last quest's
+            -- creature would pass for loaded. Showing the wing sets the
+            -- new one (its OnShow).
+            self._npcModel:ClearModel()
             self._npcModelContainer:Hide()
             self._npcModelLastCreature = creatureID
             self._npcFacing = 0

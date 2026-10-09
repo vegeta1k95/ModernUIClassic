@@ -481,6 +481,15 @@ class "TooltipBase" : extends "Frame" {
         return self._native:SetInventoryItem(unit, slot)
     end;
 
+    -- A slot of the loot that is open: an item, or a currency.
+    SetLootItem = function(self, slot)
+        self._native:SetLootItem(slot)
+    end;
+
+    SetLootCurrency = function(self, slot)
+        self._native:SetLootCurrency(slot)
+    end;
+
     -- The equipped-item comparison beside this tooltip, as item buttons show it.
     ShowCompareItem = function(self)
         GameTooltip_ShowCompareItem(self._native)

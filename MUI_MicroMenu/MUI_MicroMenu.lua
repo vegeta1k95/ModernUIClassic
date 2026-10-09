@@ -187,7 +187,7 @@ object "ModuleMicroMenu" : extends "Module" {
         hooksecurefunc("StoreFrame_SetShown", setShopShown)
         hooksecurefunc(CatalogShopInboundInterface, "SetShown", setShopShown)
 
-        -- Adventure
+        -- Adventure Guide: enabled once MUI_AdventureGuide hands over its window (WireAdventureGuide)
         self._btnAdventureGuide = MicroButtonToggle(self._container, "AdventureGuide", "AdventureGuide")
         self._btnAdventureGuide:LeftOf(self._btnShop, BUTTON_SPACING)
         self._btnAdventureGuide:SetEnabled(false)
@@ -363,7 +363,7 @@ object "ModuleMicroMenu" : extends "Module" {
         tip(Frame(MainMenuMicroButton),  "Game Menu",             "TOGGLEGAMEMENU")
         tip(Frame(CharacterMicroButton), "Character Info",        "TOGGLECHARACTER0")
         tip(self._btnShop,           "Shop")
-        --tip(self._btnAdventureGuide, "Adventure Guide",       "TOGGLEENCOUNTERJOURNAL")
+        tip(self._btnAdventureGuide, "Adventure Guide",       "MUI_TOGGLE_ADVENTUREGUIDE")
         --tip(self._btnCollections,    "Collections",           "TOGGLECOLLECTIONS")
         tip(self._btnGroupFinder,    "Group Finder",          "TOGGLEGROUPFINDER")
         tip(self._btnGuild,          "Guild",                 "TOGGLEGUILDTAB")
@@ -381,6 +381,13 @@ object "ModuleMicroMenu" : extends "Module" {
         self._btnAchievements:HookFrameVisibility(frame)
         self._btnAchievements:HookScript("OnClick", function() frame:Toggle() end)
         self._btnAchievements:SetEnabled(true)
+    end;
+
+    -- Our Adventure Guide (Era has no journal of its own): the same way.
+    WireAdventureGuide = function(self, frame)
+        self._btnAdventureGuide:HookFrameVisibility(frame)
+        self._btnAdventureGuide:HookScript("OnClick", function() frame:Toggle() end)
+        self._btnAdventureGuide:SetEnabled(true)
     end;
 
     HookGameMenu = function(self)

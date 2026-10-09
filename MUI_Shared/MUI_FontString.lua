@@ -152,6 +152,11 @@ class "FontString" : extends {"Widget", "ScriptObject"} {
         self._native:SetWordWrap(wrap)
     end;
 
+    -- Whether the text is cut short ("...") by the string's size.
+    IsTruncated = function(self)
+        return self._native:IsTruncated()
+    end;
+
     SetSpacing = function(self, spacing)
         self._native:SetSpacing(spacing)
     end;

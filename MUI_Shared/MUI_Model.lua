@@ -18,6 +18,11 @@ class "Model" : extends "Frame" {
         self._native:ClearModel()
     end;
 
+    -- File of the model that is set; nil or 0 while there is none.
+    GetModelFileID = function(self)
+        return self._native:GetModelFileID()
+    end;
+
     SetFacing = function(self, facing)
         self._native:SetFacing(facing)
     end;
@@ -71,6 +76,19 @@ class "Model" : extends "Frame" {
     -- SetCameraDistance take effect. Pass 0 for the default custom slot.
     SetCustomCamera = function(self, idx)
         self._native:SetCustomCamera(idx)
+    end;
+
+    -- Make the camera the model is shown with the addon-controlled one,
+    -- as it stands, for SetCameraPosition / SetCameraTarget to move
+    -- (SetCustomCamera switches to a camera slot instead).
+    MakeCurrentCameraCustom = function(self)
+        self._native:MakeCurrentCameraCustom()
+    end;
+
+    -- Whether the camera is addon-controlled: SetCameraPosition and
+    -- SetCameraTarget throw while it is not.
+    HasCustomCamera = function(self)
+        return self._native:HasCustomCamera()
     end;
 
     -- World-space camera position in model-local units. Origin (0,0,0)

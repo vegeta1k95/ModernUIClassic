@@ -95,8 +95,9 @@ class "AnimationGroup" {
         return Animation(self, animType)
     end;
 
-    Play = function(self)
-        self._native:Play()
+    -- reverse: run the group backwards, from its end state to its start.
+    Play = function(self, reverse)
+        self._native:Play(reverse and true or false)
     end;
 
     Stop = function(self)

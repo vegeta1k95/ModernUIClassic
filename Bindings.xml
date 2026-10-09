@@ -29,4 +29,13 @@
     <Binding name="MUI_TOGGLE_PROFESSIONS" category="BINDING_HEADER_INTERFACE">
     </Binding>
 
+    <!--
+        Toggle Adventure Guide: the window is a plain frame of ours, nothing
+        in it is protected, so the binding shows and hides it itself, in
+        combat too. Its label is set in MUI_AdventureGuide\MUI_AdventureGuide.lua.
+    -->
+    <Binding name="MUI_TOGGLE_ADVENTUREGUIDE" category="BINDING_HEADER_INTERFACE">
+        MUI_ModuleAdventureGuide:Toggle()
+    </Binding>
+
 </Bindings>

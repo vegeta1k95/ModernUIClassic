@@ -7,7 +7,9 @@
 -- tiles, boss portraits, arrows between floors and to the exit. The floor
 -- follows the minimap subzone. Right-click goes a level up, to the world
 -- map, as it does between world maps; the dungeon map is back the next time
--- the map is opened.
+-- the map is opened. A click on a boss's portrait opens the boss in the
+-- Adventure Guide, whose Show Map button in turn brings a dungeon's map up
+-- here from anywhere (Browse).
 --
 -- No player or group dots: the client doesn't give addons unit positions
 -- inside instances.
@@ -79,6 +81,8 @@ class "MapDungeonPin" : extends "Frame" {
                 self._view:ShowFloor(data.link[1], data.link[2])
             elseif data.exit then
                 self._view:Dismiss()
+            elseif data.boss then
+                self._view:OpenBoss(data.boss)
             end
         end)
     end;
@@ -163,6 +167,10 @@ class "MapDungeonView" : extends "Frame" {
                 self:Show()
             end
         end)
+        -- One looked up from outside is put away with the world map.
+        mapFrame:HookScript("OnHide", function()
+            if self._browsing then self:_EndBrowsing() end
+        end)
 
         self:SetScript("OnSizeChanged", function() self:_Layout() end)
         self:SetScript("OnShow", function() self:_Layout() end)
@@ -179,6 +187,7 @@ class "MapDungeonView" : extends "Frame" {
     -- this instance) by the instance's name. A subzone we don't know keeps
     -- the floor already shown.
     _Resolve = function(self)
+        if self._browsing then return end
         if not IsInInstance() then
             self._code, self._floor, self._instance = nil, nil, nil
             self._dismissed = false
@@ -209,14 +218,41 @@ class "MapDungeonView" : extends "Frame" {
         self:_SetFloor(code, floor)
     end;
 
+    -- A dungeon's map looked up from outside it (the Adventure Guide's Show
+    -- Map), whatever the player's zone: it stays until it is dismissed or
+    -- the world map closes, and then the map is the player's own again.
+    Browse = function(self, code, floor)
+        self._browsing = true
+        self:ShowFloor(code, floor)
+    end;
+
+    _EndBrowsing = function(self)
+        self._browsing = false
+        self._code, self._floor, self._instance = nil, nil, nil
+        self._dismissed = false
+        self:Hide()
+        self:_Resolve()
+    end;
+
+    -- A boss's portrait was clicked: its page in the Adventure Guide.
+    OpenBoss = function(self, display)
+        if MUI_ModuleAdventureGuide:OpenBoss(self._code, display) then
+            PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
+        end
+    end;
+
     -- Up to the world map, until the map is opened again. Inside an
     -- instance the world map has no "player's zone" and would sit on Azeroth,
     -- so it is pointed at the zone of the dungeon's entrance.
     Dismiss = function(self)
         PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
-        self._dismissed = true
-        self:Hide()
         local entrance = MUI_DungeonDB:GetDungeonEntrance(DUNGEON_AREA[self._code])
+        if self._browsing then
+            self:_EndBrowsing()
+        else
+            self._dismissed = true
+            self:Hide()
+        end
         local mapId = entrance and MUI_ZoneDB:GetUiMapForArea(entrance.outerAreaId)
         if mapId then WorldMapFrame:SetMapID(mapId) end
     end;

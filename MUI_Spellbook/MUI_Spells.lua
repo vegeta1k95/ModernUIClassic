@@ -290,7 +290,7 @@ local SPELL_GROUPS = {
     [3565]  = "Teleport",   -- Darnassus
     [3563]  = "Teleport",   -- Undercity
     [3567]  = "Teleport",   -- Orgrimmar
-    [3566]  = "teleport",   -- Thunder Bluff
+    [3566]  = "Teleport",   -- Thunder Bluff
 
     -- Portal
     [10059] = "Portal",    -- Stormwind
@@ -481,9 +481,11 @@ object "Spells" : extends "Module" {
 
     OnEnable = function(self)
 
-        -- Fetch class ID
+        -- Fetch class and race IDs
         local _, _, classID = UnitClass("player")
         self._classID = classID
+        local _, _, raceID = UnitRace("player")
+        self._raceID = raceID
 
         -- Force on the Blizzard preview-talents mode so left/right click on
         -- a talent stages the change via AddPreviewTalentPoints instead of
@@ -596,6 +598,18 @@ object "Spells" : extends "Module" {
 
     end;
 
+    -- Take a quest spell out of a group, and the group out once it is empty.
+    _DropQuestSpell = function(db, name, spellID)
+        local spells = name and db[name]
+        if not spells then return end
+        for i = #spells, 1, -1 do
+            if spells[i].spellID == spellID and spells[i].source == "quest" then
+                table.remove(spells, i)
+            end
+        end
+        if #spells == 0 then db[name] = nil end
+    end;
+
     -- =========================================================
     -- Spellbook + Talent scan
     -- =========================================================
@@ -627,10 +641,18 @@ object "Spells" : extends "Module" {
 
         local db = MUI_DB.data.spells
 
-        -- Merge quest spells.
+        -- Merge quest spells. One bound to a race is merged for that race
+        -- only. Every race's used to be merged, so what that left behind
+        -- of another race's is taken out again.
         local _, _, classID = UnitClass("player")
         local questSpells = QUEST_SPELLS[classID]
         if questSpells then
+            local own = {}
+            for _, spells in ipairs(questSpells) do
+                for _, spell in ipairs(spells) do
+                    if spell.race == self._raceID then own[spell[1]] = true end
+                end
+            end
             for specIndex, spells in ipairs(questSpells) do
                 for _, spell in ipairs(spells) do
 
@@ -660,6 +682,9 @@ object "Spells" : extends "Module" {
                             self._MergeSpell(db.class[specIndex], self._GetGroupName(spellID), def)
                         end
 
+                    elseif not own[spellID] then
+                        self._DropQuestSpell((specIndex == 4) and db.general or db.class[specIndex],
+                                             self._GetGroupName(spellID), spellID)
                     end
                 end
             end

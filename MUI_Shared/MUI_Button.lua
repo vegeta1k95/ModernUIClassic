@@ -179,6 +179,16 @@ class "Button" : extends "Frame" {
         return self._native:GetButtonState()
     end;
 
+    -- Keep the highlight texture showing whether or not the cursor is on
+    -- the button (a selected entry of a list).
+    LockHighlight = function(self)
+        self._native:LockHighlight()
+    end;
+
+    UnlockHighlight = function(self)
+        self._native:UnlockHighlight()
+    end;
+
     Click = function(self)
         self._native:Click()
     end;

@@ -427,7 +427,14 @@ class "SpellbookItem" : extends "SecureFrame" {
                 source = "Trainer"
             end
 
-            local sub  = "Level " .. display.levelReq .. " (" .. source .. ")"
+            -- A pet's ability and a starting spell have no source to name,
+            -- and a pet's ability no level either: its rank then.
+            local sub
+            if not source and display.levelReq == 0 then
+                sub = display.rank
+            else
+                sub = "Level " .. display.levelReq .. (source and (" (" .. source .. ")") or "")
+            end
             self._displayRank:SetText(sub)
         elseif not display.spec then
             self._displayRank:SetText(display.rank or nil)

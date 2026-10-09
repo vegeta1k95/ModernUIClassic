@@ -191,7 +191,7 @@ class "MapNavButton" : extends "Button" {
         end
         if not self._menu then
             self._menu = DropdownMenu(self, nil, self._dropdownBtn)
-            self._menu:SetMenuWidth(160)
+            self._menu:SetMenuWidth(self._menuWidth or 160)
             self._menu:SetAnchor(function(popup, anchor)
                 -- Drop straight down from the dropdown arrow, left edges
                 -- aligned (popup.TOPLEFT at anchor.BOTTOMLEFT).
@@ -202,6 +202,13 @@ class "MapNavButton" : extends "Button" {
         end
         self._menu:SetItems(items)
         self._dropdownBtn:Show()
+    end;
+
+    -- Width of the dropdown's menu (160 unless set), for lists of longer
+    -- names. Call before SetDropdownItems.
+    SetDropdownWidth = function(self, width)
+        self._menuWidth = width
+        if self._menu then self._menu:SetMenuWidth(width) end
     end;
 }
 
