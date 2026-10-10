@@ -21,6 +21,9 @@ local PIECES = {
     ["Border3"]      = { "set-borders", 256, 128, 1,   44,  41,  41 },
     ["Border4"]      = { "set-borders", 256, 128, 87,  1,   41,  41 },
     ["Border5"]      = { "set-borders", 256, 128, 44,  44,  41,  41 },
+    -- The crest on a mount only one side rides.
+    ["Alliance"]     = { "mount-factions", 128, 64, 1,  1,   46,  44 },
+    ["Horde"]        = { "mount-factions", 128, 64, 49, 1,   46,  44 },
 }
 
 object "CollectionsStyle" {

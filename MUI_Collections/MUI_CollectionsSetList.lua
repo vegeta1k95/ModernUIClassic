@@ -104,7 +104,7 @@ class "CollectionsSetRow" : extends "Button" {
         self._name:SetText(MUI_ItemSetDB:GetName(set))
         self._source:SetText(MUI_ItemSetDB:GetSource(set))
         self._icon:SetTexture(C_Item.GetItemIconByID(set.items[1]))
-        if self._list:IsForPlayer(set) then
+        if self._list:IsForPlayerClass(set) then
             self._icon:SetVertexColor(1, 1, 1)
         else
             self._icon:SetVertexColor(1, 0.125, 0.125)
@@ -157,7 +157,7 @@ class "CollectionsSetList" : extends "Frame" {
         self._menu = DropdownMenu(self, "MUI_CollectionsSetMenu")
         self._menu:SetMenuWidth(MENU_W)
         self._menu:SetItems({
-            { label = "Set Favorite", OnClick = function()
+            { label = BATTLE_PET_FAVORITE, OnClick = function()
                 local id = self._menuSet.id
                 Log:SetFavorite(id, not Log:IsFavorite(id))
             end },
@@ -211,8 +211,8 @@ class "CollectionsSetList" : extends "Frame" {
         end
     end;
 
-    IsForPlayer = function(self, set)
-        return self._page:IsForPlayer(set)
+    IsForPlayerClass = function(self, set)
+        return self._page:IsForPlayerClass(set)
     end;
 
     OnRowClicked = function(self, set)
@@ -222,12 +222,13 @@ class "CollectionsSetList" : extends "Frame" {
 
     ShowMenu = function(self, row)
         self._menuSet = row.set
-        self._menu:SetItemLabel(1, Log:IsFavorite(row.set.id) and "Remove Favorite" or "Set Favorite")
+        self._menu:SetItemLabel(1, Log:IsFavorite(row.set.id) and BATTLE_PET_UNFAVORITE or BATTLE_PET_FAVORITE)
         self._menu:SetToggleAnchor(row)
         self._menu:Open()
     end;
 
-    -- A set's name, and whose it is: in red when not the player's.
+    -- A set's name, and whose it is: its classes in red when the player's is
+    -- not one of them.
     ShowTooltip = function(self, owner, set)
         local page = self._page
         MUI_Tooltip:ShowFor(owner, "ANCHOR_RIGHT", function(tip)
@@ -241,12 +242,7 @@ class "CollectionsSetList" : extends "Frame" {
                 end
             end
             if set.faction then
-                local faction = set.faction == "Alliance" and FACTION_ALLIANCE or FACTION_HORDE
-                if page:IsForPlayerFaction(set) then
-                    tip:AddLine(faction, 1, 1, 1, true)
-                else
-                    tip:AddLine(faction, 1, 0.125, 0.125, true)
-                end
+                tip:AddLine(set.faction == "Alliance" and FACTION_ALLIANCE or FACTION_HORDE, 1, 1, 1, true)
             end
         end)
     end;

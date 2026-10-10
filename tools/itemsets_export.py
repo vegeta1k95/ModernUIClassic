@@ -10,9 +10,9 @@ build in .build.info): ItemSet, ItemSparse, Item, AreaTable, SkillLine.
 What goes in, and how:
   * Era's ItemSet table also holds Season of Discovery's sets (one client
     runs both); their items are numbered from 200000 and they are left out;
-  * a set needs two pieces of armour a model can wear: sets of weapons, of
-    jewellery, or of one cloak with them (the Ruins of Ahn'Qiraj sets) are
-    left out;
+  * a set needs two pieces of armour a model can wear: sets of weapons or of
+    jewellery are left out. The Ruins of Ahn'Qiraj sets, a class's weapon,
+    cloak and ring from the Cenarion Circle, are in for the two they show;
   * so are the sets no Era character can have: the rare PvP sets as they
     were before patch 1.11 (the vendors sell their successors) and a set of
     test items;
@@ -24,8 +24,8 @@ What goes in, and how:
     names in its own language, or plain text. Every set needs one: a set this
     script does not know stops it;
   * the PvP and Arathi Basin sets are one faction's, told by their names;
-  * a set's pieces are listed as worn, head to feet, jewellery last; the
-    first is the set's icon.
+  * a set's pieces are listed a weapon first, then as worn, head to feet,
+    jewellery last; the first is the set's icon.
 """
 import csv
 import os
@@ -54,6 +54,11 @@ HEAD, NECK, SHOULDER, SHIRT, CHEST, WAIST, LEGS, FEET, WRIST, HANDS, FINGER, TRI
 CLOAK, TABARD, ROBE = 16, 19, 20
 WORN = [HEAD, SHOULDER, CLOAK, CHEST, ROBE, WRIST, HANDS, WAIST, LEGS, FEET]
 JEWELLERY = [NECK, FINGER, TRINKET]
+WEAPON = [21, 13, 17, 22, 14, 23, 15, 26, 25]       # main hand, one hand, two hands, off hand, shield, held, ranged, thrown
+
+# The Ruins of Ahn'Qiraj sets: one piece of armour, the cloak, and with it a
+# weapon to show.
+WITH_WEAPON = {494, 495, 498, 500, 502, 504, 506, 508, 510}
 
 # Sets no Era character can have.
 EXCLUDED = {
@@ -93,6 +98,7 @@ SOURCES = [
     (area(2717, "Molten Core"), range(201, 210)),
     (area(2677, "Blackwing Lair"), range(210, 219)),
     (area(3428, "Ahn'Qiraj"), (493, 496, 497, 499, 501, 503, 505, 507, 509)),
+    (area(3429, "Ruins of Ahn'Qiraj"), sorted(WITH_WEAPON)),
     (area(3456, "Naxxramas"), (521, 523, 524, 525, 526, 527, 528, 529, 530)),
     (area(1977, "Zul'Gurub"), range(474, 483)),
     (area(3358, "Arathi Basin"), (*range(467, 474), *range(483, 489))),
@@ -195,13 +201,13 @@ for row in table("ItemSet"):
     if set_id in EXCLUDED:
         skipped["not on Era"] += 1
         continue
-    if sum(1 for i in items if slot(i) in WORN) < 2:
+    if sum(1 for i in items if slot(i) in WORN) < 2 and set_id not in WITH_WEAPON:
         skipped["nothing to show"] += 1
         continue
     if set_id not in SOURCE_OF:
         sys.exit(f"set {set_id} {row['Name_lang']} has no source: add it to SOURCES (or EXCLUDED)")
 
-    order = WORN + JEWELLERY
+    order = WEAPON + WORN + JEWELLERY
     items.sort(key=lambda i: (order.index(slot(i)) if slot(i) in order else len(order), i))
     sets.append({
         "id": set_id,
@@ -233,7 +239,8 @@ HEADER = '''-- ItemSetDB: Era's armour sets, for the Collections window (MUI_Col
 --   area        profession's skill line when it is one the client can name
 --   skill       (:GetSource)
 --   faction   "Alliance" / "Horde" for a set only one side can earn
---   items     its pieces' item ids as worn, head to feet, jewellery last
+--   items     its pieces' item ids: a weapon first, then as worn, head to
+--               feet, jewellery last
 
 object "ItemSetDB" {
     -- Every set, the highest item level first; those of one level by where

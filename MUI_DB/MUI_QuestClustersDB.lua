@@ -60313,9 +60313,16 @@ object "QuestClustersDB" {
                     name = "Fragment of the Nightmare's Corruption",
                 },
                 {
+                    clusters = {
+                        {
+                            centroid = {0.486, 0.39999999999999997},
+                            count = 12,
+                            hull = {{0.449, 0.4}, {0.4539, 0.3722}, {0.4675, 0.3519}, {0.486, 0.3444}, {0.5045, 0.3519}, {0.5181, 0.3722}, {0.523, 0.4}, {0.5181, 0.4278}, {0.5045, 0.4481}, {0.486, 0.4556}, {0.4675, 0.4481}, {0.4539, 0.4278}},
+                            uiMapId = 1431,
+                        },
+                    },
                     kind = "item",
                     name = "Fragment of the Nightmare's Corruption",
-                    stray = {{normX = 0.486, normY = 0.4, uiMapId = 1431}},
                 },
                 {
                     clusters = {

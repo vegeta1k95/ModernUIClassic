@@ -1,6 +1,6 @@
 -- MUI_CollectionsFrame: the Collections window — retail's CollectionsJournal
 -- (703x606, drawn at nine tenths like the other portrait windows) with the
--- pages Era has something for hanging off its tabs below.
+-- pages Era has something for hanging off its tabs below: sets and mounts.
 --
 -- A window of our own: Era loads no collections frame to keep, and nothing in
 -- it is protected, so it opens and closes in combat. Escape closes it through
@@ -8,6 +8,7 @@
 --
 --   CollectionsWindow()
 --     :Toggle()
+--     :ShowPage(index)   1: sets, 2: mounts
 --     .canvas          retail's frame rect, at retail's scale: everything on
 --                      it is laid out in retail's own numbers
 
@@ -15,6 +16,7 @@ local Style = MUI_CollectionsStyle
 local S     = Style.S
 
 local FRAME_W, FRAME_H = 703, 606
+local TAB_LEFT, TAB_OVERLAP = 12, 9         -- the character window's
 
 class "CollectionsWindow" : extends "PanelPortrait" {
     __init = function(self)
@@ -25,7 +27,6 @@ class "CollectionsWindow" : extends "PanelPortrait" {
         self:AlignParentTopLeft(104, 16)
         self:SetFrameStrata("MEDIUM")
         self:SetToplevel(true)
-        self:SetPortrait(Style.ART .. "portrait")
         self:Hide()
 
         self._closeButton = CloseButton(self, "MUI_CollectionsFrameClose")
@@ -45,25 +46,45 @@ class "CollectionsWindow" : extends "PanelPortrait" {
         streaks:AlignParentTopLeft(21, 6)
         streaks:AlignParentTopRight(21, 2)
 
+        self._mounts = CollectionsMounts(self.canvas)
         self._sets = CollectionsSets(self.canvas)
         self._sets:AlignParentTopRight(60, 4)
         self._sets:AlignParentBottomLeft(5, 4)
 
-        -- One page so far, and its tab under the window's bottom edge.
-        local tab = AuctionHouseTab(self, "Sets")
-        tab:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 12, 1)
-        tab:SetSelected(true)
+        -- A page to a tab under the window's bottom edge, the sets first,
+        -- each with retail's portrait for it.
+        self._pages = {
+            { page = self._sets,   text = "Sets", portrait = "Interface\\Icons\\INV_Chest_Cloth_17" },
+            { page = self._mounts, text = MOUNTS, portrait = Style.ART .. "portrait" },
+        }
+        local x = TAB_LEFT
+        for i, entry in ipairs(self._pages) do
+            entry.tab = AuctionHouseTab(self, entry.text)
+            entry.tab:SetPoint("TOPLEFT", self, "BOTTOMLEFT", x, 1)
+            entry.tab.OnClick = function() self:ShowPage(i) end
+            x = x + entry.tab:GetWidth() - TAB_OVERLAP
+        end
+        self:ShowPage(1)
 
         self:SetScript("OnShow", function()
             PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
         end)
         self:SetScript("OnHide", function()
             PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE)
+            self._mounts:Reset()
             self._sets:Reset()
         end)
     end;
 
     Toggle = function(self)
         self:SetVisible(not self:IsShown())
+    end;
+
+    ShowPage = function(self, index)
+        for i, entry in ipairs(self._pages) do
+            entry.page:SetVisible(i == index)
+            entry.tab:SetSelected(i == index)
+        end
+        self:SetPortrait(self._pages[index].portrait)
     end;
 }

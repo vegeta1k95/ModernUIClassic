@@ -26,7 +26,10 @@ class "Panel" : extends "MetalBorder" {
             self._title = FontString(self, nil, "OVERLAY")
             self._title:SetFontSize(12)
             self._title:SetTextColor(1, 0.82, 0, 1)
-            self._title:AlignParentTop(4, 0)
+            -- The border is drawn at full size here, so its title bar runs
+            -- 22 px down from the frame's top (PanelPortrait's is at nine
+            -- tenths, and shorter).
+            self._title:AlignParentTop(7, 0)
             self._title:AlignParentLeft(20)
             self._title:AlignParentRight(20)
             self._title:SetJustifyH("CENTER")

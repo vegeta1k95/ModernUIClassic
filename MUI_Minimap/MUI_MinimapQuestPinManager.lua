@@ -495,27 +495,24 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local _, _, _, playerCont = UnitPosition("player")
         local cont = playerCont or cluster:GetContinent()
 
-        -- Prefer real cluster hulls when the quest has enough points to
-        -- form one; otherwise fall back to per-point stray circles so
-        -- low-count quests (1-2 objectives) still get an area outline.
-        local hulls, strayCenters = {}, nil
-        local real = cluster:GetClusters(cont)
-        if #real > 0 then
-            for _, c in ipairs(real) do
-                hulls[#hulls + 1] = c.hull
-            end
-        else
-            hulls = cluster:GetStrayHulls(STRAY_CIRCLE_YARDS, cont)
-            strayCenters = {}
-            for _, p in ipairs(cluster:GetPoints(cont)) do
-                strayCenters[#strayCenters + 1] = { p[1], p[2] }
-            end
+        -- The real cluster hulls, and a small circle round each spot of an
+        -- objective that has no hull, so one found in a place or two still
+        -- gets an area outline, whatever the quest's other objectives have.
+        local hulls, strayCenters = {}, {}
+        for _, c in ipairs(cluster:GetClusters(cont)) do
+            hulls[#hulls + 1] = c.hull
+        end
+        for _, hull in ipairs(cluster:GetLoneHulls(STRAY_CIRCLE_YARDS, cont)) do
+            hulls[#hulls + 1] = hull
+        end
+        for _, p in ipairs(cluster:GetLonePoints(cont)) do
+            strayCenters[#strayCenters + 1] = { p[1], p[2] }
         end
         if #hulls == 0 then return end
 
         local area = MinimapQuestObjectiveArea()
         area:SetHulls(hulls, cont)
-        if strayCenters then
+        if #strayCenters > 0 then
             -- Centre icons render only for the focused quest; visibility
             -- is toggled from _ApplyFocusDimming. The icon stays in sync
             -- with the circle because they share projection in Refresh.

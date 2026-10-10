@@ -116,11 +116,12 @@ local DEFAULTS = {
         -- { name, icon, items = { [slot] = link }, ignored = { [slot] = true } }.
         equipmentSets = {},
         -- Collections (MUI_CollectionsLog): every set piece this character
-        -- has held, [item id] = true, and the sets starred in the list,
-        -- [set id] = true.
+        -- has held, [item id] = true; the sets starred in the list, [set id]
+        -- = true; the mounts starred, [mount spell id] = true.
         collections = {
             items     = {},
             favorites = {},
+            mounts    = {},
         },
         -- [nodeID] = true for every taxi node the player has discovered.
         -- C_TaxiMap.GetTaxiNodesForMap doesn't expose discovery state in

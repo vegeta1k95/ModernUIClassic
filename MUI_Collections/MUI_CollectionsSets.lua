@@ -4,13 +4,14 @@
 -- the class the list is for and how many of its sets are whole above them.
 --
 -- Era has no appearances to collect: a set is whole when the character has
--- held every piece of it at some time (MUI_CollectionsLog).
+-- held every piece of it at some time (MUI_CollectionsLog). The PvP sets of
+-- the other faction are left out: it cannot earn them.
 --
 --   CollectionsSets(canvas)
 --     :Refresh()              list, selection and progress, as things stand
 --     :SelectSet(set)
 --     :Reset()                the search emptied, the model back as it stood
---     :IsForPlayer(set), :IsForPlayerClass(set), :IsForPlayerFaction(set)
+--     :IsForPlayerClass(set), :IsForPlayerFaction(set)
 --     :ClassNames(set)        "Warrior, Paladin"; nil for a set every class wears
 
 local Style = MUI_CollectionsStyle
@@ -173,10 +174,6 @@ class "CollectionsSets" : extends "Frame" {
         return not set.faction or set.faction == self._playerFaction
     end;
 
-    IsForPlayer = function(self, set)
-        return self:IsForPlayerClass(set) and self:IsForPlayerFaction(set)
-    end;
-
     ClassNames = function(self, set)
         if set.classes == EVERY_CLASS then return nil end
         local names = {}
@@ -210,7 +207,9 @@ class "CollectionsSets" : extends "Frame" {
         local whole, all = 0, 0
         local selected = false
         for _, set in ipairs(MUI_ItemSetDB:GetSets()) do
-            if not self._class or bit.band(set.classes, ClassBit(self._class)) ~= 0 then
+            -- The other side's PvP sets are no part of this character's list.
+            if self:IsForPlayerFaction(set)
+                    and (not self._class or bit.band(set.classes, ClassBit(self._class)) ~= 0) then
                 local held, total = Log:Count(set)
                 all = all + 1
                 if held == total then whole = whole + 1 end

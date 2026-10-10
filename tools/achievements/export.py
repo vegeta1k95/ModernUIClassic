@@ -11,7 +11,9 @@ Two things are ours on top of NewEra's data:
     chapters in MUI_DB/MUI_StorylineDB.lua asks for every chapter instead
     of NewEra's quest count: crit `qstory`, retail's wording. A continent's
     Loremaster is then a meta of its zone quest achievements, as retail's,
-    instead of NewEra's continent quest count.
+    instead of NewEra's continent quest count. The Alliance gets Hillsbrad
+    Foothills, which NewEra keeps for the Horde, and an achievement for
+    Alterac Mountains, which NewEra has none for: it has chapters in both.
   - `account = true` marks the achievements retail draws with the blue
     account-wide header (ACHIEVEMENT_FLAGS_ACCOUNT) rather than the red
     character one. Retail's split, from its Achievement table: quests,
@@ -333,12 +335,35 @@ OURS = [
      "pts": 25, "icon": 236687, "crit": {"t": "repAll", "standing": 8, "list": [
          {"label": "Booty Bay", "fid": 21}, {"label": "Everlook", "fid": 577}, {"label": "Gadgetzan", "fid": 369},
          {"label": "Ratchet", "fid": 470}]}},
+    {"id": 5042, "cat": 2, "sub": 21, "name": "Alterac Mountains Quests",
+     "desc": "Complete the Alterac Mountains storylines listed below.", "pts": 10, "icon": 236711, "facOnly": "A",
+     "crit": {"t": "qstory", "zos": 36}},
 ]
 defs.extend(OURS)
 by_name = {d["name"]: d for d in defs}
+# Southshore's storylines. NewEra's zone list is retail's, where Hillsbrad is
+# the Horde's and Alterac no zone of its own; in Era the Alliance has three
+# chapters in each. Hillsbrad's achievement is both sides', and Alterac's
+# (whose chapters are all the Alliance's) stands after it in the list.
+del by_name["Hillsbrad Foothills Quests"]["facOnly"]
+defs.remove(by_name["Alterac Mountains Quests"])
+defs.insert(defs.index(by_name["Hillsbrad Foothills Quests"]) + 1, by_name["Alterac Mountains Quests"])
+# The legendaries only some classes can earn: the piece that starts each is
+# class-bound in the item data (Bindings of the Windseeker, Splinter of Atiesh).
+by_name["Thunderfury, Blessed Blade of the Windseeker"]["classOnly"] = ["WARRIOR", "PALADIN", "HUNTER", "ROGUE"]
+by_name["Atiesh, Greatstaff of the Guardian"]["classOnly"] = ["PRIEST", "MAGE", "WARLOCK", "DRUID"]
 by_name["Level 20"]["prev"] = 5001          # Level 10 heads the chain
 by_name["1000 Fish"]["prev"] = 5012         # 100, 500, 1000
 by_name["Decked Out"]["prev"] = 5003        # Superior, then Epic
+# A category lists its achievements in this order. One of ours that a chain
+# of NewEra's goes on from stands right before its successor there, not at
+# the end with the rest of ours.
+ours = {d["id"] for d in OURS}
+for d in list(defs):
+    if d["id"] not in ours and d.get("prev") in ours:
+        first = next(x for x in defs if x["id"] == d["prev"])
+        defs.remove(first)
+        defs.insert(defs.index(d), first)
 
 for d in defs:
     c = d["crit"]
@@ -438,7 +463,7 @@ out.append('''-- MUI_AchievementDB.lua  (AUTO-GENERATED — do not edit)
 -- evaluator in MUI_AchievementEngine; the other fields are its parameters.
 -- `prev` chains a progressive achievement to the one before it, `sub`
 -- files it under a sub-category, `facOnly` ("A" / "H"), `classOnly` (class
--- file name), `noHardcore` (ruled out on a Hardcore realm) and
+-- file name, or a list of them), `noHardcore` (ruled out on a Hardcore realm) and
 -- `hardcoreOnly` hide it from characters it can't apply to, `account` gives it retail's blue
 -- account-wide header instead of the red one. Ids are stable (they live in
 -- SavedVariables): never reuse one. `icon` is a retail FileDataID shipped

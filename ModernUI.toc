@@ -44,6 +44,7 @@ MUI_DB\MUI_StatisticsDB.lua
 MUI_DB\MUI_RecipeDB.lua
 MUI_DB\MUI_EncounterJournalDB.lua
 MUI_DB\MUI_ItemSetDB.lua
+MUI_DB\MUI_MountDB.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
 MUI_Tooltip\MUI_TooltipHooks.lua
@@ -234,6 +235,9 @@ MUI_Collections\MUI_CollectionsLog.lua
 MUI_Collections\MUI_CollectionsSetList.lua
 MUI_Collections\MUI_CollectionsSetDetails.lua
 MUI_Collections\MUI_CollectionsSets.lua
+MUI_Collections\MUI_CollectionsMountList.lua
+MUI_Collections\MUI_CollectionsMountDisplay.lua
+MUI_Collections\MUI_CollectionsMounts.lua
 MUI_Collections\MUI_CollectionsFrame.lua
 MUI_Collections\MUI_Collections.lua
 

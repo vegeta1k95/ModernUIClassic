@@ -50,6 +50,17 @@ local FLYOUT_PER_ROW, FLYOUT_MAX = 5, 20
 local ROW_W, ROW_H = 169, 44
 local LIST_W, LIST_H = 172, 331
 
+-- The set dialog is retail's icon selector: icons of 36 px, 46 apart, ten to
+-- a row.
+local DIALOG_W, DIALOG_H = 510, 518
+local ICON_SIZE, ICON_PITCH = 36, 46
+local ICON_COLUMNS, ICON_ROWS = 10, 8
+local GRID_LEFT, GRID_TOP = 24, 112
+local SCROLL_ROWS = 2         -- rows a notch of the wheel moves the icons
+local ICON_PATH = "INTERFACE\\ICONS\\"
+local QUESTION_MARK = "INV_MISC_QUESTIONMARK"
+local FILTER_NAMES = { all = ICON_FILTER_ALL, spell = ICON_FILTER_SPELL, item = ICON_FILTER_ITEM }
+
 local POPUP_DELETE = "MUI_EQUIPMENT_SET_DELETE"
 local POPUP_SAVE   = "MUI_EQUIPMENT_SET_SAVE"
 
@@ -550,91 +561,294 @@ class "CharacterSetRow" : extends "Button" {
 }
 
 -- ---------------------------------------------------------------------
--- CharacterSetDialog: a set's name and icon. The icons on offer are those
--- of what is worn.
+-- CharacterSetIconButton: an icon in the set dialog, in retail's slot art,
+-- ringed when it is the one chosen.
+-- ---------------------------------------------------------------------
+class "CharacterSetIconButton" : extends "Button" {
+    __init = function(self, parent)
+        Button.__init(self, parent)
+        self:SetSize(ICON_SIZE, ICON_SIZE)
+        self:SetClickSound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+        self.index = nil          -- its icon's place among those on offer
+
+        local slot = Texture(self, nil, "BACKGROUND")
+        slot:SetTexture("Interface\\Buttons\\UI-EmptySlot-Disabled")
+        slot:SetTexCoord(0.140625, 0.84375, 0.140625, 0.84375)
+        slot:SetSize(45, 45)
+        slot:CenterInParent(0, -1)
+        self._icon = Texture(self, nil, "ARTWORK")
+        self._icon:SetSize(ICON_SIZE, ICON_SIZE)
+        self._icon:CenterInParent(0, -1)
+        self._ring = Texture(self, nil, "OVERLAY")
+        self._ring:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+        self._ring:SetBlendMode("ADD")
+        self._ring:FillParent()
+        self._ring:Hide()
+        local glow = Texture(self, nil, "HIGHLIGHT")
+        glow:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+        glow:SetBlendMode("ADD")
+        glow:FillParent()
+    end;
+
+    Set = function(self, texture, chosen)
+        self._icon:SetTexture(texture)
+        self._ring:SetVisible(chosen)
+    end;
+}
+
+-- ---------------------------------------------------------------------
+-- CharacterSetDialog: a set's name and icon — retail's icon selector, which
+-- is its equipment set dialog and, on this client, the macro window's. The
+-- icons on offer are the ones macros choose from: the question mark, those
+-- of what is worn, then every spell icon and every item icon the client
+-- has. An item, a spell or a macro on the cursor, dropped on the chosen
+-- icon, gives its own.
 -- ---------------------------------------------------------------------
 class "CharacterSetDialog" : extends "Panel" {
     __init = function(self, parent)
         Panel.__init(self, parent, "MUI_CharacterSetDialog", "")
         self:SetFrameStrata("DIALOG")
-        self:SetSize(260, 220)
+        self:SetSize(DIALOG_W, DIALOG_H)
         self:Hide()
-        self._icons = {}
-        self._icon = nil
+        self._icon    = nil       -- the icon chosen
+        self._chosen  = nil       -- its place among those on offer, when it is one of them
+        self._filter  = "all"
+        self._lists   = nil       -- the icons on offer, one list after another, while the dialog shows
+        self._first   = 0         -- rows scrolled off the top
+        self._buttons = {}
 
         local prompt = FontString(self, nil, "ARTWORK")
         prompt:SetFontSize(10.5)
         prompt:SetTextColor(1, 0.82, 0, 1)
         prompt:SetText("Enter a name for this set:")
-        prompt:AlignParentTopLeft(34, 18)
+        prompt:AlignParentTopLeft(34, GRID_LEFT)
 
         self._name = EditBox(self)
-        self._name:SetSize(224, 22)
-        self._name:AlignParentTopLeft(50, 18)
+        self._name:SetSize(190, 22)
+        self._name:AlignParentTopLeft(50, GRID_LEFT)
         self._name:SetMaxLetters(16)
         self._name.OnEnterPressed = function() self:_Accept() end
         self._name.OnTextChanged = function() self:_Validate() end
 
-        -- The ring around the chosen icon, over the icon buttons.
-        self._chosen = Frame("Frame", self)
-        self._chosen:SetSize(30, 30)
-        self._chosen:PutInfront(self, 10)
-        local ring = Texture(self._chosen, nil, "OVERLAY")
-        ring:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-        ring:SetBlendMode("ADD")
-        ring:FillParent()
+        self:_BuildChosen()
+        self:_BuildFilter()
+        self:_BuildGrid()
 
-        self._okay = ButtonGold(self, nil, "Okay")
-        self._okay:SetSize(100, 22)
-        self._okay:AlignParentBottomLeft(12, 22)
-        self._okay.OnClick = function() self:_Accept() end
-        local cancel = ButtonGold(self, nil, "Cancel")
+        local cancel = ButtonGold(self, nil, CANCEL)
         cancel:SetSize(100, 22)
-        cancel:AlignParentBottomRight(12, 22)
+        cancel:AlignParentBottomRight(14, 18)
         cancel.OnClick = function() self:Hide() end
+        self._okay = ButtonGold(self, nil, OKAY)
+        self._okay:SetSize(100, 22)
+        self._okay:LeftOf(cancel, 6)
+        self._okay.OnClick = function() self:_Accept() end
+
+        -- The lists are thousands of icons long: kept only while it shows.
+        self:SetScript("OnHide", function()
+            self._lists, self._worn, self._spells, self._items = nil, nil, nil, nil
+        end)
     end;
 
-    -- name / icon: what the set has now (nil for a new one); done(name, icon).
+    -- The chosen icon, top right, as retail shows it. A click with an item,
+    -- a spell or a macro on the cursor takes that one's icon.
+    _BuildChosen = function(self)
+        self._preview = CharacterSetIconButton(self)
+        self._preview:AlignParentTopRight(36, 20)
+        self._preview.OnClick = function() self:_TakeFromCursor() end
+        self._preview:SetScript("OnReceiveDrag", function() self:_TakeFromCursor() end)
+
+        local caption = FontString(self, nil, "ARTWORK")
+        caption:SetFontSize(10)
+        caption:SetTextColor(1, 0.82, 0, 1)
+        caption:SetText(ICON_SELECTION_TITLE_CURRENT)
+        caption:LeftOf(self._preview, 8)
+    end;
+
+    -- All the icons, the spells' or the items'.
+    _BuildFilter = function(self)
+        local label = FontString(self, nil, "ARTWORK")
+        label:SetFontSize(10)
+        label:SetTextColor(1, 1, 1, 1)
+        label:SetText(MACRO_POPUP_CHOOSE_ICON)
+        label:AlignParentTopLeft(GRID_TOP - 20, GRID_LEFT)
+
+        self._filterButton = DropdownSimple(self, "MUI_CharacterSetIconFilter")
+        self._filterButton:SetSize(130, 22)
+        self._filterButton:AlignParentTopRight(GRID_TOP - 28, 18)
+
+        local menu = DropdownMenu(self._filterButton, "MUI_CharacterSetIconFilterMenu", self._filterButton)
+        menu:SetMenuWidth(130)
+        local function choice(filter)
+            return { label = FILTER_NAMES[filter], OnClick = function() self:_SetFilter(filter) end }
+        end
+        menu:SetItems({ choice("all"), choice("spell"), choice("item") })
+        self._filterButton.OnClick = function() menu:Toggle() end
+    end;
+
+    -- A screenful of icons: the buttons stay where they are and show the
+    -- rows the bar has scrolled to.
+    _BuildGrid = function(self)
+        local grid = Frame("Frame", self)
+        grid:SetSize((ICON_COLUMNS - 1) * ICON_PITCH + ICON_SIZE, (ICON_ROWS - 1) * ICON_PITCH + ICON_SIZE)
+        grid:AlignParentTopLeft(GRID_TOP, GRID_LEFT)
+        for i = 1, ICON_COLUMNS * ICON_ROWS do
+            local button = CharacterSetIconButton(grid)
+            button:AlignParentTopLeft(math.floor((i - 1) / ICON_COLUMNS) * ICON_PITCH, ((i - 1) % ICON_COLUMNS) * ICON_PITCH)
+            button.OnClick = function() self:_Choose(self:_IconAt(button.index), button.index) end
+            self._buttons[i] = button
+        end
+
+        self._bar = MinimalScrollBar(self)
+        self._bar:SetHeight((ICON_ROWS - 1) * ICON_PITCH + ICON_SIZE)
+        self._bar:AlignParentTopRight(GRID_TOP, 18)
+        self._bar:SetScrollSpeed(SCROLL_ROWS)
+        self._bar.OnScroll = function(_, value)
+            self._first = math.floor(value + 0.5)
+            self:_ShowIcons()
+        end
+        grid:EnableMouseWheel(true)
+        grid:SetScript("OnMouseWheel", function(_, delta)
+            self._bar:SetValue(self._bar:GetValue() - delta * SCROLL_ROWS)
+        end)
+    end;
+
+    -- name / icon: what the set has now (nil for a new one, which starts on
+    -- the icon of the first thing worn); done(name, icon).
     Open = function(self, title, name, icon, done)
         self._done = done
         self:SetTitle(title)
         self._name:SetText(name or "")
 
-        local seen, count = {}, 0
-        local function offer(texture)
-            if not texture or seen[texture] then return end
-            seen[texture] = true
-            count = count + 1
-            local button = self._icons[count]
-            if not button then
-                button = ButtonSimple(self)
-                button:SetSize(26, 26)
-                button:AlignParentTopLeft(80 + math.floor((count - 1) / 8) * 28, 18 + ((count - 1) % 8) * 28)
-                self._icons[count] = button
-            end
-            button:SetTexture(texture, 1, 1, 0, 0, 1, 1)
-            button.OnClick = function() self:_Choose(texture, button) end
-            button:Show()
-            if texture == icon or (not icon and count == 1) then self:_Choose(texture, button) end
-        end
-        offer(icon)
-        for slot = FIRST_SLOT, LAST_SLOT do
-            offer(GetInventoryItemTexture("player", slot))
-        end
-        offer("Interface\\Icons\\INV_Misc_QuestionMark")
-        for i = count + 1, #self._icons do
-            self._icons[i]:Hide()
-        end
+        self:_LoadIcons()
+        self._icon = icon or self._worn[1] or ICON_PATH .. QUESTION_MARK
+        self._preview:Set(self._icon, false)
+        self:_SetFilter("all")
 
         self:_Validate()
         self:Show()
         self._name:SetFocus()
     end;
 
-    _Choose = function(self, texture, button)
+    -- ---- the icons on offer ---------------------------------------------
+
+    -- The client's own lists, as it hands them to the macro window: an entry
+    -- is a file's id, or the bare name of a file in Interface\Icons.
+    _LoadIcons = function(self)
+        local worn, seen = {}, {}
+        for slot = FIRST_SLOT, LAST_SLOT do
+            local texture = GetInventoryItemTexture("player", slot)
+            if texture and not seen[texture] then
+                seen[texture] = true
+                worn[#worn + 1] = texture
+            end
+        end
+        local spells, items = {}, {}
+        GetLooseMacroIcons(spells)
+        GetMacroIcons(spells)
+        GetLooseMacroItemIcons(items)
+        GetMacroItemIcons(items)
+        self._worn, self._spells, self._items = worn, spells, items
+    end;
+
+    -- In the macro window's order: the question mark, what is worn (with
+    -- the items), the spells' icons, the items'.
+    _SetFilter = function(self, filter)
+        self._filter = filter
+        self._filterButton:SetText(FILTER_NAMES[filter])
+        local lists = { { QUESTION_MARK } }
+        if filter ~= "spell" then lists[#lists + 1] = self._worn end
+        if filter ~= "item" then lists[#lists + 1] = self._spells end
+        if filter ~= "spell" then lists[#lists + 1] = self._items end
+        self._lists = lists
+
+        local rows = math.ceil(self:_Count() / ICON_COLUMNS)
+        self._bar:SetMinMax(0, math.max(0, rows - ICON_ROWS))
+        self._bar:SetContentSize(ICON_ROWS, math.max(rows, 1))
+        self._chosen = self:_IndexOf(self._icon)
+        self:_ScrollTo(self._chosen or 1)
+    end;
+
+    _Count = function(self)
+        local count = 0
+        for _, list in ipairs(self._lists) do
+            count = count + #list
+        end
+        return count
+    end;
+
+    _IconAt = function(self, index)
+        for _, list in ipairs(self._lists) do
+            if index <= #list then
+                local texture = list[index]
+                return tonumber(texture) or ICON_PATH .. texture
+            end
+            index = index - #list
+        end
+    end;
+
+    -- Where an icon is among those on offer; nil when it is not one of them.
+    _IndexOf = function(self, icon)
+        local name = type(icon) == "string" and strupper(icon)
+        local index = 0
+        for _, list in ipairs(self._lists) do
+            for _, texture in ipairs(list) do
+                index = index + 1
+                local id = tonumber(texture)
+                if id then
+                    if id == icon then return index end
+                elseif name and strupper(ICON_PATH .. texture) == name then
+                    return index
+                end
+            end
+        end
+    end;
+
+    _ShowIcons = function(self)
+        local count = self:_Count()
+        for i, button in ipairs(self._buttons) do
+            local index = self._first * ICON_COLUMNS + i
+            button.index = index
+            button:SetVisible(index <= count)
+            if index <= count then
+                button:Set(self:_IconAt(index), index == self._chosen)
+            end
+        end
+    end;
+
+    -- Bring the row of the icon at `index` into view (to the top, when it
+    -- was out of it), and show the icons as the bar now stands.
+    _ScrollTo = function(self, index)
+        local row = math.floor((index - 1) / ICON_COLUMNS)
+        if row < self._first or row >= self._first + ICON_ROWS then
+            self._bar:SetValue(row)
+        end
+        self._first = math.floor(self._bar:GetValue() + 0.5)
+        self:_ShowIcons()
+    end;
+
+    -- `index`: the icon's place among those on offer, when the caller has it.
+    _Choose = function(self, texture, index)
         self._icon = texture
-        self._chosen:ClearAllPoints()
-        self._chosen:CenterAt(button)
+        self._chosen = index or self:_IndexOf(texture)
+        self._preview:Set(texture, false)
+        self:_ShowIcons()
+    end;
+
+    -- The icon of what the cursor holds: an item, a spell or a macro.
+    _TakeFromCursor = function(self)
+        local kind, id, _, spellId = GetCursorInfo()
+        local texture
+        if kind == "item" then
+            texture = C_Item.GetItemIconByID(id)
+        elseif kind == "spell" then
+            texture = C_Spell.GetSpellTexture(spellId)
+        elseif kind == "macro" then
+            texture = select(2, GetMacroInfo(id))
+        end
+        if not texture then return end
+        ClearCursor()
+        self:_Choose(texture)
+        if self._chosen then self:_ScrollTo(self._chosen) end
     end;
 
     _Validate = function(self)
@@ -683,7 +897,7 @@ class "CharacterEquipmentManager" : extends "Frame" {
         self._scroll.bar:AlignParentBottomLeft(30, 184)
 
         self._dialog = CharacterSetDialog(MUI_Root)
-        self._dialog:CenterInParent(0, 80)
+        self._dialog:CenterInParent(0, 40)
 
         MUI_EquipmentSets.OnChanged = function() self:Refresh() end
         self:HookScript("OnShow", function()

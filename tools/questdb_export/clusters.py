@@ -97,6 +97,16 @@ DUNGEON_ENTRANCES = {
 }
 
 
+# Creatures that are not there until the player comes: walking into the place
+# summons them. Their one spawn point stands for that place, so a target of
+# theirs is an area of this radius (yards) round it (a ring of points, which
+# clusters into a hull), not a lone spot.
+SUMMON_AREAS = {
+    15625: 100.0,  # Twilight Corrupter → the Twilight Grove, round Duskwood's Dream portal
+}
+SUMMON_AREA_VERTICES = 12
+
+
 # -------- Lua-table accessors --------
 
 def _entries_of(v):
@@ -206,10 +216,11 @@ def _item_drops(item, key, horde):
 
 # -------- spawn enumeration --------
 
-def _emit_spawns_into(out_list, spawns_table, area_to_ui):
+def _emit_spawns_into(out_list, spawns_table, area_to_ui, radius=None):
     """Append (uiMapId, normX, normY) tuples to `out_list` from a Lua-shaped
     spawns_table {[areaId] = {{x, y}, ...}}, applying dungeon rewrites and
-    areaId → uiMapId resolution."""
+    areaId → uiMapId resolution. With `radius` (yards, see SUMMON_AREAS) each
+    spawn goes in as a ring of points that far round it."""
     if spawns_table is None or spawns_table is LUA_NIL:
         return
     if not isinstance(spawns_table, dict):
@@ -229,8 +240,17 @@ def _emit_spawns_into(out_list, spawns_table, area_to_ui):
         for coord in _entries_of(coord_list):
             cx = _table_field(coord, 1)
             cy = _table_field(coord, 2)
-            if isinstance(cx, (int, float)) and isinstance(cy, (int, float)):
+            if not isinstance(cx, (int, float)) or not isinstance(cy, (int, float)):
+                continue
+            if not radius:
                 out_list.append((ui_map, cx / 100.0, cy / 100.0))
+                continue
+            width, height = UIMAP_SIZE_YARDS[ui_map]
+            for k in range(SUMMON_AREA_VERTICES):
+                a = 2 * math.pi * k / SUMMON_AREA_VERTICES
+                out_list.append((ui_map,
+                                 round(cx / 100.0 + radius * math.cos(a) / width, 4),
+                                 round(cy / 100.0 + radius * math.sin(a) / height, 4)))
 
 
 # -------- clustering --------
@@ -412,7 +432,7 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                 if not npc:
                     continue
                 points = []
-                _emit_spawns_into(points, npc.get("spawns"), area_to_ui)
+                _emit_spawns_into(points, npc.get("spawns"), area_to_ui, SUMMON_AREAS.get(cid))
                 if points:
                     target_groups.append({
                         "kind":   "npc",
@@ -454,7 +474,7 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                 if isinstance(src_id, int):
                     npc = npcs.get(src_id)
                     if npc:
-                        _emit_spawns_into(points, npc.get("spawns"), area_to_ui)
+                        _emit_spawns_into(points, npc.get("spawns"), area_to_ui, SUMMON_AREAS.get(src_id))
             for src_id in _entries_of(_item_drops(item, "objectDrops", horde)):
                 if isinstance(src_id, int):
                     obj = objects.get(src_id)

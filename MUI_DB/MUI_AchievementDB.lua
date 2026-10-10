@@ -7,7 +7,7 @@
 -- evaluator in MUI_AchievementEngine; the other fields are its parameters.
 -- `prev` chains a progressive achievement to the one before it, `sub`
 -- files it under a sub-category, `facOnly` ("A" / "H"), `classOnly` (class
--- file name), `noHardcore` (ruled out on a Hardcore realm) and
+-- file name, or a list of them), `noHardcore` (ruled out on a Hardcore realm) and
 -- `hardcoreOnly` hide it from characters it can't apply to, `account` gives it retail's blue
 -- account-wide header instead of the red one. Ids are stable (they live in
 -- SavedVariables): never reuse one. `icon` is a retail FileDataID shipped
@@ -34,6 +34,8 @@ object "AchievementDB" {
         }
 
         self._list = {
+            { id = 5001, cat = 1, name = "Level 10", desc = "Reach level 10.", pts = 5, icon = 236562,
+              crit = { t = "level", n = 10 } },
             { id = 101, cat = 1, name = "Level 20", desc = "Reach level 20.", pts = 5, icon = 236563, prev = 5001,
               crit = { t = "level", n = 20 } },
             { id = 102, cat = 1, name = "Level 30", desc = "Reach level 30.", pts = 5, icon = 236564, prev = 101,
@@ -149,7 +151,7 @@ object "AchievementDB" {
             { id = 206, cat = 2, name = "1500 Quests Completed", desc = "Complete 1,500 quests.", pts = 100, icon = 236671, prev = 205, account = true,
               crit = { t = "qcount", n = 1500 } },
             { id = 207, cat = 2, name = "Loremaster of Eastern Kingdoms", desc = "Complete the Eastern Kingdoms quest achievements listed below.", pts = 50, icon = 236759, account = true,
-              crit = { t = "meta", ids = { 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229 } } },
+              crit = { t = "meta", ids = { 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 5042, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229 } } },
             { id = 208, cat = 2, name = "Loremaster of Kalimdor", desc = "Complete the Kalimdor quest achievements listed below.", pts = 50, icon = 236807, account = true,
               crit = { t = "meta", ids = { 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 5037 } } },
             { id = 209, cat = 2, name = "The Loremaster", desc = "Complete the continental Loremaster achievements.", pts = 100, icon = 133739, account = true,
@@ -172,8 +174,10 @@ object "AchievementDB" {
               crit = { t = "qstory", zos = 10 } },
             { id = 218, cat = 2, sub = 21, name = "Wetlands Quests", desc = "Complete the Wetlands storylines listed below.", pts = 10, icon = 236853, facOnly = "A", account = true,
               crit = { t = "qstory", zos = 11 } },
-            { id = 219, cat = 2, sub = 21, name = "Hillsbrad Foothills Quests", desc = "Complete the Hillsbrad Foothills storylines listed below.", pts = 10, icon = 236779, facOnly = "H", account = true,
+            { id = 219, cat = 2, sub = 21, name = "Hillsbrad Foothills Quests", desc = "Complete the Hillsbrad Foothills storylines listed below.", pts = 10, icon = 236779, account = true,
               crit = { t = "qstory", zos = 267 } },
+            { id = 5042, cat = 2, sub = 21, name = "Alterac Mountains Quests", desc = "Complete the Alterac Mountains storylines listed below.", pts = 10, icon = 236711, facOnly = "A", account = true,
+              crit = { t = "qstory", zos = 36 } },
             { id = 220, cat = 2, sub = 21, name = "Arathi Highlands Quests", desc = "Complete the Arathi Highlands storylines listed below.", pts = 10, icon = 236712, account = true,
               crit = { t = "qstory", zos = 45 } },
             { id = 221, cat = 2, sub = 21, name = "The Hinterlands Quests", desc = "Complete the The Hinterlands storylines listed below.", pts = 10, icon = 236780, account = true,
@@ -584,11 +588,11 @@ object "AchievementDB" {
               crit = { t = "kill", label = "Ysondre", npc = { 14887 } } },
             { id = 576, cat = 5, name = "Dragonslayer of the Nightmare", desc = "Defeat all four dragons of the Emerald Nightmare.", pts = 50, icon = 134157, account = true,
               crit = { t = "meta", ids = { 572, 573, 574, 575 } } },
-            { id = 577, cat = 5, name = "Thunderfury, Blessed Blade of the Windseeker", desc = "Wield Thunderfury, Blessed Blade of the Windseeker.", pts = 100, icon = 135349,
+            { id = 577, cat = 5, name = "Thunderfury, Blessed Blade of the Windseeker", desc = "Wield Thunderfury, Blessed Blade of the Windseeker.", pts = 100, icon = 135349, classOnly = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE" },
               crit = { t = "questOrItem", item = { 19019 }, label = "Thunderfury, Blessed Blade of the Windseeker", quest = { 7787 } } },
             { id = 578, cat = 5, name = "Sulfuras, Hand of Ragnaros", desc = "Wield Sulfuras, Hand of Ragnaros.", pts = 100, icon = 133066,
               crit = { t = "questOrItem", item = { 17182 }, label = "Sulfuras, Hand of Ragnaros", quest = {  } } },
-            { id = 579, cat = 5, name = "Atiesh, Greatstaff of the Guardian", desc = "Wield Atiesh, Greatstaff of the Guardian.", pts = 100, icon = 135226,
+            { id = 579, cat = 5, name = "Atiesh, Greatstaff of the Guardian", desc = "Wield Atiesh, Greatstaff of the Guardian.", pts = 100, icon = 135226, classOnly = { "PRIEST", "MAGE", "WARLOCK", "DRUID" },
               crit = { t = "questOrItem", item = { 22589, 22630, 22631, 22632, 22737 }, label = "Atiesh, Greatstaff of the Guardian", quest = {  } } },
             { id = 601, cat = 6, name = "Somebody Likes Me", desc = "Raise a reputation to Exalted.", pts = 10, icon = 236681, account = true,
               crit = { t = "repCount", n = 1 } },
@@ -660,6 +664,8 @@ object "AchievementDB" {
               crit = { t = "fishSchool" } },
             { id = 714, cat = 7, name = "100 Fish", desc = "Fish up 100 items.", pts = 10, icon = 237301,
               crit = { t = "fish", n = 100 } },
+            { id = 5012, cat = 7, name = "500 Fish", desc = "Fish up 500 items.", pts = 10, icon = 237301, prev = 714,
+              crit = { t = "fish", n = 500 } },
             { id = 715, cat = 7, name = "1000 Fish", desc = "Fish up 1,000 items.", pts = 50, icon = 237301, prev = 5012,
               crit = { t = "fish", n = 1000 } },
             { id = 716, cat = 7, name = "Master Angler of Azeroth", desc = "Win the Stranglethorn Vale Fishing Extravaganza.", pts = 50, icon = 133892,
@@ -710,6 +716,8 @@ object "AchievementDB" {
               crit = { t = "moneyHeld", n = 50000000 } },
             { id = 806, cat = 8, name = "It's Purple!", desc = "Loot your first epic item.", pts = 10, icon = 134075,
               crit = { t = "lootQuality", n = 1, q = 4 } },
+            { id = 5003, cat = 8, name = "Superior", desc = "Equip a Superior or better item in every slot.", pts = 10, icon = 132885,
+              crit = { t = "epicSlots", q = 3 } },
             { id = 807, cat = 8, name = "Decked Out", desc = "Equip an epic item in every slot.", pts = 50, icon = 132885, prev = 5003,
               crit = { t = "epicSlots" } },
             { id = 808, cat = 8, name = "Epic Hoarder", desc = "Loot 25 epic items.", pts = 50, icon = 132764,
@@ -1060,12 +1068,8 @@ object "AchievementDB" {
               crit = { t = "dmfTickets", n = 100 } },
             { id = 1117, cat = 11, name = "A Full Deck", desc = "Combine a full set of Darkmoon cards into a deck and claim its reward.", pts = 25, icon = 134493, account = true,
               crit = { t = "dmfDeck", item = { 19228, 19267, 19277, 19257, 19288, 19289, 19287, 19290 }, label = "A Darkmoon deck" } },
-            { id = 5001, cat = 1, name = "Level 10", desc = "Reach level 10.", pts = 5, icon = 236562,
-              crit = { t = "level", n = 10 } },
             { id = 5002, cat = 1, name = "Dual Talent Specialization", desc = "Activate your Dual Talent Specialization.", pts = 10, icon = 236544,
               crit = { t = "talentGroups" } },
-            { id = 5003, cat = 8, name = "Superior", desc = "Equip a Superior or better item in every slot.", pts = 10, icon = 132885,
-              crit = { t = "epicSlots", q = 3 } },
             { id = 5004, cat = 1, name = "Represent", desc = "Equip a tabard.", pts = 5, icon = 135026,
               crit = { t = "flag", key = "tabardWorn", label = "Wear a tabard" } },
             { id = 5005, cat = 1, name = "Pest Control", desc = "Slay the following pests.", pts = 10, icon = 132196,
@@ -1082,8 +1086,6 @@ object "AchievementDB" {
               crit = { t = "playedDays", n = 30 } },
             { id = 5011, cat = 1, name = "Timeworn", desc = "Play for 100 days.", pts = 25, icon = 133785, prev = 5010,
               crit = { t = "playedDays", n = 100 } },
-            { id = 5012, cat = 7, name = "500 Fish", desc = "Fish up 500 items.", pts = 10, icon = 237301, prev = 714,
-              crit = { t = "fish", n = 500 } },
             { id = 5013, cat = 1, name = "Changed My Mind", desc = "Reset your talents 10 times.", pts = 10, icon = 236325,
               crit = { t = "count", key = "respecs", label = "Talent resets", n = 10 } },
             { id = 5014, cat = 1, name = "Frequent Flyer", desc = "Take 100 flights.", pts = 10, icon = 132225,

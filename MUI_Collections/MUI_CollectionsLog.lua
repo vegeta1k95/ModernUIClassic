@@ -3,7 +3,7 @@
 -- own: a piece counts as collected from the moment it is seen on the
 -- character, in its bags or in its bank, and stays so after it is gone. It is
 -- kept with the character's saved variables (MUI_DB.data.collections), along
--- with the sets starred in the list.
+-- with the sets and the mounts starred in their lists.
 --
 --   MUI_CollectionsLog
 --     :Start()                  take in what is held now, watch for more
@@ -13,18 +13,23 @@
 --     :SetFavorite(setId, favorite)
 --     .OnChanged                called when a piece or a star is added or a
 --                               star taken away
+--     :IsFavoriteMount(spell)
+--     :SetFavoriteMount(spell, favorite)
+--     .OnMountsChanged          called when a mount's star is set or taken
 
 object "CollectionsLog" {
     __init = function(self)
         self.OnChanged = nil
+        self.OnMountsChanged = nil
         self._items = {}
         self._favorites = {}
+        self._mounts = {}
         self._bankOpen = false
     end;
 
     Start = function(self)
         local saved = MUI_DB.data.collections
-        self._items, self._favorites = saved.items, saved.favorites
+        self._items, self._favorites, self._mounts = saved.items, saved.favorites, saved.mounts
 
         self._watcher = Frame()
         self._watcher:RegisterEventHandler("BAG_UPDATE_DELAYED", function()
@@ -74,6 +79,15 @@ object "CollectionsLog" {
     SetFavorite = function(self, setId, favorite)
         self._favorites[setId] = favorite and true or nil
         if self.OnChanged then self.OnChanged() end
+    end;
+
+    IsFavoriteMount = function(self, spell)
+        return self._mounts[spell] == true
+    end;
+
+    SetFavoriteMount = function(self, spell, favorite)
+        self._mounts[spell] = favorite and true or nil
+        if self.OnMountsChanged then self.OnMountsChanged() end
     end;
 
     -- ---- internals --------------------------------------------------------

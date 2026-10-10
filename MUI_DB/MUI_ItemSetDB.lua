@@ -11,7 +11,8 @@
 --   area        profession's skill line when it is one the client can name
 --   skill       (:GetSource)
 --   faction   "Alliance" / "Horde" for a set only one side can earn
---   items     its pieces' item ids as worn, head to feet, jewellery last
+--   items     its pieces' item ids: a weapon first, then as worn, head to
+--               feet, jewellery last
 
 object "ItemSetDB" {
     -- Every set, the highest item level first; those of one level by where
@@ -172,6 +173,24 @@ object "ItemSetDB" {
               items = { 23253, 23254, 22877, 22863, 22878, 22852 } },
             { id = 538, name = "Champion's Stormcaller", classes = 64, level = 71, quality = 3, label = "PvP Rank 10", faction = "Horde",
               items = { 23259, 23260, 22876, 22867, 22887, 22857 } },
+            { id = 506, name = "Battlegear of Eternal Justice", classes = 2, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21395, 21397, 21396 } },
+            { id = 495, name = "Battlegear of Unyielding Strength", classes = 1, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21392, 21394, 21393 } },
+            { id = 498, name = "Emblems of Veiled Shadows", classes = 8, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21404, 21406, 21405 } },
+            { id = 508, name = "Finery of Infinite Wisdom", classes = 16, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21410, 21412, 21411 } },
+            { id = 502, name = "Gift of the Gathering Storm", classes = 64, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21398, 21400, 21399 } },
+            { id = 500, name = "Implements of Unspoken Names", classes = 256, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21416, 21418, 21417 } },
+            { id = 494, name = "Symbols of Unending Life", classes = 1024, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21407, 21409, 21408 } },
+            { id = 504, name = "Trappings of Vaulted Secrets", classes = 128, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21413, 21415, 21414 } },
+            { id = 510, name = "Trappings of the Unseen Path", classes = 4, level = 70, quality = 4, label = "Ruins of Ahn'Qiraj", area = 3429,
+              items = { 21401, 21403, 21402 } },
             { id = 480, name = "Confessor's Raiment", classes = 16, level = 68, quality = 4, label = "Zul'Gurub", area = 1977,
               items = { 19841, 19843, 19842, 19594, 19958 } },
             { id = 477, name = "Predator's Armor", classes = 4, level = 68, quality = 4, label = "Zul'Gurub", area = 1977,

@@ -1,18 +1,22 @@
 -- MUI_Collections: retail's Collections window for Classic Era, which has no
 -- collections of its own — the window (MUI_CollectionsFrame) over the game's
--- item sets (MUI_ItemSetDB, see tools/itemsets_export.py) and our own record
--- of the pieces the character has held:
+-- mounts (MUI_MountDB, see tools/mounts_export.py) and item sets
+-- (MUI_ItemSetDB, see tools/itemsets_export.py), and our own record of the
+-- set pieces the character has held:
 --
---   MUI_CollectionsFrame        the window and its tabs
---   MUI_CollectionsSets         the sets page: search, filters, progress
---   MUI_CollectionsSetList      the list of sets
---   MUI_CollectionsSetDetails   the set on show: the model, its pieces
---   MUI_CollectionsLog          the pieces ever held, the sets starred
---   MUI_CollectionsStyle        scale, labels, art pieces
+--   MUI_CollectionsFrame          the window and its tabs
+--   MUI_CollectionsMounts         the mounts page: search, filters, the Mount button
+--   MUI_CollectionsMountList      the list of mounts
+--   MUI_CollectionsMountDisplay   the mount on show: the model, where it comes from
+--   MUI_CollectionsSets           the sets page: search, filters, progress
+--   MUI_CollectionsSetList        the list of sets
+--   MUI_CollectionsSetDetails     the set on show: the model, its pieces
+--   MUI_CollectionsLog            the pieces ever held, the sets and mounts starred
+--   MUI_CollectionsStyle          scale, labels, art pieces
 --
--- Of retail's window this is the Sets tab of Appearances. Its other pages
--- are about things Era has no system for (pets, toys, heirlooms, the
--- appearances of single items) or none yet here (mounts).
+-- Of retail's window these are the Mounts tab and the Sets tab of
+-- Appearances. Its other pages are about things Era has no system for (pets,
+-- toys, heirlooms, the appearances of single items).
 --
 -- The micro menu's Collections button opens the window; so do the "Toggle
 -- Collections" key binding and /muicollections.

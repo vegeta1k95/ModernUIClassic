@@ -948,7 +948,10 @@ class "AchievementEngine" {
         for _, def in ipairs(MUI_AchievementDB:GetAll()) do
             local forFaction = not def.facOnly or ((def.facOnly == "A") == (self.faction == "Alliance"))
             local forRealm = not (self.hardcore and def.noHardcore) and (not def.hardcoreOnly or self.hardcore)
-            if forFaction and forRealm and (not def.classOnly or def.classOnly == self.class) then
+            -- one class, or a list of them
+            local only = def.classOnly
+            local forClass = not only or only == self.class or (type(only) == "table" and tContains(only, self.class))
+            if forFaction and forRealm and forClass then
                 self.byId[def.id] = def
                 self.list[#self.list + 1] = def
                 local cat = def.sub or def.cat

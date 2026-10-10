@@ -4,6 +4,9 @@
 -- rounded into a smooth outline, filled, with a soft glow band around it.
 -- One area per tracked quest with non-empty clusters; the manager creates /
 -- destroys them with the watcher and toggles visibility on focus / hover.
+-- An objective found at a lone spot has no hull and gets no area here: on
+-- this map the quest's pin marks it (the small area round such a spot is
+-- the minimap's alone).
 --
 -- Visibility rule (per user spec):
 --   focused              → show
@@ -47,10 +50,6 @@ local BORDER_OUTER = CreateColor(0.35, 0.40, 1.00, 0.00)   -- outer rim
 local BORDER_WIDTH = 9      -- band width, canvas px
 local BORDER_INSET = 1      -- of which this much sits inside the fill's edge
 local BLOB_PAD     = 8      -- least margin between a hull vertex and the outline, canvas px
-
--- Stray-point circle radius (world yards). Small: BLOB_PAD already grows a
--- lone point into a blob that reads at zone-map scale.
-local STRAY_CIRCLE_YARDS = 15
 
 class "MapQuestObjectiveArea" : extends "Frame" {
     __init = function(self, name, questId)
@@ -381,17 +380,9 @@ class "MapQuestAreaManager" : extends "Frame" {
         -- Targets on the displayed map's continent; _UpdateAll re-picks
         -- on every map change.
         local cont = self:_DisplayedContinent() or cluster:GetContinent()
-        -- Real hulls when the quest has enough points to form one; otherwise
-        -- per-point stray circles, as on the minimap, so scattered single
-        -- locations (scout camps, lone objects) still get an area.
         local hulls = {}
-        local real = cluster:GetClusters(cont)
-        if #real > 0 then
-            for _, c in ipairs(real) do
-                if c.hull then hulls[#hulls + 1] = c.hull end
-            end
-        else
-            hulls = cluster:GetStrayHulls(STRAY_CIRCLE_YARDS, cont)
+        for _, c in ipairs(cluster:GetClusters(cont)) do
+            hulls[#hulls + 1] = c.hull
         end
         if #hulls == 0 then self:_Destroy(questId); return end
 

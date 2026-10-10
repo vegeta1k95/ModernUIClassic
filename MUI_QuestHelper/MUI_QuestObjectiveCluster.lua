@@ -40,7 +40,10 @@
 -- an optional continentId filter and GetContinents lists what's present.
 -- Every hull and stray point also names its target, for a tooltip over its
 -- area: `objective`, the line's index in entry.objectives, or `itemId` for
--- a required source item.
+-- a required source item. Clusters and stray points carry `target` too, the
+-- row they come from: a target with stray points and no cluster is a lone
+-- spot (GetLonePoints), where a clustered target's stray points are only
+-- its outlying spawns.
 
 -- Maps our target `kind` to the quest log leaderboard `type` string.
 -- Stable across locales — Blizzard's leaderboard `type` is fixed
@@ -52,7 +55,7 @@ local _KIND_TO_LEADER_TYPE = {
     ["trigger"] = "event",
 }
 
--- Vertex count of the circle polygon GetStrayHulls draws around each stray point.
+-- Vertex count of the circle polygon GetLoneHulls draws around each lone point.
 local STRAY_CIRCLE_VERTICES = 12
 
 class "QuestObjectiveCluster" {
@@ -100,7 +103,7 @@ class "QuestObjectiveCluster" {
             -- that kind — that counter IS the leaderboard slot index
             -- within the type.
             local typeIdx = {}
-            for _, target in ipairs(precomputed.objectives) do
+            for row, target in ipairs(precomputed.objectives) do
                 local include = false
                 local objective, itemId
                 if target.kind == "sourceitem" then
@@ -125,6 +128,7 @@ class "QuestObjectiveCluster" {
                         for _, c in ipairs(target.clusters) do
                             local rec = self:_ConvertCluster(c)
                             if rec then
+                                rec.target = row
                                 rec.hull.objective, rec.hull.itemId = objective, itemId
                                 self._clusters[#self._clusters + 1] = rec
                                 self._continent = self._continent or rec._continent
@@ -137,7 +141,7 @@ class "QuestObjectiveCluster" {
                                 s.uiMapId, s.normX, s.normY)
                             if wx and wy then
                                 self._points[#self._points + 1] =
-                                    { wx, wy, cont, objective = objective, itemId = itemId }
+                                    { wx, wy, cont, target = row, objective = objective, itemId = itemId }
                                 self._continent = self._continent or cont
                             end
                         end
@@ -194,13 +198,14 @@ class "QuestObjectiveCluster" {
         }
     end;
 
-    -- Stray points as small CCW circle polygons (world yards) for the area
-    -- renderers: a target with too few spawns for a hull still gets a clearly
-    -- localised marker. Radius is a per-surface legibility choice, not geography.
-    GetStrayHulls = function(self, radiusYards, continentId)
+    -- The lone points as small CCW circle polygons (world yards) for the
+    -- minimap's area renderer: a target with too few spawns for a hull still
+    -- gets a clearly localised marker there. Radius is a legibility choice,
+    -- not geography.
+    GetLoneHulls = function(self, radiusYards, continentId)
         local hulls = {}
         local step = 2 * math.pi / STRAY_CIRCLE_VERTICES
-        for _, p in ipairs(self:GetPoints(continentId)) do
+        for _, p in ipairs(self:GetLonePoints(continentId)) do
             local hull = { objective = p.objective, itemId = p.itemId }
             for v = 1, STRAY_CIRCLE_VERTICES do
                 local a = (v - 1) * step
@@ -228,6 +233,21 @@ class "QuestObjectiveCluster" {
         local out = {}
         for _, p in ipairs(self._points) do
             if p[3] == continentId then out[#out + 1] = p end
+        end
+        return out
+    end;
+
+    -- The stray points of the targets that have no cluster (on
+    -- `continentId`, when given): the spots of an objective found in one
+    -- place or two. The outlying spawns of a clustered target are left out.
+    GetLonePoints = function(self, continentId)
+        local clustered = {}
+        for _, c in ipairs(self:GetClusters(continentId)) do
+            clustered[c.target] = true
+        end
+        local out = {}
+        for _, p in ipairs(self:GetPoints(continentId)) do
+            if not clustered[p.target] then out[#out + 1] = p end
         end
         return out
     end;
