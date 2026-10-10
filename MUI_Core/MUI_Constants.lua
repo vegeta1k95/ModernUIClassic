@@ -18,6 +18,16 @@ MUI.TEX_SKIN  = MUI.TEX_BASE .. "skin\\"
 -- (pin icon registries + tooltip icon escapes).
 MUI.PVP_QUEST_TINT = { 1, 0.35, 0.2 }
 
+-- A class's colour as the addon draws it: the client's own, but for the
+-- shaman, who shares the paladin's pink on Era and gets retail's blue here.
+-- RAID_CLASS_COLORS itself is left alone: it is Blizzard's, and writing to it
+-- taints the secure code that reads it.
+local SHAMAN_COLOR = CreateColor(0, 0.44, 0.87)
+MUI.ClassColor = function(classFile)
+    if classFile == "SHAMAN" then return SHAMAN_COLOR end
+    return RAID_CLASS_COLORS[classFile]
+end
+
 -- Print to the default chat frame. Lazy-wraps DEFAULT_CHAT_FRAME on first
 -- use (ChatFrame class is loaded later in the .toc). Use this for all
 -- addon-side logging so module files never touch DEFAULT_CHAT_FRAME directly.

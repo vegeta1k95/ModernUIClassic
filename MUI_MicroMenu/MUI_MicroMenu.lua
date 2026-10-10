@@ -192,7 +192,7 @@ object "ModuleMicroMenu" : extends "Module" {
         self._btnAdventureGuide:LeftOf(self._btnShop, BUTTON_SPACING)
         self._btnAdventureGuide:SetEnabled(false)
 
-        -- Collections
+        -- Collections: enabled once MUI_Collections hands over its window (WireCollections)
         self._btnCollections = MicroButtonToggle(self._container, "Collections", "Collections")
         self._btnCollections:LeftOf(self._btnAdventureGuide, BUTTON_SPACING)
         self._btnCollections:SetEnabled(false)
@@ -364,7 +364,7 @@ object "ModuleMicroMenu" : extends "Module" {
         tip(Frame(CharacterMicroButton), "Character Info",        "TOGGLECHARACTER0")
         tip(self._btnShop,           "Shop")
         tip(self._btnAdventureGuide, "Adventure Guide",       "MUI_TOGGLE_ADVENTUREGUIDE")
-        --tip(self._btnCollections,    "Collections",           "TOGGLECOLLECTIONS")
+        tip(self._btnCollections,    COLLECTIONS,             "MUI_TOGGLE_COLLECTIONS")
         tip(self._btnGroupFinder,    "Group Finder",          "TOGGLEGROUPFINDER")
         tip(self._btnGuild,          "Guild",                 "TOGGLEGUILDTAB")
         tip(self._btnSpellbook,      "Spellbook & Abilities", "TOGGLESPELLBOOK")
@@ -388,6 +388,13 @@ object "ModuleMicroMenu" : extends "Module" {
         self._btnAdventureGuide:HookFrameVisibility(frame)
         self._btnAdventureGuide:HookScript("OnClick", function() frame:Toggle() end)
         self._btnAdventureGuide:SetEnabled(true)
+    end;
+
+    -- Our Collections window (Era loads none): the same way.
+    WireCollections = function(self, frame)
+        self._btnCollections:HookFrameVisibility(frame)
+        self._btnCollections:HookScript("OnClick", function() frame:Toggle() end)
+        self._btnCollections:SetEnabled(true)
     end;
 
     HookGameMenu = function(self)

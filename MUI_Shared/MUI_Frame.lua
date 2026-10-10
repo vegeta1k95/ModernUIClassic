@@ -186,6 +186,11 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         self._native:EnableMouse(enable)
     end;
 
+    -- Hover only: clicks go on to whatever is underneath.
+    EnableMouseMotion = function(self, enable)
+        self._native:EnableMouseMotion(enable)
+    end;
+
     EnableMouseWheel = function(self, enable)
         self._native:EnableMouseWheel(enable)
     end;

@@ -174,6 +174,7 @@ object "ModuleMap" : extends "Module" {
         hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", function()
             self:_ResizeFrame()
         end)
+        self:_PlacePanel()
 
         -- Re-center the canvas scroll when the viewport is taller / wider
         -- than the canvas renders at baseScale. Era's
@@ -333,23 +334,30 @@ object "ModuleMap" : extends "Module" {
         end)
     end;
 
+    -- What the panel manager places the map by. 1.15.9 shows the mini map as
+    -- a "left" UI panel (WorldMapScreenAnchor is unused): keep it at 10, -80
+    -- UIParent units. The manager places a panel before it shows it, so this
+    -- is set up front as well as with every resize: set only as the map
+    -- showed, it left the first opening at Era's own offset, on the screen's
+    -- left edge.
+    _PlacePanel = function(self)
+        self.frame:SetAttribute("UIPanelLayout-width", self._isTabVisible and 661 or 448)
+        local uiParent = Frame(UIParent)
+        local ratio = uiParent:GetEffectiveScale() / self.frame:GetEffectiveScale()
+        SetUIPanelAttribute(WorldMapFrame, "xoffset",  10 * ratio - uiParent:GetAttribute("LEFT_OFFSET"))
+        SetUIPanelAttribute(WorldMapFrame, "yoffset", -80 * ratio - uiParent:GetAttribute("TOP_OFFSET"))
+    end;
+
     _ResizeFrame = function(self)
 
         if self._isTabVisible then
             self._tabHolder:Show()
             self.frame:SetSize(661, 335)
-            self.frame:SetAttribute("UIPanelLayout-width", 661)
         else
             self._tabHolder:Hide()
             self.frame:SetSize(448, 335)
-            self.frame:SetAttribute("UIPanelLayout-width", 448)
         end
-
-        -- 1.15.9 places the mini map as a "left" UI panel (WorldMapScreenAnchor is unused): keep it at 10, -80 UIParent units.
-        local uiParent = Frame(UIParent)
-        local ratio = uiParent:GetEffectiveScale() / self.frame:GetEffectiveScale()
-        SetUIPanelAttribute(WorldMapFrame, "xoffset",  10 * ratio - uiParent:GetAttribute("LEFT_OFFSET"))
-        SetUIPanelAttribute(WorldMapFrame, "yoffset", -80 * ratio - uiParent:GetAttribute("TOP_OFFSET"))
+        self:_PlacePanel()
 
         self.closeBtn:ClearAllPoints()
         self.closeBtn:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 2, 6)

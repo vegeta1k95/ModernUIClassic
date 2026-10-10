@@ -23,6 +23,11 @@
 --     .wide            540 wide with the side pane, or 400
 --     :GetTitle()      text, r, g, b for the title bar
 --     :GetPortrait()   unit, or unit and an icon to show instead
+--     :BuildLevelText(), :UpdateLevelText()
+--                      the player's level line under the title, for the
+--                      panes that have it
+--     :BuildBarEdge(bar, name)
+--                      a thin gold edge around a status bar
 
 local S = 0.9
 -- The panel manager puts Era's frame 16 px left of and 12 px above where a
@@ -73,6 +78,53 @@ class "CharacterPane" : extends "Frame" {
 
     GetPortrait = function(self)
         return "player"
+    end;
+
+    -- Era's thin gold edge (the money frames') around a bar. The frame needs
+    -- a name: the template anchors its middle piece to its caps by name. The
+    -- art's middle strip is shaded along its length, with a step in its lower
+    -- line halfway, which shows when it is drawn out over a bar: the middle
+    -- piece is one even stretch of it instead, in the caps' own gold.
+    BuildBarEdge = function(self, bar, name)
+        local edge = Frame("Frame", bar, name, "ThinGoldEdgeTemplate")
+        edge:FillParentPadding(-3, -3, -3, -3)
+        Texture(getglobal(name .. "Middle")):SetTexCoord(0.06640625, 0.08984375, 0.3125, 0.609375)
+        return edge
+    end;
+
+    -- "Level 60 Human Warrior", the class in its colour, centred in the
+    -- strip under the title; Era's guild line under it when there is one,
+    -- the pair then sharing the strip. Era heads its character and honor
+    -- sheets with these.
+    BuildLevelText = function(self)
+        self._level = FontString(self, nil, "ARTWORK")
+        self._level:SetFontSize(11)
+        self._level:SetTextColor(1, 0.82, 0, 1)
+        self._level:SetSize(260, 24)
+
+        self._guild = FontString(self, nil, "ARTWORK")
+        self._guild:SetFontSize(10)
+        self._guild:SetTextColor(1, 0.82, 0, 1)
+        self._guild:Below(self._level, -6)
+
+        self:RegisterEventHandler("UNIT_LEVEL", function(_, _, unit)
+            if unit == "player" then self:UpdateLevelText() end
+        end)
+        self:RegisterEventHandler("PLAYER_GUILD_UPDATE", function() self:UpdateLevelText() end)
+    end;
+
+    UpdateLevelText = function(self)
+        local class, classFile = UnitClass("player")
+        local color = MUI.ClassColor(classFile)
+        self._level:SetText(PLAYER_LEVEL:format(UnitLevel("player"), UnitRace("player"), color:WrapTextInColorCode(class)))
+
+        local guild, title = GetGuildInfo("player")
+        if guild then
+            self._guild:SetText(GUILD_TITLE_TEMPLATE:format(title, guild))
+        end
+        self._guild:SetVisible(guild ~= nil)
+        self._level:ClearAllPoints()
+        self._level:AlignTop(self.window.canvas, guild and 24 or 30)
     end;
 }
 
@@ -237,6 +289,12 @@ class "CharacterWindow" : extends "PanelPortrait" {
         self._blizzard:HideAllRegions()
         self._blizzard:EnableMouse(false)
         Frame(CharacterNameFrame):Hide()
+        -- The level and guild lines of Era's character and honor sheets hang
+        -- from its name, not from the sheets: parking those leaves them here.
+        -- Made transparent: Era shows the guild lines again on every update.
+        for _, line in ipairs({ CharacterLevelText, CharacterGuildText, HonorLevelText, HonorGuildText }) do
+            FontString(line):SetAlpha(0)
+        end
         self:_ParkSubFrames()
         self:_SkinCloseButton()
 

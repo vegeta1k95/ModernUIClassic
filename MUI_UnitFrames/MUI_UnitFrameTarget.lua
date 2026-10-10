@@ -40,6 +40,8 @@ class "UnitFrameTarget" {
             f:ClearAllPoints()
             f:SetPoint("BOTTOMLEFT", MUI_ModuleActionBars.bars.MAIN1, "TOPRIGHT", 38, 162)
         end)
+        -- The native hit rect (96, 40, 10, 9) is cut for the 232x100 frame; ours takes the mouse all over.
+        self.frame:SetHitRectInsets(0, 0, 0, 0)
         hooksecurefunc(TargetFrame, "UpdateSystem", function() self.frame:Reassert() end)
 
         self._portrait = Texture(TargetFramePortrait)

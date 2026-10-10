@@ -59,7 +59,8 @@ object "UnitFrames" : extends "Module" {
         textFrame:SetWidth(ref:GetWidth())
         textFrame:SetFrameStrata(parentFrame:GetFrameStrata())
         textFrame:SetFrameLevel(parentFrame:GetFrameLevel() + 2)
-        textFrame:EnableMouse(true)
+        -- Hover only, like Blizzard's TextStatusBar: clicks go on to the unit frame.
+        textFrame:EnableMouseMotion(true)
 
         local valueText = FontString(textFrame, nil, "OVERLAY")
         valueText:SetFont(MUI.FONT, fontSize, "OUTLINE")

@@ -79,8 +79,8 @@ class "UnitFramePlayer" {
             f:ClearAllPoints()
             f:SetPoint("BOTTOMRIGHT", MUI_ModuleActionBars.bars.MAIN1, "TOPLEFT", -38, 162)
         end)
-        -- 1.15.9 shrank the native hit rect to (21, 19, 12, 15); keep the pre-1.15.9 one.
-        self.frame:SetHitRectInsets(6, 0, 4, 9)
+        -- The native hit rect (21, 19, 12, 15) is cut for the 232x100 frame; ours takes the mouse all over.
+        self.frame:SetHitRectInsets(0, 0, 0, 0)
         hooksecurefunc(PlayerFrame, "UpdateSystem", function() self.frame:Reassert() end)
 
         self._portrait = Texture(PlayerPortrait)

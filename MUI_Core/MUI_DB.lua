@@ -115,6 +115,13 @@ local DEFAULTS = {
         -- Equipment sets (MUI_CharacterEquipment), in the order made:
         -- { name, icon, items = { [slot] = link }, ignored = { [slot] = true } }.
         equipmentSets = {},
+        -- Collections (MUI_CollectionsLog): every set piece this character
+        -- has held, [item id] = true, and the sets starred in the list,
+        -- [set id] = true.
+        collections = {
+            items     = {},
+            favorites = {},
+        },
         -- [nodeID] = true for every taxi node the player has discovered.
         -- C_TaxiMap.GetTaxiNodesForMap doesn't expose discovery state in
         -- Classic Era (isUndiscovered is always false), so MapStaticPinManager

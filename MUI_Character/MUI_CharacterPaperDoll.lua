@@ -143,7 +143,7 @@ class "CharacterPaperDoll" : extends "CharacterPane" {
         self:_BuildStage()
         self:_BuildBorder()
         self:_BuildSlots()
-        self:_BuildLevelText()
+        self:BuildLevelText()
         self.sidebar = CharacterSidebar(self, window)
         self.flyout  = CharacterEquipmentFlyout(self)
 
@@ -170,10 +170,6 @@ class "CharacterPaperDoll" : extends "CharacterPane" {
         self:RegisterEventHandler("GET_ITEM_INFO_RECEIVED", function()
             if self:IsVisible() then self:_UpdateQualities() end
         end)
-        self:RegisterEventHandler("UNIT_LEVEL", function(_, _, unit)
-            if unit == "player" then self:_UpdateLevelText() end
-        end)
-        self:RegisterEventHandler("PLAYER_GUILD_UPDATE", function() self:_UpdateLevelText() end)
     end;
 
     -- Retail shows the specialization's icon in the ring; here that is the
@@ -356,39 +352,8 @@ class "CharacterPaperDoll" : extends "CharacterPane" {
         end
     end;
 
-    -- ---- the level line ------------------------------------------------
-
-    -- "Level 60 Human Warrior", the class in its colour, centred in the
-    -- strip under the title; Era's guild line under it when there is one,
-    -- the pair then sharing the strip.
-    _BuildLevelText = function(self)
-        self._level = FontString(self, nil, "ARTWORK")
-        self._level:SetFontSize(11)
-        self._level:SetTextColor(1, 0.82, 0, 1)
-        self._level:SetSize(260, 24)
-
-        self._guild = FontString(self, nil, "ARTWORK")
-        self._guild:SetFontSize(10)
-        self._guild:SetTextColor(1, 0.82, 0, 1)
-        self._guild:Below(self._level, -6)
-    end;
-
-    _UpdateLevelText = function(self)
-        local class, classFile = UnitClass("player")
-        local color = RAID_CLASS_COLORS[classFile]
-        self._level:SetText(PLAYER_LEVEL:format(UnitLevel("player"), UnitRace("player"), color:WrapTextInColorCode(class)))
-
-        local guild, title = GetGuildInfo("player")
-        if guild then
-            self._guild:SetText(GUILD_TITLE_TEMPLATE:format(title, guild))
-        end
-        self._guild:SetVisible(guild ~= nil)
-        self._level:ClearAllPoints()
-        self._level:AlignTop(self.window.canvas, guild and 24 or 30)
-    end;
-
     Refresh = function(self)
-        self:_UpdateLevelText()
+        self:UpdateLevelText()
         self:_UpdateQualities()
     end;
 }

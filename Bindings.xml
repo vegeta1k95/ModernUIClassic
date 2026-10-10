@@ -38,4 +38,12 @@
         MUI_ModuleAdventureGuide:Toggle()
     </Binding>
 
+    <!--
+        Toggle Collections: a plain window of ours too. Its label is set in
+        MUI_Collections\MUI_Collections.lua.
+    -->
+    <Binding name="MUI_TOGGLE_COLLECTIONS" category="BINDING_HEADER_INTERFACE">
+        MUI_ModuleCollections:Toggle()
+    </Binding>
+
 </Bindings>

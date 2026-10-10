@@ -24,6 +24,8 @@ class "UnitFramePet" {
             f:Below(anchorWidget, 5)
             f:AlignRight(anchorWidget)
         end)
+        -- The native hit rect (7, 66, 6, 7) is the portrait of the 128x53 frame; this is ours.
+        self.frame:SetHitRectInsets(5, 66, 6, 3)
         -- Only pet classes get the pet frame in edit mode; others never have a
         -- pet, so there's nothing to position.
         local _, class = UnitClass("player")

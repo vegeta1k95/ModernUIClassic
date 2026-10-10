@@ -89,7 +89,14 @@ class "CharacterSidebar" : extends "Frame" {
         Frame.__init(self, "Frame", paperDoll)
         self:Fill(window.insetRight, 3, 3, 3, 2)
 
-        self.stats   = CharacterStatSheet(self, "player", SECTIONS, true)
+        -- Paladins, shamans and druids hold a relic where a ranged weapon goes.
+        local sections = {}
+        for _, section in ipairs(SECTIONS) do
+            if section[1] ~= "Ranged" or not UnitHasRelicSlot("player") then
+                sections[#sections + 1] = section
+            end
+        end
+        self.stats   = CharacterStatSheet(self, "player", sections, true)
         self.manager = CharacterEquipmentManager(self, paperDoll)
         self._panes  = { self.stats, self.manager }
 

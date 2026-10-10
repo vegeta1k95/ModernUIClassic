@@ -43,6 +43,7 @@ MUI_DB\MUI_AchievementDB.lua
 MUI_DB\MUI_StatisticsDB.lua
 MUI_DB\MUI_RecipeDB.lua
 MUI_DB\MUI_EncounterJournalDB.lua
+MUI_DB\MUI_ItemSetDB.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
 MUI_Tooltip\MUI_TooltipHooks.lua
@@ -228,5 +229,12 @@ MUI_AdventureGuide\MUI_AdventureGuideEncounter.lua
 MUI_AdventureGuide\MUI_AdventureGuideSearch.lua
 MUI_AdventureGuide\MUI_AdventureGuideFrame.lua
 MUI_AdventureGuide\MUI_AdventureGuide.lua
+MUI_Collections\MUI_CollectionsStyle.lua
+MUI_Collections\MUI_CollectionsLog.lua
+MUI_Collections\MUI_CollectionsSetList.lua
+MUI_Collections\MUI_CollectionsSetDetails.lua
+MUI_Collections\MUI_CollectionsSets.lua
+MUI_Collections\MUI_CollectionsFrame.lua
+MUI_Collections\MUI_Collections.lua
 
 MUI_Test.lua

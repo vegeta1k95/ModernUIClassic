@@ -145,3 +145,26 @@ class "PlayerModel" : extends "Model" {
         self._native:SetUnit(unit)
     end;
 }
+
+-- A unit's model that items can be tried on: the dressing room's.
+class "DressUpModel" : extends "PlayerModel" {
+
+    __init = function(self, parent, name)
+        Model.__init(self, "DressUpModel", parent, name)
+    end;
+
+    -- Whether SetUnit dresses the model in what the unit wears.
+    SetAutoDress = function(self, enabled)
+        self._native:SetAutoDress(enabled)
+    end;
+
+    -- Take everything off.
+    Undress = function(self)
+        self._native:Undress()
+    end;
+
+    -- Put an item on, by link or item string ("item:16866").
+    TryOn = function(self, link)
+        self._native:TryOn(link)
+    end;
+}

@@ -23,7 +23,7 @@ class "MinimapGroupBlip" : extends "MinimapPin" {
 
     UpdateColor = function(self)
         local _, class = UnitClass(self.unit)
-        local color = class and RAID_CLASS_COLORS[class]
+        local color = class and MUI.ClassColor(class)
         if color then
             self:SetIconTint(color.r, color.g, color.b)
         else

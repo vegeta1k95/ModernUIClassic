@@ -20,6 +20,7 @@ class "CharacterHonor" : extends "CharacterPane" {
     __init = function(self, window)
         CharacterPane.__init(self, window)
 
+        self:BuildLevelText()
         self:_BuildRank()
         self._rows = {}
         for _, block in ipairs(BLOCKS) do
@@ -51,8 +52,7 @@ class "CharacterHonor" : extends "CharacterPane" {
         self._progress:SetSize(220, 12)
         self._progress:AlignParentTop(72)
         self._progress:SetMinMaxValues(0, 1)
-        local edge = Frame("Frame", self._progress, nil, "ThinGoldEdgeTemplate")
-        edge:FillParentPadding(-3, -3, -3, -3)
+        self:BuildBarEdge(self._progress, "MUI_CharacterHonorProgressEdge")
     end;
 
     -- A period: its title plate over its rows.
@@ -88,6 +88,7 @@ class "CharacterHonor" : extends "CharacterPane" {
     end;
 
     Refresh = function(self)
+        self:UpdateLevelText()
         local rankName, rankNumber = GetPVPRankInfo(UnitPVPRank("player"))
         if rankName then
             self._rank:SetText(rankName .. " (" .. RANK .. " " .. rankNumber .. ")")

@@ -152,6 +152,11 @@ class "FontString" : extends {"Widget", "ScriptObject"} {
         self._native:SetWordWrap(wrap)
     end;
 
+    -- The most lines the text wraps onto; 0 for no limit.
+    SetMaxLines = function(self, lines)
+        self._native:SetMaxLines(lines)
+    end;
+
     -- Whether the text is cut short ("...") by the string's size.
     IsTruncated = function(self)
         return self._native:IsTruncated()
