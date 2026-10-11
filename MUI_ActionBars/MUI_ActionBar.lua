@@ -47,6 +47,13 @@ end
 -- the bar's own spacing.
 local MIN_ICON_PADDING, MAX_ICON_PADDING = 2, 10
 
+-- `value` when it is a whole number from `low` to `high`, else nil.
+local function WholeIn(value, low, high)
+    if type(value) == "number" and value >= low and value <= high and value == math.floor(value) then
+        return value
+    end
+end
+
 class "ActionBar" : extends "Frame" {
 
     MIN_ICON_PADDING = MIN_ICON_PADDING,
@@ -100,6 +107,15 @@ class "ActionBar" : extends "Frame" {
 
     SetSlotPadding = function(self, pad)
         self.slotPad = pad
+    end;
+
+    -- Another background for every slot: an ActionBar atlas region, like the
+    -- one the bar was made with.
+    SetSlotBackground = function(self, region)
+        self.slotBGRegion = region
+        for _, slot in ipairs(self.slots) do
+            slot.bg:SetAtlas(ATLAS, region, true)
+        end
     end;
 
     -- ---- layout --------------------------------------------------------
@@ -457,7 +473,8 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         self:_EditModePlaceSetting(self._rowOrientation)
         self:EditModeTrackSetting(
             function() return self.orientation end,
-            function(v) self:SetOrientation(v) end)
+            function(v) self:SetOrientation(v) end,
+            self._defaultOrientation)
 
         self._rowRows = EditModeSliderRow(content, self:_RowsLabel(), 1, 4)
         self._rowRows:SetValue(self.numRows)
@@ -468,7 +485,8 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         self:_EditModePlaceSetting(self._rowRows)
         self:EditModeTrackSetting(
             function() return self.numRows end,
-            function(v) self:SetNumRows(v) end)
+            function(v) self:SetNumRows(v) end,
+            1)
 
         if withIcons then
             self._rowIcons = EditModeSliderRow(content, HUD_EDIT_MODE_SETTING_ACTION_BAR_NUM_ICONS, 6, table.getn(self.slots))
@@ -480,7 +498,8 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
             self:_EditModePlaceSetting(self._rowIcons)
             self:EditModeTrackSetting(
                 function() return self:GetLaidOutCount() end,
-                function(v) self:SetNumIcons(v) end)
+                function(v) self:SetNumIcons(v) end,
+                table.getn(self.slots))
         end
 
         self._rowPadding = EditModeSliderRow(content, HUD_EDIT_MODE_SETTING_ACTION_BAR_ICON_PADDING, MIN_ICON_PADDING, MAX_ICON_PADDING)
@@ -492,7 +511,8 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         self:_EditModePlaceSetting(self._rowPadding)
         self:EditModeTrackSetting(
             function() return self.iconPadding end,
-            function(v) self:SetIconPadding(v) end)
+            function(v) self:SetIconPadding(v) end,
+            MIN_ICON_PADDING)
     end;
 
     -- The buttons keep their native parents (not children of this bar), so the
@@ -531,7 +551,37 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         self:SetAlwaysShowButtons(true)
         self:EditModeTrackSetting(
             function() return self.alwaysShowButtons end,
-            function(v) self:SetAlwaysShowButtons(v) end)
+            function(v) self:SetAlwaysShowButtons(v) end,
+            true)
+    end;
+
+    -- Adds a checkbox for a setting that something else keeps (bar 1's art
+    -- is the module's): `get()` reads it, `set(value)` applies it. Off is the
+    -- default; on, it is saved with the bar's layout under `key`.
+    EditModeAddToggle = function(self, content, key, text, get, set)
+        local checkbox = CheckBox(content, nil, text)
+        checkbox.label:SetFontSize(12)
+        checkbox:SetSize(200, 29)
+        checkbox:SetBoxSize(24, 24)
+        checkbox:AlignParentLeft(0)
+        self:_EditModePlaceSetting(checkbox)
+
+        local toggle = {
+            get = function() return get() and true or false end,
+            set = function(value)
+                set(value)
+                checkbox:SetChecked(value)
+            end,
+        }
+        checkbox:SetChecked(toggle.get())
+        checkbox.OnChanged = function(_, checked)
+            set(checked)
+            self:EditModeNotifyChanged()
+        end
+        self:EditModeTrackSetting(toggle.get, toggle.set, false)
+
+        self._toggles = self._toggles or {}
+        self._toggles[key] = toggle
     end;
 
     -- The settings ride along with the saved layout. Only what differs from
@@ -553,6 +603,9 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         if self._rowIcons and self:GetLaidOutCount() ~= table.getn(self.slots) then
             keep("numIcons", self.numIcons)
         end
+        for key, toggle in pairs(self._toggles or {}) do
+            if toggle.get() then keep(key, true) end
+        end
         return data
     end;
 
@@ -564,6 +617,32 @@ class "ActionBarEditable" : extends {"ActionBar", "Editable"} {
         if data.numRows then self:SetNumRows(data.numRows) end
         if data.numIcons then self:SetNumIcons(data.numIcons) end
         if data.iconPadding then self:SetIconPadding(data.iconPadding) end
+        for key, toggle in pairs(self._toggles or {}) do
+            if data[key] then toggle.set(true) end
+        end
+    end;
+
+    -- An imported layout (see Editable.EditModeCleanLayout): of the bar's
+    -- own settings, those it has a control for, as the control could set them.
+    EditModeCleanLayout = function(self, data)
+        local clean = Editable.EditModeCleanLayout(self, data)
+        if self._chkAlwaysShow and data.alwaysShowButtons == false then
+            clean.alwaysShowButtons = false
+        end
+        if self._rowOrientation then
+            if data.orientation == "horizontal" or data.orientation == "vertical" then
+                clean.orientation = data.orientation
+            end
+            clean.numRows = WholeIn(data.numRows, 1, 4)
+            clean.iconPadding = WholeIn(data.iconPadding, MIN_ICON_PADDING, MAX_ICON_PADDING)
+        end
+        if self._rowIcons then
+            clean.numIcons = WholeIn(data.numIcons, 6, table.getn(self.slots))
+        end
+        for key in pairs(self._toggles or {}) do
+            if data[key] == true then clean[key] = true end
+        end
+        return clean
     end;
 
 }

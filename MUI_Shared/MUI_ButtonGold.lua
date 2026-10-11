@@ -1,6 +1,21 @@
+-- ButtonGold: the gold-rimmed panel button.
+-- Create: ButtonGold(parent, name, text)
+-- Wrap:   ButtonGold(nativeButton): Era's button, its scripts and its click
+--         in this art, the label taking the text it has.
 class "ButtonGold" : extends "Button" {
     __init = function(self, parent, name, text)
         Button.__init(self, parent, name, text)
+
+        -- A wrapped button's scripts keep re-texturing its own art: that and
+        -- its label are made transparent, not hidden.
+        if IsNativeObject(parent, "Button") then
+            for _, region in ipairs(self:GetRegions()) do
+                region:SetAlpha(0)
+            end
+            self:SetText(self:GetNativeText())
+            self:HookScript("OnEnter", function() self:OnEnter() end)
+            self:HookScript("OnLeave", function() self:OnLeave() end)
+        end
 
         self._ns = NineSlice(self)
         self._ns:SetFromTextureRegion("button-gold", 128, 128, 1, 1, 78, 21, 5, 5, 5, 5, 1)

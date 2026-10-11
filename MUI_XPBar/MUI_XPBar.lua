@@ -71,7 +71,7 @@ object "ModuleXPBar" : extends "Module" {
         self.bar:SetFrameStrata("MEDIUM")
         self.bar:EditModeSetDefaultPosition(function(b)
             b:ClearAllPoints()
-            b:AlignParentBottom(2)
+            b:AlignParentBottom(5)
         end)
 
         self.bgL, self.bgR = CreateSplitPair(self.bar, "BACKGROUND",
@@ -230,6 +230,7 @@ object "ModuleXPBar" : extends "Module" {
 
     CreateRepBar = function(self)
         self.repBar = XPBarEditable("MUI_RepBar", "Reputation Bar")
+        self.repBar:EditModeSetOption("repBar")
         self.repBar:SetSize(BAR_WIDTH, FRAME_H)
         -- Default sits at the bottom at max level (no XP bar), else above the XP
         -- bar. "Restore default position" re-runs the same state-dependent rule.

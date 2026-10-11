@@ -196,11 +196,13 @@ object "QuestObjectiveResolver" {
                 end
             end
             -- [4] reputation — no geographic target, skip
-            -- [5] killCredit — geographic, same treatment as [1]
+            -- [5] killCredit — geographic like [1], but an entry lists every
+            -- creature that counts for its line: { {creatureId, ...}, baseId,
+            -- text, icon } (Kodo Roundup's three kinds of kodo).
             if q.objectives[5] then
                 for _, entry in ipairs(q.objectives[5]) do
-                    if entry and entry[1] then
-                        _resolveCreature(out, questId, 5, entry[1], "ObjectiveSlay")
+                    for _, creatureId in ipairs(entry[1]) do
+                        _resolveCreature(out, questId, 5, creatureId, "ObjectiveSlay")
                     end
                 end
             end

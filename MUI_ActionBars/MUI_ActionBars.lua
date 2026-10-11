@@ -83,11 +83,20 @@ object "ModuleActionBars" : extends "Module" {
         local PET_CLASSES    = { WARLOCK = true, HUNTER = true }
         stance:EditModeEnabled(STANCE_CLASSES[class] and true or false)
         pet:EditModeEnabled(PET_CLASSES[class] and true or false)
+        stance:EditModeSetOption("stanceBar")
+        pet:EditModeSetOption("petBar")
 
         -- Retail's settings: the layout for every bar, the number of icons
-        -- for bars 1-8 and "Always Show Buttons" for 2-8.
+        -- for bars 1-8, "Always Show Buttons" for 2-8 and, for bar 1, hiding
+        -- its art and its page arrows.
         main:EditModeSetupSettings(function(content)
             main:EditModeAddLayoutSettings(content, true)
+            main:EditModeAddToggle(content, "hideBarArt", HUD_EDIT_MODE_SETTING_ACTION_BAR_HIDE_BAR_ART,
+                function() return self._hideBarArt end,
+                function(hide) self:_SetBarArtHidden(hide) end)
+            main:EditModeAddToggle(content, "hideBarScrolling", HUD_EDIT_MODE_SETTING_ACTION_BAR_HIDE_BAR_SCROLLING,
+                function() return self._hideBarScrolling end,
+                function(hide) self:_SetBarScrollingHidden(hide) end)
         end)
 
         for _, bar in ipairs(multi) do
@@ -421,13 +430,14 @@ object "ModuleActionBars" : extends "Module" {
         local bar = self.bars.MAIN1
         local row = bar.orientation == "horizontal" and bar.numRows == 1
         local count = bar:GetLaidOutCount()
+        local art = not self._hideBarArt
 
-        self.bgLeft:SetVisible(row)
-        self.bgMiddle:SetVisible(row)
-        self.bgRight:SetVisible(row)
-        self.bgGrid:SetVisible(not row)
+        self.bgLeft:SetVisible(art and row)
+        self.bgMiddle:SetVisible(art and row)
+        self.bgRight:SetVisible(art and row)
+        self.bgGrid:SetVisible(art and not row)
 
-        local divided = row and bar.iconPadding == bar.MIN_ICON_PADDING
+        local divided = art and row and bar.iconPadding == bar.MIN_ICON_PADDING
         for i, div in ipairs(self._dividers) do
             div:SetVisible(divided and i < count)
         end
@@ -441,6 +451,23 @@ object "ModuleActionBars" : extends "Module" {
             self.leftGryphon:AlignParentBottomLeft(-46, -134)
             self.rightGryphon:AlignParentBottomRight(-46, -132)
         end
+    end;
+
+    -- Retail's "Hide Bar Art" for bar 1: the gryphons, the plate and the
+    -- dividers go, and its slots take the background the other bars have.
+    _SetBarArtHidden = function(self, hide)
+        self._hideBarArt = hide
+        self.gryphonFrame:SetVisible(not hide)
+        self.bars.MAIN1:SetSlotBackground(hide and "IconFrameBG" or "IconFrameSlot")
+        self:_UpdateMainBarArt()
+    end;
+
+    -- Retail's "Hide Bar Scrolling": the page arrows and the page number.
+    _SetBarScrollingHidden = function(self, hide)
+        self._hideBarScrolling = hide
+        self.pageUp:SetVisible(not hide)
+        self.pageNumFrame:SetVisible(not hide)
+        self.pageDown:SetVisible(not hide)
     end;
 
     _UpdatePageNum = function(self)

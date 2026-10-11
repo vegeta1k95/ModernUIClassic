@@ -66,14 +66,40 @@ local DEFAULTS = {
         bags = {
             combined = false,   -- join all bags into one window (retail-style)
         },
-        -- Edit-mode layouts keyed by frame name: [name] = { points = {...}, scale = N }.
-        -- Written by the edit-mode "Save" button, applied on PLAYER_ENTERING_WORLD.
-        editmode = {},
+        dressingRoom = {
+            minimized = false,  -- the window at retail's small size
+        },
+        -- Edit mode's named layouts, as retail keeps them. `list` holds
+        -- { name = "...", frames = { [frame name] = { points = {...}, scale = N, ... } } }
+        -- in the order made; `active` is the one applied, 0 for the preset
+        -- (every frame as it comes). Written by the edit-mode "Save" button,
+        -- applied on PLAYER_ENTERING_WORLD.
+        editmodeLayouts = {
+            active = 0,
+            list = {},
+        },
         -- Edit-mode alignment grid (a display aid, not a per-frame layout).
         -- Toggled/sized from the Interface Settings panel; persists on change.
         editmodeGrid = {
             enabled = false,
             spacing = 50,
+        },
+        -- Edit mode's "Snap to Elements": a frame let go near a grid line, a
+        -- screen edge or another frame lines up with it. On, as in retail.
+        editmodeSnap = true,
+        -- Edit mode's "Advanced Options", and the frames its checkboxes put
+        -- up for editing (the keys of MUI_EditMode's OPTIONS). Kept as set.
+        editmodeAdvanced = false,
+        editmodeShown = {
+            target     = true,
+            pet        = true,
+            buffs      = true,
+            castBar    = true,
+            stanceBar  = true,
+            petBar     = true,
+            repBar     = true,
+            durability = true,
+            loot       = true,
         },
     },
     data = {
@@ -159,6 +185,18 @@ local function RunMigrations(db)
         db.settings.focus.kind = "quest"
         db.settings.focus.key  = qh.focusedQuest
         qh.focusedQuest        = nil
+    end
+
+    -- settings.editmode (the one, unnamed edit-mode layout) → a layout of
+    -- its own in settings.editmodeLayouts, the one applied.
+    local frames = db.settings.editmode
+    if frames then
+        if next(frames) then
+            local layouts = db.settings.editmodeLayouts
+            tinsert(layouts.list, { name = "Custom", frames = frames })
+            layouts.active = #layouts.list
+        end
+        db.settings.editmode = nil
     end
 end
 

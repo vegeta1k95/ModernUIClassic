@@ -72,6 +72,14 @@ MUI_AtlasRegistry = {
 		ExitNormal = { w = 36, h = 38, l = 0.152344, r = 0.292969, t = 0.007812, b = 0.304688 },
 		ExitPressed = { w = 36, h = 38, l = 0.152344, r = 0.292969, t = 0.632812, b = 0.929688 },
 		ExitDisabled = { w = 36, h = 38, l = 0.152344, r = 0.292969, t = 0.320312, b = 0.617188 },
+
+		CondenseNormal = { w = 36, h = 38, l = 0.003906, r = 0.144531, t = 0.007812, b = 0.304688 },
+		CondensePressed = { w = 36, h = 38, l = 0.003906, r = 0.144531, t = 0.632812, b = 0.929688 },
+		CondenseDisabled = { w = 36, h = 38, l = 0.003906, r = 0.144531, t = 0.320312, b = 0.617188 },
+
+		ExpandNormal = { w = 36, h = 38, l = 0.300781, r = 0.441406, t = 0.007812, b = 0.304688 },
+		ExpandPressed = { w = 36, h = 38, l = 0.300781, r = 0.441406, t = 0.632812, b = 0.929688 },
+		ExpandDisabled = { w = 36, h = 38, l = 0.300781, r = 0.441406, t = 0.320312, b = 0.617188 },
 	}),
 
 	CheckboxMinimal = TextureAtlas("checkbox-minimal", 64,64,64,64, {

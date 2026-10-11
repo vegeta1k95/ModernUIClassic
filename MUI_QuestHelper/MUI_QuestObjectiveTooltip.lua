@@ -57,14 +57,20 @@ class "QuestObjectiveTooltip" {
         if not q then return end
         local objs = q.objectives
         if objs then
-            -- [1] creature kills, [5] killCredit — both resolve to NPC ids.
-            for _, cat in ipairs({ 1, 5 }) do
-                local list = objs[cat]
-                if list then
-                    for _, e in ipairs(list) do
-                        if e and e[1] then
-                            self:_AddIdx(self._npcQuests, e[1], questId)
-                        end
+            -- [1] creature kills: { creatureId, ... }.
+            if objs[1] then
+                for _, e in ipairs(objs[1]) do
+                    if e and e[1] then
+                        self:_AddIdx(self._npcQuests, e[1], questId)
+                    end
+                end
+            end
+            -- [5] killCredit: { {creatureId, ...}, baseId, text, icon }, every
+            -- creature that counts for the line.
+            if objs[5] then
+                for _, e in ipairs(objs[5]) do
+                    for _, npcId in ipairs(e[1]) do
+                        self:_AddIdx(self._npcQuests, npcId, questId)
                     end
                 end
             end
@@ -197,9 +203,13 @@ class "QuestObjectiveTooltip" {
     end;
 
     _IsKillTarget = function(self, q, npcId)
-        for _, cat in ipairs({ 1, 5 }) do
-            for _, e in ipairs(q.objectives and q.objectives[cat] or {}) do
-                if e and e[1] == npcId then return true end
+        local objs = q.objectives or {}
+        for _, e in ipairs(objs[1] or {}) do
+            if e and e[1] == npcId then return true end
+        end
+        for _, e in ipairs(objs[5] or {}) do
+            for _, id in ipairs(e[1]) do
+                if id == npcId then return true end
             end
         end
         return false

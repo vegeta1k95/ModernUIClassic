@@ -157,7 +157,12 @@ object "ModuleMicroMenu" : extends "Module" {
 
         self._container = MicroMenuFrame()
         self._container:AlignParentBottomRight(5, 6)
+        self._container:EditModeSetDefaultPosition(function(f)
+            f:ClearAllPoints()
+            f:AlignParentBottomRight(5, 6)
+        end)
         self._container:SetScale(0.9)
+        self._container:EditModeSetDefaultScale(0.9)   -- 0.9 is the default, not a user scale
         self._container:SetClampedToScreen(true)
         self._container:SetHeight(41)
 

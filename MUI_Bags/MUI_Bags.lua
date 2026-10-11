@@ -76,7 +76,7 @@ object "ModuleBags" : extends "Module" {
         self.bagBar:AlignParentBottomRight(43, 4)
         self.bagBar:EditModeSetDefaultPosition(function(b)
             b:ClearAllPoints()
-            b:AlignParentBottomRight(36, 4)
+            b:AlignParentBottomRight(43, 4)
         end)
 
         self.backpack:SetParent(self.bagBar)

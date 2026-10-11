@@ -393,6 +393,7 @@ object "ModuleMinimap" : extends "Module" {
     SkinDurability = function(self)
         if not DurabilityFrame then return end
         self.durability = DurabilityEditable(DurabilityFrame, "Durability")
+        self.durability:EditModeSetOption("durability")
         self.durability:ClearAllPoints()
         self.durability:Below(MUI_Minimap, 4)
         self.durability:AlignLeft(MUI_Minimap)

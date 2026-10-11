@@ -66,6 +66,32 @@ class "CharacterModelButton" : extends "Button" {
 }
 
 -- ---------------------------------------------------------------------
+-- CharacterModelBar: the control bar over a model's top — zoom in, zoom
+-- out, turn left, turn right, reset. The model is told what is held:
+-- model:Hold(action), and model:Hold(nil) when it is let go.
+-- ---------------------------------------------------------------------
+class "CharacterModelBar" : extends "Frame" {
+    __init = function(self, model)
+        Frame.__init(self, "Frame", model)
+        self:SetSize(5 * BUTTON_SIZE - 4 * BUTTON_OVERLAP, BUTTON_SIZE)
+        self:AlignParentTop(10)
+        self:Hide()
+
+        local specs = {
+            { "in",    0.504395, 0.629395, 0.000977, 0.250977 },
+            { "out",   0.756348, 0.881348, 0.000977, 0.250977 },
+            { "left",  0.126465, 0.175293, 0.756836, 0.854492 },
+            { "right", 0.126465, 0.175293, 0.856445, 0.954102 },
+            { "reset", 0.378418, 0.503418, 0.252930, 0.502930 },
+        }
+        for i, spec in ipairs(specs) do
+            local button = CharacterModelButton(self, model, spec[1], spec[2], spec[3], spec[4], spec[5])
+            button:AlignParentLeft((i - 1) * (BUTTON_SIZE - BUTTON_OVERLAP))
+        end
+    end;
+}
+
+-- ---------------------------------------------------------------------
 -- CharacterModel
 -- ---------------------------------------------------------------------
 class "CharacterModel" : extends "PlayerModel" {
@@ -97,29 +123,8 @@ class "CharacterModel" : extends "PlayerModel" {
             if changed == unit and self:IsVisible() then self:Refresh() end
         end)
 
-        self:_BuildControls()
-    end;
-
-    -- Zoom in, zoom out, turn left, turn right, reset: half faded until the
-    -- cursor is on the bar itself.
-    _BuildControls = function(self)
-        local bar = Frame("Frame", self)
-        bar:SetSize(5 * BUTTON_SIZE - 4 * BUTTON_OVERLAP, BUTTON_SIZE)
-        bar:AlignParentTop(10)
-        bar:Hide()
-        self._bar = bar
-
-        local specs = {
-            { "in",    0.504395, 0.629395, 0.000977, 0.250977 },
-            { "out",   0.756348, 0.881348, 0.000977, 0.250977 },
-            { "left",  0.126465, 0.175293, 0.756836, 0.854492 },
-            { "right", 0.126465, 0.175293, 0.856445, 0.954102 },
-            { "reset", 0.378418, 0.503418, 0.252930, 0.502930 },
-        }
-        for i, spec in ipairs(specs) do
-            local button = CharacterModelButton(bar, self, spec[1], spec[2], spec[3], spec[4], spec[5])
-            button:AlignParentLeft((i - 1) * (BUTTON_SIZE - BUTTON_OVERLAP))
-        end
+        -- Half faded until the cursor is on the bar itself.
+        self._bar = CharacterModelBar(self)
     end;
 
     Refresh = function(self)

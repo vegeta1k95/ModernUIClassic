@@ -1,6 +1,8 @@
 -- Colored status suffixes for the talent-group dropdown button + menu rows.
 local STATUS_ACTIVE   = " |cff00ff00(Active)|r"
 local STATUS_INACTIVE = " |cff808080(Inactive)|r"
+-- The secondary group while dual specialization is not bought yet.
+local STATUS_LOCKED   = " |cffff2020(Not purchased)|r"
 
 local SPEC_BACKGROUNDS = {
     [1] = {                 -- WARRIOR
@@ -387,11 +389,17 @@ class "TabTalents" : extends "SecureFrame" {
 
     -- Re-text the (already-built) menu rows in place and toggle Secondary's
     -- enabled state. The rows are created once via SetItems in _CreateBottomBar.
+    -- Until dual specialization is bought Secondary says so, not "Inactive".
     _RefreshPresetMenu = function(self)
         local active = C_SpecializationInfo.GetActiveSpecGroup()
+        local bought = GetNumTalentGroups() > 1
+        local secondary = STATUS_LOCKED
+        if bought then
+            secondary = active == 2 and STATUS_ACTIVE or STATUS_INACTIVE
+        end
         self._presetMenu:SetItemLabel(1, "Primary"   .. (active == 1 and STATUS_ACTIVE or STATUS_INACTIVE))
-        self._presetMenu:SetItemLabel(2, "Secondary" .. (active == 2 and STATUS_ACTIVE or STATUS_INACTIVE))
-        self._presetMenu:SetItemEnabled(2, GetNumTalentGroups() > 1)
+        self._presetMenu:SetItemLabel(2, "Secondary" .. secondary)
+        self._presetMenu:SetItemEnabled(2, bought)
     end;
 
     -- Retail's drifting "air particle" loop for one texture layer. The layer

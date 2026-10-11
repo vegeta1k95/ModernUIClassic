@@ -195,6 +195,17 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         self._native:EnableMouseWheel(enable)
     end;
 
+    -- Keyboard input. A frame with an OnKeyDown script takes every key while
+    -- it shows, unless it says, from inside that script, that the key may go
+    -- on to the game. Both calls are blocked for addon code in combat.
+    EnableKeyboard = function(self, enable)
+        self._native:EnableKeyboard(enable)
+    end;
+
+    SetPropagateKeyboardInput = function(self, propagate)
+        self._native:SetPropagateKeyboardInput(propagate)
+    end;
+
     SetHitRectInsets = function(self, left, right, top, bottom)
         self._native:SetHitRectInsets(left, right, top, bottom)
     end;

@@ -6,7 +6,7 @@ class "Model" : extends "Frame" {
                      and not typeOrNative._native
         local objType  = isNative and typeOrNative:GetObjectType()
         if objType == "Model" or objType == "PlayerModel" then
-            Frame.__init(self, parentOrNative)
+            Frame.__init(self, typeOrNative)
             return
         end
 
@@ -144,13 +144,25 @@ class "PlayerModel" : extends "Model" {
     SetUnit = function(self, unit)
         self._native:SetUnit(unit)
     end;
+
+    -- Turn a character to `radians`, as Era's own model frames do. It steps
+    -- round to it unless `animate` is false (a drag, a held button).
+    SetRotation = function(self, radians, animate)
+        self._native:SetRotation(radians, animate ~= false)
+    end;
 }
 
 -- A unit's model that items can be tried on: the dressing room's.
+-- Create: DressUpModel(parent, name)
+-- Wrap:   DressUpModel(DressUpModelFrame)
 class "DressUpModel" : extends "PlayerModel" {
 
-    __init = function(self, parent, name)
-        Model.__init(self, "DressUpModel", parent, name)
+    __init = function(self, parentOrNative, name)
+        if IsNativeObject(parentOrNative, "DressUpModel") then
+            Frame.__init(self, parentOrNative)
+            return
+        end
+        Model.__init(self, "DressUpModel", parentOrNative, name)
     end;
 
     -- Whether SetUnit dresses the model in what the unit wears.

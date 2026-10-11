@@ -167,3 +167,33 @@ object "TooltipItemHook" {
     end;
 
 }
+
+-- A player's class in its colour on the unit tooltip's level line:
+-- "Level 39 Night Elf Druid (Player)".
+object "TooltipUnitHook" {
+
+    __init = function(self)
+        MUI_Tooltip:HookScript("OnTooltipSetUnit", function() self:_ColorClass() end)
+    end;
+
+    -- The client builds the line, so the class is found in what it wrote. The
+    -- line is the one with the level on it too: a guild's name can have a
+    -- class in it ("Warriors of Light").
+    _ColorClass = function(self)
+        local _, unit = MUI_Tooltip:GetUnit()
+        if not unit or not UnitIsPlayer(unit) then return end
+        local className, classFile = UnitClass(unit)
+        local level = UnitLevel(unit)
+        level = level > 0 and tostring(level) or "??"
+
+        for i = 2, MUI_Tooltip:NumLines() do
+            local text = MUI_Tooltip:GetLineText(i) or ""
+            local from, to = strfind(text, className, 1, true)
+            if from and strfind(text, level, 1, true) then
+                local colored = MUI.ClassColor(classFile):WrapTextInColorCode(className)
+                MUI_Tooltip:GetLineWidget(i):SetText(strsub(text, 1, from - 1) .. colored .. strsub(text, to + 1))
+                return
+            end
+        end
+    end;
+}

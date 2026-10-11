@@ -118,6 +118,14 @@ class "DropdownMenu" : extends "Frame" {
         end
     end;
 
+    -- Tick or untick a built checkbox row in place. Its OnChanged stays quiet.
+    SetItemChecked = function(self, index, checked)
+        local item = self._items[index]
+        if not item then return end
+        item.checked = checked
+        if item._checkbox then item._checkbox:SetChecked(checked) end
+    end;
+
     -- ----- visibility -----------------------------------------------------
 
     Open    = function(self) self.popup:Show() end;

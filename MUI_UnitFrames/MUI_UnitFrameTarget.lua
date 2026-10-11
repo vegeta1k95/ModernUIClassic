@@ -33,6 +33,7 @@ class "UnitFrameTarget" {
         Texture(TargetFrameFlash):SetAlpha(0)
 
         self.frame = UnitFrameEditable(TargetFrame, "Target")
+        self.frame:EditModeSetOption("target")
         self.frame:ClearAllPoints()
         self.frame:SetSize(171, 58)
         self.frame:SetPoint("BOTTOMLEFT", MUI_ModuleActionBars.bars.MAIN1, "TOPRIGHT", 38, 162)

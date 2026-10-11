@@ -226,7 +226,8 @@ class "CastBar" : extends "Frame" {
         self:_SetFillAtlas("FillingStandard")
         self:_SetProgress(1)
         self:_SetSpellText(text or "")
-        self:_SetTime(nil)
+        -- A sample, so that showing or hiding the time can be seen.
+        self:_SetTime(0)
         self._spark:Hide()
         self._sparkTrail:Hide()
         self._flash:Hide()

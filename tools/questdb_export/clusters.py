@@ -150,6 +150,20 @@ def _entry_target_id(entry):
     return None
 
 
+def _creature_objective(entry, kill_credit):
+    """The creatures of one "monster" leaderboard line, and the line's own
+    text when the data carries it. A kill objective names one creature:
+    {id, text, icon}. A killCredit one lists every creature that counts for
+    it: {{id, ...}, baseId, text, icon} (Kodo Roundup: the Aged, Dying and
+    Ancient Kodos for one "Kodos Tamed")."""
+    if not kill_credit:
+        cid = _entry_target_id(entry)
+        return ([cid] if cid else []), None
+    ids = [i for i in _entries_of(_table_field(entry, 1)) if isinstance(i, int)]
+    text = _table_field(entry, 3)
+    return ids, (text if isinstance(text, str) else None)
+
+
 def _table_field(t, num_key, list_idx=None):
     if list_idx is None:
         list_idx = num_key - 1
@@ -416,8 +430,9 @@ def build_all(quests, npcs, objects, items, area_to_ui):
 
         objs = q.get("objectives")
 
-        # [1] creature kills + [5] killCredit — both creature-shaped, both
-        # match leaderboard type "monster".
+        # [1] creature kills + [5] killCredit — both match leaderboard type
+        # "monster". A killCredit line is one target however many creatures
+        # count for it: their spawns go into the one group.
         slot = 0
         for cat_idx in (1, 5):
             cat = _objectives_category(objs, cat_idx)
@@ -425,19 +440,19 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                 continue
             for entry in _entries_of(cat):
                 slot += 1
-                cid = _entry_target_id(entry)
-                if not cid:
-                    continue
-                npc = npcs.get(cid)
-                if not npc:
-                    continue
+                ids, name = _creature_objective(entry, cat_idx == 5)
                 points = []
-                _emit_spawns_into(points, npc.get("spawns"), area_to_ui, SUMMON_AREAS.get(cid))
+                for cid in ids:
+                    npc = npcs.get(cid)
+                    if not npc:
+                        continue
+                    name = name or npc.get("name")
+                    _emit_spawns_into(points, npc.get("spawns"), area_to_ui, SUMMON_AREAS.get(cid))
                 if points:
                     target_groups.append({
                         "kind":   "npc",
                         "slot":   slot,
-                        "name":   npc.get("name") or "?",
+                        "name":   name or "?",
                         "points": points,
                     })
 

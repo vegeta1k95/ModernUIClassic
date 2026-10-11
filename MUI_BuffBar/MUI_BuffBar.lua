@@ -43,6 +43,7 @@ object "ModuleBuffBar" : extends "Module" {
         -- from the same top-right origin and the editable box never resizes.
         self.buffFrame = EditableFrame("Frame", "Buff Bar", nil, "MUI_BuffBar")
         self.buffFrame:SetSize(GridSize(BUFFS_PER_ROW, BUFF_MAX_DISPLAY or 32))
+        self.buffFrame:EditModeSetOption("buffs")
         self.buffFrame:EditModeSetDragAnchor("TOPRIGHT")
         self.buffFrame:LeftOf(MUI_Minimap, 56)
         self.buffFrame:AlignTop(MUI_Root, 10)
@@ -54,6 +55,7 @@ object "ModuleBuffBar" : extends "Module" {
 
         self.debuffFrame = EditableFrame("Frame", "Debuff Bar", nil, "MUI_DebuffBar")
         self.debuffFrame:SetSize(GridSize(DEBUFFS_PER_ROW, DEBUFF_MAX_DISPLAY or 16))
+        self.debuffFrame:EditModeSetOption("buffs")
         self.debuffFrame:EditModeSetDragAnchor("TOPRIGHT")
         self.debuffFrame:Below(self.buffFrame, 8)
         self.debuffFrame:AlignRight(self.buffFrame)

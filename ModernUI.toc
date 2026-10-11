@@ -240,5 +240,8 @@ MUI_Collections\MUI_CollectionsMountDisplay.lua
 MUI_Collections\MUI_CollectionsMounts.lua
 MUI_Collections\MUI_CollectionsFrame.lua
 MUI_Collections\MUI_Collections.lua
+MUI_DressingRoom\MUI_DressingRoomModel.lua
+MUI_DressingRoom\MUI_DressingRoomFrame.lua
+MUI_DressingRoom\MUI_DressingRoom.lua
 
 MUI_Test.lua

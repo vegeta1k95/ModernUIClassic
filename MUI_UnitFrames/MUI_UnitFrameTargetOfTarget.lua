@@ -20,6 +20,7 @@ class "UnitFrameTargetOfTarget" {
         Texture(TargetFrameToTTextureFrameTexture):Hide()
 
         self.frame = UnitFrameEditable(TargetFrameToT, "ToT")
+        self.frame:EditModeSetOption("target")
         self.frame:ClearAllPoints()
         self.frame:SetSize(103, 41)
         self.frame:Below(targetFrameWidget, 5)
@@ -27,7 +28,7 @@ class "UnitFrameTargetOfTarget" {
         self.frame:EditModeSetDefaultPosition(function(f)
             f:ClearAllPoints()
             f:Below(targetFrameWidget, 5)
-            f:AlignRight(targetFrameWidget, -24)
+            f:AlignRight(targetFrameWidget, -54)
         end)
 
         self._frameTex = Texture(self.frame)

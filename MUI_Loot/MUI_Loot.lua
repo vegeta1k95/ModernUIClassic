@@ -307,6 +307,7 @@ class "LootWindow" : extends {"Panel", "Editable"} {
         self:SeatDefault()
         Editable.__init(self)
         self:EditModeSetLabel("Loot Window")
+        self:EditModeSetOption("loot")
         self:EditModeSetDragAnchor("TOPLEFT")
         self:EditModeSetDefaultPosition(function() self:SeatDefault() end)
         self:EditModeSetupSettings(function(content) end)
@@ -533,11 +534,13 @@ class "LootWindow" : extends {"Panel", "Editable"} {
     -- ---- Edit Mode -------------------------------------------------------
 
     -- Shown empty and at its full height while Edit Mode is up, as retail
-    -- shows it, and from where it opens when it is not opened at the cursor.
+    -- shows it, and from where it opens when it is not opened at the cursor
+    -- (unless it was moved since Edit Mode came up: its checkbox there can
+    -- put it away and up again, and it then comes back where it was left).
     EditModeShow = function(self)
         if not self._editEnabled then return end
         if not self._looting then
-            MUI_EditMode:ReassertLayout(self)
+            if not self:EditModeIsDirty() then MUI_EditMode:ReassertLayout(self) end
             self._showAnim:Stop()
             self._hideAnim:Stop()
             self:_Fit(self:_Fill())

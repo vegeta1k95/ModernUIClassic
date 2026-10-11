@@ -7395,7 +7395,23 @@ object "QuestClustersDB" {
                 },
             },
         },
-        [452] = {finisher = {{normX = 0.465, normY = 0.7439, uiMapId = 1421}}},
+        [452] = {
+            finisher = {{normX = 0.465, normY = 0.7439, uiMapId = 1421}},
+            objectives = {
+                {
+                    clusters = {
+                        {
+                            centroid = {0.4650222222222222, 0.7403666666666666},
+                            count = 9,
+                            hull = {{0.46490000000000004, 0.7409}, {0.465, 0.74}, {0.46509999999999996, 0.7404000000000001}, {0.46509999999999996, 0.7404999999999999}},
+                            uiMapId = 1421,
+                        },
+                    },
+                    kind = "npc",
+                    name = "Councilman Smithers",
+                },
+            },
+        },
         [453] = {finisher = {{normX = 0.1838, normY = 0.5637, uiMapId = 1431}}},
         [454] = {finisher = {{normX = 0.5221, normY = 0.6943, uiMapId = 1432}}},
         [455] = {
@@ -27877,6 +27893,11 @@ object "QuestClustersDB" {
             finisher = {{normX = 0.9509000000000001, normY = 0.3156, uiMapId = 1428}},
             objectives = {
                 {
+                    kind = "npc",
+                    name = "Cyrus Therepentous",
+                    stray = {{normX = 0.9509000000000001, normY = 0.3156, uiMapId = 1428}},
+                },
+                {
                     kind = "item",
                     name = "Black Dragonflight Molt",
                     stray = {{normX = 0.9440000000000001, normY = 0.318, uiMapId = 1428}},
@@ -45546,7 +45567,47 @@ object "QuestClustersDB" {
                 },
             },
         },
-        [5561] = {finisher = {{normX = 0.6086, normY = 0.6186, uiMapId = 1443}}},
+        [5561] = {
+            finisher = {{normX = 0.6086, normY = 0.6186, uiMapId = 1443}},
+            objectives = {
+                {
+                    clusters = {
+                        {
+                            centroid = {0.5156913043478262, 0.5961652173913043},
+                            count = 23,
+                            hull = {{0.4648, 0.6065999999999999}, {0.47, 0.5886}, {0.4913, 0.5562}, {0.5195000000000001, 0.561}, {0.5365, 0.5669}, {0.5497, 0.5822999999999999}, {0.5776, 0.7105}},
+                            uiMapId = 1443,
+                        },
+                        {
+                            centroid = {0.585025, 0.3446},
+                            count = 4,
+                            hull = {{0.5803, 0.34840000000000004}, {0.5842, 0.34240000000000004}, {0.5893, 0.3432}},
+                            uiMapId = 1443,
+                        },
+                        {
+                            centroid = {0.449375, 0.19190000000000002},
+                            count = 4,
+                            hull = {{0.4482, 0.1981}, {0.4487, 0.1884}, {0.4514, 0.18460000000000001}, {0.44920000000000004, 0.19649999999999998}},
+                            uiMapId = 1443,
+                        },
+                        {
+                            centroid = {0.493975, 0.40675},
+                            count = 4,
+                            hull = {{0.4936, 0.41229999999999994}, {0.49369999999999997, 0.4017}, {0.4949, 0.4082}},
+                            uiMapId = 1443,
+                        },
+                        {
+                            centroid = {0.5680499999999999, 0.8280000000000001},
+                            count = 4,
+                            hull = {{0.5674, 0.8206}, {0.5694, 0.8297}, {0.5675, 0.8318000000000001}},
+                            uiMapId = 1443,
+                        },
+                    },
+                    kind = "npc",
+                    name = "Aged Kodo",
+                },
+            },
+        },
         [5581] = {
             finisher = {{normX = 0.2582, normY = 0.6820999999999999, uiMapId = 1443}},
             objectives = {
@@ -63774,7 +63835,23 @@ object "QuestClustersDB" {
                 },
             },
         },
-        [9051] = {finisher = {{normX = 0.7164, normY = 0.7595999999999999, uiMapId = 1449}}},
+        [9051] = {
+            finisher = {{normX = 0.7164, normY = 0.7595999999999999, uiMapId = 1449}},
+            objectives = {
+                {
+                    kind = "npc",
+                    name = "Devilsaur",
+                    stray = {
+                        {normX = 0.5726, normY = 0.2368, uiMapId = 1449},
+                        {normX = 0.3119, normY = 0.3642, uiMapId = 1449},
+                        {normX = 0.34600000000000003, normY = 0.2237, uiMapId = 1449},
+                        {normX = 0.742, normY = 0.33039999999999997, uiMapId = 1449},
+                        {normX = 0.5013000000000001, normY = 0.6071, uiMapId = 1449},
+                        {normX = 0.5729, normY = 0.6175, uiMapId = 1449},
+                    },
+                },
+            },
+        },
         [9052] = {
             finisher = {{normX = 0.7164, normY = 0.7595999999999999, uiMapId = 1449}},
             objectives = {

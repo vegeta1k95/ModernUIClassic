@@ -15,6 +15,7 @@ class "UnitFramePet" {
         Frame(PetFrameManaBar):HideFrame()
 
         self.frame = UnitFrameEditable(PetFrame, "Pet")
+        self.frame:EditModeSetOption("pet")
         self.frame:ClearAllPoints()
         self.frame:SetSize(103, 41)
         self.frame:Below(anchorWidget, 5)

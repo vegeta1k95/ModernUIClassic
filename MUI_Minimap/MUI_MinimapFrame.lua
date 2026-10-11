@@ -33,7 +33,8 @@ class "MinimapFrame" : extends {"Frame", "Editable"} {
 
         self:EditModeTrackSetting(
             function() return self.rotateMinimap end,
-            function(v) self:SetRotateMinimap(v) end)
+            function(v) self:SetRotateMinimap(v) end,
+            false)
 
         hooksecurefunc(MinimapCluster, "SetRotateMinimap", function()
             SetCVar("rotateMinimap", self.rotateMinimap and "1" or "0")
@@ -61,6 +62,12 @@ class "MinimapFrame" : extends {"Frame", "Editable"} {
         if data and data.rotateMinimap then
             self:SetRotateMinimap(true)
         end
+    end;
+
+    EditModeCleanLayout = function(self, data)
+        local clean = Editable.EditModeCleanLayout(self, data)
+        if data.rotateMinimap == true then clean.rotateMinimap = true end
+        return clean
     end;
 
     SetBlipTexture = function(self, path)
