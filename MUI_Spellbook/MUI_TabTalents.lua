@@ -174,7 +174,7 @@ class "TabTalents" : extends "SecureFrame" {
         self:_CreateBottomBar()
 
         -- Subscribe to updates to spells and talents
-        self:RegisterEventHandler("PLAYER_LEVEL_UP", function() self:_UpdateLevel() end)
+        self:RegisterEventHandler("PLAYER_LEVEL_UP", function(_, _, level) self:_UpdateLevel(level) end)
         self:RegisterEventHandler("ACTIVE_TALENT_GROUP_CHANGED", function()
             if self._specGrid then self:SetPreviewGroup(C_SpecializationInfo.GetActiveSpecGroup()) end
         end)
@@ -284,8 +284,9 @@ class "TabTalents" : extends "SecureFrame" {
         end
     end;
 
-    _UpdateLevel = function(self)
-        self._classPoints:SetText(UnitLevel("player"))
+    -- `level`: PLAYER_LEVEL_UP's own, which UnitLevel does not read yet then.
+    _UpdateLevel = function(self, level)
+        self._classPoints:SetText(level or UnitLevel("player"))
         self._classHeader:SetWidth(self._className:GetStringWidth() + self._classPoints:GetStringWidth() + 20)
     end;
 

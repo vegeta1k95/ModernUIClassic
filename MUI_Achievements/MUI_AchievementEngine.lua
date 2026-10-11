@@ -55,9 +55,10 @@ local function anyItemOwned(ids)
     return false
 end
 
+-- A spell the game replaced with its successor (Bear Form) still counts.
 local function anySpellKnown(ids)
     for _, id in ipairs(ids) do
-        if C_SpellBook.IsSpellKnown(id) then return true end
+        if C_SpellBook.IsSpellKnown(id) or MUI_Spells:IsReplaced(id) then return true end
     end
     return false
 end
@@ -155,7 +156,7 @@ local CRIT = {}
 -- ---- the character --------------------------------------------------
 
 CRIT.level = function(engine, c)
-    local level = UnitLevel("player") or 1
+    local level = math.max(UnitLevel("player") or 1, engine.level or 1)
     return level >= c.n, { barRow("Level", level, c.n) }
 end
 
@@ -1340,6 +1341,13 @@ class "AchievementEngine" {
         self._playedMuted = nil
         self.store.counters.played = total
         self:Dirty("played")
+    end;
+
+    -- PLAYER_LEVEL_UP carries the new level; UnitLevel still reads the old
+    -- one while the event is handled.
+    OnLevelUp = function(self, level)
+        self.level = level
+        self:Dirty("level")
     end;
 
     -- ---- evaluation and award ------------------------------------------

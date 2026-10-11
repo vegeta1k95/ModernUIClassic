@@ -424,8 +424,10 @@ class "ClassTree" : extends "SpellGrid" {
         local level       = UnitLevel("player")
         local group       = spell.group
         local displayRank = group:GetDisplayRank()
-        local isKnown     = group:IsKnown()
-        local isFullyKnown = group:IsFullyKnown()
+        -- A spell the game replaced with another one (Bear Form) stays learned.
+        local isReplaced  = MUI_Spells:IsReplaced(displayRank.spellID)
+        local isKnown     = group:IsKnown() or isReplaced
+        local isFullyKnown = group:IsFullyKnown() or isReplaced
 
         local isLearnable
         local isNext
@@ -433,7 +435,7 @@ class "ClassTree" : extends "SpellGrid" {
             isLearnable = false
             isNext = false
         else
-            isLearnable = (not displayRank.isKnown)
+            isLearnable = (not displayRank.isKnown) and (not isReplaced)
                 and (displayRank.levelReq <= level)
             isNext = displayRank.levelReq > level and displayRank.levelReq <= level + 2
         end
@@ -445,6 +447,8 @@ class "ClassTree" : extends "SpellGrid" {
         local numTotal = group:GetTotalRanks()
         if numKnown > 0 and numTotal > 1 then
             slot:SetLabel(numKnown)
+        else
+            slot:SetLabel("")
         end
 
         if isLearnable then
@@ -515,7 +519,7 @@ class "ClassTree" : extends "SpellGrid" {
                 tooltip:SetTalent(displayRank.talentID, false)
             end
 
-            if not displayRank.isKnown then
+            if not displayRank.isKnown and not isReplaced then
                 tooltip:AddBlank()
                 if displayRank.source == "talent" then
                     tooltip:AddLine("Talent at level |cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)

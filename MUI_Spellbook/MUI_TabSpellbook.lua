@@ -570,7 +570,9 @@ class "TabSpellbook" : extends "SecureFrame" {
                 local showPassives = MUI_DB.settings.spellbook.showPassive
                 -- Unlearned passives are skipped;
                 -- Learned passives are skipped depending on the setting;
-                if (not passive) or (known and showPassives) then
+                -- A spell the game replaced with another one is skipped;
+                local replaced = display and MUI_Spells:IsReplaced(display.spellID)
+                if (not replaced) and ((not passive) or (known and showPassives)) then
                     table.insert(groups, g)
                     key[g] = {
                         known   = known,

@@ -182,7 +182,7 @@ class "AchievementTrackers" : extends "Frame" {
         self:RegisterEventHandler("PLAYER_REGEN_DISABLED", function() self.lastCombat = GetTime() end)
         self:RegisterEventHandler("COMBAT_LOG_EVENT_UNFILTERED", function() self:_CombatLog() end)
         self:RegisterEventHandler("QUEST_TURNED_IN", function(_, _, id) e:OnQuestTurnIn(id) end)
-        self:RegisterEventHandler("PLAYER_LEVEL_UP", function() e:Dirty("level") end)
+        self:RegisterEventHandler("PLAYER_LEVEL_UP", function(_, _, level) e:OnLevelUp(level) end)
         -- The map's explored areas changed. (On the "Discovered" info message
         -- instead, a zone's last area was only counted at the next zone change.)
         self:RegisterEventHandler("MAP_EXPLORATION_UPDATED", function() e:Dirty("explore") end)

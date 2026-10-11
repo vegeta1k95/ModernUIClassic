@@ -324,6 +324,12 @@ local SPELL_GROUPS = {
     
 }
 
+-- Spells the game takes back when the spell replacing them is learned. The
+-- two have different names, so each is a group of its own here.
+local REPLACED_BY = {
+    [5487] = 9634,    -- Bear Form -> Dire Bear Form
+}
+
 class "SpellGroup" {
 
     __init = function(self, name, spells)
@@ -524,6 +530,12 @@ object "Spells" : extends "Module" {
         local db = specIndex and MUI_DB.data.spells.class[specIndex] or MUI_DB.data.general
         local spells = db[name]
         return spells and SpellGroup(name, spells) or nil
+    end;
+
+    -- True once the spell that replaces this one is known.
+    IsReplaced = function(self, spellID)
+        local by = REPLACED_BY[spellID]
+        return by ~= nil and C_SpellBook.IsSpellKnown(by)
     end;
 
     Reset = function()
