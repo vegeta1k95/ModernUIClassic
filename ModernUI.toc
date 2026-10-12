@@ -180,6 +180,7 @@ MUI_UnitFrames\MUI_UnitFrameTarget.lua
 MUI_UnitFrames\MUI_UnitFrameTargetAuras.lua
 MUI_UnitFrames\MUI_UnitFramePet.lua
 MUI_UnitFrames\MUI_UnitFrameTargetOfTarget.lua
+MUI_UnitFrames\MUI_UnitFrameParty.lua
 MUI_UnitFrames\MUI_ComboBar.lua
 MUI_UnitFrames\MUI_UnitFrameComboBar.lua
 MUI_UnitFrames\MUI_UnitFrames.lua

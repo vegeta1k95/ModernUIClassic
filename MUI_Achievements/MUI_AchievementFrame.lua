@@ -2081,7 +2081,8 @@ class "AchievementWindow" : extends "Frame" {
         local maxScroll = math.max(0, childH - viewH)
         bar:SetMinMax(0, maxScroll)
         bar:SetContentSize(viewH, childH)
-        if bar:GetValue() > maxScroll then bar:SetValue(maxScroll) end
+        -- SetMinMax pulls the bar's value into the new range without an OnScroll.
+        scroll:SetVerticalScroll(bar:GetValue())
     end;
 
     -- ---- state ---------------------------------------------------------

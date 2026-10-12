@@ -190,6 +190,9 @@ class "MinimalScrollBar" : extends "Frame" {
         self._thumb:AnchorToTopOf(self._trackTop, offset)
     end;
 
+    -- A value outside the new range is pulled into it without an OnScroll
+    -- (the chat's bar re-ranges all the time and must not scroll the chat
+    -- for it): the caller scrolls its view to GetValue() afterwards.
     SetMinMax = function(self, min, max)
         self._minVal = min
         self._maxVal = max

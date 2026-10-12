@@ -92,6 +92,7 @@ local DEFAULTS = {
         editmodeAdvanced = false,
         editmodeShown = {
             target     = true,
+            party      = true,
             pet        = true,
             buffs      = true,
             castBar    = true,

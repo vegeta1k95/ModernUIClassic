@@ -779,6 +779,7 @@ local OPTION_CATEGORIES = {
 }
 local OPTIONS = {
     { key = "target",     category = 1, basic = true, text = HUD_EDIT_MODE_TARGET_FRAME_LABEL },
+    { key = "party",      category = 1, basic = true, text = HUD_EDIT_MODE_PARTY_FRAMES_LABEL },
     { key = "pet",        category = 1,               text = HUD_EDIT_MODE_PET_FRAME_LABEL },
     { key = "buffs",      category = 2, basic = true, text = HUD_EDIT_MODE_BUFFS_AND_DEBUFFS_LABEL },
     { key = "castBar",    category = 2, basic = true, text = HUD_EDIT_MODE_CAST_BAR_LABEL },

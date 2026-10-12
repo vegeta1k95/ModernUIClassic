@@ -558,6 +558,8 @@ class "ProfessionsRecipeList" : extends "Frame" {
         local maxScroll = math.max(0, contentH - viewportH)
         self._listScroll:SetMinMax(0, maxScroll)
         self._listScroll:SetContentSize(math.max(1, viewportH), contentH)
+        -- SetMinMax pulls the bar's value into the new range without an OnScroll.
+        self._listScrollFrame:SetVerticalScroll(self._listScroll:GetValue())
     end;
 
     _OnRowClick = function(self, row)

@@ -118,6 +118,8 @@ class "AnimatedBar" : extends "Frame" {
         self._cutoutTexturePath = "Interface\\TargetingFrame\\UI-StatusBar"
         self._fillDir = "LEFT"
         self._cutoutSuppressedUntil = 0
+        -- The fill art within its texture: left, right, top, bottom.
+        self._region = { 0, 1, 0, 1 }
 
         -- Feature flags
         self._animEnabled = true
@@ -133,9 +135,9 @@ class "AnimatedBar" : extends "Frame" {
         local h = self:GetHeight()
 
         if self._fillDir == "RIGHT" then
-            self._fill:SetTexCoord(1 - pct, 1, 0, 1)
+            self:_Crop(self._fill, 1 - pct, 1)
         else
-            self._fill:SetTexCoord(0, pct, 0, 1)
+            self:_Crop(self._fill, 0, pct)
         end
         self._fill:SetSize(w * pct, h)
 
@@ -149,12 +151,19 @@ class "AnimatedBar" : extends "Frame" {
             return
         end
         local from = (self._fillDir == "RIGHT") and (1 - pct - span) or pct
-        predict:SetTexCoord(from, from + span, 0, 1)
+        self:_Crop(predict, from, from + span)
         predict:ClearAllPoints()
         predict:AlignParentTopLeft(0, w * from)
         predict:SetSize(w * span, h)
         predict:SetVertexColor(self._baseColor[1], self._baseColor[2], self._baseColor[3], PREDICTION_ALPHA)
         predict:Show()
+    end;
+
+    -- Crop `tex` to the stretch of the fill art between two fractions of the bar.
+    _Crop = function(self, tex, from, to)
+        local region = self._region
+        local width = region[2] - region[1]
+        tex:SetTexCoord(region[1] + width * from, region[1] + width * to, region[3], region[4])
     end;
 
     -- Show `amount` more of the bar as a translucent stretch after the fill
@@ -187,10 +196,10 @@ class "AnimatedBar" : extends "Frame" {
             cutout:SetVertexColor(self._cutoutColor[1], self._cutoutColor[2], self._cutoutColor[3], CUTOUT_ALPHA)
 
             if self._fillDir == "RIGHT" then
-                cutout:SetTexCoord(1 - oldPct, 1 - newPct, 0, 1)
+                self:_Crop(cutout, 1 - oldPct, 1 - newPct)
                 cutout:SetPoint("TOPLEFT", self, "TOPLEFT", w * (1 - oldPct), 0)
             else
-                cutout:SetTexCoord(newPct, oldPct, 0, 1)
+                self:_Crop(cutout, newPct, oldPct)
                 cutout:SetPoint("TOPLEFT", self, "TOPLEFT", w * newPct, 0)
             end
             cutout:SetSize(math.min(cutW, w), h)
@@ -246,6 +255,13 @@ class "AnimatedBar" : extends "Frame" {
         self._fill:SetTexture(path)
         self._cutoutTexturePath = path
         if self._predict then self._predict:SetTexture(path) end
+    end;
+
+    -- A fill that is one piece of its file: Texture:SetTextureRegion's arguments.
+    SetFillTextureRegion = function(self, path, fileW, fileH, x, y, w, h)
+        self._region = { x / fileW, (x + w) / fileW, y / fileH, (y + h) / fileH }
+        self:SetFillTexture(path)
+        self:_UpdateFill()
     end;
 
     SetBgTexture = function(self, path)

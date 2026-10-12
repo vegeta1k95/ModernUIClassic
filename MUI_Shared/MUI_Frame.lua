@@ -147,6 +147,13 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         end
     end;
 
+    -- Show one of a unit's auras in a frame made from PartyAuraFrameTemplate,
+    -- Blizzard's party buff / debuff icon: art, stack count, duration swipe
+    -- and tooltip. `aura` is the AuraData; the frame shows itself.
+    SetupPartyAura = function(self, unit, aura, isBuff)
+        self._native:Setup(unit, aura, isBuff)
+    end;
+
     -- When false, the frame no longer auto-raises to the top of its strata on
     -- click (the XML `toplevel` behaviour).
     SetToplevel = function(self, enable)

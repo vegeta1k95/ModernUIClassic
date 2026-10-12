@@ -1,5 +1,5 @@
 -- MUI_UnitFrames: facade for the unit-frame layer. Wires the per-unit
--- skin classes (player/target/pet/tot), the target-aura layout helper,
+-- skin classes (player/target/pet/tot/party), the target-aura layout helper,
 -- and the combo bar. Exposes shared formatting + factory helpers used
 -- by the components (FormatValue, GetPowerColor, CreateBarText), and
 -- owns the single event-dispatch table that fans out to the right
@@ -13,6 +13,7 @@
 --   5. pet             — anchored Below player.frame
 --   6. tot             — anchored to target.frame
 --   7. combo           — anchored Below player.mana (druids: player.druidMana)
+--   8. party           — Blizzard's PartyFrame, pinned to its own edit-mode box
 
 local POWER_COLORS = {
     [0] = { 0.04, 0.5, 1 },  -- Mana
@@ -35,6 +36,7 @@ object "UnitFrames" : extends "Module" {
         self.pet         = UnitFramePet(self, self.player.frame)
         self.tot         = UnitFrameTargetOfTarget(self, self.target.frame)
         self.combo       = UnitFrameComboBar(self.player.frame, self.player.druidMana or self.player.mana)
+        self.party       = UnitFrameParty(self)
 
         self:_RegisterEvents()
         self:ApplyStatusTextMode()
@@ -121,6 +123,7 @@ object "UnitFrames" : extends "Module" {
         if UnitExists("target") then
             self.target:UpdateBars()
         end
+        self.party:UpdateAll()
     end;
 
     -- ---- target cast bar (small enough to live on the facade) --------
@@ -167,6 +170,8 @@ object "UnitFrames" : extends "Module" {
                 self.pet:UpdateBars()
             elseif unit == "targettarget" then
                 self.tot:UpdateBars()
+            else
+                self.party:UpdateUnit(unit)
             end
         end
 
@@ -181,6 +186,7 @@ object "UnitFrames" : extends "Module" {
             self.combo:Update()
             if UnitExists("target") then self.target:OnTargetChanged() end
             if UnitExists("pet")    then self.pet:UpdateBars()         end
+            self.party:UpdateAll()
         end
         self.eventFrame:RegisterEventHandler("PLAYER_ENTERING_WORLD", onEnteringWorld)
         -- OnEnable itself runs from PLAYER_ENTERING_WORLD, so the handler
@@ -200,6 +206,8 @@ object "UnitFrames" : extends "Module" {
             if unit == "player" then
                 self.player:UpdatePowerType()
                 self.combo:Update()
+            else
+                self.party:UpdateUnit(unit)
             end
         end)
 
@@ -210,7 +218,7 @@ object "UnitFrames" : extends "Module" {
         -- Combat ended — re-apply any frame layout Blizzard's Edit Mode
         -- overwrote while the frames were locked down.
         self.eventFrame:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()
-            for _, unit in ipairs({ self.player, self.target, self.pet }) do
+            for _, unit in ipairs({ self.player, self.target, self.pet, self.party }) do
                 if unit.frame.reassertPending then unit.frame:Reassert() end
             end
         end)
