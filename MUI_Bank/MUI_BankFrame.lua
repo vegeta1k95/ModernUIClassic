@@ -27,6 +27,7 @@ local TRADE_GOODS = Enum.ItemClass.Tradegoods
 local REFRESH_EVENTS = {
     "BAG_UPDATE_DELAYED", "PLAYERBANKSLOTS_CHANGED", "PLAYERBANKBAGSLOTS_CHANGED",
     "ITEM_LOCK_CHANGED", "BAG_UPDATE_COOLDOWN", "INVENTORY_SEARCH_UPDATE", "PLAYER_MONEY",
+    "QUEST_ACCEPTED", "UNIT_QUEST_LOG_CHANGED",   -- a quest item's "!"
 }
 
 class "BankWindow" : extends "PanelPortrait" {

@@ -15,7 +15,7 @@
 -- Adapter contract (per kind):
 --   GetTargetPoints(self, key) -> tiers | nil
 --     tiers = {
---       { points = {{wx, wy, hull = optional}, ...},
+--       { points = {{wx, wy, shape = optional}, ...},
 --         continent = N,
 --         allowTransportReroute = true | false }, -- default true
 --       -- ... fallback tiers, walker stops at first non-empty
@@ -123,7 +123,7 @@ object "FocusManager" : extends "Module" {
     --                                 a different continent.
     --
     -- Returns
-    --   { wx, wy, hull|nil, continent, playerY, playerX, kind, key } on success
+    --   { wx, wy, shape|nil, continent, playerY, playerX, kind, key } on success
     --   nil when nothing is focused / no adapter / no candidates / no player
     --   position / cross-continent with no bridge (reroute path only).
     -- `continent` is the picked candidate's continent (tier.continent if not
@@ -197,7 +197,7 @@ object "FocusManager" : extends "Module" {
         return {
             wx        = best[1],
             wy        = best[2],
-            hull      = best.hull,
+            shape     = best.shape,
             continent = pickedContinent,
             playerY   = playerY,
             playerX   = playerX,

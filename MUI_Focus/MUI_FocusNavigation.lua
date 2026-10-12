@@ -33,15 +33,18 @@ local SMOOTH_ALPHA = 0.25
 -- arc boundary to 1 exactly at north.
 local DISTANCE_FADEIN_ANGLE = math.pi * 1.5
 
--- Range (metres) below which the whole compass fades out for non-hull
--- targets — 1 at this distance, 0 at the target.
+-- Range (metres) below which the whole compass fades out for targets
+-- without an area — 1 at this distance, 0 at the target.
 local PROXIMITY_FADEOUT_METERS = 7
 
--- Depth (metres) past the hull boundary, toward the centroid, over which
--- the compass fades from 1 (on boundary) to 0. Used for hull-bearing
--- targets (cluster centroids) where a scalar radius misrepresents the
--- often-elongated cluster shape.
-local HULL_FADE_DEPTH_METERS = 5
+-- Depth (metres) inside an area's edge over which the compass fades from
+-- 1 (on the edge) to 0. Used for targets with an area (cluster centroids)
+-- where a scalar radius misrepresents the often-elongated cluster shape.
+local AREA_FADE_DEPTH_METERS = 5
+
+-- The fade is worked out again once the player has moved this far (yards):
+-- the walk round a large area's outline is not free.
+local AREA_FADE_STEP_YARDS = 0.5
 
 class "FocusNavigation" : extends "Frame" {
     __init = function(self, name)
@@ -149,52 +152,42 @@ class "FocusNavigation" : extends "Frame" {
         self.distLabel:SetAlpha(labelAlpha)
         self.distLabel:Show()
 
-        -- Proximity fade: hull-ray for cluster-centroid targets (non-nil
-        -- hull on the candidate); fixed-meter fallback otherwise.
+        -- Proximity fade: by depth into the area for cluster-centroid targets
+        -- (non-nil shape on the candidate); fixed-meter fallback otherwise.
         local proximityAlpha = 1
-        if target.hull then
-            proximityAlpha = self:_HullFadeAlpha(tx, ty, target.hull, playerY, playerX)
+        if target.shape then
+            proximityAlpha = self:_AreaFadeAlpha(target.shape, playerY, playerX)
         elseif meters < PROXIMITY_FADEOUT_METERS then
             proximityAlpha = meters / PROXIMITY_FADEOUT_METERS
         end
         self:SetAlpha(math.min(proximityAlpha, self:_CursorFadeAlpha()))
     end;
 
-    -- Fade multiplier for hull-bearing targets: 1 outside the hull and on
-    -- the boundary, ramps to 0 once the player is HULL_FADE_DEPTH_METERS
-    -- past the boundary along the centroid→player direction. Cast the ray
-    -- centroid + s·(player − centroid) against every CCW edge; smallest
-    -- positive s where the ray line crosses an edge is where the ray
-    -- exits the hull (s=1 means player is on boundary; s>1 means player
-    -- is that multiple of |player−centroid| away from boundary, i.e.
-    -- inside).
-    _HullFadeAlpha = function(self, cWx, cWy, hull, playerY, playerX)
-        if not hull or #hull < 3 then return 1 end
-
-        local dx, dy = playerY - cWx, playerX - cWy
-        local playerDistSq = dx * dx + dy * dy
-        if playerDistSq < 1e-6 then return 0 end
-
-        local sExit = math.huge
-        local n = #hull
-        for i = 1, n do
-            local a = hull[i]
-            local b = hull[(i % n) + 1]
-            local ex = b[1] - a[1]
-            local ey = b[2] - a[2]
-            local denom = ex * dy - ey * dx
-            if denom > 1e-12 or denom < -1e-12 then
-                local s = (ey * (cWx - a[1]) - ex * (cWy - a[2])) / denom
-                if s > 0 and s < sExit then sExit = s end
-            end
+    -- Fade multiplier for targets with an area: 1 outside the area and on
+    -- its edge, ramps to 0 once the player is AREA_FADE_DEPTH_METERS inside
+    -- it, measured to the nearest stretch of the edge. `shape` is the
+    -- area's, in world yards like the player's position.
+    _AreaFadeAlpha = function(self, shape, playerY, playerX)
+        local last = self._areaFade
+        if last and last.shape == shape
+                and math.abs(last.playerY - playerY) < AREA_FADE_STEP_YARDS
+                and math.abs(last.playerX - playerX) < AREA_FADE_STEP_YARDS then
+            return last.alpha
         end
-        if sExit == math.huge or sExit <= 1 then return 1 end
 
-        -- Player is inside. Depth in yards past the boundary toward centroid.
-        local depthYards = (sExit - 1) * math.sqrt(playerDistSq)
-        local fadeYards  = HULL_FADE_DEPTH_METERS / YARDS_TO_METERS
-        if depthYards >= fadeYards then return 0 end
-        return 1 - depthYards / fadeYards
+        local alpha = 1
+        local box = shape.box
+        if playerY >= box[1] and playerY <= box[3] and playerX >= box[2] and playerX <= box[4]
+                and MUI_BlobOutline:Contains(shape.rings, playerY, playerX) then
+            local depthYards = MUI_BlobOutline:EdgeDistance(shape.rings, playerY, playerX)
+            local fadeYards  = AREA_FADE_DEPTH_METERS / YARDS_TO_METERS
+            alpha = math.max(0, 1 - depthYards / fadeYards)
+        end
+
+        last = last or {}
+        last.shape, last.playerY, last.playerX, last.alpha = shape, playerY, playerX, alpha
+        self._areaFade = last
+        return alpha
     end;
 
     -- Fade the whole frame toward transparent when the cursor is over the

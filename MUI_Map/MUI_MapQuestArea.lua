@@ -1,10 +1,10 @@
 -- MapQuestObjectiveArea + MapQuestAreaManager: world-map equivalent of
--- MUI_MinimapQuestObjectiveArea. Renders the precomputed objective convex
--- hulls of a quest as retail-style blobs on the WorldMap canvas: each hull
--- rounded into a smooth outline, filled, with a soft glow band around it.
--- One area per tracked quest with non-empty clusters; the manager creates /
--- destroys them with the watcher and toggles visibility on focus / hover.
--- An objective found at a lone spot has no hull and gets no area here: on
+-- MUI_MinimapQuestObjectiveArea. Renders the precomputed objective areas
+-- of a quest as retail-style blobs on the WorldMap canvas: each area
+-- filled, with a soft glow band around its outline (and round its holes).
+-- One area frame per tracked quest with non-empty clusters; the manager
+-- creates / destroys them with the watcher and toggles visibility on focus /
+-- hover. An objective found at a lone spot has no area here: on
 -- this map the quest's pin marks it (the small area round such a spot is
 -- the minimap's alone).
 --
@@ -14,10 +14,10 @@
 --   log row hovered      → show (PushQuestHover from MapQuestLog)
 --   otherwise            → hide
 --
--- Hulls live in world yards (same convention as the minimap renderer).
--- Per refresh we project each vertex through MUI_MapMath:WorldToMap onto
--- the currently-displayed uiMap; hulls whose continent doesn't match the
--- map's are skipped, which lets a tracked Kalimdor quest's hull stay
+-- Shapes live in world yards (same convention as the minimap renderer).
+-- Per redraw we project each point through MUI_MapMath:WorldToMap onto
+-- the currently-displayed uiMap; shapes whose continent doesn't match the
+-- map's are skipped, which lets a tracked Kalimdor quest's area stay
 -- silent while the user browses Eastern Kingdoms zones.
 
 local _canvasWrapper
@@ -33,11 +33,11 @@ end
 -- Frame-level: above the explored-area overlay (Blizzard MapCanvas pin
 -- frame levels start at 2000 and grow with each pin type), below our own
 -- pins (MUI_MAP_PIN_FRAME_LEVEL = 3000) so pins always draw on top of
--- hulls.
+-- areas.
 local MUI_MAP_QUEST_AREA_FRAME_LEVEL = 2700
 
--- Enum.UIMapType.Zone == 3. Hulls only render on zone-level maps;
--- continent / world / cosmic views suppress them (the projected polygon
+-- Enum.UIMapType.Zone == 3. Areas only render on zone-level maps;
+-- continent / world / cosmic views suppress them (the projected outline
 -- would technically still resolve via WorldToMap, but the cluster looks
 -- like garbage at those zooms — same convention as static pins).
 local ZONE_MAP_TYPE = 3
@@ -49,17 +49,15 @@ local BORDER_INNER = CreateColor(0.70, 0.90, 1.00, 0.90)   -- at the fill's edge
 local BORDER_OUTER = CreateColor(0.35, 0.40, 1.00, 0.00)   -- outer rim
 local BORDER_WIDTH = 9      -- band width, canvas px
 local BORDER_INSET = 1      -- of which this much sits inside the fill's edge
-local BLOB_PAD     = 8      -- least margin between a hull vertex and the outline, canvas px
 
 class "MapQuestObjectiveArea" : extends "Frame" {
     __init = function(self, name, questId)
-        -- Field init MUST come before self:Hide() — our Hide override
-        -- calls _HideEdges() which iterates the texture pools.
-        self._hulls           = {}
+        self._shapes          = {}
         self._continent       = nil
         self._fills           = { used = 0 }
         self._borders         = { used = 0 }
-        self._projectedHulls  = nil       -- hulls in normalized [0,1] map coords
+        self._projected       = nil       -- the shapes in normalized [0,1] map coords
+        self._drawnKey        = nil       -- the map and canvas size the pieces are laid out for
         self._questId         = questId   -- needed for tooltip + hover push/pop
         self._tooltipActive   = false
         self._tooltipKey      = nil       -- the targets the tooltip up now lists
@@ -74,11 +72,11 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         -- Hover detection: poll IsMouseOver each frame the area is shown
         -- (OnUpdate doesn't run on hidden frames). On enter → show the
         -- POI-style quest tooltip + push hover (which reinforces this
-        -- quest's visibility while the cursor's over the hull). On
+        -- quest's visibility while the cursor's over the area). On
         -- leave → reverse both.
         self:SetScript("OnUpdate", function() self:_PollHover() end)
 
-        -- Tooltip cleanup: the cursor may be over the hull when we go hidden
+        -- Tooltip cleanup: the cursor may be over the area when we go hidden
         -- (focus cleared, solo filter, or the whole map closing, which never
         -- calls our Hide). OnHide covers all of them; drop the tooltip so it
         -- doesn't dangle.
@@ -91,20 +89,32 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         end)
     end;
 
-    SetHulls = function(self, hulls, continentId)
-        self._hulls     = hulls or {}
-        self._continent = continentId
+    -- shapes: list of area shapes in world yards (the `shape` of each
+    -- QuestObjectiveCluster:GetClusters() entry). The same shapes again
+    -- leave what is drawn alone.
+    SetShapes = function(self, shapes, continentId)
+        shapes = shapes or {}
+        local same = continentId == self._continent and #shapes == #self._shapes
+        for i = 1, #shapes do
+            same = same and shapes[i] == self._shapes[i]
+        end
+        if not same then
+            self._shapes    = shapes
+            self._continent = continentId
+            self._drawnKey  = nil
+        end
         if self:IsShown() then self:_Refresh() end
     end;
 
     Refresh = function(self) self:_Refresh() end;
 
+    -- Lays the pieces out for the displayed map, once the area shows on it.
+    -- They stay laid out while the frame is hidden, so showing it again for
+    -- the same map and canvas size costs nothing.
     _Refresh = function(self)
-        if not WorldMapFrame or not WorldMapFrame:IsShown() then
-            self:_HideEdges(); return
-        end
+        if not self:IsShown() or not WorldMapFrame:IsShown() then return end
         local uiMapId = WorldMapFrame:GetMapID()
-        if not uiMapId or not self._hulls or #self._hulls == 0 then
+        if not uiMapId or #self._shapes == 0 then
             self:_HideEdges(); return
         end
         local info = C_Map.GetMapInfo(uiMapId)
@@ -117,51 +127,60 @@ class "MapQuestObjectiveArea" : extends "Frame" {
             self:_HideEdges(); return
         end
 
+        local key = uiMapId .. ":" .. W .. ":" .. H
+        if key == self._drawnKey then return end
+        self._drawnKey = key
+
         self._fills.used, self._borders.used = 0, 0
         local projected = {}
-        for _, hull in ipairs(self._hulls) do
-            local proj, pts = { objective = hull.objective, itemId = hull.itemId }, {}
-            local ok = #hull >= 1
-            for i, v in ipairs(hull) do
-                local nx, ny = MUI_MapMath:WorldToMap(
-                    uiMapId, v[1], v[2], self._continent)
-                if not nx then ok = false; break end
-                proj[i] = { nx, ny }
-                pts[i]  = { nx * W, -ny * H }
+        for _, shape in ipairs(self._shapes) do
+            -- Normalized rings for the hover test, canvas px for drawing.
+            local proj = { shape = shape, rings = {} }
+            local rings, ok = {}, true
+            for k, ring in ipairs(shape.rings) do
+                local norm, px = {}, {}
+                for i = 1, #ring, 2 do
+                    local nx, ny = MUI_MapMath:WorldToMap(
+                        uiMapId, ring[i], ring[i + 1], self._continent)
+                    if not nx then ok = false; break end
+                    norm[i], norm[i + 1] = nx, ny
+                    px[i],   px[i + 1]   = nx * W, -ny * H
+                end
+                if not ok then break end
+                proj.rings[k], rings[k] = norm, px
             end
             if ok then
+                proj.box = { MUI_BlobOutline:Bounds(proj.rings) }
                 projected[#projected + 1] = proj
-                self:_DrawBlob(MUI_BlobOutline:Round(pts, BLOB_PAD))
+                self:_DrawShape(rings, shape.tris)
             end
         end
-        -- Cache projected hulls in normalized [0,1] map coords for the
-        -- per-frame hover test in _PollHover / IsMouseOver.
-        self._projectedHulls = projected
+        -- Cache the projected shapes for the per-frame hover test in
+        -- _PollHover / IsMouseOver.
+        self._projected = projected
 
         for i = self._fills.used + 1, #self._fills do self._fills[i]:Hide() end
         for i = self._borders.used + 1, #self._borders do self._borders[i]:Hide() end
     end;
 
-    -- True if the cursor is inside ANY projected hull.
+    -- True if the cursor is inside ANY projected shape.
     IsMouseOver = function(self)
         return self:_HoveredTargets() ~= nil
     end;
 
-    -- What the cursor is over, nil when it is inside no projected hull:
-    -- a key naming the targets of the hulls it is inside, and those
+    -- What the cursor is over, nil when it is inside no projected shape:
+    -- a key naming the targets of the shapes it is inside, and those
     -- targets as two sets, objective lines (indices into the quest's
-    -- leaderboard) and required source items. Hulls of different
-    -- objectives overlap, so it can be several. A hull that names no
+    -- leaderboard) and required source items. Shapes of different
+    -- objectives overlap, so it can be several. A shape that names no
     -- target (no leaderboard yet) stands for the whole quest: the key is
     -- then "" and there are no sets.
-    -- Cursor is normalized to [0,1] map coords (matching _projectedHulls),
-    -- then a sign-agnostic point-in-convex test runs per hull. Sign-
-    -- agnostic so we don't have to track winding direction (the
-    -- exporter's CCW-in-yards becomes CW-in-y-down here).
+    -- Cursor is normalized to [0,1] map coords (matching _projected) and
+    -- tried against each shape's box, then its rings.
     _HoveredTargets = function(self)
         if not self:IsShown() then return nil end
-        local hulls = self._projectedHulls
-        if not hulls or #hulls == 0 then return nil end
+        local shapes = self._projected
+        if not shapes or #shapes == 0 then return nil end
         local W, H = self:GetWidth(), self:GetHeight()
         if not W or not H or W <= 0 or H <= 0 then return nil end
 
@@ -178,39 +197,25 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         if px < 0 or px > 1 or py < 0 or py > 1 then return nil end
 
         local key, objectives, items, whole
-        for _, hull in ipairs(hulls) do
-            local n = #hull
-            if n >= 3 then
-                local prevSign, inside = nil, true
-                for i = 1, n do
-                    local a = hull[i]
-                    local b = hull[(i % n) + 1]
-                    local cross = (b[1] - a[1]) * (py - a[2])
-                                - (b[2] - a[2]) * (px - a[1])
-                    local s = cross >= 0
-                    if prevSign == nil then
-                        prevSign = s
-                    elseif s ~= prevSign then
-                        inside = false
-                        break
+        for _, proj in ipairs(shapes) do
+            local box = proj.box
+            if px >= box[1] and px <= box[3] and py >= box[2] and py <= box[4]
+                    and MUI_BlobOutline:Contains(proj.rings, px, py) then
+                local shape = proj.shape
+                key = key or ""
+                objectives, items = objectives or {}, items or {}
+                if shape.objective then
+                    if not objectives[shape.objective] then
+                        objectives[shape.objective] = true
+                        key = key .. "o" .. shape.objective
                     end
-                end
-                if inside then
-                    key = key or ""
-                    objectives, items = objectives or {}, items or {}
-                    if hull.objective then
-                        if not objectives[hull.objective] then
-                            objectives[hull.objective] = true
-                            key = key .. "o" .. hull.objective
-                        end
-                    elseif hull.itemId then
-                        if not items[hull.itemId] then
-                            items[hull.itemId] = true
-                            key = key .. "i" .. hull.itemId
-                        end
-                    else
-                        whole = true
+                elseif shape.itemId then
+                    if not items[shape.itemId] then
+                        items[shape.itemId] = true
+                        key = key .. "i" .. shape.itemId
                     end
+                else
+                    whole = true
                 end
             end
         end
@@ -224,10 +229,10 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         if key then
             self._tooltipActive = true
             -- Re-assert tooltip when something else has hidden it
-            -- while our cursor is still inside the hull (concrete case:
-            -- cursor moves POI → hull, POI:OnLeave hid the tooltip).
+            -- while our cursor is still inside the area (concrete case:
+            -- cursor moves POI → area, POI:OnLeave hid the tooltip).
             -- Cheap — only rebuilds when it isn't already up, or when the
-            -- cursor has moved onto another objective's hull.
+            -- cursor has moved onto another objective's area.
             if key ~= self._tooltipKey or not MUI_Tooltip:IsShown() then
                 self._tooltipKey = key
                 MUI_QuestHelper:ShowMapQuestTooltip(self, self._questId, objectives, items)
@@ -237,47 +242,58 @@ class "MapQuestObjectiveArea" : extends "Frame" {
             self._tooltipKey = nil
             MUI_Tooltip:Hide()
         end
-        -- Intentionally NO PushQuestHover/PopQuestHover here. The hull's
-        -- own cursor-hover must not keep the hull alive — visibility is
+        -- Intentionally NO PushQuestHover/PopQuestHover here. The area's
+        -- own cursor-hover must not keep the area alive — visibility is
         -- driven solely by focus + POI / log-row hover, so unfocused
-        -- hulls disappear the instant the POI is left, even if the
-        -- cursor is still inside the polygon.
+        -- areas disappear the instant the POI is left, even if the
+        -- cursor is still inside the outline.
     end;
 
-    -- One rounded hull: a triangle fan from the centroid for the fill (the
-    -- quad's two lower corners collapse there), and a quad per segment along
-    -- per-vertex outward normals for the glow band, its opaque edge on the
-    -- fill's. Neighbouring quads share their vertices, so both are
-    -- seamless.
-    _DrawBlob = function(self, pts, cx, cy)
-        local n = #pts
-        local nx, ny = {}, {}
-        for i = 1, n do
-            local p, q = pts[(i - 2) % n + 1], pts[i % n + 1]
-            local tx, ty = q[1] - p[1], q[2] - p[2]
-            local len = math.sqrt(tx * tx + ty * ty)
-            local ax, ay = 0, 0
-            if len > 0 then ax, ay = ty / len, -tx / len end
-            if ax * (pts[i][1] - cx) + ay * (pts[i][2] - cy) < 0 then ax, ay = -ax, -ay end
-            nx[i], ny[i] = ax, ay
-        end
-
+    -- One shape, its `rings` in canvas px: a piece per triangle of `tris`
+    -- for the fill (a quad with two corners on one point), and a quad per
+    -- ring segment along per-vertex outward normals for the glow band, its
+    -- opaque edge on the fill's. Neighbouring pieces share their vertices,
+    -- so both are seamless.
+    _DrawShape = function(self, rings, tris)
+        local xs, ys = {}, {}
         local outer = BORDER_WIDTH - BORDER_INSET
-        for i = 1, n do
-            local j = i % n + 1
-            local a, b = pts[i], pts[j]
+        for k, ring in ipairs(rings) do
+            local n = #ring / 2
+            -- Outward is to the right of the ring's direction when the area
+            -- is on its left.
+            local side = MUI_BlobOutline:AreaOnLeft(rings, k) and 1 or -1
+            local nx, ny = {}, {}
+            for i = 1, n do
+                local p, q = ((i - 2) % n) * 2, (i % n) * 2
+                local tx, ty = ring[q + 1] - ring[p + 1], ring[q + 2] - ring[p + 2]
+                local len = math.sqrt(tx * tx + ty * ty)
+                if len > 0 then
+                    nx[i], ny[i] = side * ty / len, -side * tx / len
+                else
+                    nx[i], ny[i] = 0, 0
+                end
+                xs[#xs + 1], ys[#ys + 1] = ring[2 * i - 1], ring[2 * i]
+            end
+            for i = 1, n do
+                local j = i % n + 1
+                local ax, ay, bx, by = ring[2 * i - 1], ring[2 * i], ring[2 * j - 1], ring[2 * j]
+                self:_Piece(self._borders, 2)
+                    :SetQuad(
+                        ax - nx[i] * BORDER_INSET, ay - ny[i] * BORDER_INSET,
+                        ax + nx[i] * outer,        ay + ny[i] * outer,
+                        bx - nx[j] * BORDER_INSET, by - ny[j] * BORDER_INSET,
+                        bx + nx[j] * outer,        by + ny[j] * outer)
+            end
+        end
+
+        for t = 1, #tris, 3 do
+            local a, b, c = tris[t], tris[t + 1], tris[t + 2]
             self:_Piece(self._fills, 1)
-                :SetQuad(a[1], a[2], cx, cy, b[1], b[2], cx, cy)
-            self:_Piece(self._borders, 2)
-                :SetQuad(
-                    a[1] - nx[i] * BORDER_INSET, a[2] - ny[i] * BORDER_INSET,
-                    a[1] + nx[i] * outer,        a[2] + ny[i] * outer,
-                    b[1] - nx[j] * BORDER_INSET, b[2] - ny[j] * BORDER_INSET,
-                    b[1] + nx[j] * outer,        b[2] + ny[j] * outer)
+                :SetQuad(xs[a], ys[a], xs[c], ys[c], xs[b], ys[b], xs[c], ys[c])
         end
     end;
 
-    -- Next texture of a pool (`used` counts this refresh's pieces). A band
+    -- Next texture of a pool (`used` counts this redraw's pieces). A band
     -- piece is a vertical gradient: its top edge lies on the fill's edge.
     _Piece = function(self, pool, subLevel)
         pool.used = pool.used + 1
@@ -298,19 +314,17 @@ class "MapQuestObjectiveArea" : extends "Frame" {
         return tex
     end;
 
+    -- Nothing to draw on the displayed map.
     _HideEdges = function(self)
         for _, t in ipairs(self._fills) do t:Hide() end
         for _, t in ipairs(self._borders) do t:Hide() end
+        self._drawnKey  = nil
+        self._projected = nil
     end;
 
     Show = function(self)
         Frame.Show(self)
         self:_Refresh()
-    end;
-
-    Hide = function(self)
-        Frame.Hide(self)
-        self:_HideEdges()
     end;
 
     Destroy = function(self)
@@ -353,7 +367,7 @@ class "MapQuestAreaManager" : extends "Frame" {
             self:_UpdateAll()
         end)
 
-        -- Re-project hulls every time the world map is opened. OnMapChanged
+        -- Re-project areas every time the world map is opened. OnMapChanged
         -- only fires when the map ID changes, so opening the map with the
         -- same map ID as last time (common: focus changed in tracker
         -- while map was closed) wouldn't trigger a refresh — the focused
@@ -380,18 +394,18 @@ class "MapQuestAreaManager" : extends "Frame" {
         -- Targets on the displayed map's continent; _UpdateAll re-picks
         -- on every map change.
         local cont = self:_DisplayedContinent() or cluster:GetContinent()
-        local hulls = {}
+        local shapes = {}
         for _, c in ipairs(cluster:GetClusters(cont)) do
-            hulls[#hulls + 1] = c.hull
+            shapes[#shapes + 1] = c.shape
         end
-        if #hulls == 0 then self:_Destroy(questId); return end
+        if #shapes == 0 then self:_Destroy(questId); return end
 
         local area = self._areas[questId]
         if not area then
             area = MapQuestObjectiveArea("MUI_MapQuestArea_" .. questId, questId)
             self._areas[questId] = area
         end
-        area:SetHulls(hulls, cont)
+        area:SetShapes(shapes, cont)
         self:_ApplyVisibility(questId)
     end;
 
@@ -421,7 +435,7 @@ class "MapQuestAreaManager" : extends "Frame" {
         local area = self._areas[questId]
         if not area then return end
         -- Master toggle from the world-map filter button. When off, no
-        -- hull renders regardless of focus / hover.
+        -- area renders regardless of focus / hover.
         local s_qh = MUI_DB and MUI_DB.settings and MUI_DB.settings.questHelper
         if s_qh and s_qh.showObjectivesOnMap == false then
             area:Hide()
@@ -443,10 +457,10 @@ class "MapQuestAreaManager" : extends "Frame" {
         end
     end;
 
-    -- Restrict the manager to a single quest's hull (others hidden), or
+    -- Restrict the manager to a single quest's area (others hidden), or
     -- pass nil to clear. Mirrors MapQuestPoiManager:SetSoloQuestFilter
     -- — ModuleMap:ShowQuestDescription / ShowQuestLog drive both so the
-    -- description tab shows its own quest's hull and suppresses others
+    -- description tab shows its own quest's area and suppresses others
     -- (including a different focused quest).
     SetSoloQuestFilter = function(self, questId)
         if self._soloQuestId == questId then return end

@@ -1,20 +1,20 @@
--- MUI_MinimapQuestObjectiveArea: glowing convex-hull overlays on the
--- minimap, rendered from precomputed hulls. This class is a pure RENDERER:
--- it doesn't own the clustering logic — see QuestObjectiveCluster
+-- MUI_MinimapQuestObjectiveArea: glowing outlines of quest objective areas
+-- on the minimap, rendered from precomputed shapes. This class is a pure
+-- RENDERER: it doesn't own the clustering logic — see QuestObjectiveCluster
 -- (MUI_QuestHelper/MUI_QuestObjectiveCluster.lua) for how a quest's spawn
--- points become hulls. A single cluster object is authored once per quest
--- in world yards and can be consumed by multiple renderers (minimap here,
--- future world-map overlay, edge-arrow aiming).
+-- points become shapes. A single cluster object is authored once per quest
+-- in world yards and consumed by several renderers (minimap here, the
+-- world-map overlay, edge-arrow aiming).
 --
--- Per frame, Refresh() projects every supplied hull through the player
--- position + minimap rotation + zoom, clips each edge to the minimap radius
--- (minus optional edge padding), and updates a pool of Lines.
+-- Per frame, Refresh() projects the rings of every supplied shape that are
+-- in view through the player position + minimap rotation + zoom, clips each
+-- edge to the minimap radius (minus optional edge padding), and updates a
+-- pool of Lines.
 --
 -- Use:
 --   local area = MinimapQuestObjectiveArea()
---   area:SetHulls({
---       { {wx, wy}, {wx, wy}, ... },   -- CCW hull 1
---       { {wx, wy}, {wx, wy}, ... },   -- CCW hull 2
+--   area:SetShapes({
+--       { rings = { {wx, wy, wx, wy, ...}, ... }, box = {...} },
 --       ...
 --   }, continentId)
 
@@ -23,11 +23,11 @@
 local GLOW_THICK = 3
 local CORE_THICK = 1
 
--- The drawn outline is the hull rounded into a blob (MUI_BlobOutline, as on
--- the world map), kept this many world yards outside every hull point.
-local OUTLINE_PAD_YARDS = 10
+-- A ring is drawn in runs of this many edges; a run out of view is skipped
+-- whole.
+local RUN_EDGES = 16
 
--- Hull edges are clipped to (minimap radius − this) so the halo's
+-- Ring edges are clipped to (minimap radius − this) so the halo's
 -- perpendicular overhang at the termination point doesn't poke past the
 -- minimap border. Tunable per-instance via :SetEdgePadding(px).
 local DEFAULT_EDGE_PADDING_PX = 3.5
@@ -78,21 +78,26 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         _areaFrameLevel = _areaFrameLevel + 1
         self:SetFrameLevel(mm:GetFrameLevel() + _areaFrameLevel)
 
-        -- Hulls in UnitPosition-space world yards, fed externally.
-        -- self._hulls[i] = { {wx, wy}, {wx, wy}, ... } (CCW vertices)
-        self._hulls       = {}
-        self._outlines    = {}
+        -- Shapes in UnitPosition-space world yards, fed externally, and
+        -- their rings cut into runs (see SetShapes).
+        self._shapes      = {}
+        self._runs        = {}
         self._worldCont   = nil
         self._edgePadding = DEFAULT_EDGE_PADDING_PX
 
-        -- Line pool, grown on demand across all hulls. Per frame,
-        -- _DrawEdge(idx, ...) bumps idx for every drawn edge and unused
-        -- pool slots beyond the final idx are hidden.
+        -- How the last Refresh looked at the world, for the hover test:
+        -- player position, px per yard and the minimap's rotation.
+        self._view   = {}
+        self._inView = false
+
+        -- Line pool, grown on demand across all shapes. Per frame every
+        -- drawn edge takes the next pair and the pairs beyond the last one
+        -- are hidden.
         self._halos = {}
         self._cores = {}
 
-        -- Optional per-hull centre-icon overlay (pure art — no mouse, no
-        -- tooltip; hover resolution still runs off the hulls). Populated
+        -- Optional centre-icon overlay (pure art — no mouse, no tooltip;
+        -- hover resolution still runs off the shapes). Populated
         -- via SetCenterIcons; toggled via SetCentersVisible so the pin
         -- manager can show them only for the focused quest.
         self._centerTexs    = {}
@@ -104,18 +109,37 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         MUI_MinimapPinTicker:Register(self)
     end;
 
-    -- hulls: list of CCW hulls in world yards (e.g. from a
-    -- QuestObjectiveCluster:GetClusters() spread).
+    -- shapes: list of area shapes in world yards (e.g. the `shape` of each
+    -- QuestObjectiveCluster:GetClusters() entry).
     -- continentId: numeric continent this area belongs to; the overlay
     -- hides when the player is on a different continent.
-    SetHulls = function(self, hulls, continentId)
-        self._hulls     = hulls or {}
+    SetShapes = function(self, shapes, continentId)
+        self._shapes    = shapes or {}
         self._worldCont = continentId
-        -- The outline is rigid in world space: round each hull once here,
-        -- and only project its points per frame.
-        self._outlines = {}
-        for i, hull in ipairs(self._hulls) do
-            self._outlines[i] = MUI_BlobOutline:Round(hull, OUTLINE_PAD_YARDS)
+        -- The outline is rigid in world space: cut every ring into runs of
+        -- edges once here, each with the circle round it and the side the
+        -- area is on, and only project the runs in view per frame.
+        self._runs = {}
+        for _, shape in ipairs(self._shapes) do
+            for k, ring in ipairs(shape.rings) do
+                local points   = #ring / 2
+                local areaLeft = MUI_BlobOutline:AreaOnLeft(shape.rings, k)
+                for first = 1, points, RUN_EDGES do
+                    local edges = math.min(RUN_EDGES, points - first + 1)
+                    local minX, minY, maxX, maxY = math.huge, math.huge, -math.huge, -math.huge
+                    for p = first, first + edges do
+                        local i = ((p - 1) % points) * 2
+                        minX, maxX = math.min(minX, ring[i + 1]), math.max(maxX, ring[i + 1])
+                        minY, maxY = math.min(minY, ring[i + 2]), math.max(maxY, ring[i + 2])
+                    end
+                    self._runs[#self._runs + 1] = {
+                        ring = ring, points = points, first = first, edges = edges,
+                        areaLeft = areaLeft,
+                        x = (minX + maxX) / 2, y = (minY + maxY) / 2,
+                        radius = math.sqrt((maxX - minX) ^ 2 + (maxY - minY) ^ 2) / 2,
+                    }
+                end
+            end
         end
     end;
 
@@ -142,7 +166,7 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
     end;
 
     -- Attach a centre-icon overlay to this area. One texture is placed at
-    -- each `centers[i] = {wx, wy}` (world yards, same convention as hulls)
+    -- each `centers[i] = {wx, wy}` (world yards, same convention as shapes)
     -- using the icon region keyed by `iconType` in MUI_MinimapPinIcons.
     -- Centres don't render until SetCentersVisible(true) — the pin manager
     -- uses that to show the icons only for the focused quest.
@@ -166,10 +190,10 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         end
     end;
 
-    -- Ticker callback. Re-projects every hull → minimap pixels, clips
+    -- Ticker callback. Re-projects the runs in view → minimap pixels, clips
     -- edges to the minimap circle, updates Line endpoints.
     Refresh = function(self)
-        if not self._hulls or #self._hulls == 0 or not self._worldCont then
+        if #self._runs == 0 or not self._worldCont then
             self:_HideAll(); return
         end
 
@@ -188,53 +212,51 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         local scale = fullRadiusPx / zoomYards
 
         local rotate = GetCVar("rotateMinimap") == "1"
-        local cosF, sinF
+        local cosF, sinF = 1, 0
         if rotate then
             local facing = GetPlayerFacing() or 0
             cosF, sinF = math.cos(facing), math.sin(facing)
         end
 
-        -- Project world-yard vertices to minimap pixel space. MinimapPin axis
-        -- convention: UnitPosition returns (Y, X) where Y is N-S (+north)
-        -- and X is E-W (+west).
-        local function project(points)
-            local proj = {}
-            for i, v in ipairs(points) do
-                local east  = playerX - v[2]
-                local north = v[1]    - playerY
-                if rotate then
-                    east, north = east * cosF + north * sinF, -east * sinF + north * cosF
-                end
-                proj[i] = { east * scale, north * scale }
-            end
-            return proj
-        end
+        local view = self._view
+        view.playerY, view.playerX, view.scale = playerY, playerX, scale
+        view.rotate, view.cosF, view.sinF = rotate, cosF, sinF
+        self._inView = true
 
+        -- World yards → minimap pixel space. MinimapPin axis convention:
+        -- UnitPosition returns (Y, X) where Y is N-S (+north) and X is E-W
+        -- (+west). A run is in view when its circle reaches the minimap's.
         local drawn = 0
-        local projectedHulls = {}
-        for hIdx, hull in ipairs(self._hulls) do
-            -- The hull itself is what the hover test runs against (it keeps
-            -- the target it is for); the rounded outline around it is what
-            -- gets drawn.
-            local projected = project(hull)
-            projected.objective, projected.itemId = hull.objective, hull.itemId
-            projectedHulls[hIdx] = projected
-            local proj = project(self._outlines[hIdx])
-
-            for i = 1, #proj do
-                local a = proj[i]
-                local b = proj[(i % #proj) + 1]
-                local cax, cay, cbx, cby =
-                    _clipSegmentToCircle(a[1], a[2], b[1], b[2], clipRadiusPx)
-                if cax then
-                    drawn = drawn + 1
-                    self:_DrawEdge(drawn, cax, cay, cbx, cby)
+        for _, run in ipairs(self._runs) do
+            local dx, dy = run.x - playerY, run.y - playerX
+            local reach = zoomYards + run.radius
+            if dx * dx + dy * dy <= reach * reach then
+                local ring, points = run.ring, run.points
+                local ax, ay
+                for p = run.first, run.first + run.edges do
+                    local i = ((p - 1) % points) * 2
+                    local east  = playerX - ring[i + 2]
+                    local north = ring[i + 1] - playerY
+                    if rotate then
+                        east, north = east * cosF + north * sinF, -east * sinF + north * cosF
+                    end
+                    local bx, by = east * scale, north * scale
+                    if ax then
+                        local cax, cay, cbx, cby =
+                            _clipSegmentToCircle(ax, ay, bx, by, clipRadiusPx)
+                        -- _DrawEdge glows to the right of the edge's direction:
+                        -- away from the area.
+                        if cax and not run.areaLeft then
+                            cax, cay, cbx, cby = cbx, cby, cax, cay
+                        end
+                        if cax and self:_DrawEdge(drawn + 1, cax, cay, cbx, cby) then
+                            drawn = drawn + 1
+                        end
+                    end
+                    ax, ay = bx, by
                 end
             end
         end
-        -- Cache the (unclipped) projected hulls so IsMouseOver can run
-        -- point-in-polygon without re-projecting.
-        self._projectedHulls = projectedHulls
 
         for i = drawn + 1, #self._halos do
             self._halos[i]:Hide()
@@ -242,7 +264,7 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         end
 
         -- Centre icons: project each centre to minimap pixel space using
-        -- the same axes as hull projection, then place/show the pooled
+        -- the same axes as the rings, then place/show the pooled
         -- texture. Hidden wholesale when SetCentersVisible is off.
         if self._centersVisible and self._centers and self._centerType then
             local spec = MUI_MinimapPinIcons and MUI_MinimapPinIcons[self._centerType]
@@ -287,31 +309,30 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         for _, l in ipairs(self._halos) do l:Hide() end
         for _, l in ipairs(self._cores) do l:Hide() end
         for _, t in ipairs(self._centerTexs) do t:Hide() end
-        self._projectedHulls = nil
+        self._inView = false
     end;
 
-    -- True if the cursor is inside ANY projected hull of this area. What
-    -- those hulls are for is kept for GetHoveredTargets.
+    -- True if the cursor is inside ANY shape of this area. What
+    -- those shapes are for is kept for GetHoveredTargets.
     IsMouseOver = function(self)
         self._hoverKey, self._hoverObjectives, self._hoverItems = self:_HoveredTargets()
         return self._hoverKey ~= nil
     end;
 
     -- What the last IsMouseOver found under the cursor, nil when nothing:
-    -- a key naming the targets of the hulls the cursor is inside, and those
+    -- a key naming the targets of the shapes the cursor is inside, and those
     -- targets as two sets, objective lines (indices into the quest's
-    -- leaderboard) and required source items. Hulls of different objectives
-    -- overlap, so it can be several. A hull that names no target stands for
+    -- leaderboard) and required source items. Shapes of different objectives
+    -- overlap, so it can be several. A shape that names no target stands for
     -- the whole quest: the key is then "" and there are no sets.
     GetHoveredTargets = function(self)
         return self._hoverKey, self._hoverObjectives, self._hoverItems
     end;
 
-    -- Uses the CCW point-in-convex test against the last projected hulls
-    -- cached by Refresh(). Cheap: O(Σ hullSize) per call.
+    -- The cursor is taken back from minimap pixels to world yards, as the
+    -- last Refresh() looked at the world, and tried against each shape there.
     _HoveredTargets = function(self)
-        local hulls = self._projectedHulls
-        if not hulls or #hulls == 0 then return nil end
+        if not self._inView then return nil end
         if not MUI_Minimap:IsMouseOver() then return nil end
 
         local scale = MUI_Minimap:GetEffectiveScale()
@@ -319,33 +340,30 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
         mx, my = mx / scale, my / scale
         local cx, cy = MUI_Minimap:GetCenter()
         if not cx then return nil end
-        local px, py = mx - cx, my - cy
+        local view = self._view
+        local east, north = (mx - cx) / view.scale, (my - cy) / view.scale
+        if view.rotate then
+            east, north = east * view.cosF - north * view.sinF,
+                          east * view.sinF + north * view.cosF
+        end
+        local wx, wy = view.playerY + north, view.playerX - east
 
         local key, objectives, items, whole
-        for _, hull in ipairs(hulls) do
-            local n = #hull
-            local inside = n >= 3
-            for i = 1, n do
-                local a = hull[i]
-                local b = hull[(i % n) + 1]
-                -- CCW test: interior keeps cross(b-a, p-a) >= 0 on every edge.
-                if ((b[1] - a[1]) * (py - a[2]) - (b[2] - a[2]) * (px - a[1])) < 0 then
-                    inside = false
-                    break
-                end
-            end
-            if inside then
+        for _, shape in ipairs(self._shapes) do
+            local box = shape.box
+            if wx >= box[1] and wx <= box[3] and wy >= box[2] and wy <= box[4]
+                    and MUI_BlobOutline:Contains(shape.rings, wx, wy) then
                 key = key or ""
                 objectives, items = objectives or {}, items or {}
-                if hull.objective then
-                    if not objectives[hull.objective] then
-                        objectives[hull.objective] = true
-                        key = key .. "o" .. hull.objective
+                if shape.objective then
+                    if not objectives[shape.objective] then
+                        objectives[shape.objective] = true
+                        key = key .. "o" .. shape.objective
                     end
-                elseif hull.itemId then
-                    if not items[hull.itemId] then
-                        items[hull.itemId] = true
-                        key = key .. "i" .. hull.itemId
+                elseif shape.itemId then
+                    if not items[shape.itemId] then
+                        items[shape.itemId] = true
+                        key = key .. "i" .. shape.itemId
                     end
                 else
                     whole = true
@@ -358,10 +376,11 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
 
     -- Lazily allocate and reuse pool lines. Endpoints are anchored to
     -- Minimap's CENTER so the pixel offsets we pass are minimap-local.
+    -- Returns whether the edge was long enough to draw.
     _DrawEdge = function(self, index, ax, ay, bx, by)
         local dx, dy = bx - ax, by - ay
         local len = math.sqrt(dx * dx + dy * dy)
-        if len < 1e-6 then return end
+        if len < 1e-6 then return false end
         local nx =  dy / len
         local ny = -dx / len
         local hx, hy = nx * GLOW_THICK * 0.5, ny * GLOW_THICK * 0.5
@@ -375,7 +394,7 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
             halo:SetThickness(GLOW_THICK)
             halo:SetGradient("VERTICAL",
                 CreateColor(0.35, 0.40, 1.00, 0.00),    -- outer: transparent light-blue
-                CreateColor(0.70, 0.90, 1.00, 1.00))    -- hull edge: near-white
+                CreateColor(0.70, 0.90, 1.00, 1.00))    -- area edge: near-white
             self._halos[index] = halo
         end
         halo:SetStartPoint("CENTER", Minimap, ax + hx, ay + hy)
@@ -389,12 +408,13 @@ class "MinimapQuestObjectiveArea" : extends "Frame" {
             core:SetColorTexture(1, 1, 1, 1)
             core:SetThickness(CORE_THICK)
             core:SetGradient("VERTICAL",
-                CreateColor(0.80, 1.00, 1.00, 1.00),    -- hull edge: near-white
+                CreateColor(0.80, 1.00, 1.00, 1.00),    -- area edge: near-white
                 CreateColor(0.35, 0.40, 1.00, 0.00))    -- inward: transparent
             self._cores[index] = core
         end
         core:SetStartPoint("CENTER", Minimap, ax - cx, ay - cy)
         core:SetEndPoint("CENTER", Minimap, bx - cx, by - cy)
         core:Show()
+        return true
     end;
 }

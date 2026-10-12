@@ -15,11 +15,11 @@ local function _spotKey(kind, targetId, normX, normY)
 end
 
 -- Quests whose surviving objective points number fewer than QuestObjective-
--- Cluster's MIN_CLUSTER_SIZE don't form a cluster hull. Render a small
+-- Cluster's MIN_CLUSTER_SIZE don't form a cluster area. Render a small
 -- circle around each stray point so single-target quests still get a
 -- visible area overlay (with hover tooltip). Radius is picked for "clearly
 -- localised marker" rather than geographic accuracy.
-local STRAY_CIRCLE_YARDS = 16   -- the area's outline padding adds another 10
+local STRAY_CIRCLE_YARDS = 26
 
 -- Hotzone cluster radius for objective pins (world yards). Matches Questie's
 -- `clusterLevelHotzone` default — merges nearby spawns of the same target
@@ -47,9 +47,9 @@ local function _clusterSpecs(specs, rangeYards)
     for _, group in pairs(groups) do
         local pts = {}
         for _, spec in ipairs(group) do
-            local wx, wy = MUI_MapMath:MapToWorld(spec.uiMapId, spec.normX, spec.normY)
+            local wx, wy, cont = MUI_MapMath:MapToWorld(spec.uiMapId, spec.normX, spec.normY)
             if wx then
-                pts[#pts + 1] = { spec = spec, wx = wx, wy = wy }
+                pts[#pts + 1] = { spec = spec, wx = wx, wy = wy, cont = cont }
             end
         end
 
@@ -59,14 +59,14 @@ local function _clusterSpecs(specs, rangeYards)
             if not p.touched then
                 p.touched = true
                 clusterIdx = clusterIdx + 1
-                local sumNX, sumNY, n = p.spec.normX, p.spec.normY, 1
+                local sumWX, sumWY, n = p.wx, p.wy, 1
                 for j = i + 1, #pts do
                     local q = pts[j]
                     if not q.touched then
                         local dx, dy = p.wx - q.wx, p.wy - q.wy
                         if (dx * dx + dy * dy) < (rangeYards * rangeYards) then
                             q.touched = true
-                            sumNX, sumNY, n = sumNX + q.spec.normX, sumNY + q.spec.normY, n + 1
+                            sumWX, sumWY, n = sumWX + q.wx, sumWY + q.wy, n + 1
                         end
                     end
                 end
@@ -75,8 +75,10 @@ local function _clusterSpecs(specs, rangeYards)
                 -- spawnIdx, which is the per-objective cluster index.
                 local rep = {}
                 for k, v in pairs(p.spec) do rep[k] = v end
-                rep.normX       = sumNX / n
-                rep.normY       = sumNY / n
+                -- The centre is a mean of world yards, put back on the first
+                -- spawn's map: one cluster's spawns can be filed under several.
+                local nx, ny = MUI_MapMath:WorldToMap(rep.uiMapId, sumWX / n, sumWY / n, p.cont)
+                if nx then rep.normX, rep.normY = nx, ny end
                 rep.spawnIdx    = clusterIdx
                 rep.clusterSize = n
                 out[#out + 1] = rep
@@ -103,9 +105,9 @@ end
 -- PLAYER_ENTERING_WORLD to cover reload / login.
 --
 -- Specs are cached per quest for every zone the target is known in; pins
--- are only materialised for the player's current top-level area. Out-of-
--- zone targets are NOT pinned — the single focused-quest edge arrow is
--- the only off-minimap hint.
+-- are only materialised for the spawns standing on the current zone's map
+-- (_IsInZone). Out-of-zone targets are NOT pinned — the single focused-quest
+-- edge arrow is the only off-minimap hint.
 
 class "MinimapQuestPinManager" : extends "Frame" {
     __init = function(self, watcher)
@@ -125,6 +127,8 @@ class "MinimapQuestPinManager" : extends "Frame" {
         -- availablePins[key] = { pin, tooltipId, questIds = {qid, ...} }
         self.availablePins = {}
         self.currentAreaId = nil
+        -- [uiMapId] = the current zone's rectangle on that map, see _IsInZone.
+        self._zoneWindows  = {}
 
         -- Visibility gates persisted via MUI_DB.settings.questHelper. When
         -- false, creation methods short-circuit; lifecycle events still fire
@@ -356,7 +360,7 @@ class "MinimapQuestPinManager" : extends "Frame" {
 
         local inZoneSpecs = {}
         for _, spec in ipairs(specList) do
-            if spec.uiMapId and not isFinished(spec) and spec.areaId == areaId then
+            if spec.uiMapId and self:_IsInZone(spec) and not isFinished(spec) then
                 inZoneSpecs[#inZoneSpecs + 1] = spec
             end
         end
@@ -380,8 +384,9 @@ class "MinimapQuestPinManager" : extends "Frame" {
     end;
 
     _CreatePinEntry = function(self, spec)
-        local pinName = string.format("MUI_QuestPin_%d_%d_%d_%d",
-                spec.questId, spec.objectiveIdx, spec.targetId, spec.spawnIdx)
+        -- spawnIdx counts within one area, and spawns of two can be in view.
+        local pinName = string.format("MUI_QuestPin_%d_%d_%d_%d_%d",
+                spec.questId, spec.objectiveIdx, spec.targetId, spec.areaId, spec.spawnIdx)
         local pin = MinimapPin(pinName, 12)
         -- PvP quests get the red-orange turn-in "?".
         pin:SetIconType((spec.iconType == "QuestTurnIn" and MUI_QuestHelper:IsPvPQuest(spec.questId))
@@ -475,8 +480,8 @@ class "MinimapQuestPinManager" : extends "Frame" {
 
     -- Build/rebuild the minimap area overlay for a quest from clusters
     -- already cached in MUI_QuestHelper. This is a pure consumer — every
-    -- non-finished point, clustering, hull, and centroid is decided in
-    -- QuestObjectiveCluster; the pin manager just takes the CCW hulls
+    -- non-finished point, clustering, area, and centroid is decided in
+    -- QuestObjectiveCluster; the pin manager just takes the shapes
     -- and hands them to the renderer. The quest clusters registry fires
     -- its own updates from OnQuestAdded / OnQuestChanged before the pin
     -- manager's same-event callbacks run, so by the time we query here
@@ -495,23 +500,23 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local _, _, _, playerCont = UnitPosition("player")
         local cont = playerCont or cluster:GetContinent()
 
-        -- The real cluster hulls, and a small circle round each spot of an
-        -- objective that has no hull, so one found in a place or two still
+        -- The real cluster areas, and a small circle round each spot of an
+        -- objective that has none, so one found in a place or two still
         -- gets an area outline, whatever the quest's other objectives have.
-        local hulls, strayCenters = {}, {}
+        local shapes, strayCenters = {}, {}
         for _, c in ipairs(cluster:GetClusters(cont)) do
-            hulls[#hulls + 1] = c.hull
+            shapes[#shapes + 1] = c.shape
         end
-        for _, hull in ipairs(cluster:GetLoneHulls(STRAY_CIRCLE_YARDS, cont)) do
-            hulls[#hulls + 1] = hull
+        for _, shape in ipairs(cluster:GetLoneShapes(STRAY_CIRCLE_YARDS, cont)) do
+            shapes[#shapes + 1] = shape
         end
         for _, p in ipairs(cluster:GetLonePoints(cont)) do
             strayCenters[#strayCenters + 1] = { p[1], p[2] }
         end
-        if #hulls == 0 then return end
+        if #shapes == 0 then return end
 
         local area = MinimapQuestObjectiveArea()
-        area:SetHulls(hulls, cont)
+        area:SetShapes(shapes, cont)
         if #strayCenters > 0 then
             -- Centre icons render only for the focused quest; visibility
             -- is toggled from _ApplyFocusDimming. The icon stays in sync
@@ -526,9 +531,9 @@ class "MinimapQuestPinManager" : extends "Frame" {
             isHovered = function() return area:IsMouseOver() end,
             dedupKey  = "quest:" .. questId,
             priority  = 10,   -- same as pins
-            -- What the hulls under the cursor are for: the block lists
+            -- What the areas under the cursor are for: the block lists
             -- those objectives only, and is built again when the cursor
-            -- moves onto another objective's hull.
+            -- moves onto another objective's area.
             state     = function() return (area:GetHoveredTargets()) end,
             build     = function()
                 local _, objectives, items = area:GetHoveredTargets()
@@ -650,8 +655,46 @@ class "MinimapQuestPinManager" : extends "Frame" {
         local areaId = self:_CurrentAreaId()
         if areaId == self.currentAreaId then return false end
         self.currentAreaId = areaId
+        self._zoneWindows  = {}
         self:_RebuildAll()
         return true
+    end;
+
+    -- Whether a spawn stands on the current zone's map. The map the DB files
+    -- it under does not say: zone maps overlap, so a spawn of this zone can be
+    -- on a neighbour's (Uldaman's dig site, in the Badlands, is on Loch
+    -- Modan's). A foreign map is asked once per zone, see _ZoneWindow.
+    _IsInZone = function(self, spec)
+        if spec.areaId == self.currentAreaId then return true end
+        -- Inside an instance: on no zone's map.
+        if MUI_DungeonDB:GetDungeonEntrance(spec.areaId) then return false end
+
+        local window = self._zoneWindows[spec.uiMapId]
+        if window == nil then
+            window = self:_ZoneWindow(spec.uiMapId) or false
+            self._zoneWindows[spec.uiMapId] = window
+        end
+        return window
+           and spec.normX >= window[1] and spec.normX <= window[3]
+           and spec.normY >= window[2] and spec.normY <= window[4]
+    end;
+
+    -- The current zone's map as a rectangle { left, top, right, bottom } in
+    -- another map's coordinates. nil when the two share no continent, and
+    -- when the player is on no zone's map: at sea it is the continent's,
+    -- which holds every spawn there is.
+    _ZoneWindow = function(self, uiMapId)
+        local zoneMap = MUI_ZoneDB:GetUiMapForArea(self.currentAreaId)
+        local info    = zoneMap and C_Map.GetMapInfo(zoneMap)
+        if not info or info.mapType < Enum.UIMapType.Zone then return nil end
+
+        local north, west, continent = MUI_MapMath:MapToWorld(zoneMap, 0, 0)
+        local south, east            = MUI_MapMath:MapToWorld(zoneMap, 1, 1)
+        if not north or not south then return nil end
+        local left, top     = MUI_MapMath:WorldToMap(uiMapId, north, west, continent)
+        local right, bottom = MUI_MapMath:WorldToMap(uiMapId, south, east, continent)
+        if not left or not right then return nil end
+        return { left, top, right, bottom }
     end;
 
     _CurrentAreaId = function(self)

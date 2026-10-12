@@ -137,7 +137,7 @@ ZONES = {
         ("Rin'ji's Secret", ["+Rin'ji is Trapped!", "A Sticky Situation"]),
     ]),
     3: ("Badlands", [
-        ("The Shattered Necklace", ["+Necklace Recovery", "+The Shattered Necklace"]),
+        (None, ["+Necklace Recovery", "+The Shattered Necklace"]),   # Uldaman's story, not the zone's
         ("Study of the Elements", ["+Study of the Elements: Rock"]),
         ("Hammertoe's Digsite", ["+A Sign of Hope", "A Dwarf and His Tools"]),
         ("Tremors of the Earth", ["+Agmond's Fate", "+Mirages", "Fiery Blaze Enchantments"]),

@@ -1,18 +1,27 @@
 -- QuestObjectiveCluster: thin wrapper around precomputed cluster data
 -- shipped in MUI_QuestClustersDB (generated offline by
 -- tools/questdb_export/clusters.py — that's where the single-linkage
--- union-find / merge-small / convex-hull math lives). The runtime just
--- materializes world-yard coords lazily from the normalized values.
+-- union-find / merge-small math lives, and outline.py next to it works out
+-- each cluster's area). The runtime just materializes world-yard coords
+-- lazily from the normalized values.
 --
 -- DB row shape per questId:
 --   objectives = {
 --     { kind, name,
---       clusters = { {uiMapId, hull = {{nx,ny},...},
+--       clusters = { {uiMapId, rings = {packed, ...}, tris = packed,
 --                     centroid = {nx,ny}, count}, ... },
 --       stray    = { {uiMapId, normX, normY}, ... } },
 --     ...                              -- one row per quest target
 --   },
 --   finisher = { {uiMapId, normX, normY}, ... }
+--
+-- A cluster's area is its `rings` (the outlines of its parts and of the
+-- holes in them; a point inside an odd number of them is inside the area)
+-- and the triangles `tris` that fill it, both packed into strings as
+-- clusters.py describes. Unpacked, the area is a "shape": rings as flat
+-- world-yard runs {wx, wy, wx, wy, ...}, tris as indices into the rings'
+-- points taken together, and the box {minX, minY, maxX, maxY} round it
+-- (MUI_BlobOutline has the geometry).
 --
 -- `kind` ∈ {"npc", "object", "item", "sourceitem", "trigger"}. `name` is
 -- kept for tooltip / debug; runtime filtering uses position-within-type
@@ -31,14 +40,13 @@
 -- for "kill X, Y, Z" quests as individual targets complete (the others'
 -- clusters keep contributing; finished targets drop out).
 --
--- Output (via GetClusters / GetPoints / GetFinisherPoints) matches what
--- the previous runtime-clustering implementation produced — same shape,
--- same world-yard convention — so existing consumers (focus arrow,
--- on-screen compass, minimap area overlay) need no changes. Every
+-- Output (via GetClusters / GetPoints / GetFinisherPoints) is in world
+-- yards, the convention the consumers (focus arrow, on-screen compass,
+-- minimap and world-map area overlays) share. Every
 -- cluster and stray point carries its continent (a required source item
 -- can sit across the sea from the rest of the quest); the accessors take
 -- an optional continentId filter and GetContinents lists what's present.
--- Every hull and stray point also names its target, for a tooltip over its
+-- Every shape and stray point also names its target, for a tooltip over its
 -- area: `objective`, the line's index in entry.objectives, or `itemId` for
 -- a required source item. Clusters and stray points carry `target` too, the
 -- row they come from: a target with stray points and no cluster is a lone
@@ -55,12 +63,45 @@ local _KIND_TO_LEADER_TYPE = {
     ["trigger"] = "event",
 }
 
--- Vertex count of the circle polygon GetLoneHulls draws around each lone point.
-local STRAY_CIRCLE_VERTICES = 12
+-- Vertex count of the circle GetLoneShapes draws around each lone point.
+local STRAY_CIRCLE_VERTICES = 24
+
+-- How clusters.py packs an area: base-57 digits from "#" on, most significant
+-- first. A coordinate is three of them, counting steps from COORD_LOW.
+local DIGIT_FIRST  = 35
+local DIGIT_BASE   = 57
+local COORD_DIGITS = 3
+local COORD_LOW    = -0.25
+local COORD_STEP   = 1.5 / (DIGIT_BASE ^ COORD_DIGITS - 1)
+
+-- The normalized coordinate packed at position `i` of `packed`.
+local function _Coord(packed, i)
+    local a, b, c = string.byte(packed, i, i + 2)
+    return COORD_LOW + (((a - DIGIT_FIRST) * DIGIT_BASE + b - DIGIT_FIRST) * DIGIT_BASE
+                        + c - DIGIT_FIRST) * COORD_STEP
+end
+
+-- The packed triangle indices of an area of `count` points, counted from 1.
+local function _Indices(packed, count)
+    local width = 1
+    while DIGIT_BASE ^ width < count do width = width + 1 end
+    local out = {}
+    for i = 1, #packed, width do
+        local v = 0
+        for k = i, i + width - 1 do
+            v = v * DIGIT_BASE + string.byte(packed, k) - DIGIT_FIRST
+        end
+        out[#out + 1] = v + 1
+    end
+    return out
+end
+
+-- Unpacked clusters by their DB row: an area is unpacked once.
+local _converted = {}
 
 class "QuestObjectiveCluster" {
     __init = function(self)
-        self._clusters       = {}     -- list of { hull, centroid, count }
+        self._clusters       = {}     -- list of { shape, centroid, count }
         self._points         = {}     -- flat stray points (world yards)
         self._continent      = nil
         self._finisherPoints = {}     -- world yards
@@ -129,7 +170,7 @@ class "QuestObjectiveCluster" {
                             local rec = self:_ConvertCluster(c)
                             if rec then
                                 rec.target = row
-                                rec.hull.objective, rec.hull.itemId = objective, itemId
+                                rec.shape.objective, rec.shape.itemId = objective, itemId
                                 self._clusters[#self._clusters + 1] = rec
                                 self._continent = self._continent or rec._continent
                             end
@@ -161,59 +202,68 @@ class "QuestObjectiveCluster" {
         end
     end;
 
-    -- Convert one precomputed cluster (uiMap + normalized centroid + hull
-    -- vertices) into a world-yard record. Returns nil when the API can't
-    -- resolve the uiMap or the hull collapses to < 3 verts after
-    -- conversion (degenerate; shouldn't happen with valid data).
+    -- One precomputed cluster (uiMap + normalized centroid + packed area) as
+    -- a world-yard record. Returns nil when the API can't resolve the uiMap.
     --
-    -- The exporter's convex-hull pass produces vertices in CCW order in
-    -- NORMALIZED map coords, where the +Y axis is DOWN (top-of-map = 0).
-    -- When the same vertices project through to (east_right, north_up)
-    -- the +Y axis flips, and a normalized-CCW hull becomes screen-CW.
-    -- The IsMouseOver point-in-polygon test in MinimapQuestObjectiveArea
-    -- assumes CCW; reverse the hull during conversion to keep that
-    -- invariant.
+    -- A map's world position is linear in its normalized coordinates, so the
+    -- world positions of two corners place every point: north-south runs
+    -- down the map (with normalized y), east-west across it (with x).
     _ConvertCluster = function(self, c)
-        if not c.uiMapId or not c.centroid then return nil end
-        local cwx, cwy, cont = MUI_MapMath:MapToWorld(
-            c.uiMapId, c.centroid[1], c.centroid[2])
-        if not cwx or not cwy then return nil end
-        local hull = {}
-        if c.hull then
-            local n = #c.hull
-            for i = n, 1, -1 do
-                local v = c.hull[i]
-                local wx, wy = MUI_MapMath:MapToWorld(c.uiMapId, v[1], v[2])
-                if wx and wy then
-                    hull[#hull + 1] = { wx, wy }
-                end
+        local rec = _converted[c]
+        if rec then return rec end
+        if not c.uiMapId or not c.centroid or not c.rings then return nil end
+        local x0, y0, cont = MUI_MapMath:MapToWorld(c.uiMapId, 0, 0)
+        local x1, y1 = MUI_MapMath:MapToWorld(c.uiMapId, 1, 1)
+        if not x0 or not x1 then return nil end
+        local sx, sy = x1 - x0, y1 - y0
+
+        local rings, count = {}, 0
+        for r, packed in ipairs(c.rings) do
+            local ring = {}
+            for i = 1, #packed, 2 * COORD_DIGITS do
+                ring[#ring + 1] = x0 + _Coord(packed, i + COORD_DIGITS) * sx
+                ring[#ring + 1] = y0 + _Coord(packed, i) * sy
             end
+            rings[r] = ring
+            count = count + #ring / 2
         end
-        if #hull < 3 then return nil end
-        return {
-            hull       = hull,
-            centroid   = { cwx, cwy },
+        rec = {
+            shape = {
+                rings = rings,
+                tris  = _Indices(c.tris, count),
+                box   = { MUI_BlobOutline:Bounds(rings) },
+            },
+            centroid   = { x0 + c.centroid[2] * sx, y0 + c.centroid[1] * sy },
             count      = c.count,
             _continent = cont,
         }
+        _converted[c] = rec
+        return rec
     end;
 
-    -- The lone points as small CCW circle polygons (world yards) for the
-    -- minimap's area renderer: a target with too few spawns for a hull still
-    -- gets a clearly localised marker there. Radius is a legibility choice,
-    -- not geography.
-    GetLoneHulls = function(self, radiusYards, continentId)
-        local hulls = {}
+    -- The lone points as small circles (shapes of one ring, no triangles)
+    -- for the minimap's area renderer: a target with too few spawns for an
+    -- area still gets a clearly localised marker there. Radius is a
+    -- legibility choice, not geography.
+    GetLoneShapes = function(self, radiusYards, continentId)
+        local shapes = {}
         local step = 2 * math.pi / STRAY_CIRCLE_VERTICES
         for _, p in ipairs(self:GetLonePoints(continentId)) do
-            local hull = { objective = p.objective, itemId = p.itemId }
+            local ring = {}
             for v = 1, STRAY_CIRCLE_VERTICES do
                 local a = (v - 1) * step
-                hull[v] = { p[1] + radiusYards * math.cos(a), p[2] + radiusYards * math.sin(a) }
+                ring[2 * v - 1] = p[1] + radiusYards * math.cos(a)
+                ring[2 * v]     = p[2] + radiusYards * math.sin(a)
             end
-            hulls[#hulls + 1] = hull
+            shapes[#shapes + 1] = {
+                rings = { ring },
+                box   = { p[1] - radiusYards, p[2] - radiusYards,
+                          p[1] + radiusYards, p[2] + radiusYards },
+                objective = p.objective,
+                itemId    = p.itemId,
+            }
         end
-        return hulls
+        return shapes
     end;
 
     -- ---- accessors ------------------------------------------------------

@@ -547,6 +547,9 @@ def _lua_value_pretty(v: Any, indent: int = 0, width: int = _PRETTY_WIDTH) -> st
 
 
 def _lua_string(s: str) -> str:
+    # Nothing to escape (the packed rings of the cluster DB, mostly).
+    if s.isascii() and s.isprintable() and "\\" not in s and "\"" not in s:
+        return "\"" + s + "\""
     # Pick the quote style that requires less escaping.
     # Escape backslashes, the quote, and control chars.
     def esc(s: str, q: str) -> str:

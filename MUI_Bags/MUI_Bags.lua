@@ -472,6 +472,12 @@ object "ModuleBags" : extends "Module" {
             for id = 1, NUM_BAG_SLOTS do self:SyncCombinedBag(id) end
         end)
 
+        -- Taking or dropping a quest changes its item's "!" with no bag update
+        -- (Era's bag frames, unlike Wrath's, don't listen for these).
+        local questEvents = Frame()
+        questEvents:RegisterEventHandler("QUEST_ACCEPTED", function() self:UpdateQuestMarks() end)
+        questEvents:RegisterUnitEventHandler("UNIT_QUEST_LOG_CHANGED", "player", function() self:UpdateQuestMarks() end)
+
         -- Joint mode: hovering a bottom-bar bag icon lights up that bag's slots
         -- in the joined window (focus texture).
         self.backpack:HookScript("OnEnter", function() self:HighlightBag(0, true) end)
@@ -589,6 +595,13 @@ object "ModuleBags" : extends "Module" {
         focus:FillParentPadding()
         focus:Hide()
 
+        -- The "!" of an item that starts a quest, under the search overlay.
+        local quest = Texture(btn, nil, "OVERLAY")
+        quest:SetDrawLayer("OVERLAY", 2)
+        quest:SetTexture(TEXTURE_ITEM_QUEST_BANG)
+        quest:FillParent()
+        quest:Hide()
+
         local nativeIcon = Texture(native.icon)
         nativeIcon:Hide()
 
@@ -600,7 +613,8 @@ object "ModuleBags" : extends "Module" {
             border = border,
             icon = icon,
             nativeIcon = nativeIcon,
-            focus = focus
+            focus = focus,
+            quest = quest
         }
     end;
 
@@ -633,6 +647,7 @@ object "ModuleBags" : extends "Module" {
                     slot.icon:Hide()
                     slot.icon:SetQuality(nil)
                 end
+                self:UpdateQuestMark(slot.quest, id, slot.button:GetID())
             end
         end
 
@@ -643,6 +658,25 @@ object "ModuleBags" : extends "Module" {
             self:LayoutCombined()
         else
             self:LayoutBagFrame(entry, id)
+        end
+    end;
+
+    -- Show `mark` over an item that starts a quest the player is not on yet,
+    -- the loot card's rule. Era's own bag code keeps its quest overlay hidden.
+    UpdateQuestMark = function(self, mark, container, slot)
+        local quest = C_Container.GetContainerItemQuestInfo(container, slot)
+        mark:SetVisible(quest.questID and not quest.isActive)
+    end;
+
+    UpdateQuestMarks = function(self)
+        for _, entry in ipairs(self._bags) do
+            if entry.frame:IsShown() then
+                local id = entry.frame:GetID()
+                for i = 1, entry.size or 0 do
+                    local slot = entry.slots[i]
+                    self:UpdateQuestMark(slot.quest, id, slot.button:GetID())
+                end
+            end
         end
     end;
 

@@ -700,19 +700,6 @@ object "StorylineDB" {
                 { 735 },  -- The Star, the Hand and the Heart
                 { 737 },  -- Forbidden Knowledge
             } },
-            { name = "The Shattered Necklace", steps = {
-                { 2198 },  -- The Shattered Necklace
-                { 2199 },  -- Lore for a Price
-                { 2283 },  -- Necklace Recovery
-                { 2284 },  -- Necklace Recovery, Take 2
-                { 2200 },  -- Back to Uldaman
-                { 2318, 2338 },  -- Translating the Journal
-                { 2201 },  -- Find the Gems
-                { 2204, 2361 },  -- Restoring the Necklace
-                { 2339 },  -- Find the Gems and Power Source
-                { 2340 },  -- Deliver the Gems
-                { 2341 },  -- Necklace Recovery, Take 3
-            } },
         },
         [51] = {  -- Searing Gorge
             { name = "Dorius Stonetender", steps = {

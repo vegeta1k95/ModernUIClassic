@@ -342,7 +342,7 @@ def main() -> int:
 
     # ---- Quest cluster precomputation ---------------------------------------
     # Replaces the runtime clustering in MUI_QuestObjectiveCluster.lua —
-    # the addon ships per-objective spawn clusters (centroid + convex hull
+    # the addon ships per-objective spawn clusters (centroid + area outline
     # in normalized coords) and the runtime just wraps the lookup.
     print("Building quest clusters...")
     from clusters import build_all as build_clusters

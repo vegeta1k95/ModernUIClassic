@@ -3,14 +3,14 @@ Build per-quest, per-TARGET spawn clusters offline.
 
 Mirrors the runtime logic that lived in:
   - MUI_QuestHelper/MUI_QuestObjectiveResolver.lua  (objective → spawn list)
-  - MUI_QuestHelper/MUI_QuestObjectiveCluster.lua   (single-linkage + hull)
+  - MUI_QuestHelper/MUI_QuestObjectiveCluster.lua   (single-linkage + area)
 
 Output schema, keyed by questId:
     {
         objectives = [
             { kind, name, pos,
               clusters = [
-                { uiMapId, hull = [[nx, ny], ...],
+                { uiMapId, rings = [ring, ...], tris,
                   centroid = [nx, ny], count },
                 ...
               ],
@@ -20,6 +20,17 @@ Output schema, keyed by questId:
         ],
         finisher = [ { uiMapId, normX, normY }, ... ],
     }
+
+A cluster's area (outline.py) is its `rings`: the closed outlines of its
+parts and of the holes in them. A point is inside the area when it is inside
+an odd number of rings. `tris` are the triangles that fill it, as indices
+(from 0) into the rings' points taken together, three a triangle. Both are
+packed into strings of base-DIGIT_BASE digits, most significant first (a
+digit is the character DIGIT_FIRST + its value): a ring is its points' x and
+y, COORD_DIGITS digits each, counting steps of COORD_SPAN / COORD_STEPS from
+COORD_LOW in normalized map coordinates; an index takes as many digits as
+count the area's points. `centroid` is the mean of the cluster's spawns, or
+the spawn nearest to it when the mean itself is outside the area.
 
 `kind` ∈ {"npc", "object", "item", "sourceitem", "trigger"}. `name` is
 the in-game target name as it appears in the quest log leaderboard line,
@@ -47,6 +58,7 @@ import math
 from lua_parser import LUA_NIL
 from enums import RACE_KEYS
 from map_sizes import UIMAP_SIZE_YARDS
+from outline import MARGIN_YARDS, build as build_outline
 
 
 # Single-linkage threshold in world yards — same neighborhood as the
@@ -54,11 +66,21 @@ from map_sizes import UIMAP_SIZE_YARDS
 CLUSTER_THRESHOLD = 200.0
 MIN_CLUSTER_SIZE  = 3
 
+# How an area's rings and triangles are packed into strings (see the schema
+# above; MUI_QuestObjectiveCluster.lua unpacks them with the same numbers).
+# The digits run from "#" to "[", none of which a Lua string has to escape.
+DIGIT_FIRST  = 35
+DIGIT_BASE   = 57
+COORD_DIGITS = 3
+COORD_LOW    = -0.25
+COORD_SPAN   = 1.5
+COORD_STEPS  = DIGIT_BASE ** COORD_DIGITS - 1
+
 # Under-sized groups are folded into their nearest group only when that
-# neighbour is within this distance. Anything farther stays a stray point:
-# gluing an isolated spawn onto a cluster on the other side of the zone
-# stretched hulls across the map (four scattered scout camps became one
-# zone-spanning "area" with its centroid in the sea).
+# neighbour is within this distance, and show as a patch of their own in its
+# area. Anything farther stays a stray point: an isolated spawn on the other
+# side of the zone is no part of the cluster (four scattered scout camps once
+# became one zone-spanning "area" with its centroid in the sea).
 MERGE_THRESHOLD = 2 * CLUSTER_THRESHOLD
 
 
@@ -100,7 +122,7 @@ DUNGEON_ENTRANCES = {
 # Creatures that are not there until the player comes: walking into the place
 # summons them. Their one spawn point stands for that place, so a target of
 # theirs is an area of this radius (yards) round it (a ring of points, which
-# clusters into a hull), not a lone spot.
+# clusters into an area that wide), not a lone spot.
 SUMMON_AREAS = {
     15625: 100.0,  # Twilight Corrupter → the Twilight Grove, round Duskwood's Dream portal
 }
@@ -259,6 +281,8 @@ def _emit_spawns_into(out_list, spawns_table, area_to_ui, radius=None):
             if not radius:
                 out_list.append((ui_map, cx / 100.0, cy / 100.0))
                 continue
+            # The area reaches the margin past its points.
+            radius -= MARGIN_YARDS
             width, height = UIMAP_SIZE_YARDS[ui_map]
             for k in range(SUMMON_AREA_VERTICES):
                 a = 2 * math.pi * k / SUMMON_AREA_VERTICES
@@ -333,42 +357,61 @@ def _merge_small(clusters, size, min_size=MIN_CLUSTER_SIZE, merge_threshold=MERG
     return clusters
 
 
-def _convex_hull(points):
-    sorted_pts = sorted(set(points))
-    if len(sorted_pts) < 3:
-        return sorted_pts
-    def cross(o, a, b):
-        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
-    lower = []
-    for p in sorted_pts:
-        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
-            lower.pop()
-        lower.append(p)
-    upper = []
-    for p in reversed(sorted_pts):
-        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
-            upper.pop()
-        upper.append(p)
-    return lower[:-1] + upper[:-1]
+def _digits(value, width):
+    """`value` as `width` base-DIGIT_BASE digits, most significant first."""
+    out = []
+    for _ in range(width):
+        value, digit = divmod(value, DIGIT_BASE)
+        out.append(chr(DIGIT_FIRST + digit))
+    if value:
+        raise ValueError("number too large for %d digits" % width)
+    return "".join(reversed(out))
+
+
+def _coord_step(v):
+    return round((v - COORD_LOW) / COORD_SPAN * COORD_STEPS)
+
+
+def _snap_coord(v):
+    """A normalized coordinate as it comes back out of its packed form."""
+    return COORD_LOW + _coord_step(v) * COORD_SPAN / COORD_STEPS
+
+
+def _pack_ring(ring):
+    return "".join(_digits(_coord_step(c), COORD_DIGITS) for p in ring for c in p)
+
+
+def _pack_indices(indices, count):
+    width = 1
+    while DIGIT_BASE ** width < count:
+        width += 1
+    return "".join(_digits(i, width) for i in indices)
+
+
+# Many quests share a target, so the same spawns come round again and again.
+_built = {}
 
 
 def _build_uimap_clusters(points, size):
     """Cluster points in a single uiMap of `size` yards. Returns (clusters, stray)."""
     if len(points) < MIN_CLUSTER_SIZE:
         return [], list(points)
+    key = (size, tuple(points))
+    if key in _built:
+        return _built[key]
     clusters, stray = [], []
     for g in _merge_small(_cluster_points(points, size), size):
-        hull = _convex_hull(g) if len(g) >= MIN_CLUSTER_SIZE else []
-        if len(hull) < 3:
+        if len(set(g)) < MIN_CLUSTER_SIZE:
             stray.extend(g)
             continue
-        cx = sum(p[0] for p in g) / len(g)
-        cy = sum(p[1] for p in g) / len(g)
+        rings, triangles, centre = build_outline(g, size, CLUSTER_THRESHOLD, _snap_coord)
         clusters.append({
-            "hull": [list(v) for v in hull],
-            "centroid": [cx, cy],
+            "rings": [_pack_ring(ring) for ring in rings],
+            "tris": _pack_indices(triangles, sum(len(ring) for ring in rings)),
+            "centroid": [round(c, 5) for c in centre],
             "count": len(g),
         })
+    _built[key] = clusters, stray
     return clusters, stray
 
 
@@ -394,7 +437,8 @@ def _bake_target_groups(target_groups):
             for c in clusters:
                 target_clusters.append({
                     "uiMapId":  ui_map,
-                    "hull":     c["hull"],
+                    "rings":    c["rings"],
+                    "tris":     c["tris"],
                     "centroid": c["centroid"],
                     "count":    c["count"],
                 })

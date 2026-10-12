@@ -50,6 +50,7 @@ class "BankSlot" {
         self.button = skin.button
         self._icon  = skin.icon
         self._focus = skin.focus
+        self._quest = skin.quest
         self.button:SetSize(SLOT_W, SLOT_H)
         self.button:SetID(slot)
         self.button:ClearAllPoints()
@@ -81,6 +82,7 @@ class "BankSlot" {
         end
         self.button:SetItemButtonCount(info and info.stackCount)
         self._search:SetVisible(info and info.isFiltered)
+        MUI_ModuleBags:UpdateQuestMark(self._quest, self.container, self.slot)
         self:_UpdateCooldown(info)
     end;
 

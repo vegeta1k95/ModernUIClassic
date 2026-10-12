@@ -1,9 +1,11 @@
 # questdb_export — Questie → MUI_DB porting tool
 
-Offline pure-Python script that reads a vendored Questie checkout and emits
+Offline Python script that reads a vendored Questie checkout and emits
 self-contained singleton-class Lua files into `../../MUI_DB/` — one file
 per `MUI_*DB` singleton, each bundling its accessor methods and its data
-table in a single `object "XDB" { ... }` declaration. Runs in ~3 seconds.
+table in a single `object "XDB" { ... }` declaration. Runs in ~35 seconds.
+Needs `numpy` (the quest area outlines); everything else is the standard
+library.
 
 ## Run it
 
@@ -42,6 +44,8 @@ See `MUI_DB/README.md` for the currently-vendored version.
 | `zones.py` | Parses `Zones/data/{zoneIds,areaIdToUiMapId,uiMapIdToAreaId,subZoneToParentZone}.lua`. |
 | `quest_xp.py` | Parses `QuestXP/DB/xpDB-classic.lua`. |
 | `map_sizes.py` | Width / height in yards of every zone map, from the client's `UiMapAssignment` table. The cluster pass measures spawn distances with it. |
+| `clusters.py` | Groups each quest target's spawns into clusters per zone map (spawns within `CLUSTER_THRESHOLD` yards are linked) and bakes `MUI_QuestClustersDB`: each cluster's area, centre and spawn count, and the stray and turn-in points. Its docstring has the schema and how an area is packed. |
+| `outline.py` | The area of one cluster: linked spawns with nothing between them are joined by a strip `MARGIN_YARDS` to either side, then every gap too small for a disc `DISC_YARDS` across is filled. A stretch that comes out long and narrow is widened to `STRIP_MAP_SHARE` of the zone map's width. Dents that are details of the area are levelled and its corners rounded, never nearer than `KEEP_YARDS` to a spawn. Gives the outline's rings (holes included) and the triangles that fill it. The constants at its top set the look. |
 | `emit.py` | Merges base DB + corrections + faction fixes, applies the faction auto-patch (assign `requiredRaces` from starter NPC faction), drops blacklisted IDs, converts positional arrays to named-field dicts, and serializes as Lua table literals. |
 | `export.py` | CLI entry — wires the whole pipeline together. Also holds the pinned `EXPECTED_*_KEYS` layout for the key-stability check. |
 
