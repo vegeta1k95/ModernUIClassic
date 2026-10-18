@@ -147,6 +147,13 @@ class "Frame" : extends {"Widget", "ScriptObject"} {
         end
     end;
 
+    -- The portrait of a live unit ("npc", "questnpc") in that ring.
+    SetPortraitToUnit = function(self, unit)
+        if self._native.SetPortraitToUnit then
+            self._native:SetPortraitToUnit(unit)
+        end
+    end;
+
     -- Show one of a unit's auras in a frame made from PartyAuraFrameTemplate,
     -- Blizzard's party buff / debuff icon: art, stack count, duration swipe
     -- and tooltip. `aura` is the AuraData; the frame shows itself.

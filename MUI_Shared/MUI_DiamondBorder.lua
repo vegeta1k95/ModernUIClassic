@@ -46,7 +46,6 @@ class "DiamondHeader" : extends "Frame" {
 
     SetText = function(self, text)
         self._label:SetText(text)
-        local textWidth = self._label:GetStringWidth()
-        self:SetWidth((textWidth + 512) * scale)
+        self:SetWidth(math.max(140, self._label:GetStringWidth() + 64))
     end;
 }

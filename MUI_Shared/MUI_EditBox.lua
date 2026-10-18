@@ -27,8 +27,8 @@ class "EditBox" : extends "Frame" {
                 self._focused = false
                 if self.OnFocusLost then self:OnFocusLost() end
             end)
-            self:HookScript("OnTextChanged", function()
-                if self.OnTextChanged then self:OnTextChanged(self:GetText()) end
+            self:HookScript("OnTextChanged", function(_, userInput)
+                if self.OnTextChanged then self:OnTextChanged(self:GetText(), userInput) end
             end)
             self:HookScript("OnEnterPressed", function()
                 if self.OnEnterPressed then self:OnEnterPressed(self:GetText()) end
@@ -74,10 +74,10 @@ class "EditBox" : extends "Frame" {
             if self.OnFocusLost then self:OnFocusLost() end
         end)
 
-        self:SetScript("OnTextChanged", function()
+        self:SetScript("OnTextChanged", function(_, userInput)
             self:_UpdateHint()
             if self.OnTextChanged then
-                self:OnTextChanged(self:GetText())
+                self:OnTextChanged(self:GetText(), userInput)
             end
         end)
 
@@ -148,6 +148,36 @@ class "EditBox" : extends "Frame" {
 
     SetJustifyH = function(self, align)
         self._native:SetJustifyH(align)
+    end;
+
+    SetFontObject = function(self, font)
+        self._native:SetFontObject(font)
+    end;
+
+    -- Text on several lines: Enter starts a new one.
+    SetMultiLine = function(self, multiLine)
+        self._native:SetMultiLine(multiLine)
+    end;
+
+    SetCursorPosition = function(self, position)
+        self._native:SetCursorPosition(position)
+    end;
+
+    -- Blizzard's player-name completion, on a box made from
+    -- AutoCompleteEditBoxTemplate: the names offered are `include` less
+    -- `exclude` (the AUTOCOMPLETE_LIST flags).
+    SetAutoCompleteSource = function(self, include, exclude)
+        AutoCompleteEditBox_SetAutoCompleteSource(self._native, C_AutoComplete.GetAutoCompleteResults, include, exclude)
+    end;
+
+    -- Takes the name picked in the completion list; false when none is.
+    AcceptAutoComplete = function(self)
+        return AutoCompleteEditBox_OnEnterPressed(self._native)
+    end;
+
+    -- Closes the completion list; false when it was not open.
+    CancelAutoComplete = function(self)
+        return AutoCompleteEditBox_OnEscapePressed(self._native)
     end;
 
     -- ===== Hint helpers =====

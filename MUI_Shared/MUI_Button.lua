@@ -163,6 +163,11 @@ class "Button" : extends "Frame" {
         end
     end;
 
+    -- As the client has it: Blizzard enables and disables a wrapped button too.
+    IsEnabled = function(self)
+        return self._native:IsEnabled()
+    end;
+
     Enable = function(self)
         self:SetEnabled(true)
     end;

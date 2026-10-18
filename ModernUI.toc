@@ -84,6 +84,9 @@ MUI_Shared\MUI_ButtonSimple.lua
 MUI_Shared\MUI_CloseButton.lua
 MUI_Shared\MUI_Tab.lua
 MUI_Shared\MUI_TabGroup.lua
+MUI_Shared\MUI_PanelTab.lua
+MUI_Shared\MUI_NativeScrollBar.lua
+MUI_Shared\MUI_DropdownSkin.lua
 MUI_Shared\MUI_BlobOutline.lua
 
 MUI_Core\MUI_PositionDebugger.lua
@@ -99,6 +102,7 @@ MUI_Minimap\MUI_MinimapPin.lua
 MUI_Minimap\MUI_MinimapTooltip.lua
 MUI_Minimap\MUI_MinimapQuestObjectiveArea.lua
 MUI_Minimap\MUI_MinimapTracker.lua
+MUI_Minimap\MUI_MinimapCalendarButton.lua
 MUI_Minimap\MUI_Minimap.lua
 
 MUI_Focus\MUI_FocusManager.lua
@@ -191,7 +195,15 @@ MUI_Chat\MUI_Chat.lua
 MUI_Options\MUI_Options.lua
 
 MUI_Mail\MUI_Mail.lua
+MUI_Social\MUI_SocialAllies.lua
+MUI_Social\MUI_SocialFriendsTab.lua
+MUI_Social\MUI_SocialWhoTab.lua
+MUI_Social\MUI_SocialGuildTab.lua
+MUI_Social\MUI_SocialRaidTab.lua
+MUI_Social\MUI_SocialWindow.lua
+MUI_Social\MUI_Social.lua
 MUI_Gossip\MUI_Gossip.lua
+MUI_QuestFrame\MUI_QuestFrame.lua
 MUI_Merchant\MUI_Merchant.lua
 MUI_AuctionHouse\MUI_AuctionHouseStyle.lua
 MUI_AuctionHouse\MUI_AuctionHouseScan.lua
@@ -244,5 +256,13 @@ MUI_Collections\MUI_Collections.lua
 MUI_DressingRoom\MUI_DressingRoomModel.lua
 MUI_DressingRoom\MUI_DressingRoomFrame.lua
 MUI_DressingRoom\MUI_DressingRoom.lua
+MUI_Calendar\MUI_CalendarHolidays.lua
+MUI_Calendar\MUI_CalendarStyle.lua
+MUI_Calendar\MUI_CalendarDay.lua
+MUI_Calendar\MUI_CalendarLists.lua
+MUI_Calendar\MUI_CalendarPanels.lua
+MUI_Calendar\MUI_CalendarCreateEvent.lua
+MUI_Calendar\MUI_CalendarFrame.lua
+MUI_Calendar\MUI_Calendar.lua
 
 MUI_Test.lua

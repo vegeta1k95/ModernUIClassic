@@ -3,9 +3,18 @@
 -- Owns all the Slider-specific native methods (value/minMax/orientation/
 -- thumb-texture). They live here, not on Frame — generic frames don't
 -- have these.
+--
+-- Create: Slider(parent, name)
+-- Wrap:   Slider(existingNativeSlider) — the pass-throughs only, on a slider
+--         of Blizzard's (a scroll bar); its art and scripts are left alone.
 
 class "Slider" : extends "Frame" {
     __init = function(self, parent, name)
+        if IsNativeObject(parent, "Slider") then
+            Frame.__init(self, parent)
+            return
+        end
+
         Frame.__init(self, "Slider", parent, name)
         self:SetOrientation("HORIZONTAL")
         self:EnableMouse(true)
@@ -93,6 +102,10 @@ class "Slider" : extends "Frame" {
 
     GetMinMaxValues = function(self)
         return self._native:GetMinMaxValues()
+    end;
+
+    IsEnabled = function(self)
+        return self._native:IsEnabled()
     end;
 
     SetOrientation = function(self, orientation)

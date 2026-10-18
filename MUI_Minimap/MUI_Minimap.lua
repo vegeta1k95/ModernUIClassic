@@ -308,6 +308,11 @@ object "ModuleMinimap" : extends "Module" {
             )
         end)
 
+        -- Calendar at the bar's right end (retail's GameTimeFrame)
+        self.calendarButton = MinimapCalendarButton(self.topPanel)
+        self.calendarButton:SetScale(0.7)
+        self.calendarButton:RightOf(self.topPanel, -4, -1.7)
+
         local zoneText = FontString(MinimapZoneText)
         zoneText:SetParent(self.topPanel)
         zoneText:ClearAllPoints()

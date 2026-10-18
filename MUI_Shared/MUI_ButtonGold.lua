@@ -7,14 +7,19 @@ class "ButtonGold" : extends "Button" {
         Button.__init(self, parent, name, text)
 
         -- A wrapped button's scripts keep re-texturing its own art: that and
-        -- its label are made transparent, not hidden.
+        -- its label are made transparent, not hidden, and the label emptied.
+        -- Blizzard enables and disables its button itself (Accept while a
+        -- quest's text is still being written out); the art follows.
         if IsNativeObject(parent, "Button") then
             for _, region in ipairs(self:GetRegions()) do
                 region:SetAlpha(0)
             end
             self:SetText(self:GetNativeText())
+            self:SetNativeText("")
             self:HookScript("OnEnter", function() self:OnEnter() end)
             self:HookScript("OnLeave", function() self:OnLeave() end)
+            self:HookScript("OnEnable", function() self:SetEnabled(true) end)
+            self:HookScript("OnDisable", function() self:SetEnabled(false) end)
         end
 
         self._ns = NineSlice(self)

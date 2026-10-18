@@ -175,28 +175,23 @@ local function _hasRequiredRep(requiredMinRep, requiredMaxRep)
 end
 
 -- Profession-skill check. `req` is `{skillLineID, requiredRank}` from the
--- Questie DB (e.g. {171, 210} = Alchemy skill 210). GetProfessionInfo
--- returns (name, icon, rank, maxRank, _, _, skillLine, …) — `skillLine` is
--- the dbc id that matches req[1]. Missing profession or insufficient rank
--- → false. Missing API / nil req → true (pass-through). Quests like
--- "Badlands Reagent Run II" (needs Alchemy 210) become unavailable when
--- the player doesn't have the profession, preventing false-positive pins.
+-- Questie DB (e.g. {171, 210} = Alchemy skill 210). Era's GetProfessions is
+-- a non-functional stub, and its skill list names each line rather than
+-- giving the id: the rank is the professions module's, which matches those
+-- names to its professions. Missing profession or insufficient rank →
+-- false. Quests like "Badlands Reagent Run II" (needs Alchemy 210) become
+-- unavailable when the player doesn't have the profession, preventing
+-- false-positive pins.
+local _PROF_KEYS = {
+    [129] = "FIRST_AID",  [164] = "BLACKSMITHING", [165] = "LEATHERWORKING",
+    [171] = "ALCHEMY",    [182] = "HERBALISM",     [185] = "COOKING",
+    [186] = "MINING",     [197] = "TAILORING",     [202] = "ENGINEERING",
+    [333] = "ENCHANTING", [356] = "FISHING",       [393] = "SKINNING",
+}
 local function _hasRequiredSkill(req)
-    if not req or type(req) ~= "table" or not req[1] then return true end
-    if not GetProfessions or not GetProfessionInfo then return true end
-    local reqId   = req[1]
-    local reqRank = req[2] or 0
-    local prof1, prof2, arch, fish, cook, firstAid = GetProfessions()
-    local slots = { prof1, prof2, arch, fish, cook, firstAid }
-    for _, slot in ipairs(slots) do
-        if slot then
-            local _, _, rank, _, _, _, skillLine = GetProfessionInfo(slot)
-            if skillLine == reqId then
-                return rank and rank >= reqRank
-            end
-        end
-    end
-    return false
+    if not req or not req[1] then return true end
+    local prof = MUI_ModuleProfessions:GetProfession(_PROF_KEYS[req[1]])
+    return prof ~= nil and (prof.rank or 0) >= req[2]
 end
 
 class "QuestAvailability" : extends "Frame" {

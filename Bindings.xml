@@ -46,4 +46,12 @@
         MUI_ModuleCollections:Toggle()
     </Binding>
 
+    <!--
+        Toggle Calendar: a plain window of ours too. Its label is set in
+        MUI_Calendar\MUI_Calendar.lua.
+    -->
+    <Binding name="MUI_TOGGLE_CALENDAR" category="BINDING_HEADER_INTERFACE">
+        MUI_ModuleCalendar:Toggle()
+    </Binding>
+
 </Bindings>

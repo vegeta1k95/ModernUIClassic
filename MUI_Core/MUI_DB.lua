@@ -69,6 +69,17 @@ local DEFAULTS = {
         dressingRoom = {
             minimized = false,  -- the window at retail's small size
         },
+        -- The calendar's filters (retail keeps them in calendarShow* CVars,
+        -- which Era does not have): what kinds of events it shows.
+        calendar = {
+            filters = {
+                holidays      = true,
+                darkmoon      = true,
+                lockouts      = true,
+                weekly        = true,
+                battlegrounds = true,
+            },
+        },
         -- Edit mode's named layouts, as retail keeps them. `list` holds
         -- { name = "...", frames = { [frame name] = { points = {...}, scale = N, ... } } }
         -- in the order made; `active` is the one applied, 0 for the preset
@@ -150,6 +161,9 @@ local DEFAULTS = {
             favorites = {},
             mounts    = {},
         },
+        -- Recent Allies (MUI_SocialAllies): the players last grouped with,
+        -- [full name] = { name, class, level, zone, time, pinned }.
+        recentAllies = {},
         -- [nodeID] = true for every taxi node the player has discovered.
         -- C_TaxiMap.GetTaxiNodesForMap doesn't expose discovery state in
         -- Classic Era (isUndiscovered is always false), so MapStaticPinManager
