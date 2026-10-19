@@ -51,6 +51,17 @@ local BULLET_ICON_SIZE    = 14
 local ITEM_BTN_SIZE       = 22
 local ITEM_BTN_GAP        = 2
 
+-- A timed quest's countdown (QuestTrackerTimer): an objective line with
+-- retail's timer bar under it, its art (ObjectiveTrackerTimerBarTemplate's)
+-- at four fifths of retail's size: the bar's height, the caps of its border
+-- and how far they reach past its ends, and the gap above it.
+local TIMER_BAR_H              = 8
+local TIMER_CAP_W, TIMER_CAP_H = 7, 11
+local TIMER_CAP_OUT            = 2
+local TIMER_BAR_GAP            = 3
+local TIMER_H                  = OBJECTIVE_H + TIMER_BAR_GAP + (TIMER_BAR_H + TIMER_CAP_H) / 2
+local TIMER_BORDER             = "Interface\\PaperDollInfoFrame\\UI-Character-Skills-BarBorder"
+
 -- An achievement block lists this many unfinished criteria, then "..."
 -- (retail's MAX_CRITERIA_PER_ACHIEVEMENT).
 local MAX_ACHIEVEMENT_CRITERIA = 5
@@ -539,6 +550,78 @@ class "QuestTrackerObjective" : extends "Frame" {
 
 
 -- ---------------------------------------------------------------------
+-- QuestTrackerTimer: a timed quest's countdown under its objectives, a
+-- line, "Time Remaining: 04:59", without the dash, as retail's time-left
+-- lines have it, and in a light blue that sets it apart from the white
+-- objectives and goes with its bar: retail's, running down from the time
+-- the quest allows. Without the time allowed (QuestLogWatcher notes it
+-- when it sees the timer start) the line shows alone.
+-- ---------------------------------------------------------------------
+class "QuestTrackerTimer" : extends "Frame" {
+    __init = function(self, parent)
+        Frame.__init(self, "Frame", parent)
+
+        self.line = QuestTrackerObjective(self)
+        self.line:AlignParentTop(0)
+        self.line:FillWidth()
+
+        -- Under the line's text, from its first letter to where objective
+        -- text ends (20 in from the right), the border's caps included.
+        local top = OBJECTIVE_H + TIMER_BAR_GAP
+        self.bar = StatusBar(self)
+        self.bar:SetHeight(TIMER_BAR_H)
+        self.bar:AlignParentTopLeft(top, BULLET_W - 1 + TIMER_CAP_OUT)
+        self.bar:AlignParentTopRight(top, 20 + TIMER_CAP_OUT)
+        self.bar:SetBarColor(0.26, 0.42, 1)
+        self.bar:SetBackgroundColor(0.04, 0.07, 0.18, 1)
+
+        -- The skill bar's border over the fill: two caps, one mirrored, and
+        -- the run between them.
+        local left = Texture(self.bar, nil, "OVERLAY")
+        left:SetTexture(TIMER_BORDER)
+        left:SetTexCoord(0.007843, 0.043137, 0.193548, 0.774193)
+        left:SetSize(TIMER_CAP_W, TIMER_CAP_H)
+        left:AlignParentLeft(-TIMER_CAP_OUT)
+        local right = Texture(self.bar, nil, "OVERLAY")
+        right:SetTexture(TIMER_BORDER)
+        right:SetTexCoord(0.043137, 0.007843, 0.193548, 0.774193)
+        right:SetSize(TIMER_CAP_W, TIMER_CAP_H)
+        right:AlignParentRight(-TIMER_CAP_OUT)
+        local middle = Texture(self.bar, nil, "OVERLAY")
+        middle:SetTexture(TIMER_BORDER)
+        middle:SetTexCoord(0.113726, 0.1490196, 0.193548, 0.774193)
+        middle:FillBetweenH(left, right)
+
+        self:SetScript("OnUpdate", function() self:_Tick() end)
+        self:Hide()
+    end;
+
+    -- `ends`: when the timer runs out, on GetTime's clock; `allowed`: the
+    -- seconds the quest gives, or nil.
+    SetTimer = function(self, ends, allowed)
+        self._ends, self._allowed = ends, allowed
+        self._second = nil
+        self.bar:SetVisible(allowed ~= nil)
+        if allowed then self.bar:SetMinMaxValues(0, allowed) end
+        self:SetHeight(allowed and TIMER_H or OBJECTIVE_H)
+        self:_Tick()
+    end;
+
+    -- The bar every frame, the line by the second. It stops at 00:00 until
+    -- the quest's failure takes the row away.
+    _Tick = function(self)
+        local left = math.max(self._ends - GetTime(), 0)
+        if self._allowed then self.bar:SetValue(left) end
+        local second = math.floor(left)
+        if second == self._second then return end
+        self._second = second
+        self.line:SetObjective({ text = TIME_REMAINING .. " " .. SecondsToClock(left), noDash = true })
+        self.line.text:SetTextColor(BRIGHTBLUE_FONT_COLOR:GetRGB())
+    end;
+}
+
+
+-- ---------------------------------------------------------------------
 -- QuestTrackerQuest: one tracked quest. No bg, no expander — just the
 -- POI button + golden title + objective lines (or "Can Turn In." grey
 -- line when all objectives are finished).
@@ -775,6 +858,9 @@ class "QuestTrackerQuest" : extends "Frame" {
         self.turnInLabel:AlignParentTopRight(0, 20)
         self.turnInLabel:Hide()
 
+        -- A timed quest's countdown, under the objectives (_PlaceTimer).
+        self.timer = QuestTrackerTimer(self.objContainer)
+
         self.objectives     = {}
         self._prevFinished  = {}
         self._prevIsComplete = false
@@ -898,8 +984,8 @@ class "QuestTrackerQuest" : extends "Frame" {
             self.turnInLabel:Show()
             -- Floor to OBJECTIVE_H so a "Can Turn In." block lines up
             -- with a single-objective block of the same quest.
-            self.objContainer:SetHeight(math.max(OBJECTIVE_H,
-                self.turnInLabel:GetStringHeight() or 0))
+            local h = math.max(OBJECTIVE_H, self.turnInLabel:GetStringHeight() or 0)
+            self.objContainer:SetHeight(self:_PlaceTimer(entry, h + OBJECTIVE_GAP) or h)
             self:_LayoutAndRebaseline(entry, questChanged, {})
             return
         end
@@ -956,8 +1042,27 @@ class "QuestTrackerQuest" : extends "Frame" {
             self.turnInLabel:Hide()
         end
 
-        self.objContainer:SetHeight(y == 0 and 1 or (y - OBJECTIVE_GAP))
+        local h = y == 0 and 1 or (y - OBJECTIVE_GAP)
+        self.objContainer:SetHeight(self:_PlaceTimer(entry, y == 0 and 0 or h + OBJECTIVE_GAP) or h)
         self:_LayoutAndRebaseline(entry, questChanged, flipped)
+    end;
+
+    -- A quest on the clock gets its countdown `top` down the objectives;
+    -- returns where the countdown ends, nil with no timer. Retail shows it
+    -- for a quest in progress only, but Era keeps a timed delivery quest
+    -- complete from the moment it's accepted while its clock runs on, so
+    -- here it shows under "Can Turn In." too. A failed quest has none.
+    _PlaceTimer = function(self, entry, top)
+        if not entry.timerEnd or entry.isFailed then
+            self.timer:Hide()
+            return nil
+        end
+        self.timer:ClearAllPoints()
+        self.timer:AlignParentTop(top)
+        self.timer:FillWidth()
+        self.timer:SetTimer(entry.timerEnd, entry.timeAllowed)
+        self.timer:Show()
+        return top + self.timer:GetHeight()
     end;
 
     _LayoutAndRebaseline = function(self, entry, questChanged, flipped)

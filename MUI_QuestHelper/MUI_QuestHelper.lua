@@ -58,6 +58,14 @@ object "QuestHelper" : extends "Module" {
         Module.__init(self, "QuestHelper")
         self._questTags  = {}   -- [questId] = tag id | false, see GetQuestTag
         self._tagAsked   = {}
+
+        -- Era's "Quest Timers" box: retail has none, the tracker shows a
+        -- timed quest's countdown in its block (QuestTrackerTimer). Silenced
+        -- here, at load, before an event can show it: once shown it sits in
+        -- Blizzard's right-side container, and hiding it from addon code
+        -- re-lays that container out under our taint (the durability figure
+        -- in it is an Edit Mode system).
+        Frame(QuestTimerFrame):UnregisterAllEvents()
     end;
 
     OnEnable = function(self)

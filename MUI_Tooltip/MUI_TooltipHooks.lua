@@ -121,11 +121,6 @@ object "TooltipItemHook" {
         end
 
         for i, tooltip in pairs(tooltips) do
-            tooltip:HookScript("OnTooltipSetItem", function()
-                remove(tooltip)
-            end)
-
-
             local badge = NineSlice(tooltip)
             badge:Above(tooltip, -1)
             badge:AlignLeft(tooltip)
@@ -138,9 +133,13 @@ object "TooltipItemHook" {
             text:CenterInParent(0, -1)
             text:SetJustifyH("CENTER")
 
-            badge:SetSize(text:GetStringWidth() + 20, 20)
-
-
+            tooltip:HookScript("OnTooltipSetItem", function()
+                remove(tooltip)
+                -- Sized to its text as it shows, not at load: early in a cold
+                -- start the font isn't ready, the text measured short and the
+                -- badge came out narrower than it.
+                badge:SetSize(text:GetStringWidth() + 20, 20)
+            end)
         end
 
         local function topAlign(tt)

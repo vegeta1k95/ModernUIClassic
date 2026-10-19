@@ -119,6 +119,12 @@ local DEFAULTS = {
         -- quest tracker shows them: { spellID, name, reagents = { { itemID,
         -- count, name } } } (MUI_RecipeTracker).
         trackedRecipes = {},
+        -- [questID] = the seconds a timed quest allows, which Era doesn't
+        -- tell (only the seconds left): noted by the quest log watcher when
+        -- it sees the quest's timer start, dropped when the quest is
+        -- abandoned or turned in. The tracker's countdown bar runs down
+        -- from it.
+        questTimers = {},
         -- Achievement progress (MUI_AchievementEngine): what is earned and
         -- when, the trackers' tallies, kills and quests found, battleground
         -- columns, what is on the objective tracker.

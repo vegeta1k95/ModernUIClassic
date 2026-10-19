@@ -32,7 +32,18 @@
 
 local DEBOUNCE_SEC = 0.15
 
-local function _readQuestEntry(logIndex, questId)
+-- The seconds left on each of the player's quest timers, by quest log
+-- index: GetQuestTimers lists them, GetQuestIndexForTimer says whose each is.
+local function _questTimers()
+    local byLogIndex = {}
+    for i, seconds in ipairs({ GetQuestTimers() }) do
+        local logIndex = GetQuestIndexForTimer(i)
+        if logIndex then byLogIndex[logIndex] = seconds end
+    end
+    return byLogIndex
+end
+
+local function _readQuestEntry(logIndex, questId, timers)
     -- Classic Era quest-log API. Args: title, level, suggGroup, isHeader,
     -- isCollapsed, isComplete (int: 1=complete, -1=failed), frequency,
     -- questID (may be nil; use passed-in questId if so).
@@ -55,6 +66,7 @@ local function _readQuestEntry(logIndex, questId)
         }
     end
 
+    local timeLeft = timers[logIndex]
     return {
         questId     = questId,
         logIndex    = logIndex,
@@ -65,6 +77,9 @@ local function _readQuestEntry(logIndex, questId)
         isComplete  = isComplete == 1,
         isFailed    = isFailed,
         objectives  = objectives,
+        -- A timed quest: when its timer runs out, on GetTime's clock. The
+        -- seconds it allows (timeAllowed) are added by _NoteTimer.
+        timerEnd    = timeLeft and GetTime() + timeLeft,
     }
 end
 
@@ -83,6 +98,9 @@ class "QuestLogWatcher" : extends "Frame" {
         -- empty but never fires QUEST_ACCEPTED, so those quests emit with
         -- isNew=false and auto-focus listeners can skip them.
         self._justAccepted = {}
+        -- Every quest accepted this session, kept while it's in the log: the
+        -- ones whose timer the watcher can see start (_NoteTimer).
+        self._accepted = {}
 
         -- Events. Engine callback signature: (cframe, event, ...). We just
         -- route into methods on self; `self` is captured by the closure.
@@ -149,14 +167,46 @@ class "QuestLogWatcher" : extends "Frame" {
         -- index may be stale. Let _FullRefresh catch it shortly. Stash
         -- the questId so the resulting OnQuestAdded fire can be marked
         -- as a real accept (vs /reload re-hydration).
-        if questId then self._justAccepted[questId] = true end
+        if questId then
+            self._justAccepted[questId] = true
+            self._accepted[questId] = true
+        end
         self:_ScheduleRefresh()
     end;
 
     _OnQuestRemoved = function(self, questId, reason)
         if not self.watched[questId] then return end
         self.watched[questId] = nil
+        self:_Forget(questId)
         self:_Emit("OnQuestRemoved", questId, reason)
+    end;
+
+    -- A quest abandoned or turned in: a later accept of it starts afresh.
+    _Forget = function(self, questId)
+        self._accepted[questId] = nil
+        MUI_DB.data.questTimers[questId] = nil
+    end;
+
+    -- A timed quest's timer, for the tracker's countdown. Era gives the
+    -- seconds left on it, not the seconds the quest allows (retail's
+    -- C_QuestLog.GetTimeAllowed): those are noted when the watcher sees the
+    -- timer start on a quest accepted this session, and kept for the
+    -- character until the quest is abandoned or turned in. A timer already
+    -- running when the session began has them only if they were noted
+    -- before.
+    _NoteTimer = function(self, entry, prev)
+        local allowed = MUI_DB.data.questTimers
+        if entry.timerEnd then
+            local known = prev and prev.timerEnd
+            if not known and self._accepted[entry.questId] then
+                allowed[entry.questId] = math.ceil(entry.timerEnd - GetTime())
+            elseif known and math.abs(known - entry.timerEnd) < 1 then
+                -- A new reading a fraction of a second off the last: keep
+                -- the last, so the clock doesn't step back.
+                entry.timerEnd = known
+            end
+        end
+        entry.timeAllowed = allowed[entry.questId]
     end;
 
     _ScheduleRefresh = function(self)
@@ -172,12 +222,14 @@ class "QuestLogWatcher" : extends "Frame" {
         -- Read the entire quest log, diff against `watched`, emit callbacks.
         -- Headers are skipped inside _readQuestEntry.
         local seen = {}
+        local timers = _questTimers()
         local numEntries = GetNumQuestLogEntries()
         for i = 1, numEntries do
-            local entry = _readQuestEntry(i)
+            local entry = _readQuestEntry(i, nil, timers)
             if entry then
                 seen[entry.questId] = true
                 local prev = self.watched[entry.questId]
+                self:_NoteTimer(entry, prev)
                 self.watched[entry.questId] = entry
                 if not prev then
                     local isNew = self._justAccepted[entry.questId] and true or false
@@ -196,6 +248,10 @@ class "QuestLogWatcher" : extends "Frame" {
         for questId in pairs(self.watched) do
             if not seen[questId] then
                 self.watched[questId] = nil
+                -- Out of the list may only be out of sight (a collapsed
+                -- header), so its timer's noted seconds stay; but should it
+                -- come back, it isn't a fresh accept.
+                self._accepted[questId] = nil
                 self:_Emit("OnQuestRemoved", questId)
             end
         end
@@ -214,6 +270,10 @@ class "QuestLogWatcher" : extends "Frame" {
         if prev.title ~= cur.title then
             diff = diff or {}
             diff.titleChanged = true
+        end
+        if (prev.timerEnd ~= nil) ~= (cur.timerEnd ~= nil) then
+            diff = diff or {}
+            diff.timerChanged = true
         end
         -- Objective-level diff: collect indices whose finished flag flipped.
         local completed = {}
