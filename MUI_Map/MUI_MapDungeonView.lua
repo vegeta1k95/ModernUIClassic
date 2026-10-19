@@ -35,6 +35,12 @@ local BORDER_PAD_TL, BORDER_PAD_BR = 0.17, 0.15
 local EXIT_ATLAS  = "poi-door-up"
 local EXIT_REGION = { 8, 334, 53, 62 }
 
+-- Arrows to another floor (the source's "Garr_LevelUpgradeArrow" pins): the
+-- garrison's green arrow from our own copy of its cell. Through the Blizzard
+-- atlas the pin showed nothing on Era.
+local ARROW_ATLAS  = "Garr_LevelUpgradeArrow"
+local ARROW_REGION = { 0, 0, 33, 39 }
+
 -- Dungeon map code -> MUI_DungeonDB area id, for the zone its entrance is in.
 local DUNGEON_AREA = {
     RFC = 2437, SFK = 209, RFK = 491, Stocks = 717, WC = 718, BFD = 719,
@@ -104,6 +110,10 @@ class "MapDungeonPin" : extends "Frame" {
                 tex:SetRotation(0)
                 tex:SetTextureRegion(MUI.TEX_BASE .. "objecticonsatlas", 1024, 1024,
                     EXIT_REGION[1], EXIT_REGION[2], EXIT_REGION[3], EXIT_REGION[4])
+            elseif data.atlas == ARROW_ATLAS then
+                tex:SetTextureRegion(MUI.TEX_SKIN .. "worldmap\\dungeon-arrow", 64, 64,
+                    ARROW_REGION[1], ARROW_REGION[2], ARROW_REGION[3], ARROW_REGION[4])
+                tex:SetRotation(math.rad(-(data.angle or 0)))
             else
                 tex:SetBlizzardAtlas(data.atlas, false)
                 tex:SetRotation(math.rad(-(data.angle or 0)))

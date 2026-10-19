@@ -12,7 +12,8 @@
 -- draws its other unit frames at. Blizzard's code keeps the portrait, the
 -- name, the threat glow, the leader / loot master / PvP / offline icons, the
 -- ready check, the debuff row and the pet button working; the bars, their
--- texts, the debuff glow and the row of the player's own buffs are ours.
+-- texts, the debuff glow, the role icon and the row of the player's own buffs
+-- are ours.
 --
 -- Taint: Blizzard shows and hides the buttons in combat, so nothing is
 -- written on them or on PartyFrame (no fields, no replaced methods, no
@@ -22,6 +23,7 @@
 --   UnitFrameParty(module)
 --     :UpdateUnit(unit)    a unit's health or power changed
 --     :UpdateAll()         every frame anew (the status text mode changed)
+--     :UpdateRoles()       the group's roles were assigned
 --     .frame               the edit-mode box (Reassert, reassertPending)
 
 local TEX = MUI.TEX_SKIN .. "unitframes\\"
@@ -36,6 +38,14 @@ local SPACING          = 10
 -- apart. Up to this many of the player's buffs, then the member's debuffs.
 local AURA_PITCH = 17
 local MAX_BUFFS  = 8
+
+-- Retail's role icons (roleicon-tiny-*), which Era's client has neither the
+-- atlas nor the file of: where each role's 16x16 cell starts in the sheet.
+local ROLE_CELL_X = {
+    [Enum.LFGRole.Tank]   = 37,
+    [Enum.LFGRole.Healer] = 19,
+    [Enum.LFGRole.Damage] = 1,
+}
 
 -- The party frames' place, scale and settings in edit mode: a box the size
 -- of four of them. PartyFrame's own size follows the buttons it shows (none,
@@ -236,12 +246,12 @@ class "UnitFramePartyMember" {
         flash:ClearAllPoints()
         flash:AlignParentTopLeft(2, 1)
 
-        -- Retail's name is 57 wide, short of its role icon; Era has none.
+        -- Retail's name is 57 wide, short of the role icon.
         local name = FontString(overlay.Name)
         name:SetFont(MUI.FONT, 10)
         name:SetTextColor(1, 0.82, 0)
         name:SetJustifyH("LEFT")
-        name:SetSize(68, 12)
+        name:SetSize(57, 12)
         name:ClearAllPoints()
         name:AlignParentTopLeft(6, 46)
 
@@ -275,6 +285,10 @@ class "UnitFramePartyMember" {
         self._pvp = Texture(overlay.PVPIcon)
         self._pvp:SetSize(38)
 
+        self._role = Texture(self._overlay, nil, "OVERLAY")
+        self._role:SetSize(12)
+        self._role:AlignParentTopRight(5, 5)
+
         local notPresent = Frame(native.NotPresentIcon)
         notPresent:ClearAllPoints()
         notPresent:RightOf(frame, 2, -2)
@@ -291,6 +305,7 @@ class "UnitFramePartyMember" {
         hooksecurefunc(native, "ToPlayerArt", function()
             self:_Place()
             self:Update(true)
+            self:UpdateRole()
         end)
         hooksecurefunc(native, "UpdateAuras", function()
             self:UpdateStatus()
@@ -304,6 +319,7 @@ class "UnitFramePartyMember" {
         self:Update(true)
         self:UpdateStatus()
         self:UpdateBuffs()
+        self:UpdateRole()
         self.pet:Update(true)
     end;
 
@@ -424,6 +440,16 @@ class "UnitFramePartyMember" {
         self._status:SetVisible(debuff)
     end;
 
+    -- The member's group role as retail marks it (UpdateAssignedRoles):
+    -- tank, healer or damage, nothing without one.
+    UpdateRole = function(self)
+        local x = ROLE_CELL_X[UnitGroupRolesAssignedEnum(self._button.unit)]
+        if x then
+            self._role:SetTextureRegion(TEX .. "role-icons", 64, 32, x, 1, 16, 16)
+        end
+        self._role:SetVisible(x)
+    end;
+
     -- Every buff the player cast on the member, in the icons of the tooltip
     -- that comes up over the frame. Not that tooltip's list (button.buffs):
     -- it leaves out what the spell data keeps off group frames, Mark of the
@@ -482,6 +508,12 @@ class "UnitFrameParty" {
     UpdateAll = function(self)
         for _, member in ipairs(self.members) do
             member:Update(true)
+        end
+    end;
+
+    UpdateRoles = function(self)
+        for _, member in ipairs(self.members) do
+            member:UpdateRole()
         end
     end;
 }

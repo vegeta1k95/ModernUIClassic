@@ -54,6 +54,9 @@ text = re.sub(r'funct\s*=\s*function\(\)\s*SetDungeonMapTextures\("([^"]+)",\s*"
               r'link = {"\1", \2}', text)
 text = re.sub(r'funct\s*=\s*function\(\)\s*ToggleDungeonMap\(\)\s*end', 'exit = true', text)
 assert "funct" not in text, "unconverted pin handler"
+# A pin written without its braces (Maraudon's purple door): evaluated as is,
+# its fields land on the pin list itself and the pin is lost.
+text = re.sub(r'^([ \t]*)(pinType\s*=.*?),?[ \t]*$', r'\1{\2},', text, flags=re.M)
 
 lua = LuaRuntime(unpack_returned_tuples=True)
 lua.execute(text)

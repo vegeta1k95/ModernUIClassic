@@ -250,6 +250,25 @@ def _item_drops(item, key, horde):
     return item.get(key)
 
 
+def _extra_points(q, npcs, objects, area_to_ui):
+    """The places of the quest's extra objectives that stand for no
+    objective of their own (index 0 or none): Questie's notes on what the
+    quest log doesn't say ("Slay Vale Screechers and use Yeh'kinya's Bramble
+    on their corpse"). Each has its own spawn list or names the creatures
+    and objects it is done at."""
+    points = []
+    for extra in _entries_of(q.get("extraObjectives")):
+        if _table_field(extra, 4):
+            continue
+        _emit_spawns_into(points, _table_field(extra, 1), area_to_ui)
+        for ref in _entries_of(_table_field(extra, 5)):
+            table = npcs if _table_field(ref, 1) == "monster" else objects
+            source = table.get(_table_field(ref, 2))
+            if source:
+                _emit_spawns_into(points, source.get("spawns"), area_to_ui)
+    return points
+
+
 # -------- spawn enumeration --------
 
 def _emit_spawns_into(out_list, spawns_table, area_to_ui, radius=None):
@@ -492,6 +511,11 @@ def build_all(quests, npcs, objects, items, area_to_ui):
                         continue
                     name = name or npc.get("name")
                     _emit_spawns_into(points, npc.get("spawns"), area_to_ui, SUMMON_AREAS.get(cid))
+                # A creature with no spawns of its own (the Screecher Spirit
+                # is called up from a screecher's corpse) is found where the
+                # quest's extra objectives say.
+                if not points:
+                    points = _extra_points(q, npcs, objects, area_to_ui)
                 if points:
                     target_groups.append({
                         "kind":   "npc",

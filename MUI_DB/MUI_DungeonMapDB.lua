@@ -310,6 +310,7 @@ object "DungeonMapDB" {
                 [1] = { name = "Caverns of Maraudon", path = "Interface\\Worldmap\\Maraudon\\Maraudon1_", ext = ".blp", pins = {
                     { x = 0.161, y = 0.555, text = "Zaetar's Grave", atlas = "Garr_LevelUpgradeArrow", angle = 270, link = { "Mara", 2 } },
                     { x = 0.764, y = 0.618, text = "Maraudon Outside Orange", atlas = "poi-door-up", angle = 155, link = { "Mara", 3 } },
+                    { x = 0.615, y = 0.248, text = "Maraudon Outside Purple", atlas = "poi-door-up", angle = 170, link = { "Mara", 4 } },
                     { x = 0.376, y = 0.711, text = "Lord Vyletongue", boss = 12334, minLevel = 47, maxLevel = 47 },
                     { x = 0.162, y = 0.341, text = "Razorlash", boss = 12389, minLevel = 48, maxLevel = 48 },
                     { x = 0.351, y = 0.1, text = "Noxxion", boss = 11172, minLevel = 48, maxLevel = 48 },

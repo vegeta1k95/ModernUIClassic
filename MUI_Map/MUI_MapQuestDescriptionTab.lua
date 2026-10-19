@@ -65,6 +65,10 @@ class "RewardTile" : extends "Frame" {
             if not self._link then return end
             tooltip:SetHyperlink(self._link)
         end)
+        -- Shift links the item in chat, Control opens the dressing room.
+        self:SetScript("OnMouseUp", function()
+            if self._link then HandleModifiedItemClick(self._link) end
+        end)
 
     end;
 

@@ -215,6 +215,12 @@ object "UnitFrames" : extends "Module" {
             self.combo:Update()
         end)
 
+        -- A role set from the unit menu or a role poll: Era's raid frames
+        -- redraw their role icons on this event.
+        self.eventFrame:RegisterEventHandler("PLAYER_ROLES_ASSIGNED", function()
+            self.party:UpdateRoles()
+        end)
+
         -- Combat ended — re-apply any frame layout Blizzard's Edit Mode
         -- overwrote while the frames were locked down.
         self.eventFrame:RegisterEventHandler("PLAYER_REGEN_ENABLED", function()

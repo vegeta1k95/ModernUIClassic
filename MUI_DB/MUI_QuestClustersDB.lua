@@ -33356,7 +33356,54 @@ object "QuestClustersDB" {
         },
         [3518] = {finisher = {{normX = 0.6984999999999999, normY = 0.3091, uiMapId = 1456}}},
         [3519] = {finisher = {{normX = 0.609, normY = 0.41960000000000003, uiMapId = 1438}}},
-        [3520] = {finisher = {{normX = 0.6698999999999999, normY = 0.2236, uiMapId = 1446}}},
+        [3520] = {
+            finisher = {{normX = 0.6698999999999999, normY = 0.2236, uiMapId = 1446}},
+            objectives = {
+                {
+                    clusters = {
+                        {
+                            centroid = {0.5828, 0.58522},
+                            count = 4,
+                            rings = {
+                                "BJ9CR&BBRCHVB<$C>IB6$C3=B0UC':B,FBSDB)4BF)B&ZB8(AX;A6,AXHA1>AYDA,QA[>A(*B%%A$8B(,@ZPB+3@Y@B.9@Y4B1@@Z,B4TA#=B7MA'&B:7A,QBF7AL7BJ8AXRBMJB-)BPFB:OBSBBH:BVSBUCBZTC(OC&ZC3HC-@C<LCAPCRMCDECW:CF(D#(CFPD'NCFND,<CE[D1)CD:D5PCA9D:=C>GD=$C;@D>>C8:D>UC53D>,C2QD<PC-?D7@",
+                            },
+                            tris = "LM##$%%&''())*++,--.//01123345567789?@AABCCDEEFGGHIIJKKL##%'')++-//1335779:?ACCEGGIKK#''+//377:;>?CCGKK'//7;>CK/;<=>KK/<<=K",
+                            uiMapId = 1444,
+                        },
+                        {
+                            centroid = {0.4485, 0.3614},
+                            count = 7,
+                            rings = {
+                                "=WM;L7=VB;BK=T3;8?=PI;,Z=L:;#+=GB:T.=CD:OQ=?+:LK=:7:JY=59:JB=07:KB=+9:MY=$Z:Q(<W/:RC<P1:R7<I1:P?<B5:LY<6F:E?<34:AC<1$:<U</T:8/</;:3A</M:.T<0M:*.<2M:%@<5&9[1<8-9XH<;49W8<>:9W,=#$9UQ=..9U[=8C9WA=A[9Z:=J9:%C=QH:*Y=WH:1B>%C:;N>+=:F;>02:Q;>3X;#I>75;2$>9L;@P>;*;OS>;N;Z8>;&<&M>9?<+G>79</9>4Q<26>1K<45>.D<5,>+=<4U>)3<4'>&)<1M>#I<.J=ZH<*L=Y6<&%=X;;UJ",
+                            },
+                            tris = "Z[#./001223445667889::;<<=>>?@@ABBCDDEFFGHHIJJKLLMNNOPPQRRSTTUVVWXXYZ-.00244688:<<>@@BDDFHHJLLNPPRTTVXXZ#-0448<<@DDHLLPTTX#,-44<DDLTT#$+,4DT$+4DD$%*+DD%&)*DD&'()DD'(",
+                            uiMapId = 1444,
+                        },
+                        {
+                            centroid = {0.563, 0.48648},
+                            count = 6,
+                            rings = {
+                                "B54?D,B(L?2[AWA?&,AON>VLAIB>QUAB4>N-A:,>KFA1->J2A*4>JAA#S>L8@VY>OI@QN>T7@M:>Z2@J'?(6@CI?9O@@K?><@=N?A,@:G?BD@7@?BY@4:?B-@13?@5@.,?<O@,@?9O@*X?5(@*.?0;@*-?+M@+&?&8@5.>C0@8R>:[@=:>3J@BQ>-;@HZ>(2@ON>$2@W)=Z@A%V=Y&A.&=XZA;P=Z<AFQ>#>AN[>&)AT.>)2B)T>7,B0@>><B9+>I8BCN>WVBIB?&)BOC?+TBUI?0&B[L?2IC(E?3FC.+?2TC31?06CA3?&8CD9?%8CG@?%?CK1?''CM[?):CPT?-KCRK?2NCS??7<CSD?<)CRX?@OCQ@?E=CNP?J*CL-?LTC71?[TC0H@&9C)C@'YB[*@'EBS>@%:BKM?Z:BD%?TIB<@?M0",
+                            },
+                            tris = "$0$1###0#1#2#2#3#4#4#5#6#6#7#8#8#9#:#:#;#<#<#=#>#>#?#@#@#A#B#B#C#D#D#E#F#F#G#H#H#I#J#J#K#L#L#M#N#U#V#W#W#X#Y#Y#Z#[#[$#$$$$$%$&$&$'$($($)$*$*$+$,$,$-$.$.$/$0$0###$#0#2#4#4#6#8#8#:#<#<#>#@#@#B#D#D#F#H#H#J#L#U#W#Y#Y#[$$$$$&$($($*$,$,$.$0$0#$#%#/#0#4#4#8#<#<#@#D#D#H#L#T#U#Y#Y$$$($($,$0#/#4#<#D#L#N#T#Y$($($0#%#.#/#<#D#N#O#S#T$($(#%#&#-#.#<#D#O#P#R#S$($(#&#'#,#-#<#D#P#Q#Q#R$($(#'#(#,#<#D#Q$(#(#+#,#D#D#Q#(#*#+#D#D#(#)#)#*#D",
+                            uiMapId = 1444,
+                        },
+                        {
+                            centroid = {0.4613, 0.5004},
+                            count = 7,
+                            rings = {
+                                "=[.>G<>%'>B;>).>?$>.4>=1>4)>=->::>>R>@W>B2?99?*(?<A?-7??,?2%?@@?6K?A)?;9?@Z?@&??F?F:?>'?J'?:Y?N6?7R?PI?4L?QN?1E?QO>-6?LD>'Q?K+=[X?H%=WQ?CA=TE?=Y=R;?7D=Q;?0N=QM?)M=S?>[T",
+                                "><SAGE>==ABX>>ZA>*>ABA9D>CMA71>GHA4W>K<A4:>NBA5+>QSA71>TPA:I>VIA>1>X(ABX>XMAGE>X6C%'>WNC)N>V6C.@>SSC3)>QIC5B>N6C7O>K<C8C>H5C89>F<C7O>BZC5<>@AC2@>>6C.;><[C)N><9C%'",
+                            },
+                            tris = "=>##$%%&''())*++,--.//011233455677899:;;<==#%%'))+--/11355799;==%))-11599=))19XY??@AABCCDEEFGGHIIJKKLMMNOOPQQRSSTUUVWWX??ACCEGGIKKMOOQSSUWW?CCGKKOSSWCCKS",
+                            uiMapId = 1444,
+                        },
+                    },
+                    kind = "npc",
+                    name = "Screecher Spirit",
+                },
+            },
+        },
         [3521] = {
             finisher = {{normX = 0.609, normY = 0.41960000000000003, uiMapId = 1438}},
             objectives = {
