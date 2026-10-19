@@ -69,7 +69,12 @@ class "MapDungeonPin" : extends "Frame" {
         self.border:Hide()
 
         self:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine(self.data.text, 1, 0.82, 0, false, 13)
+            local data = self.data
+            local text = data.text
+            if data.maxLevel then
+                text = MUI_ModuleMap:FormatLevelRange(text, data.minLevel, data.maxLevel)
+            end
+            tooltip:AddLine(text, 1, 0.82, 0, false, 13)
         end)
         self:SetScript("OnMouseUp", function(_, button)
             local data = self.data

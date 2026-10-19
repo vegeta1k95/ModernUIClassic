@@ -697,8 +697,10 @@ object "ModuleMap" : extends "Module" {
     end;
 
     -- "Name (min-max)" with the range in the difficulty colour of its top
-    -- level, as the zone hover label shows it; a single level for a raid.
+    -- level, as the zone hover label shows it; a single level for a raid;
+    -- "??" in red for -1 (a boss, as UnitLevel has it).
     FormatLevelRange = function(self, name, minLevel, maxLevel)
+        if maxLevel == -1 then return name .. " |cFFFF1A1A(??)|r" end
         local range = (minLevel == maxLevel) and tostring(maxLevel) or (minLevel .. "-" .. maxLevel)
         return name .. " |cFF" .. DifficultyHex(maxLevel) .. "(" .. range .. ")|r"
     end;

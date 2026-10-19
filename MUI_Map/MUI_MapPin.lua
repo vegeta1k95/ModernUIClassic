@@ -372,13 +372,25 @@ class "MapPin" : extends "Frame" {
     SetOnClick = function(self, fn, isOnFn)
         self._onClickFn = fn
         self._isOnFn    = isOnFn
+        self:_WireClicks()
+    end;
+
+    -- A right-click handler, through the same click-vs-drag test, with no
+    -- press shift or sound (retail's dungeon entrances open the Adventure
+    -- Guide on it).
+    SetOnRightClick = function(self, fn)
+        self._onRightClickFn = fn
+        self:_WireClicks()
+    end;
+
+    _WireClicks = function(self)
         self:SetScript("OnMouseDown", function(_, button)
-            if button ~= "LeftButton" then return end
+            if button ~= "LeftButton" and button ~= "RightButton" then return end
             self._mouseDownX, self._mouseDownY = GetCursorPosition()
-            self:_SetPressed(true)
+            if button == "LeftButton" then self:_SetPressed(true) end
         end)
         self:SetScript("OnMouseUp", function(_, button)
-            if button ~= "LeftButton" then return end
+            if button ~= "LeftButton" and button ~= "RightButton" then return end
             self:_SetPressed(false)
             local downX, downY = self._mouseDownX, self._mouseDownY
             self._mouseDownX, self._mouseDownY = nil, nil
@@ -386,6 +398,10 @@ class "MapPin" : extends "Frame" {
             local cx, cy = GetCursorPosition()
             local dx, dy = cx - downX, cy - downY
             if dx * dx + dy * dy > MAP_PIN_CLICK_THRESHOLD_SQ then return end
+            if button == "RightButton" then
+                if self._onRightClickFn then self._onRightClickFn(self) end
+                return
+            end
             if not self._onClickFn then return end
             local wasOn = self._isOnFn and self._isOnFn() or false
             PlaySound(wasOn

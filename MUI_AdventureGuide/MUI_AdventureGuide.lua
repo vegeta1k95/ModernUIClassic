@@ -17,8 +17,10 @@
 -- Era does not have; so are the difficulty and class filters.
 --
 -- The micro menu's Adventure Guide button opens the window; so do the
--- "Toggle Adventure Guide" key binding, /muiguide, and a boss's portrait on
--- a dungeon map (MUI_MapDungeonView), which opens it on that boss.
+-- "Toggle Adventure Guide" key binding, /muiguide, a boss's portrait on a
+-- dungeon map (MUI_MapDungeonView), which opens it on that boss, and a right
+-- click on a dungeon / raid entrance on the world map, which opens it on
+-- that instance.
 
 BINDING_NAME_MUI_TOGGLE_ADVENTUREGUIDE = "Toggle Adventure Guide"
 
@@ -47,5 +49,20 @@ object "ModuleAdventureGuide" : extends "Module" {
         self.window:Raise()
         self.window:ShowEncounter(instance, encounter)
         return true
+    end;
+
+    -- Open the guide on the instance behind a dungeon / raid entrance
+    -- (a MUI_DungeonDB area id). One gate to several wings (Dire Maul,
+    -- Stratholme) opens the journal's first.
+    OpenEntrance = function(self, area)
+        local raid = MUI_DungeonDB:GetDungeonEntrance(area).isRaid or false
+        for _, instance in ipairs(MUI_EncounterJournalDB:GetInstances(raid)) do
+            if instance.area == area then
+                self.window:Show()
+                self.window:Raise()
+                self.window:ShowInstance(instance)
+                return
+            end
+        end
     end;
 }

@@ -660,7 +660,8 @@ class "MapStaticPinManager" : extends "Frame" {
     -- from MUI_DungeonDB. No faction filter — both factions can enter
     -- every Classic Era instance. Hover label shows the
     -- "<Dungeon|Raid>: <Name>" via the same EvaluateLabels override
-    -- mechanism transport pins use.
+    -- mechanism transport pins use. A right click opens the instance in
+    -- the Adventure Guide, as retail's entrance pins do.
     --
     -- Visibility: a dungeon pin is shown on every zone-level map whose
     -- bounds contain the entrance's world position. That naturally
@@ -715,6 +716,7 @@ class "MapStaticPinManager" : extends "Frame" {
                     end,
                     function() return MUI_FocusManager:IsFocused("dungeon", key) end
                 )
+                pin:SetOnRightClick(function() MUI_ModuleAdventureGuide:OpenEntrance(key) end)
                 self:_WireDungeonHover(pin, d)
                 self.dungeonPins[#self.dungeonPins + 1] = pin
             end
@@ -1186,6 +1188,8 @@ class "MapStaticPinManager" : extends "Frame" {
         pin:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             tooltip:AddLine(label, 1,1,1, false, 13)
             tooltip:AddLine(sublabel, 1, 0.82, 0, true)
+            -- Retail's DUNGEON_POI_TOOLTIP_INSTRUCTION_LINE (not in Era's strings)
+            tooltip:AddLine("<Right Click to open Adventure Guide>", 0, 1, 0)
         end)
     end;
 
