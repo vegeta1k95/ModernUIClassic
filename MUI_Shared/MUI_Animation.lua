@@ -21,6 +21,10 @@ class "Animation" {
         self._native:SetStartDelay(seconds)
     end;
 
+    SetEndDelay = function(self, seconds)
+        self._native:SetEndDelay(seconds)
+    end;
+
     SetOrder = function(self, order)
         self._native:SetOrder(order)
     end;

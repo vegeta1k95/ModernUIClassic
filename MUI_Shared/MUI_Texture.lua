@@ -6,6 +6,9 @@
 -- wrappers are throwaway (GetNormalTexture() builds a new one on every call).
 local portraitMasks = setmetatable({}, { __mode = "k" })
 
+-- Native texture -> the MaskTextures AddMask put on it.
+local addedMasks = setmetatable({}, { __mode = "k" })
+
 class "Texture" : extends "Widget" {
     __init = function(self, parentOrNative, name, layer)
         Widget.__init(self)
@@ -75,13 +78,21 @@ class "Texture" : extends "Widget" {
     end;
 
     -- The engine throws "Cannot set tex coords when texture has mask", but a
-    -- mask added AFTER the texcoords is fine — so lift our portrait mask around
-    -- the call. Matters for reused icons that stay round between updates.
+    -- mask added AFTER the texcoords is fine — so lift our masks (the portrait
+    -- one, those of AddMask) around the call. Matters for reused icons that
+    -- stay round between updates.
     _SetTexCoord = function(self, ...)
         local mask = portraitMasks[self._native]
         local masked = mask and self._native:GetNumMaskTextures() > 0
+        local added = addedMasks[self._native]
         if masked then self._native:RemoveMaskTexture(mask) end
+        if added then
+            for _, m in ipairs(added) do self._native:RemoveMaskTexture(m) end
+        end
         self._native:SetTexCoord(...)
+        if added then
+            for _, m in ipairs(added) do self._native:AddMaskTexture(m) end
+        end
         if masked then self._native:AddMaskTexture(mask) end
     end;
 
@@ -208,6 +219,18 @@ class "Texture" : extends "Widget" {
         end
     end;
 
+    -- Clip the texture to a MaskTexture's shape. It stays clipped through
+    -- later texcoord changes (_SetTexCoord).
+    AddMask = function(self, mask)
+        local added = addedMasks[self._native]
+        if not added then
+            added = {}
+            addedMasks[self._native] = added
+        end
+        table.insert(added, mask._native)
+        self._native:AddMaskTexture(mask._native)
+    end;
+
     -- Set a portrait texture from a live unit (player/target/etc).
     SetPortraitFromUnit = function(self, unit)
         SetPortraitTexture(self._native, unit)
@@ -229,4 +252,15 @@ class "Texture" : extends "Widget" {
 			self._native:SetMask(mask)
 		end
 	end;
+}
+
+-- MaskTexture: a mask region, opaque where its file is; Texture:AddMask clips
+-- a texture to it, and outside the file it hides everything.
+-- Create: MaskTexture(parentCFrame, path)
+class "MaskTexture" : extends "Widget" {
+    __init = function(self, parent, path)
+        Widget.__init(self)
+        self._native = parent._native:CreateMaskTexture()
+        self._native:SetTexture(path, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    end;
 }

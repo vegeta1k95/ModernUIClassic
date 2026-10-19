@@ -93,6 +93,7 @@ MUI_Core\MUI_PositionDebugger.lua
 MUI_EditMode\MUI_EditMode.lua
 
 MUI_ActionBars\MUI_ActionBar.lua
+MUI_ActionBars\MUI_ActionButtonCastFX.lua
 MUI_ActionBars\MUI_ActionBars.lua
 
 MUI_Minimap\MUI_MinimapFrame.lua

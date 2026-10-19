@@ -7,6 +7,13 @@ local BUTTON_TYPES = {
     "StanceButton", "PetActionButton"
 }
 
+-- The buttons of action bars 1-8 (ActionBarActionButtonMixin).
+local ACTION_BUTTON_TYPES = {
+    "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+    "MultiBarRightButton", "MultiBarLeftButton",
+    "MultiBar5Button", "MultiBar6Button", "MultiBar7Button"
+}
+
 object "ModuleActionBars" : extends "Module" {
     __init = function(self)
         Module.__init(self, "ActionBars")
@@ -39,6 +46,7 @@ object "ModuleActionBars" : extends "Module" {
 		self:_UpdateSlotsVisibility()
 
         self:_SetupRangeIndicator()
+        self:_SetupCastFX()
         self:_SetupEditMode()
 
         local function relayoutAll()
@@ -216,6 +224,45 @@ object "ModuleActionBars" : extends "Module" {
                     end
                 end
             end
+        end
+    end;
+
+    -- Retail's cast animation on the buttons of bars 1-8 (ActionButtonCastFX).
+    -- Blizzard already hands each spellcast event to the buttons that hold the
+    -- spell (ActionBarActionEventsFrame), as button:OnEvent, so that is hooked
+    -- per button. A button's animation is made at its first cast.
+    _SetupCastFX = function(self)
+        self._castFX = {}
+        for _, buttonType in ipairs(ACTION_BUTTON_TYPES) do
+            for i = 1, 12 do
+                hooksecurefunc(getglobal(buttonType .. i), "OnEvent", function(native, event)
+                    self:_OnCastEvent(native, event)
+                end)
+            end
+        end
+    end;
+
+    -- What ActionBarActionButtonMixin:OnEvent plays where Era's spell FX are on.
+    _OnCastEvent = function(self, native, event)
+        local fx = self._castFX[native]
+        if not fx and (event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_CHANNEL_START") then
+            fx = ActionButtonCastFX(native)
+            self._castFX[native] = fx
+        end
+        if not fx then return end
+
+        if event == "UNIT_SPELLCAST_INTERRUPTED" then
+            fx:Interrupt()
+        elseif event == "UNIT_SPELLCAST_START" then
+            fx:PlayCast("cast")
+        elseif event == "UNIT_SPELLCAST_STOP" then
+            fx:StopCast(true, "cast")
+        elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+            fx:StopCast(false, "cast")
+        elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+            fx:PlayCast("channel")
+        elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" then
+            fx:StopCast(false, "channel")
         end
     end;
 
@@ -528,12 +575,7 @@ object "ModuleActionBars" : extends "Module" {
         end)
 
 		-- Update is a mixin method copied onto every action button, so hook each button.
-		local actionButtons = {
-			"ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
-			"MultiBarRightButton", "MultiBarLeftButton",
-			"MultiBar5Button", "MultiBar6Button", "MultiBar7Button"
-		}
-		for _, buttonType in ipairs(actionButtons) do
+		for _, buttonType in ipairs(ACTION_BUTTON_TYPES) do
 			for i = 1, 12 do
 				hooksecurefunc(getglobal(buttonType .. i), "Update", function(btn)
 					self:_OnButtonUpdate(btn)
