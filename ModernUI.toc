@@ -232,6 +232,11 @@ MUI_Character\MUI_CharacterReputation.lua
 MUI_Character\MUI_CharacterSkills.lua
 MUI_Character\MUI_CharacterHonor.lua
 MUI_Character\MUI_Character.lua
+MUI_Inspect\MUI_InspectPaperDoll.lua
+MUI_Inspect\MUI_InspectHonor.lua
+MUI_Inspect\MUI_InspectGuild.lua
+MUI_Inspect\MUI_InspectFrame.lua
+MUI_Inspect\MUI_Inspect.lua
 MUI_Taxi\MUI_Taxi.lua
 MUI_Loot\MUI_Loot.lua
 MUI_AdventureGuide\MUI_AdventureGuideStyle.lua

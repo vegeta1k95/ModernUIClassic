@@ -23,6 +23,8 @@ What changes on the way:
     of the spells are vanilla ones). Where Era has no value the phrase goes;
   * each instance gets its MUI_DungeonMapDB map and MUI_DungeonDB area, the
     dungeons their continent, the raids their size;
+  * the classic raids, which retail's journal leaves without a description,
+    get the ones of Blizzard's original Game Guide (RAID_DESCRIPTIONS);
   * the loot keeps NewEra's drop chances and gets its item names and
     qualities, so a list reads before the client has the items cached.
 
@@ -67,6 +69,58 @@ KALIMDOR = {226, 240, 227, 234, 233, 232, 241, 230, 1276, 1277}
 KALIMDOR_MAP, EASTERN_KINGDOMS_MAP = 1414, 1415          # world map ids
 # The raids in the order they are progressed through, and their size.
 RAIDS = [(741, 40), (760, 40), (742, 40), (76, 20), (743, 20), (744, 40), (754, 40)]
+
+# The classic raids have no description in retail's journal, nor in any other
+# table of the game: theirs are those of Blizzard's original Game Guide
+# (2004-06), as warcraft.wiki.gg/wiki/Game_Guide/Raid_Areas keeps them, with
+# the guide's "Nefarion" spelled right.
+RAID_DESCRIPTIONS = {
+    741: ("The Molten Core lies at the very bottom of Blackrock Depths. It is the heart of Blackrock "
+          "Mountain and the exact spot where, long ago in a desperate bid to turn the tide of the dwarven "
+          "civil war, Emperor Thaurissan summoned the elemental Firelord, Ragnaros, into the world. Though "
+          "the fire lord is incapable of straying far from the blazing Core, it is believed that his "
+          "elemental minions command the Dark Iron dwarves, who are in the midst of creating armies out of "
+          "living stone. The burning lake where Ragnaros lies sleeping acts as a rift connecting to the "
+          "plane of fire, allowing the malicious elementals to pass through. Chief among Ragnaros' agents "
+          "is Majordomo Executus - for this cunning elemental is the only one capable of calling the "
+          "Firelord from his slumber."),
+    760: ("Onyxia is the daughter of the mighty dragon Deathwing, and sister of the scheming Nefarian Lord "
+          "of Blackrock Spire. It is said that Onyxia delights in corrupting the mortal races by meddling "
+          "in their political affairs. To this end it is believed that she takes on various humanoid forms "
+          "and uses her charm and power to influence delicate matters between the different races. Some "
+          "believe that Onyxia has even assumed an alias once used by her father - the title of the royal "
+          "House Prestor. When not meddling in mortal concerns, Onyxia resides in a fiery cave below the "
+          "Dragonmurk, a dismal swamp located within Dustwallow Marsh. There she is guarded by her kin, "
+          "the remaining members of the insidious Black Dragon Flight."),
+    742: ("Blackwing Lair can be found at the very height of Blackrock Spire. It is there in the dark "
+          "recesses of the mountain's peak that Nefarian has begun to unfold the final stages of his plan "
+          "to destroy Ragnaros once and for all and lead his army to undisputed supremacy over all the "
+          "races of Azeroth."),
+    743: ("During the final hours of the War of the Shifting Sands, the combined forces of the night elves "
+          "and the four dragonflights drove the battle to the very heart of the qiraji empire, to the "
+          "fortress city of Ahn'Qiraj. Yet at the city gates, the armies of Kalimdor encountered a "
+          "concentration of silithid war drones more massive than any they had encountered before. "
+          "Ultimately the silithid and their qiraji masters were not defeated, but merely imprisoned "
+          "inside a magical barrier, and the war left the cursed city in ruins. A thousand years have "
+          "passed since that day, but the qiraji forces have not been idle. A new and terrible army has "
+          "been spawned from the hives, and the ruins of Ahn'Qiraj are teeming once again with swarming "
+          "masses of silithid and qiraji. This threat must be eliminated, or else all of Azeroth may fall "
+          "before the terrifying might of the new qiraji army."),
+    744: ("At the heart of Ahn'Qiraj lies an ancient temple complex. Built in the time before recorded "
+          "history, it is both a monument to unspeakable gods and a massive breeding ground for the qiraji "
+          "army. Since the War of the Shifting Sands ended a thousand years ago, the Twin Emperors of the "
+          "qiraji empire have been trapped inside their temple, barely contained behind the magical "
+          "barrier erected by the bronze dragon Anachronos and the night elves. Now that the Scepter of "
+          "the Shifting Sands has been reassembled and the seal has been broken, the way into the inner "
+          "sanctum of Ahn'Qiraj is open. Beyond the crawling madness of the hives, beneath the Temple of "
+          "Ahn'Qiraj, legions of qiraji prepare for invasion. They must be stopped at all costs before "
+          "they can unleash their voracious insectoid armies on Kalimdor once again, and a second War of "
+          "the Shifting Sands breaks loose!"),
+    754: ("Floating above the Plaguelands, the necropolis known as Naxxramas serves as the seat of one of "
+          "the Lich King's most powerful officers, the dreaded lich Kel'Thuzad. Horrors of the past and "
+          "new terrors yet to be unleashed are gathering inside the necropolis as the Lich King's servants "
+          "prepare their assault. Soon the Scourge will march again..."),
+}
 
 ART = [
     ("522972-ui-encounterjournaltextures.blp", "journal.blp"),
@@ -481,7 +535,8 @@ for inst in seq(ne.DATA.instances):
     art("lore", f"{inst.loreFDID}.blp", "Lore", f"{inst.loreFDID}.blp")
     art("backdrops", f"{inst.bgFDID}.blp", "Backdrops", f"{inst.bgFDID}.blp")
     instances.append({
-        "id": int(inst.id), "name": inst.name, "raid": bool(inst.isRaid), "desc": fill(inst.desc),
+        "id": int(inst.id), "name": inst.name, "raid": bool(inst.isRaid),
+        "desc": fill(inst.desc or RAID_DESCRIPTIONS.get(int(inst.id), "")),
         "map": code, "floor": floor, "area": area,
         "button": int(inst.buttonFDID), "lore": int(inst.loreFDID), "bg": int(inst.bgFDID),
         "encounters": encounters,

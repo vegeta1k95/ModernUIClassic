@@ -140,9 +140,10 @@ class "PlayerModel" : extends "Model" {
         self._native:SetCreature(creatureId, displayId)
     end;
 
-    -- The model of a live unit ("player", "pet").
+    -- The model of a live unit ("player", "pet"). False when the client has
+    -- no model of it to draw (a player out of range).
     SetUnit = function(self, unit)
-        self._native:SetUnit(unit)
+        return self._native:SetUnit(unit)
     end;
 
     -- Turn a character to `radians`, as Era's own model frames do. It steps
@@ -175,8 +176,9 @@ class "DressUpModel" : extends "PlayerModel" {
         self._native:Undress()
     end;
 
-    -- Put an item on, by link or item string ("item:16866").
-    TryOn = function(self, link)
-        self._native:TryOn(link)
+    -- Put an item on, by link or item string ("item:16866"); a weapon in the
+    -- hand `handSlot` names ("MAINHANDSLOT", "SECONDARYHANDSLOT").
+    TryOn = function(self, link, handSlot)
+        self._native:TryOn(link, handSlot)
     end;
 }

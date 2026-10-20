@@ -3,10 +3,12 @@
 -- while the cursor is on it.
 --
 --   CharacterModel(stage, name, unit, facing)
---     stage      the frame the model fills: its rect is what the cursor is
---                tested against
---     :Refresh() take the unit's model again (it changed, or the frame showed)
---     :Reset()   back to the starting facing and zoom
+--     stage         the frame the model fills: its rect is what the cursor
+--                   is tested against
+--     :Follow(unit) show another unit from now on (the inspect window's)
+--     :Refresh()    take the unit's model again (it changed, or the frame
+--                   showed); false when there is none to draw
+--     :Reset()      back to the starting facing and zoom
 
 local BUTTONS = "Interface\\Common\\CommonButtons"
 local ICONS   = "Interface\\Common\\CommonIcons"
@@ -98,7 +100,6 @@ class "CharacterModel" : extends "PlayerModel" {
     __init = function(self, stage, name, unit, facing)
         PlayerModel.__init(self, stage, name)
         self:FillParent()
-        self.unit = unit
         self._stage  = stage
         self._home   = facing or 0
         self._facing = self._home
@@ -119,18 +120,26 @@ class "CharacterModel" : extends "PlayerModel" {
             self._held = nil
         end)
         self:SetScript("OnUpdate", function(_, elapsed) self:_OnUpdate(elapsed) end)
-        self:RegisterUnitEventHandler("UNIT_MODEL_CHANGED", unit, function(_, _, changed)
-            if changed == unit and self:IsVisible() then self:Refresh() end
-        end)
+        if unit then self:Follow(unit) end
 
         -- Half faded until the cursor is on the bar itself.
         self._bar = CharacterModelBar(self)
     end;
 
+    Follow = function(self, unit)
+        self.unit = unit
+        self:RegisterUnitEventHandler("UNIT_MODEL_CHANGED", unit, function(_, _, changed)
+            if changed == unit and self:IsVisible() then self:Refresh() end
+        end)
+    end;
+
     Refresh = function(self)
-        self:SetUnit(self.unit)
+        -- The inspect window's model follows nobody until the first inspect.
+        if not self.unit then return false end
+        local drawn = self:SetUnit(self.unit)
         self:SetFacing(self._facing)
         self:SetPortraitZoom(self._zoom)
+        return drawn
     end;
 
     Reset = function(self)

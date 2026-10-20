@@ -98,14 +98,16 @@ class "MerchantWindow" : extends "Frame" {
     -- ---- frame ---------------------------------------------------------
 
     -- What PanelChrome leaves of Era's art: the button bar's strip, the
-    -- loose portrait and name, and two pieces Blizzard shows again with the
-    -- merchant page: its second strip of border (the band is drawn on the
-    -- first) and the "Repair" label retail dropped.
+    -- loose name, and two pieces Blizzard shows again with the merchant
+    -- page: its second strip of border (the band is drawn on the first) and
+    -- the "Repair" label retail dropped. Era's loose portrait is a
+    -- BACKGROUND texture, which PanelChrome hides; the global
+    -- MerchantFramePortrait is the template's, in the ring (both have that
+    -- name).
     _HideClassicArt = function(self)
         Texture(MerchantFrameBtnCornerLeft):Hide()
         Texture(MerchantFrameBtnCornerRight):Hide()
         Texture(MerchantFrameButtonBottomBorder):Hide()
-        Texture(MerchantFramePortrait):Hide()
         FontString(MerchantNameText):Hide()
         Texture(MerchantFrameBottomRightBorder):SetAlpha(0)
         FontString(MerchantRepairText):SetAlpha(0)

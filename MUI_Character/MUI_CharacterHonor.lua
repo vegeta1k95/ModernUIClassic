@@ -17,6 +17,11 @@ local BLOCKS = {
 }
 
 class "CharacterHonor" : extends "CharacterPane" {
+
+    -- The progress bar's edge (a named frame: its template anchors its
+    -- pieces by name).
+    EDGE_NAME = "MUI_CharacterHonorProgressEdge",
+
     __init = function(self, window)
         CharacterPane.__init(self, window)
 
@@ -52,7 +57,7 @@ class "CharacterHonor" : extends "CharacterPane" {
         self._progress:SetSize(220, 12)
         self._progress:AlignParentTop(72)
         self._progress:SetMinMaxValues(0, 1)
-        self:BuildBarEdge(self._progress, "MUI_CharacterHonorProgressEdge")
+        self:BuildBarEdge(self._progress, self.EDGE_NAME)
     end;
 
     -- A period: its title plate over its rows.
@@ -80,16 +85,18 @@ class "CharacterHonor" : extends "CharacterPane" {
         self._rows[block.key] = rows
     end;
 
-    _Set = function(self, key, ...)
+    -- A period's rows, in order.
+    SetBlock = function(self, key, ...)
         for i, row in ipairs(self._rows[key]) do
             local value = select(i, ...) or 0
             row:Set(row.label, value, row.label .. " " .. value)
         end
     end;
 
-    Refresh = function(self)
-        self:UpdateLevelText()
-        local rankName, rankNumber = GetPVPRankInfo(UnitPVPRank("player"))
+    -- `rank` as UnitPVPRank gives it, the progress to the next (0 to 1),
+    -- and the faction, which colours the bar.
+    ShowRank = function(self, rank, progress, faction)
+        local rankName, rankNumber = GetPVPRankInfo(rank)
         if rankName then
             self._rank:SetText(rankName .. " (" .. RANK .. " " .. rankNumber .. ")")
         else
@@ -99,23 +106,28 @@ class "CharacterHonor" : extends "CharacterPane" {
         if rankNumber and rankNumber > 0 then
             self._badge:SetTexture(string.format("Interface\\PvPRankBadges\\PvPRank%02d", rankNumber))
         end
-        if UnitFactionGroup("player") == "Alliance" then
+        if faction == "Alliance" then
             self._progress:SetStatusBarColor(0.05, 0.15, 0.36)
         else
             self._progress:SetStatusBarColor(0.63, 0.09, 0.09)
         end
-        self._progress:SetValue(GetPVPRankProgress())
+        self._progress:SetValue(progress)
+    end;
+
+    Refresh = function(self)
+        self:UpdateLevelText()
+        self:ShowRank(UnitPVPRank("player"), GetPVPRankProgress(), UnitFactionGroup("player"))
 
         local hk, dk, honor, standing, highest
         hk, dk = GetPVPSessionStats()
-        self:_Set("today", hk, dk)
+        self:SetBlock("today", hk, dk)
         hk, dk, honor = GetPVPYesterdayStats()
-        self:_Set("yesterday", hk, honor)
+        self:SetBlock("yesterday", hk, honor)
         hk, honor = GetPVPThisWeekStats()
-        self:_Set("thisWeek", hk, honor)
+        self:SetBlock("thisWeek", hk, honor)
         hk, dk, honor, standing = GetPVPLastWeekStats()
-        self:_Set("lastWeek", hk, honor, standing)
+        self:SetBlock("lastWeek", hk, honor, standing)
         hk, dk, highest = GetPVPLifetimeStats()
-        self:_Set("lifetime", hk, dk, GetPVPRankInfo(highest) or NONE)
+        self:SetBlock("lifetime", hk, dk, GetPVPRankInfo(highest) or NONE)
     end;
 }

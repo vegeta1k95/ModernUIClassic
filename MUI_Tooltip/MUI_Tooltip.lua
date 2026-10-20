@@ -481,6 +481,12 @@ class "TooltipBase" : extends "Frame" {
         return self._native:SetInventoryItem(unit, slot)
     end;
 
+    -- One of a unit's auras, by its place in the list `filter` picks
+    -- ("HELPFUL|PLAYER", …), numbered as C_UnitAuras.GetAuraDataByIndex.
+    SetUnitAura = function(self, unit, index, filter)
+        self._native:SetUnitAura(unit, index, filter)
+    end;
+
     -- A slot of the loot that is open: an item, or a currency.
     SetLootItem = function(self, slot)
         self._native:SetLootItem(slot)

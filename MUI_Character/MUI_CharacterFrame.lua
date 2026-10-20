@@ -187,18 +187,19 @@ class "CharacterScrollArea" : extends "ScrollFrame" {
 
 -- ---------------------------------------------------------------------
 -- CharacterTab: one of Era's CharacterFrameTab buttons in the frame tab art
--- the other windows use. Era's own pieces are made transparent rather than
--- hidden: its tab functions show and hide them on every switch. No field is
--- written to the button, as ToggleCharacter reads its fields on the way to
--- opening the panel.
+-- the other windows use, or, given a parent and its label, a tab of our
+-- own in it. Era's own pieces are made transparent rather than hidden: its
+-- tab functions show and hide them on every switch. No field is written to
+-- the button, as ToggleCharacter reads its fields on the way to opening the
+-- panel.
 -- ---------------------------------------------------------------------
 class "CharacterTab" : extends "Button" {
 
     HEIGHT          = 31,
     HEIGHT_SELECTED = 36,
 
-    __init = function(self, native)
-        Button.__init(self, native)
+    __init = function(self, nativeOrParent, text)
+        Button.__init(self, nativeOrParent)
         for _, region in ipairs(self:GetRegions()) do
             region:SetAlpha(0)
         end
@@ -213,11 +214,11 @@ class "CharacterTab" : extends "Button" {
         self._label = FontString(self, nil, "OVERLAY")
         self._label:SetFontSize(9)
         self._label:SetShadowOffset(1, -1)
-        self._label:SetText(self:GetNativeText())
+        self._label:SetText(text or self:GetNativeText())
         self._width = math.max(72, self._label:GetStringWidth() + 28)
         -- Era's label is emptied: transparent is not enough, as selecting a
         -- tab gives it its font again and that brings it back.
-        self:SetNativeText("")
+        if not text then self:SetNativeText("") end
 
         self:HookScript("OnEnter", function() self._label:SetTextColor(1, 1, 1, 1) end)
         self:HookScript("OnLeave", function() self:_ColorLabel() end)
@@ -248,9 +249,19 @@ class "CharacterTab" : extends "Button" {
     _ColorLabel = function(self)
         if self._selected then
             self._label:SetTextColor(1, 1, 1, 1)
+        elseif self._disabled then
+            self._label:SetTextColor(0.5, 0.5, 0.5, 1)
         else
             self._label:SetTextColor(1, 0.82, 0, 1)
         end
+    end;
+
+    -- A tab of our own that can't be picked for now: greyed, and deaf to
+    -- clicks.
+    SetTabEnabled = function(self, enabled)
+        self._disabled = not enabled
+        self:SetEnabled(enabled)
+        self:_ColorLabel()
     end;
 
     -- Era's template sizes the tab to its own label every time it shows.

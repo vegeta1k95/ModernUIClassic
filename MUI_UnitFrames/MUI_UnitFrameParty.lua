@@ -36,8 +36,9 @@ local SPACING          = 10
 
 -- The row under a frame: Blizzard's party aura icon is 15 wide and set 2
 -- apart. Up to this many of the player's buffs, then the member's debuffs.
-local AURA_PITCH = 17
-local MAX_BUFFS  = 8
+local AURA_PITCH  = 17
+local MAX_BUFFS   = 8
+local BUFF_FILTER = "HELPFUL|PLAYER"
 
 -- Retail's role icons (roleicon-tiny-*), which Era's client has neither the
 -- atlas nor the file of: where each role's 16x16 cell starts in the sheet.
@@ -450,14 +451,14 @@ class "UnitFramePartyMember" {
         self._role:SetVisible(x)
     end;
 
-    -- Every buff the player cast on the member, in the icons of the tooltip
-    -- that comes up over the frame. Not that tooltip's list (button.buffs):
-    -- it leaves out what the spell data keeps off group frames, Mark of the
-    -- Wild and the other long buffs among it.
+    -- Every buff the player cast on the member, in the icons of Blizzard's
+    -- buff box for a hovered frame (PartyMemberBuffTooltip). Not that box's
+    -- list (button.buffs): it leaves out what the spell data keeps off group
+    -- frames, Mark of the Wild and the other long buffs among it.
     UpdateBuffs = function(self)
         local unit, count = self._button.unit, 0
         while count < MAX_BUFFS do
-            local aura = C_UnitAuras.GetBuffDataByIndex(unit, count + 1, "HELPFUL|PLAYER")
+            local aura = C_UnitAuras.GetBuffDataByIndex(unit, count + 1, BUFF_FILTER)
             if not aura then break end
             count = count + 1
             self:_BuffIcon(count):SetupPartyAura(unit, aura, true)
@@ -473,6 +474,21 @@ class "UnitFramePartyMember" {
         local icon = self._buffIcons[index]
         if not icon then
             icon = Frame("Frame", self._buffRow, nil, "PartyAuraFrameTemplate")
+            -- Not the template's tooltip: it looks the aura up by instance
+            -- id (with the "RAID" filter for a buff the player can cast on
+            -- others) and on Era came up with another icon's buff. This is
+            -- the aura at the icon's own place in the list the row is read
+            -- from, kept up to date while it shows (the time left).
+            local function tooltip()
+                MUI_Tooltip:SetUnitAura(self._button.unit, index, BUFF_FILTER)
+            end
+            icon:SetScript("OnEnter", function()
+                MUI_Tooltip:SetOwner(icon, "ANCHOR_RIGHT")
+                tooltip()
+            end)
+            icon:SetScript("OnUpdate", function()
+                if MUI_Tooltip:IsOwnedBy(icon) then tooltip() end
+            end)
             self._buffIcons[index] = icon
         end
         return icon
@@ -497,6 +513,12 @@ class "UnitFrameParty" {
                 member:SetShowStatusText(show)
             end
         end
+
+        -- Not Blizzard's box of the member's buffs and debuffs that comes up
+        -- over a hovered frame (and over the pet frame, which shares it): it
+        -- is hidden as soon as UpdateTooltip has shown it.
+        local popup = Frame(PartyMemberBuffTooltip)
+        hooksecurefunc(PartyMemberBuffTooltip, "UpdateTooltip", function() popup:Hide() end)
     end;
 
     UpdateUnit = function(self, unit)

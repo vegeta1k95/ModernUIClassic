@@ -27,6 +27,114 @@ local WEAPONS = { "MainHand", "SecondaryHand", "Ranged" }
 -- How dark the backdrop is kept, by race: retail's SetPaperDollBackground.
 local BACKDROP_SHADE = { NightElf = 0.6, Scourge = 0.3, Troll = 0.6, Orc = 0.6 }
 
+-- The backdrop's four quarters: width, height, top, left, texcoords.
+local QUARTERS = {
+    { 212, 245, 0,   0,   0.171875, 1,        0.0392156862745098, 1 },
+    { 19,  245, 0,   212, 0,        0.296875, 0.0392156862745098, 1 },
+    { 212, 128, 245, 0,   0.171875, 1,        0,                  1 },
+    { 19,  128, 245, 212, 0,        0.296875, 0,                  1 },
+}
+
+-- ---------------------------------------------------------------------
+-- PaperDollStage: the model's rect in a paper doll's inset (the character
+-- window's, the inspect window's), clipped: the backdrop is taller than
+-- it. The backdrop's four quarters are the dressing room's for a race,
+-- desaturated and shaded as retail has them. The model goes in front of
+-- `.art`.
+-- ---------------------------------------------------------------------
+class "PaperDollStage" : extends "Frame" {
+    __init = function(self, pane)
+        Frame.__init(self, "Frame", pane)
+        self:SetSize(STAGE_W, STAGE_H)
+        self:AlignParentTopLeft(6, 48)
+        self:SetClipsChildren(true)
+
+        self.art = Frame("Frame", self)
+        self.art:FillParent()
+        self._quarters = {}
+        for i, q in ipairs(QUARTERS) do
+            local t = Texture(self.art, nil, "BACKGROUND")
+            t:SetSize(q[1], q[2])
+            t:AlignParentTopLeft(q[3], q[4])
+            self._quarters[i] = t
+        end
+        self._shade = Texture(self.art, nil, "BORDER")
+        self._shade:FillParent()
+    end;
+
+    -- `race`: UnitRace's file name ("NightElf").
+    SetRace = function(self, race)
+        for i, t in ipairs(self._quarters) do
+            local q = QUARTERS[i]
+            t:SetTexture(BACKDROP .. race .. i)
+            t:SetTexCoord(q[5], q[6], q[7], q[8])
+            t:SetDesaturated(true)
+        end
+        self._shade:SetColorTexture(0, 0, 0, BACKDROP_SHADE[race] or 0.7)
+    end;
+}
+
+-- ---------------------------------------------------------------------
+-- PaperDollBorder: retail's inner border around a paper doll's model, in
+-- front of it, and the line across the inset under it that the weapon
+-- slots sit on.
+-- ---------------------------------------------------------------------
+class "PaperDollBorder" : extends "Frame" {
+    __init = function(self, pane, model)
+        Frame.__init(self, "Frame", pane)
+        self:FillParent()
+        self:PutInfront(model, 2)
+
+        local function corner(y)
+            local t = Texture(self, nil, "OVERLAY")
+            t:SetTextureRegion(PARTS, 256, 128, 104, y, 7, 7)
+            t:SetSize(7, 7)
+            return t
+        end
+        local topLeft, topRight       = corner(103), corner(94)
+        local bottomLeft, bottomRight = corner(85), corner(76)
+        topLeft:AlignParentTopLeft(4, 46)
+        topRight:AlignParentTopRight(4, 47)
+        bottomLeft:AlignParentBottomLeft(31, 46)
+        bottomRight:AlignParentBottomRight(31, 47)
+
+        local function vertical(l, r)
+            local t = Texture(self, nil, "OVERLAY")
+            t:SetTexture(EDGES_V)
+            t:SetVertTile(true)
+            t:SetTexCoord(l, r, 0, 1)
+            t:SetWidth(5)
+            return t
+        end
+        local function horizontal(t0, b0)
+            local t = Texture(self, nil, "OVERLAY")
+            t:SetTexture(EDGES_H)
+            t:SetHorizTile(true)
+            t:SetTexCoord(0, 1, t0, b0)
+            t:SetHeight(5)
+            return t
+        end
+
+        -- Each edge runs between two corners, a pixel outside them.
+        local left = vertical(0.0625, 0.375)
+        left:AlignParentTopLeft(11, 45)
+        left:AlignParentBottomLeft(38, 45)
+        local right = vertical(0.5, 0.8125)
+        right:AlignParentTopRight(11, 46)
+        right:AlignParentBottomRight(38, 46)
+        local top = horizontal(0.5, 0.8125)
+        top:AlignParentTopLeft(3, 53)
+        top:AlignParentTopRight(3, 54)
+        local bottom = horizontal(0.0625, 0.375)
+        bottom:AlignParentBottomLeft(30, 53)
+        bottom:AlignParentBottomRight(30, 54)
+
+        local shelf = horizontal(0.0625, 0.375)
+        shelf:AlignParentBottomLeft(27, 0)
+        shelf:AlignParentBottomRight(27, 0)
+    end;
+}
+
 -- ---------------------------------------------------------------------
 -- CharacterSlot: one of Era's Character<Name>Slot buttons, in retail's slot
 -- frame for its `side` ("left", "right", "bottom"; nil for the ammo slot).
@@ -140,8 +248,12 @@ class "CharacterPaperDoll" : extends "CharacterPane" {
     __init = function(self, window)
         CharacterPane.__init(self, window)
 
-        self:_BuildStage()
-        self:_BuildBorder()
+        self._stage = PaperDollStage(self)
+        local _, race = UnitRace("player")
+        self._stage:SetRace(race)
+        self.model = CharacterModel(self._stage, "MUI_CharacterModel", "player", MODEL_FACING)
+        self.model:PutInfront(self._stage.art, 1)
+        self._borderFrame = PaperDollBorder(self, self.model)
         self:_BuildSlots()
         self:BuildLevelText()
         self.sidebar = CharacterSidebar(self, window)
@@ -177,100 +289,6 @@ class "CharacterPaperDoll" : extends "CharacterPane" {
     GetPortrait = function(self)
         local spec = MUI_Talents:GetPrimarySpec()
         return "player", spec and MUI_SPEC_ICONS[MUI.GetClassID()][spec.index]
-    end;
-
-    -- ---- the model -----------------------------------------------------
-
-    -- The model's rect, clipped: the backdrop is taller than it. The
-    -- backdrop's four quarters are the dressing room's, desaturated and
-    -- shaded as retail has them.
-    _BuildStage = function(self)
-        local stage = Frame("Frame", self)
-        stage:SetSize(STAGE_W, STAGE_H)
-        stage:AlignParentTopLeft(6, 48)
-        stage:SetClipsChildren(true)
-        self._stage = stage
-
-        local art = Frame("Frame", stage)
-        art:FillParent()
-        local _, race = UnitRace("player")
-        local quarters = {
-            { 212, 245, 0,   0,   0.171875, 1,        0.0392156862745098, 1 },
-            { 19,  245, 0,   212, 0,        0.296875, 0.0392156862745098, 1 },
-            { 212, 128, 245, 0,   0.171875, 1,        0,                  1 },
-            { 19,  128, 245, 212, 0,        0.296875, 0,                  1 },
-        }
-        for i, q in ipairs(quarters) do
-            local t = Texture(art, nil, "BACKGROUND")
-            t:SetTexture(BACKDROP .. race .. i)
-            t:SetTexCoord(q[5], q[6], q[7], q[8])
-            t:SetDesaturated(true)
-            t:SetSize(q[1], q[2])
-            t:AlignParentTopLeft(q[3], q[4])
-        end
-        local shade = Texture(art, nil, "BORDER")
-        shade:SetColorTexture(0, 0, 0, BACKDROP_SHADE[race] or 0.7)
-        shade:FillParent()
-
-        self.model = CharacterModel(stage, "MUI_CharacterModel", "player", MODEL_FACING)
-        self.model:PutInfront(art, 1)
-    end;
-
-    -- Retail's inner border around the model, and the line across the inset
-    -- under it that the weapon slots sit on.
-    _BuildBorder = function(self)
-        local border = Frame("Frame", self)
-        border:FillParent()
-        border:PutInfront(self.model, 2)
-        self._borderFrame = border
-
-        local function corner(y)
-            local t = Texture(border, nil, "OVERLAY")
-            t:SetTextureRegion(PARTS, 256, 128, 104, y, 7, 7)
-            t:SetSize(7, 7)
-            return t
-        end
-        local topLeft, topRight       = corner(103), corner(94)
-        local bottomLeft, bottomRight = corner(85), corner(76)
-        topLeft:AlignParentTopLeft(4, 46)
-        topRight:AlignParentTopRight(4, 47)
-        bottomLeft:AlignParentBottomLeft(31, 46)
-        bottomRight:AlignParentBottomRight(31, 47)
-
-        local function vertical(l, r)
-            local t = Texture(border, nil, "OVERLAY")
-            t:SetTexture(EDGES_V)
-            t:SetVertTile(true)
-            t:SetTexCoord(l, r, 0, 1)
-            t:SetWidth(5)
-            return t
-        end
-        local function horizontal(t0, b0)
-            local t = Texture(border, nil, "OVERLAY")
-            t:SetTexture(EDGES_H)
-            t:SetHorizTile(true)
-            t:SetTexCoord(0, 1, t0, b0)
-            t:SetHeight(5)
-            return t
-        end
-
-        -- Each edge runs between two corners, a pixel outside them.
-        local left = vertical(0.0625, 0.375)
-        left:AlignParentTopLeft(11, 45)
-        left:AlignParentBottomLeft(38, 45)
-        local right = vertical(0.5, 0.8125)
-        right:AlignParentTopRight(11, 46)
-        right:AlignParentBottomRight(38, 46)
-        local top = horizontal(0.5, 0.8125)
-        top:AlignParentTopLeft(3, 53)
-        top:AlignParentTopRight(3, 54)
-        local bottom = horizontal(0.0625, 0.375)
-        bottom:AlignParentBottomLeft(30, 53)
-        bottom:AlignParentBottomRight(30, 54)
-
-        local shelf = horizontal(0.0625, 0.375)
-        shelf:AlignParentBottomLeft(27, 0)
-        shelf:AlignParentBottomRight(27, 0)
     end;
 
     -- ---- the slots -----------------------------------------------------

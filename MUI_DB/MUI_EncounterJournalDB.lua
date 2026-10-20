@@ -2051,7 +2051,7 @@ object "EncounterJournalDB" {
               },
             },
             { id = 741, name = "Molten Core", raid = true, players = 40, map = "MC", floor = 1, area = 2717, button = 1396586, lore = 1396505, bg = 1396460,
-              desc = "",
+              desc = "The Molten Core lies at the very bottom of Blackrock Depths. It is the heart of Blackrock Mountain and the exact spot where, long ago in a desperate bid to turn the tide of the dwarven civil war, Emperor Thaurissan summoned the elemental Firelord, Ragnaros, into the world. Though the fire lord is incapable of straying far from the blazing Core, it is believed that his elemental minions command the Dark Iron dwarves, who are in the midst of creating armies out of living stone. The burning lake where Ragnaros lies sleeping acts as a rift connecting to the plane of fire, allowing the malicious elementals to pass through. Chief among Ragnaros' agents is Majordomo Executus - for this cunning elemental is the only one capable of calling the Firelord from his slumber.",
               encounters = {
                 { id = 12118, name = "Lucifron", portrait = 1378993,
                   creatures = { { name = "Lucifron", display = 13031, dist = 4.5, eye = 0.75 } },
@@ -2152,7 +2152,7 @@ object "EncounterJournalDB" {
               },
             },
             { id = 760, name = "Onyxia's Lair", raid = true, players = 40, map = "Onyxia", floor = 1, area = 2159, button = 1396589, lore = 1396508, bg = 1396463,
-              desc = "",
+              desc = "Onyxia is the daughter of the mighty dragon Deathwing, and sister of the scheming Nefarian Lord of Blackrock Spire. It is said that Onyxia delights in corrupting the mortal races by meddling in their political affairs. To this end it is believed that she takes on various humanoid forms and uses her charm and power to influence delicate matters between the different races. Some believe that Onyxia has even assumed an alias once used by her father - the title of the royal House Prestor. When not meddling in mortal concerns, Onyxia resides in a fiery cave below the Dragonmurk, a dismal swamp located within Dustwallow Marsh. There she is guarded by her kin, the remaining members of the insidious Black Dragon Flight.",
               encounters = {
                 { id = 10184, name = "Onyxia", portrait = 1379025,
                   creatures = { { name = "Onyxia", display = 8570, dist = 35.5, eye = 3.44 } },
@@ -2170,7 +2170,7 @@ object "EncounterJournalDB" {
               },
             },
             { id = 742, name = "Blackwing Lair", raid = true, players = 40, map = "BWL", floor = 1, area = 2677, button = 1396580, lore = 1396499, bg = 1396454,
-              desc = "",
+              desc = "Blackwing Lair can be found at the very height of Blackrock Spire. It is there in the dark recesses of the mountain's peak that Nefarian has begun to unfold the final stages of his plan to destroy Ragnaros once and for all and lead his army to undisputed supremacy over all the races of Azeroth.",
               encounters = {
                 { id = 12435, name = "Razorgore the Untamed", portrait = 1379008,
                   creatures = { { name = "Razorgore the Untamed", display = 10115, dist = 8.9, eye = 1.22 } },
@@ -2388,7 +2388,7 @@ object "EncounterJournalDB" {
               },
             },
             { id = 743, name = "Ruins of Ahn'Qiraj", raid = true, players = 20, map = "AQ20", floor = 1, area = 3429, button = 1396591, lore = 1396510, bg = 1396465,
-              desc = "",
+              desc = "During the final hours of the War of the Shifting Sands, the combined forces of the night elves and the four dragonflights drove the battle to the very heart of the qiraji empire, to the fortress city of Ahn'Qiraj. Yet at the city gates, the armies of Kalimdor encountered a concentration of silithid war drones more massive than any they had encountered before. Ultimately the silithid and their qiraji masters were not defeated, but merely imprisoned inside a magical barrier, and the war left the cursed city in ruins. A thousand years have passed since that day, but the qiraji forces have not been idle. A new and terrible army has been spawned from the hives, and the ruins of Ahn'Qiraj are teeming once again with swarming masses of silithid and qiraji. This threat must be eliminated, or else all of Azeroth may fall before the terrifying might of the new qiraji army.",
               encounters = {
                 { id = 15348, name = "Kurinnaxx", portrait = 1385749,
                   creatures = { { name = "Kurinnaxx", display = 15742, dist = 10.4, eye = 0.72 } },
@@ -2447,7 +2447,7 @@ object "EncounterJournalDB" {
               },
             },
             { id = 744, name = "Temple of Ahn'Qiraj", raid = true, players = 40, map = "AQ40", floor = 2, area = 3428, button = 1396593, lore = 1396512, bg = 1396467,
-              desc = "",
+              desc = "At the heart of Ahn'Qiraj lies an ancient temple complex. Built in the time before recorded history, it is both a monument to unspeakable gods and a massive breeding ground for the qiraji army. Since the War of the Shifting Sands ended a thousand years ago, the Twin Emperors of the qiraji empire have been trapped inside their temple, barely contained behind the magical barrier erected by the bronze dragon Anachronos and the night elves. Now that the Scepter of the Shifting Sands has been reassembled and the seal has been broken, the way into the inner sanctum of Ahn'Qiraj is open. Beyond the crawling madness of the hives, beneath the Temple of Ahn'Qiraj, legions of qiraji prepare for invasion. They must be stopped at all costs before they can unleash their voracious insectoid armies on Kalimdor once again, and a second War of the Shifting Sands breaks loose!",
               encounters = {
                 { id = 15263, name = "The Prophet Skeram", portrait = 1385769,
                   creatures = { { name = "The Prophet Skeram", display = 15345, dist = 10, eye = 1.66 } },
@@ -2544,7 +2544,7 @@ object "EncounterJournalDB" {
               },
             },
             { id = 754, name = "Naxxramas", raid = true, players = 40, map = "Nax", floor = 5, area = 3456, button = 1396587, lore = 1396506, bg = 1396461,
-              desc = "",
+              desc = "Floating above the Plaguelands, the necropolis known as Naxxramas serves as the seat of one of the Lich King's most powerful officers, the dreaded lich Kel'Thuzad. Horrors of the past and new terrors yet to be unleashed are gathering inside the necropolis as the Lich King's servants prepare their assault. Soon the Scourge will march again...",
               encounters = {
                 { id = 15956, name = "Anub'Rekhan", portrait = 1378964,
                   creatures = { { name = "Anub'Rekhan", display = 15931, dist = 18.7, eye = 2.3 } },
