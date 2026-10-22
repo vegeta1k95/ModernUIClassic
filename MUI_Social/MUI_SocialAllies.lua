@@ -8,6 +8,8 @@
 -- them, the longest unseen dropped first. Pinned ones are kept. Whether an
 -- ally is online is not known unless they are in the group.
 
+local L = MUI.L
+
 local MAX_ALLIES = 50
 
 local SHEET = MUI.TEX_SKIN .. "social\\friendslist"
@@ -93,7 +95,7 @@ class "SocialAllies" {
                 return a.pinned or false
             end
             if a.time ~= b.time then return a.time > b.time end
-            return a.name < b.name
+            return strcmputf8i(a.name, b.name) < 0
         end)
         return list
     end;
@@ -200,7 +202,7 @@ class "SocialAlliesRow" : extends "Button" {
             self._details:SetText(class)
         end
 
-        self._seen:SetText("Grouped " .. FriendsFrame_GetLastOnline(entry.time) .. " ago")
+        self._seen:SetText(L.SOCIAL_GROUPED_AGO:format(FriendsFrame_GetLastOnline(entry.time)))
         self._zone:SetText(entry.zone)
         self._pin:SetVisible(entry.pinned and true or false)
     end;
@@ -238,7 +240,7 @@ class "SocialAlliesList" : extends "Frame" {
         self._empty:SetTextColor(0.5, 0.5, 0.5, 1)
         self._empty:SetWidth(LIST_W - 60)
         self._empty:CenterInParent()
-        self._empty:SetText("Players you group with are listed here.")
+        self._empty:SetText(L.SOCIAL_ALLIES_EMPTY)
 
         self:_BuildMenu()
 
@@ -262,7 +264,7 @@ class "SocialAlliesList" : extends "Frame" {
                 C_FriendList.AddFriend(self._menuEntry.name)
             end },
             { type = "separator" },
-            { type = "text", label = "Pin", OnClick = function()
+            { type = "text", label = L.RECENT_ALLIES_MENU_BUTTON_LABEL_PIN, OnClick = function()
                 self._allies:SetPinned(self._menuEntry, not self._menuEntry.pinned)
             end },
             { type = "text", label = REMOVE, OnClick = function()
@@ -273,7 +275,7 @@ class "SocialAlliesList" : extends "Frame" {
 
     ShowMenu = function(self, row)
         self._menuEntry = row:GetEntry()
-        self._menu:SetItemLabel(5, self._menuEntry.pinned and "Unpin" or "Pin")
+        self._menu:SetItemLabel(5, self._menuEntry.pinned and L.RECENT_ALLIES_MENU_BUTTON_LABEL_UNPIN or L.RECENT_ALLIES_MENU_BUTTON_LABEL_PIN)
         self._menu:SetToggleAnchor(row)
         self._menu:Open()
     end;

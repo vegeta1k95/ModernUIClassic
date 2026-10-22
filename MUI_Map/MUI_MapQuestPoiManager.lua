@@ -294,8 +294,7 @@ class "MapQuestPoiManager" : extends "Frame" {
             -- (e.g. "Speak with Marshal McBride." quests). Show the DB
             -- objectivesText so the tooltip isn't just a bare title.
             if not emittedAny then
-                local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-                local lines = q and q.objectivesText
+                local lines = MUI_QuestHelper:GetObjectivesText(questId)
                 if lines and #lines > 0 then
                     local text = type(lines) == "table"
                             and table.concat(lines, "\n")

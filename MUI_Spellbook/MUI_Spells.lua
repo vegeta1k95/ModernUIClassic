@@ -1,3 +1,4 @@
+local L = MUI.L
 
 local SPEC_ANCHORS = {
     [1] = {
@@ -285,20 +286,20 @@ local SPELL_GROUPS = {
     [17728] = 2362,
 
     -- Teleport
-    [3561]  = "Teleport",   -- Stormwind
-    [3562]  = "Teleport",   -- Ironforge
-    [3565]  = "Teleport",   -- Darnassus
-    [3563]  = "Teleport",   -- Undercity
-    [3567]  = "Teleport",   -- Orgrimmar
-    [3566]  = "Teleport",   -- Thunder Bluff
+    [3561]  = L.SPELLBOOK_GROUP_TELEPORT,   -- Stormwind
+    [3562]  = L.SPELLBOOK_GROUP_TELEPORT,   -- Ironforge
+    [3565]  = L.SPELLBOOK_GROUP_TELEPORT,   -- Darnassus
+    [3563]  = L.SPELLBOOK_GROUP_TELEPORT,   -- Undercity
+    [3567]  = L.SPELLBOOK_GROUP_TELEPORT,   -- Orgrimmar
+    [3566]  = L.SPELLBOOK_GROUP_TELEPORT,   -- Thunder Bluff
 
     -- Portal
-    [10059] = "Portal",    -- Stormwind
-    [11416] = "Portal",    -- Ironforge
-    [11419] = "Portal",    -- Darnassus
-    [11417] = "Portal",    -- Orgrimmar
-    [11418] = "Portal",    -- Undercity
-    [11420] = "Portal",    -- Thunder Bluff
+    [10059] = L.SPELLBOOK_GROUP_PORTAL,    -- Stormwind
+    [11416] = L.SPELLBOOK_GROUP_PORTAL,    -- Ironforge
+    [11419] = L.SPELLBOOK_GROUP_PORTAL,    -- Darnassus
+    [11417] = L.SPELLBOOK_GROUP_PORTAL,    -- Orgrimmar
+    [11418] = L.SPELLBOOK_GROUP_PORTAL,    -- Undercity
+    [11420] = L.SPELLBOOK_GROUP_PORTAL,    -- Thunder Bluff
 
     -- Detect Invisibility
     [11743] = 2970,
@@ -985,7 +986,7 @@ object "Spells" : extends "Module" {
                 end
             end
 
-            MUI.Print("|cff00ff00ModernUI: |cffffffff Updated spells DB with " .. processed .. " entries")
+            MUI.Print("|cff00ff00ModernUI: |cffffffff" .. L.SPELLBOOK_DB_UPDATED:format(processed))
 
             EventRegistry:TriggerEvent("MUI_SPELLS_UPDATED")
 

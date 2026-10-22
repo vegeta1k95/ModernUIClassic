@@ -7,13 +7,13 @@ local HAPPINESS = "Interface\\PetPaperDollFrame\\UI-PetHappiness"
 
 -- The pet's sheet, as CharacterStatSheet takes it.
 local SECTIONS = {
-    { "Attributes", {
+    { STAT_CATEGORY_ATTRIBUTES, {
         { "Attribute", 1 }, { "Attribute", 2 }, { "Attribute", 3 }, { "Attribute", 4 }, { "Attribute", 5 },
     } },
-    { "Combat", {
+    { COMBAT, {
         { "Damage" }, { "AttackPower" }, { "Attack" }, { "Armor" }, { "Defense" },
     } },
-    { "Resistances", {
+    { STAT_CATEGORY_RESISTANCE, {
         { "Resistance", 6 }, { "Resistance", 2 }, { "Resistance", 3 }, { "Resistance", 4 }, { "Resistance", 5 },
     } },
 }

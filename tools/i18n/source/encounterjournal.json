@@ -1,0 +1,2406 @@
+{
+ "ej/section/11517001/text": {
+  "en": "Oggleflint swings his weapon in a wide arc, striking all enemies in front of him for additional Physical damage.",
+  "note": "what an ability or phase of Oggleflint, a boss in Ragefire Chasm does (title: Cleave)"
+ },
+ "ej/section/11520001/text": {
+  "en": "Taragaman erupts in a nova of flame, inflicting Fire damage to all nearby enemies.",
+  "note": "what an ability or phase of Taragaman the Hungerer, a boss in Ragefire Chasm does (title: Fire Nova)"
+ },
+ "ej/section/11520002/text": {
+  "en": "Taragaman delivers a brutal uppercut, inflicting heavy Physical damage and knocking his target back.",
+  "note": "what an ability or phase of Taragaman the Hungerer, a boss in Ragefire Chasm does (title: Uppercut)"
+ },
+ "ej/section/11518001/text": {
+  "en": "Jergosh engulfs an enemy in flame, inflicting Fire damage instantly and additional Fire damage over time.",
+  "note": "what an ability or phase of Jergosh the Invoker, a boss in Ragefire Chasm does (title: Immolate)"
+ },
+ "ej/section/11518002/text": {
+  "en": "Jergosh curses his target with weakness, reducing the Physical damage they deal.",
+  "note": "what an ability or phase of Jergosh the Invoker, a boss in Ragefire Chasm does (title: Curse of Weakness)"
+ },
+ "ej/section/11519001/text": {
+  "en": "Bazzalan lashes out with a sinister strike, inflicting additional Physical damage.",
+  "note": "what an ability or phase of Bazzalan, a boss in Ragefire Chasm does (title: Sinister Strike)"
+ },
+ "ej/section/11519002/title": {
+  "en": "Poison",
+  "note": "the name of an ability or phase of Bazzalan, a boss in Ragefire Chasm"
+ },
+ "ej/section/11519002/text": {
+  "en": "Bazzalan's blades are coated in poison, inflicting Nature damage over time to those he strikes.",
+  "note": "what an ability or phase of Bazzalan, a boss in Ragefire Chasm does (title: Poison)"
+ },
+ "ej/section/4968/text": {
+  "en": "Lord Pythas inflicts Nature damage to all players within 10 yards, increasing the time between their attacks by 43% and slowing their movement speed for 10 sec.",
+  "note": "what an ability or phase of Lord Pythas, a boss in Wailing Caverns does (title: Thunderclap)"
+ },
+ "ej/section/4969/text": {
+  "en": "Kresh bites his current target, reducing their armor.",
+  "note": "what an ability or phase of Kresh, a boss in Wailing Caverns does (title: Crushing Bite)"
+ },
+ "ej/section/29777/text": {
+  "en": "Rhahk'Zor enters a spinning rage, attacking nearby enemies in a whirlwind. While he rages, Rhahk'Zor inflicts Physical damage to nearby enemies and knocks them back.",
+  "note": "what an ability or phase of Rhahk'Zor, a boss in Deadmines does (title: Whirlwind)"
+ },
+ "ej/section/29803/text": {
+  "en": "Sneed shoots a painful razor at a target, inflicting Physical damage and decreasing their Haste by 35% for 15 sec.",
+  "note": "what an ability or phase of Sneed, a boss in Deadmines does (title: Distracting Pain)"
+ },
+ "ej/section/29802/text": {
+  "en": "Sneed cuts a wide arc with his shredder, inflicting Physical damage to targets in front of him.",
+  "note": "what an ability or phase of Sneed, a boss in Deadmines does (title: Cleave)"
+ },
+ "ej/section/29807/text": {
+  "en": "Gilnid hurls molten metal, inflicting Fire damage every 3 sec to an enemy, increasing the time between their attacks by 54%, and slowing their movement by 50% for 15 sec.",
+  "note": "what an ability or phase of Gilnid, a boss in Deadmines does (title: Molten Metal)"
+ },
+ "ej/section/29809/text": {
+  "en": "Gilnid calls out worker golems to attack a random target.",
+  "note": "what an ability or phase of Gilnid, a boss in Deadmines does (title: Summon Remote-Controlled Golems)"
+ },
+ "ej/section/29822/text": {
+  "en": "Mr. Smite fires his pistol at a distant target, inflicting Physical damage.",
+  "note": "what an ability or phase of Mr. Smite, a boss in Deadmines does (title: Pistol Shot)"
+ },
+ "ej/section/29823/text": {
+  "en": "At 70% health Mr. Smite stomps, stunning all players. He then equips a reaver in each hand, increasing his damage done and granting him additional attacks.",
+  "note": "what an ability or phase of Mr. Smite, a boss in Deadmines does (title: I'll Have to Improvise)"
+ },
+ "ej/section/29826/text": {
+  "en": "Mr. Smite fires his pistol at a distant target, inflicting Physical damage.",
+  "note": "what an ability or phase of Mr. Smite, a boss in Deadmines does (title: Pistol Shot)"
+ },
+ "ej/section/29813/text": {
+  "en": "At 35% health Mr. Smite stomps, stunning all players, and equips his mighty hammer, increasing his damage done but reducing his attack speed by 50%.",
+  "note": "what an ability or phase of Mr. Smite, a boss in Deadmines does (title: Now I'm Angry)"
+ },
+ "ej/section/29825/text": {
+  "en": "Mr. Smite fires his pistol at a distant target, inflicting Physical damage.",
+  "note": "what an ability or phase of Mr. Smite, a boss in Deadmines does (title: Pistol Shot)"
+ },
+ "ej/section/29828/text": {
+  "en": "Greenskin throws a poison-tipped harpoon at his target, inflicting Nature damage and further damage for 1 min.",
+  "note": "what an ability or phase of Captain Greenskin, a boss in Deadmines does (title: Poisoned Harpoon)"
+ },
+ "ej/section/29829/text": {
+  "en": "Greenskin inflicts Physical damage on enemies in front of him.",
+  "note": "what an ability or phase of Captain Greenskin, a boss in Deadmines does (title: Cleave)"
+ },
+ "ej/section/29830/text": {
+  "en": "Greenskin fires his pistol at a distant target, inflicting Physical damage.",
+  "note": "what an ability or phase of Captain Greenskin, a boss in Deadmines does (title: Pistol Shot)"
+ },
+ "ej/section/29832/text": {
+  "en": "VanCleef steps into the shadows, reappearing behind a random enemy and stabbing them in the back. VanCleef fixates on his target.",
+  "note": "what an ability or phase of Edwin VanCleef, a boss in Deadmines does (title: Shadowstep)"
+ },
+ "ej/section/29837/text": {
+  "en": "Cookie takes a sip of yesterday's soup, restoring part of his health.",
+  "note": "what an ability or phase of Cookie, a boss in Deadmines does (title: Cookie's Cooking)"
+ },
+ "ej/section/29839/text": {
+  "en": "Cookie tosses a bottle of poison at his target, inflicting Nature damage every 5 sec for 30 sec.",
+  "note": "what an ability or phase of Cookie, a boss in Deadmines does (title: Acid Splash)"
+ },
+ "ej/section/3914001/text": {
+  "en": "Rethilgore drains the soul from his current target, sapping their life and rooting them in place for 10 sec.",
+  "note": "what an ability or phase of Rethilgore, a boss in Shadowfang Keep does (title: Soul Drain)"
+ },
+ "ej/section/3886001/text": {
+  "en": "Razorclaw butchers his foes with savage strokes, draining their vitality to heal himself for a portion of the damage he deals.",
+  "note": "what an ability or phase of Razorclaw the Butcher, a boss in Shadowfang Keep does (title: Butcher Drain)"
+ },
+ "ej/section/3887001/text": {
+  "en": "Baron Silverlaine shrouds a player in a veil of shadow, reducing all healing they receive by 75% for 15 sec.",
+  "note": "what an ability or phase of Baron Silverlaine, a boss in Shadowfang Keep does (title: Veil of Shadow)"
+ },
+ "ej/section/4278001/text": {
+  "en": "Commander Springvale channels the Light to heal himself or a wounded ally for a large amount.",
+  "note": "what an ability or phase of Commander Springvale, a boss in Shadowfang Keep does (title: Holy Light)"
+ },
+ "ej/section/4278002/text": {
+  "en": "Commander Springvale hammers his current target with the weight of justice, stunning them for 4 sec.",
+  "note": "what an ability or phase of Commander Springvale, a boss in Shadowfang Keep does (title: Hammer of Justice)"
+ },
+ "ej/section/4279001/text": {
+  "en": "As Odo is wounded — at 75%, 50%, and 25% health — he flies into a howling rage, growing in size and increasing the damage he deals. The frenzy intensifies at each threshold.",
+  "note": "what an ability or phase of Odo the Blindwatcher, a boss in Shadowfang Keep does (title: Howling Rage)"
+ },
+ "ej/section/4274001/text": {
+  "en": "Fenrus coats a player in toxic saliva, inflicting Nature damage every 6 sec for 2 min.",
+  "note": "what an ability or phase of Fenrus the Devourer, a boss in Shadowfang Keep does (title: Toxic Saliva)"
+ },
+ "ej/section/3927001/title": {
+  "en": "Call of the Pack",
+  "note": "the name of an ability or phase of Wolf Master Nandos, a boss in Shadowfang Keep"
+ },
+ "ej/section/3927001/text": {
+  "en": "Wolf Master Nandos summons his pack to his aid, calling forth Bleak Worgs, Slavering Worgs, and finally a Lupine Horror to overwhelm intruders.",
+  "note": "what an ability or phase of Wolf Master Nandos, a boss in Shadowfang Keep does (title: Call of the Pack)"
+ },
+ "ej/section/4275001/text": {
+  "en": "Arugal hurls a bolt of void energy at his target, inflicting heavy Shadow damage.",
+  "note": "what an ability or phase of Archmage Arugal, a boss in Shadowfang Keep does (title: Void Bolt)"
+ },
+ "ej/section/4275002/text": {
+  "en": "Arugal curses a player, transforming them into a Shadowfang Glutton under his control for 10 sec.",
+  "note": "what an ability or phase of Archmage Arugal, a boss in Shadowfang Keep does (title: Arugal's Curse)"
+ },
+ "ej/section/4275003/text": {
+  "en": "Arugal unleashes a shock of nature energy around himself, inflicting Nature damage, knocking back nearby players, and stunning them for 5 sec.",
+  "note": "what an ability or phase of Archmage Arugal, a boss in Shadowfang Keep does (title: Thundershock)"
+ },
+ "ej/section/4275004/title": {
+  "en": "Shadow Port",
+  "note": "the name of an ability or phase of Archmage Arugal, a boss in Shadowfang Keep"
+ },
+ "ej/section/4275004/text": {
+  "en": "Throughout the encounter Arugal vanishes in a swirl of shadow and reappears at another vantage point in the chamber, repositioning before resuming his assault.",
+  "note": "what an ability or phase of Archmage Arugal, a boss in Shadowfang Keep does (title: Shadow Port)"
+ },
+ "ej/section/4887001/text": {
+  "en": "Ghamoo-ra tramples the enemies around it, inflicting Physical damage to all nearby.",
+  "note": "what an ability or phase of Ghamoo-ra, a boss in Blackfathom Deeps does (title: Trample)"
+ },
+ "ej/section/4831001/text": {
+  "en": "Lady Sarevess hurls forked lightning, inflicting Nature damage to enemies in a cone before her.",
+  "note": "what an ability or phase of Lady Sarevess, a boss in Blackfathom Deeps does (title: Forked Lightning)"
+ },
+ "ej/section/4831002/text": {
+  "en": "Lady Sarevess blasts nearby enemies with frost, freezing them in place for a short time.",
+  "note": "what an ability or phase of Lady Sarevess, a boss in Blackfathom Deeps does (title: Frost Nova)"
+ },
+ "ej/section/4831003/text": {
+  "en": "Lady Sarevess slows an enemy, reducing their attack and movement speed.",
+  "note": "what an ability or phase of Lady Sarevess, a boss in Blackfathom Deeps does (title: Slow)"
+ },
+ "ej/section/6243001/text": {
+  "en": "Gelihast ensnares an enemy in a net, rooting them in place and preventing escape.",
+  "note": "what an ability or phase of Gelihast, a boss in Blackfathom Deeps does (title: Net)"
+ },
+ "ej/section/4832001/text": {
+  "en": "Twilight Lord Kelris lulls nearby enemies into a deep sleep, incapacitating them until they are awakened by damage.",
+  "note": "what an ability or phase of Twilight Lord Kelris, a boss in Blackfathom Deeps does (title: Sleep)"
+ },
+ "ej/section/4832002/text": {
+  "en": "Kelris assaults a player's mind, inflicting Shadow damage.",
+  "note": "what an ability or phase of Twilight Lord Kelris, a boss in Blackfathom Deeps does (title: Mind Blast)"
+ },
+ "ej/section/4830001/text": {
+  "en": "Old Serra'kis pulses with leeching energy, draining life from nearby enemies to heal itself.",
+  "note": "what an ability or phase of Old Serra'kis, a boss in Blackfathom Deeps does (title: Leech Pulse)"
+ },
+ "ej/section/4829001/text": {
+  "en": "Aku'mai belches a cloud of poison, inflicting Nature damage over time to all enemies caught within it.",
+  "note": "what an ability or phase of Aku'mai, a boss in Blackfathom Deeps does (title: Poison Cloud)"
+ },
+ "ej/section/4829002/text": {
+  "en": "Aku'mai works itself into a frenzied rage, increasing its attack speed and the damage it deals.",
+  "note": "what an ability or phase of Aku'mai, a boss in Blackfathom Deeps does (title: Frenzied Rage)"
+ },
+ "ej/section/4693/text": {
+  "en": "Electrocutioner 6000 throws a bolt of lightning at his current target, inflicting Nature damage.",
+  "note": "what an ability or phase of Electrocutioner 6000, a boss in Gnomeregan does (title: Shock)"
+ },
+ "ej/section/4694/text": {
+  "en": "Electrocutioner 6000 strikes his current target with a lightning bolt that arcs to 3 nearby targets, inflicting Nature damage to each target.",
+  "note": "what an ability or phase of Electrocutioner 6000, a boss in Gnomeregan does (title: Chain Bolt)"
+ },
+ "ej/section/4702/text": {
+  "en": "Mekgineer Thermaplugg blasts his current target with steam, inflicting Fire damage and knocking them back.",
+  "note": "what an ability or phase of Mekgineer Thermaplugg, a boss in Gnomeregan does (title: Steam Blast)"
+ },
+ "ej/section/4703/text": {
+  "en": "Mekgineer Thermaplugg pounds his current target, inflicting Physical damage and disorienting them.",
+  "note": "what an ability or phase of Mekgineer Thermaplugg, a boss in Gnomeregan does (title: Pound)"
+ },
+ "ej/section/4704/text": {
+  "en": "Mekgineer Thermplugg blasts his current target with a welding beam, inflicting 250 Nature damage.",
+  "note": "what an ability or phase of Mekgineer Thermaplugg, a boss in Gnomeregan does (title: Welding Beam)"
+ },
+ "ej/section/1696001/text": {
+  "en": "Targorr thrashes wildly, gaining additional melee attacks.",
+  "note": "what an ability or phase of Targorr the Dread, a boss in The Stockade does (title: Thrash)"
+ },
+ "ej/section/1696002/text": {
+  "en": "Upon falling below 30% health, Targorr flies into an enrage, dramatically increasing the damage he deals.",
+  "note": "what an ability or phase of Targorr the Dread, a boss in The Stockade does (title: Enrage)"
+ },
+ "ej/section/1666001/text": {
+  "en": "Kam Deepfury slams his shield into his target, inflicting Physical damage and stunning them briefly.",
+  "note": "what an ability or phase of Kam Deepfury, a boss in The Stockade does (title: Shield Slam)"
+ },
+ "ej/section/1717001/text": {
+  "en": "Hamhock unleashes a bolt of lightning that arcs between nearby enemies, inflicting Nature damage.",
+  "note": "what an ability or phase of Hamhock, a boss in The Stockade does (title: Chain Lightning)"
+ },
+ "ej/section/1717002/text": {
+  "en": "Hamhock works himself into a bloodlust, increasing his attack speed.",
+  "note": "what an ability or phase of Hamhock, a boss in The Stockade does (title: Bloodlust)"
+ },
+ "ej/section/1716001/text": {
+  "en": "Bazil Thredd hurls a smoke bomb, stunning nearby enemies in a cloud of choking smoke.",
+  "note": "what an ability or phase of Bazil Thredd, a boss in The Stockade does (title: Smoke Bomb)"
+ },
+ "ej/section/1716002/text": {
+  "en": "Bazil Thredd lets out a battle shout, increasing the attack power of nearby allies.",
+  "note": "what an ability or phase of Bazil Thredd, a boss in The Stockade does (title: Battle Shout)"
+ },
+ "ej/section/1663001/text": {
+  "en": "Dextren Ward delivers a powerful strike for additional Physical damage.",
+  "note": "what an ability or phase of Dextren Ward, a boss in The Stockade does (title: Strike)"
+ },
+ "ej/section/1663002/text": {
+  "en": "Dextren Ward looses an intimidating shout, causing nearby players to flee in fear.",
+  "note": "what an ability or phase of Dextren Ward, a boss in The Stockade does (title: Intimidating Shout)"
+ },
+ "ej/section/6168001/text": {
+  "en": "Roogug hurls a bolt of lightning at its target, inflicting Nature damage.",
+  "note": "what an ability or phase of Roogug, a boss in Razorfen Kraul does (title: Lightning Bolt)"
+ },
+ "ej/section/6168002/text": {
+  "en": "Roogug summons an Earth Rumbler to fight at its side.",
+  "note": "what an ability or phase of Roogug, a boss in Razorfen Kraul does (title: Summon Earth Rumbler)"
+ },
+ "ej/section/4424001/text": {
+  "en": "Aggem Thorncurse calls upon nature to heal himself and nearby allies, the healing energy leaping between targets.",
+  "note": "what an ability or phase of Aggem Thorncurse, a boss in Razorfen Kraul does (title: Chain Heal)"
+ },
+ "ej/section/4424002/text": {
+  "en": "Aggem Thorncurse summons a Boar Spirit to aid him in battle.",
+  "note": "what an ability or phase of Aggem Thorncurse, a boss in Razorfen Kraul does (title: Summon Boar Spirit)"
+ },
+ "ej/section/4424003/text": {
+  "en": "Aggem Thorncurse bolsters his allies with a battle shout, increasing their attack power.",
+  "note": "what an ability or phase of Aggem Thorncurse, a boss in Razorfen Kraul does (title: Battle Shout)"
+ },
+ "ej/section/4428001/text": {
+  "en": "Death Speaker Jargba dominates a player's mind, taking control of them and turning them against their allies.",
+  "note": "what an ability or phase of Death Speaker Jargba, a boss in Razorfen Kraul does (title: Dominate Mind)"
+ },
+ "ej/section/4428002/text": {
+  "en": "Death Speaker Jargba hurls a bolt of shadow, inflicting Shadow damage.",
+  "note": "what an ability or phase of Death Speaker Jargba, a boss in Razorfen Kraul does (title: Shadow Bolt)"
+ },
+ "ej/section/4420001/text": {
+  "en": "Overlord Ramtusk slams the ground, inflicting Nature damage to nearby enemies and slowing their attack speed.",
+  "note": "what an ability or phase of Overlord Ramtusk, a boss in Razorfen Kraul does (title: Thunderclap)"
+ },
+ "ej/section/4420002/text": {
+  "en": "Overlord Ramtusk rallies his warband with a battle shout, increasing their attack power.",
+  "note": "what an ability or phase of Overlord Ramtusk, a boss in Razorfen Kraul does (title: Battle Shout)"
+ },
+ "ej/section/4422001/text": {
+  "en": "Agathelos rushes a distant enemy, charging into them for Physical damage.",
+  "note": "what an ability or phase of Agathelos the Raging, a boss in Razorfen Kraul does (title: Rushing Charge)"
+ },
+ "ej/section/4422002/text": {
+  "en": "Agathelos rampages, battering its target with a flurry of heavy Physical blows.",
+  "note": "what an ability or phase of Agathelos the Raging, a boss in Razorfen Kraul does (title: Rampage)"
+ },
+ "ej/section/4422003/text": {
+  "en": "Agathelos works itself into an enrage, increasing the damage it deals.",
+  "note": "what an ability or phase of Agathelos the Raging, a boss in Razorfen Kraul does (title: Enrage)"
+ },
+ "ej/section/4421001/text": {
+  "en": "Charlga unleashes a bolt of lightning that arcs between nearby enemies, inflicting Nature damage.",
+  "note": "what an ability or phase of Charlga Razorflank, a boss in Razorfen Kraul does (title: Chain Bolt)"
+ },
+ "ej/section/4421002/text": {
+  "en": "Charlga renews herself or a wounded ally, restoring health over time.",
+  "note": "what an ability or phase of Charlga Razorflank, a boss in Razorfen Kraul does (title: Renew)"
+ },
+ "ej/section/4421003/text": {
+  "en": "When her mana runs low, Charlga unleashes a spike of energy at a player, inflicting Holy damage.",
+  "note": "what an ability or phase of Charlga Razorflank, a boss in Razorfen Kraul does (title: Mana Spike)"
+ },
+ "ej/section/3983001/text": {
+  "en": "Interrogator Vishas sears his victims with Immolate, engulfing them in flames that burn for Fire damage over time.",
+  "note": "what an ability or phase of Interrogator Vishas, a boss in Scarlet Monastery does (title: Immolate)"
+ },
+ "ej/section/4543001/text": {
+  "en": "Bloodmage Thalnos unleashes a volley of shadow bolts, striking all nearby enemies for Shadow damage.",
+  "note": "what an ability or phase of Bloodmage Thalnos, a boss in Scarlet Monastery does (title: Shadow Bolt Volley)"
+ },
+ "ej/section/4543002/text": {
+  "en": "Bloodmage Thalnos conjures a spike of flame, scorching all enemies caught in the area for Fire damage.",
+  "note": "what an ability or phase of Bloodmage Thalnos, a boss in Scarlet Monastery does (title: Flame Spike)"
+ },
+ "ej/section/3974001/text": {
+  "en": "Houndmaster Loksey incites bloodlust in his hounds, increasing their attack speed.",
+  "note": "what an ability or phase of Houndmaster Loksey, a boss in Scarlet Monastery does (title: Bloodlust)"
+ },
+ "ej/section/3974002/text": {
+  "en": "Houndmaster Loksey urges on his pack with a battle shout, increasing their attack power.",
+  "note": "what an ability or phase of Houndmaster Loksey, a boss in Scarlet Monastery does (title: Battle Shout)"
+ },
+ "ej/section/6487001/text": {
+  "en": "Surrounding himself with an arcane bubble, Arcanist Doan channels a massive detonation that erupts across the entire chamber, inflicting heavy Arcane damage to everyone. Take cover behind the pillars to survive it.",
+  "note": "what an ability or phase of Arcanist Doan, a boss in Scarlet Monastery does (title: Detonation)"
+ },
+ "ej/section/6487002/text": {
+  "en": "Arcanist Doan polymorphs a player into a harmless creature, removing them from the fight until the effect is broken.",
+  "note": "what an ability or phase of Arcanist Doan, a boss in Scarlet Monastery does (title: Polymorph)"
+ },
+ "ej/section/6487003/text": {
+  "en": "Arcanist Doan silences nearby spellcasters, preventing them from casting for several seconds.",
+  "note": "what an ability or phase of Arcanist Doan, a boss in Scarlet Monastery does (title: Silence)"
+ },
+ "ej/section/6487004/text": {
+  "en": "Arcanist Doan releases a burst of arcane energy, inflicting Arcane damage to all nearby enemies.",
+  "note": "what an ability or phase of Arcanist Doan, a boss in Scarlet Monastery does (title: Arcane Explosion)"
+ },
+ "ej/section/3975001/text": {
+  "en": "Herod spins in a deadly whirlwind, striking all nearby enemies for heavy Physical damage.",
+  "note": "what an ability or phase of Herod, a boss in Scarlet Monastery does (title: Whirlwind)"
+ },
+ "ej/section/3975002/text": {
+  "en": "Herod charges a distant target, closing the gap and striking them for Physical damage.",
+  "note": "what an ability or phase of Herod, a boss in Scarlet Monastery does (title: Rushing Charge)"
+ },
+ "ej/section/3975003/text": {
+  "en": "Herod cleaves all enemies in front of him for heavy Physical damage.",
+  "note": "what an ability or phase of Herod, a boss in Scarlet Monastery does (title: Cleave)"
+ },
+ "ej/section/3975004/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Herod, a boss in Scarlet Monastery"
+ },
+ "ej/section/3975004/text": {
+  "en": "Bloodied, Herod flies into a frenzy, dramatically increasing his attack speed.",
+  "note": "what an ability or phase of Herod, a boss in Scarlet Monastery does (title: Frenzy)"
+ },
+ "ej/section/3976001/text": {
+  "en": "Mograine smites his target with a powerful Crusader Strike, inflicting heavy Holy and Physical damage.",
+  "note": "what an ability or phase of Scarlet Commander Mograine, a boss in Scarlet Monastery does (title: Crusader Strike)"
+ },
+ "ej/section/3976002/text": {
+  "en": "Mograine hammers his target with the weight of justice, stunning them for a short time.",
+  "note": "what an ability or phase of Scarlet Commander Mograine, a boss in Scarlet Monastery does (title: Hammer of Justice)"
+ },
+ "ej/section/3977001/text": {
+  "en": "When Scarlet Commander Mograine falls, Whitemane resurrects him, restoring her commander to the fight to renew his assault.",
+  "note": "what an ability or phase of High Inquisitor Whitemane, a boss in Scarlet Monastery does (title: Scarlet Resurrection)"
+ },
+ "ej/section/3977002/text": {
+  "en": "Whitemane casts the entire party into a deep sleep, incapacitating them while she revives her fallen commander.",
+  "note": "what an ability or phase of High Inquisitor Whitemane, a boss in Scarlet Monastery does (title: Deep Sleep)"
+ },
+ "ej/section/3977003/text": {
+  "en": "Whitemane channels a powerful heal, restoring health to herself or to Mograine.",
+  "note": "what an ability or phase of High Inquisitor Whitemane, a boss in Scarlet Monastery does (title: Heal)"
+ },
+ "ej/section/3977004/text": {
+  "en": "Whitemane smites an enemy with the power of the Light, inflicting Holy damage.",
+  "note": "what an ability or phase of High Inquisitor Whitemane, a boss in Scarlet Monastery does (title: Holy Smite)"
+ },
+ "ej/section/4542001/text": {
+  "en": "Fairbanks curses a player's blood, increasing the Physical damage they take.",
+  "note": "what an ability or phase of High Inquisitor Fairbanks, a boss in Scarlet Monastery does (title: Curse of Blood)"
+ },
+ "ej/section/4542002/text": {
+  "en": "Fairbanks lulls an enemy into a deep sleep, incapacitating them until they take damage.",
+  "note": "what an ability or phase of High Inquisitor Fairbanks, a boss in Scarlet Monastery does (title: Sleep)"
+ },
+ "ej/section/4542003/text": {
+  "en": "Fairbanks strikes terror into nearby players, causing them to flee in fear.",
+  "note": "what an ability or phase of High Inquisitor Fairbanks, a boss in Scarlet Monastery does (title: Fear)"
+ },
+ "ej/section/4542004/text": {
+  "en": "Below 30% health, Fairbanks channels a powerful heal to restore his own health.",
+  "note": "what an ability or phase of High Inquisitor Fairbanks, a boss in Scarlet Monastery does (title: Heal)"
+ },
+ "ej/section/4542005/text": {
+  "en": "Below 25% health, Fairbanks shields himself with the Light, absorbing a portion of incoming damage.",
+  "note": "what an ability or phase of High Inquisitor Fairbanks, a boss in Scarlet Monastery does (title: Power Word: Shield)"
+ },
+ "ej/section/4892/text": {
+  "en": "Jadespine Basilisk's skin shimmers, giving it a chance to reflect harmful spells back at the caster for 5 sec.",
+  "note": "what an ability or phase of Grimlok, a boss in Uldaman does (title: Reflection)"
+ },
+ "ej/section/7355001/text": {
+  "en": "Tuten'kash curses a player, reducing the healing they receive.",
+  "note": "what an ability or phase of Tuten'kash, a boss in Razorfen Downs does (title: Curse of Tuten'kash)"
+ },
+ "ej/section/7355002/text": {
+  "en": "Tuten'kash sprays webbing over nearby enemies, rooting them in place.",
+  "note": "what an ability or phase of Tuten'kash, a boss in Razorfen Downs does (title: Web Spray)"
+ },
+ "ej/section/7355003/title": {
+  "en": "Virulent Poison",
+  "note": "the name of an ability or phase of Tuten'kash, a boss in Razorfen Downs"
+ },
+ "ej/section/7355003/text": {
+  "en": "Tuten'kash's bite carries a virulent poison, inflicting Nature damage over time.",
+  "note": "what an ability or phase of Tuten'kash, a boss in Razorfen Downs does (title: Virulent Poison)"
+ },
+ "ej/section/7357001/text": {
+  "en": "Mordresh hurls a fireball at his target, inflicting Fire damage.",
+  "note": "what an ability or phase of Mordresh Fire Eye, a boss in Razorfen Downs does (title: Fireball)"
+ },
+ "ej/section/7357002/text": {
+  "en": "Mordresh erupts in a nova of fire, inflicting Fire damage to all nearby enemies.",
+  "note": "what an ability or phase of Mordresh Fire Eye, a boss in Razorfen Downs does (title: Fire Nova)"
+ },
+ "ej/section/8567001/text": {
+  "en": "Glutton exudes a cloud of disease, inflicting Nature damage to nearby enemies over time.",
+  "note": "what an ability or phase of Glutton, a boss in Razorfen Downs does (title: Disease Cloud)"
+ },
+ "ej/section/8567002/text": {
+  "en": "Glutton thrashes, gaining additional melee attacks.",
+  "note": "what an ability or phase of Glutton, a boss in Razorfen Downs does (title: Thrash)"
+ },
+ "ej/section/8567003/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Glutton, a boss in Razorfen Downs"
+ },
+ "ej/section/8567003/text": {
+  "en": "Below 15% health, Glutton flies into a frenzy, attacking with greatly increased speed.",
+  "note": "what an ability or phase of Glutton, a boss in Razorfen Downs does (title: Frenzy)"
+ },
+ "ej/section/7356001/text": {
+  "en": "Plaguemaw emits a putrid stench, weakening nearby enemies with rotting disease.",
+  "note": "what an ability or phase of Plaguemaw the Rotting, a boss in Razorfen Downs does (title: Putrid Stench)"
+ },
+ "ej/section/7356002/text": {
+  "en": "Plaguemaw's touch withers its victims, draining their mana.",
+  "note": "what an ability or phase of Plaguemaw the Rotting, a boss in Razorfen Downs does (title: Withered Touch)"
+ },
+ "ej/section/7354001/text": {
+  "en": "Ragglesnout dominates a player's mind, controlling them for a time.",
+  "note": "what an ability or phase of Ragglesnout, a boss in Razorfen Downs does (title: Dominate Mind)"
+ },
+ "ej/section/7354002/text": {
+  "en": "Ragglesnout hurls a bolt of shadow, inflicting Shadow damage.",
+  "note": "what an ability or phase of Ragglesnout, a boss in Razorfen Downs does (title: Shadow Bolt)"
+ },
+ "ej/section/7354003/text": {
+  "en": "Ragglesnout afflicts a player with searing pain, inflicting Shadow damage over time.",
+  "note": "what an ability or phase of Ragglesnout, a boss in Razorfen Downs does (title: Shadow Word: Pain)"
+ },
+ "ej/section/7354004/text": {
+  "en": "Ragglesnout channels a heal to mend its own wounds or those of an ally.",
+  "note": "what an ability or phase of Ragglesnout, a boss in Razorfen Downs does (title: Heal)"
+ },
+ "ej/section/7358001/text": {
+  "en": "Amnennar unleashes his wrath upon an enemy, inflicting Frost damage.",
+  "note": "what an ability or phase of Amnennar the Coldbringer, a boss in Razorfen Downs does (title: Amnennar's Wrath)"
+ },
+ "ej/section/7358002/text": {
+  "en": "At 66% health, Amnennar summons a pair of Frost Spectres to assail his foes.",
+  "note": "what an ability or phase of Amnennar the Coldbringer, a boss in Razorfen Downs does (title: Summon Frost Spectres)"
+ },
+ "ej/section/7358003/text": {
+  "en": "Amnennar wreathes himself in frost armor, chilling and slowing those who strike him in melee.",
+  "note": "what an ability or phase of Amnennar the Coldbringer, a boss in Razorfen Downs does (title: Frost Armor)"
+ },
+ "ej/section/4715/text": {
+  "en": "Razorlash cleaves, inflicting Physical damage to its current target and their nearest allies.",
+  "note": "what an ability or phase of Razorlash, a boss in Maraudon does (title: Cleave)"
+ },
+ "ej/section/5005/text": {
+  "en": "Theka the Martyr plagues a player, inflicting Nature damage and further damage every 5 sec for 3 min.",
+  "note": "what an ability or phase of Theka the Martyr, a boss in Zul'Farrak does (title: Fevered Plague)"
+ },
+ "ej/section/5006/text": {
+  "en": "At 30% remaining health Theka the Martyr transforms, increasing his resistance to Physical and Shadow damage for 30 sec.",
+  "note": "what an ability or phase of Theka the Martyr, a boss in Zul'Farrak does (title: Shadow Transformation)"
+ },
+ "ej/section/29864/text": {
+  "en": "Theka curses a random target, transforming them into a scarab and sounding the toll of persecution which draws the attention of nearby scarabs.",
+  "note": "what an ability or phase of Theka the Martyr, a boss in Zul'Farrak does (title: Curse of the Martyr)"
+ },
+ "ej/section/4979/text": {
+  "en": "Hydromancer Velratha hurls a watery bolt at a player, inflicting Frost damage.",
+  "note": "what an ability or phase of Hydromancer Velratha, a boss in Zul'Farrak does (title: Water Bolt)"
+ },
+ "ej/section/4980/text": {
+  "en": "Hydromancer Velratha summons a typhoon that inflicts Frost damage to all players in front of her and knocks them back.",
+  "note": "what an ability or phase of Hydromancer Velratha, a boss in Zul'Farrak does (title: Crashing Wave)"
+ },
+ "ej/section/4987/text": {
+  "en": "Antu'sul summons a Greater Healing Ward at his feet for 30 sec. The Greater Healing Ward heals all of Antu'sul's allies within 10 yards every 3 sec until destroyed.",
+  "note": "what an ability or phase of Antu'sul, a boss in Zul'Farrak does (title: Healing Ward)"
+ },
+ "ej/section/4991/text": {
+  "en": "At 25% remaining health, Antu'sul heals himself.",
+  "note": "what an ability or phase of Antu'sul, a boss in Zul'Farrak does (title: Healing Wave of Antu'sul)"
+ },
+ "ej/section/4981/text": {
+  "en": "Gahz'rilla shoots a bolt of ice, inflicting Frost damage to a random player and slowing their movement speed by 50% for 10 sec.",
+  "note": "what an ability or phase of Gahz'rilla, a boss in Zul'Farrak does (title: Icicle)"
+ },
+ "ej/section/4982/text": {
+  "en": "Gahz'rilla freezes a player, stunning them and inflicting Frost damage every 3 seconds for 10 sec.",
+  "note": "what an ability or phase of Gahz'rilla, a boss in Zul'Farrak does (title: Freeze Solid)"
+ },
+ "ej/section/4983/text": {
+  "en": "Gahz'rilla slams the ground, inflicting Physical damage to all players within 20 yards and knocking them into the air.",
+  "note": "what an ability or phase of Gahz'rilla, a boss in Zul'Farrak does (title: Gahz'rilla Slam)"
+ },
+ "ej/section/5018/text": {
+  "en": "Nekrum Gutchewer plagues a player, inflicting Nature damage and further damage every 5 sec for 3 min.",
+  "note": "what an ability or phase of Nekrum & Sezz'ziz, a boss in Zul'Farrak does (title: Fevered Plague)"
+ },
+ "ej/section/29720/text": {
+  "en": "Nekrum Gutchewer inflicts Physical damage on enemies in front of him.",
+  "note": "what an ability or phase of Nekrum & Sezz'ziz, a boss in Zul'Farrak does (title: Cleave)"
+ },
+ "ej/section/5023/text": {
+  "en": "Shadow Priest Sezz'ziz renews an ally, healing them for a part of their health every 3 sec for 20 sec.",
+  "note": "what an ability or phase of Nekrum & Sezz'ziz, a boss in Zul'Farrak does (title: Renew)"
+ },
+ "ej/section/5026/text": {
+  "en": "Chief Ukorz Sandscalp inflicts Physical damage on enemies in front of him.",
+  "note": "what an ability or phase of Chief Ukorz Sandscalp, a boss in Zul'Farrak does (title: Cleave)"
+ },
+ "ej/section/5027/text": {
+  "en": "Chief Ukorz Sandscalp frenzies, increasing his attack speed for 2 min.",
+  "note": "what an ability or phase of Chief Ukorz Sandscalp, a boss in Zul'Farrak does (title: Frenzy)"
+ },
+ "ej/section/29885/text": {
+  "en": "When Ruuzlu dies, Chief Ukorz enrages, increasing his damage done and his attack speed.",
+  "note": "what an ability or phase of Chief Ukorz Sandscalp, a boss in Zul'Farrak does (title: Enrage)"
+ },
+ "ej/section/29884/text": {
+  "en": "When Chief Ukorz dies, Ruuzlu enrages, increasing his damage done and his attack speed.",
+  "note": "what an ability or phase of Chief Ukorz Sandscalp, a boss in Zul'Farrak does (title: Enrage)"
+ },
+ "ej/section/10506001/text": {
+  "en": "Kirtonos curses a player with the eye, transforming them into a ghostly form and stripping their abilities for a time.",
+  "note": "what an ability or phase of Kirtonos the Herald, a boss in Scholomance does (title: Curse of the Eye)"
+ },
+ "ej/section/10506002/text": {
+  "en": "Kirtonos buffets the area before him with his wings, inflicting Physical damage and knocking players back.",
+  "note": "what an ability or phase of Kirtonos the Herald, a boss in Scholomance does (title: Wing Buffet)"
+ },
+ "ej/section/10506003/text": {
+  "en": "Kirtonos swoops at his target, inflicting Physical damage and stunning them briefly.",
+  "note": "what an ability or phase of Kirtonos the Herald, a boss in Scholomance does (title: Swoop)"
+ },
+ "ej/section/10503001/title": {
+  "en": "Illusions",
+  "note": "the name of an ability or phase of Jandice Barov, a boss in Scholomance"
+ },
+ "ej/section/10503001/text": {
+  "en": "Jandice cloaks herself in invisibility and conjures a host of illusionary copies. The raid must find and strike the true Jandice among them.",
+  "note": "what an ability or phase of Jandice Barov, a boss in Scholomance does (title: Illusions)"
+ },
+ "ej/section/10503002/text": {
+  "en": "Jandice curses a player's blood, increasing the Physical damage they take.",
+  "note": "what an ability or phase of Jandice Barov, a boss in Scholomance does (title: Curse of Blood)"
+ },
+ "ej/section/10503003/text": {
+  "en": "Jandice looses a banshee's wail at an enemy, inflicting heavy Shadow damage.",
+  "note": "what an ability or phase of Jandice Barov, a boss in Scholomance does (title: Banshee Wail)"
+ },
+ "ej/section/11622001/text": {
+  "en": "Rattlegore's massive blade cleaves all enemies before him for tremendous Physical damage.",
+  "note": "what an ability or phase of Rattlegore, a boss in Scholomance does (title: Cleave)"
+ },
+ "ej/section/11622002/title": {
+  "en": "War Stomp",
+  "note": "the name of an ability or phase of Rattlegore, a boss in Scholomance"
+ },
+ "ej/section/11622002/text": {
+  "en": "Rattlegore stomps the ground with bone-crushing force, stunning all nearby players.",
+  "note": "what an ability or phase of Rattlegore, a boss in Scholomance does (title: War Stomp)"
+ },
+ "ej/section/10433001/text": {
+  "en": "The Black Guard Marduk spins in a whirlwind, inflicting Physical damage to all nearby players.",
+  "note": "what an ability or phase of Marduk Blackpool, a boss in Scholomance does (title: Whirlwind)"
+ },
+ "ej/section/10433002/text": {
+  "en": "Marduk cleaves all enemies in front of him for heavy Physical damage.",
+  "note": "what an ability or phase of Marduk Blackpool, a boss in Scholomance does (title: Cleave)"
+ },
+ "ej/section/10433003/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Marduk Blackpool, a boss in Scholomance"
+ },
+ "ej/section/10433003/text": {
+  "en": "Marduk works himself into a frenzy, increasing his attack speed and the damage he deals.",
+  "note": "what an ability or phase of Marduk Blackpool, a boss in Scholomance does (title: Frenzy)"
+ },
+ "ej/section/10432001/text": {
+  "en": "Vectus surrounds himself with a shield of fire, inflicting Fire damage to any who strike him in melee.",
+  "note": "what an ability or phase of Vectus, a boss in Scholomance does (title: Fire Shield)"
+ },
+ "ej/section/10432002/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Vectus, a boss in Scholomance"
+ },
+ "ej/section/10432002/text": {
+  "en": "Vectus flies into a frenzy, sharply increasing his attack speed.",
+  "note": "what an ability or phase of Vectus, a boss in Scholomance does (title: Frenzy)"
+ },
+ "ej/section/10508001/text": {
+  "en": "Ras Frostwhisper hurls a frostbolt at his target, inflicting Frost damage and slowing them.",
+  "note": "what an ability or phase of Ras Frostwhisper, a boss in Scholomance does (title: Frostbolt)"
+ },
+ "ej/section/10508002/text": {
+  "en": "Ras Frostwhisper releases a nova of frost, inflicting Frost damage to nearby players and freezing them in place.",
+  "note": "what an ability or phase of Ras Frostwhisper, a boss in Scholomance does (title: Chill Nova)"
+ },
+ "ej/section/10508003/title": {
+  "en": "Fear",
+  "note": "the name of an ability or phase of Ras Frostwhisper, a boss in Scholomance"
+ },
+ "ej/section/10508003/text": {
+  "en": "Ras Frostwhisper strikes terror into the raid, causing nearby players to flee in fear.",
+  "note": "what an ability or phase of Ras Frostwhisper, a boss in Scholomance does (title: Fear)"
+ },
+ "ej/section/10505001/text": {
+  "en": "Instructor Malicia channels a swift heal to restore her own health or that of an ally.",
+  "note": "what an ability or phase of Instructor Malicia, a boss in Scholomance does (title: Flash Heal)"
+ },
+ "ej/section/10505002/text": {
+  "en": "Instructor Malicia curses a player with agony, inflicting escalating Shadow damage over time.",
+  "note": "what an ability or phase of Instructor Malicia, a boss in Scholomance does (title: Curse of Agony)"
+ },
+ "ej/section/10505003/text": {
+  "en": "Instructor Malicia flays a player's mind, inflicting Shadow damage and slowing them while channeled.",
+  "note": "what an ability or phase of Instructor Malicia, a boss in Scholomance does (title: Mind Flay)"
+ },
+ "ej/section/10505004/text": {
+  "en": "Instructor Malicia renews herself or an ally, restoring health over time.",
+  "note": "what an ability or phase of Instructor Malicia, a boss in Scholomance does (title: Renew)"
+ },
+ "ej/section/11261001/text": {
+  "en": "The Crimson Surgeon rends his target, inflicting Physical damage and causing them to bleed over time.",
+  "note": "what an ability or phase of Doctor Theolen Krastinov, a boss in Scholomance does (title: Rend)"
+ },
+ "ej/section/11261002/text": {
+  "en": "Krastinov backhands his target, inflicting Physical damage and stunning them briefly.",
+  "note": "what an ability or phase of Doctor Theolen Krastinov, a boss in Scholomance does (title: Backhand)"
+ },
+ "ej/section/11261003/text": {
+  "en": "Krastinov cleaves all enemies in front of him for heavy Physical damage.",
+  "note": "what an ability or phase of Doctor Theolen Krastinov, a boss in Scholomance does (title: Cleave)"
+ },
+ "ej/section/11261004/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Doctor Theolen Krastinov, a boss in Scholomance"
+ },
+ "ej/section/11261004/text": {
+  "en": "Krastinov flies into a frenzy, butchering the raid with greatly increased attack speed.",
+  "note": "what an ability or phase of Doctor Theolen Krastinov, a boss in Scholomance does (title: Frenzy)"
+ },
+ "ej/section/10901001/text": {
+  "en": "Polkelt infects a player with a volatile disease, inflicting Nature damage over time.",
+  "note": "what an ability or phase of Lorekeeper Polkelt, a boss in Scholomance does (title: Volatile Infection)"
+ },
+ "ej/section/10901002/text": {
+  "en": "Polkelt afflicts a player with a dark plague, a disease that festers and inflicts Nature damage over time.",
+  "note": "what an ability or phase of Lorekeeper Polkelt, a boss in Scholomance does (title: Dark Plague)"
+ },
+ "ej/section/10507001/text": {
+  "en": "The Ravenian tramples the players around it, inflicting Physical damage to all nearby.",
+  "note": "what an ability or phase of The Ravenian, a boss in Scholomance does (title: Trample)"
+ },
+ "ej/section/10507002/text": {
+  "en": "The Ravenian cleaves all enemies in front of it for heavy Physical damage.",
+  "note": "what an ability or phase of The Ravenian, a boss in Scholomance does (title: Cleave)"
+ },
+ "ej/section/10507003/text": {
+  "en": "The Ravenian knocks its target to the ground, stunning them briefly.",
+  "note": "what an ability or phase of The Ravenian, a boss in Scholomance does (title: Knockdown)"
+ },
+ "ej/section/10504001/text": {
+  "en": "Lord Alexei Barov shrouds a player in a veil of shadow, sharply reducing the healing they receive.",
+  "note": "what an ability or phase of Lord Alexei Barov, a boss in Scholomance does (title: Veil of Shadow)"
+ },
+ "ej/section/10504002/text": {
+  "en": "Lord Alexei Barov engulfs an enemy in flame, inflicting Fire damage instantly and additional Fire damage over time.",
+  "note": "what an ability or phase of Lord Alexei Barov, a boss in Scholomance does (title: Immolate)"
+ },
+ "ej/section/10504003/text": {
+  "en": "Lord Alexei Barov blasts nearby enemies with shadow energy, inflicting Shadow damage.",
+  "note": "what an ability or phase of Lord Alexei Barov, a boss in Scholomance does (title: Shadow Shock)"
+ },
+ "ej/section/10502001/text": {
+  "en": "Lady Illucia Barov curses a player with agony, inflicting escalating Shadow damage over time.",
+  "note": "what an ability or phase of Lady Illucia Barov, a boss in Scholomance does (title: Curse of Agony)"
+ },
+ "ej/section/10502002/text": {
+  "en": "Lady Illucia Barov silences nearby spellcasters, preventing them from casting for several seconds.",
+  "note": "what an ability or phase of Lady Illucia Barov, a boss in Scholomance does (title: Silence)"
+ },
+ "ej/section/10502003/title": {
+  "en": "Fear",
+  "note": "the name of an ability or phase of Lady Illucia Barov, a boss in Scholomance"
+ },
+ "ej/section/10502003/text": {
+  "en": "Lady Illucia Barov strikes terror into the raid, causing nearby players to flee in fear.",
+  "note": "what an ability or phase of Lady Illucia Barov, a boss in Scholomance does (title: Fear)"
+ },
+ "ej/section/10502004/text": {
+  "en": "Lady Illucia Barov blasts nearby enemies with shadow energy, inflicting Shadow damage.",
+  "note": "what an ability or phase of Lady Illucia Barov, a boss in Scholomance does (title: Shadow Shock)"
+ },
+ "ej/section/1853001/text": {
+  "en": "Darkmaster Gandling banishes a random player through a shadow portal into one of the side classrooms, sealing them in with a deadly summoned foe until it is slain.",
+  "note": "what an ability or phase of Darkmaster Gandling, a boss in Scholomance does (title: Shadow Portal)"
+ },
+ "ej/section/1853002/title": {
+  "en": "Curse of the Darkmaster",
+  "note": "the name of an ability or phase of Darkmaster Gandling, a boss in Scholomance"
+ },
+ "ej/section/1853002/text": {
+  "en": "Gandling curses a player, weakening them with dark magic.",
+  "note": "what an ability or phase of Darkmaster Gandling, a boss in Scholomance does (title: Curse of the Darkmaster)"
+ },
+ "ej/section/1853003/text": {
+  "en": "Gandling channels a barrage of arcane missiles at his target, inflicting Arcane damage.",
+  "note": "what an ability or phase of Darkmaster Gandling, a boss in Scholomance does (title: Arcane Missiles)"
+ },
+ "ej/section/1853004/text": {
+  "en": "Gandling wraps himself in a shield of shadow, inflicting Shadow damage to any who strike him in melee.",
+  "note": "what an ability or phase of Darkmaster Gandling, a boss in Scholomance does (title: Shadow Shield)"
+ },
+ "ej/section/4633/text": {
+  "en": "High Interrogator Gerstahn surrounds herself in a dark shield, absorbing damage for 30 sec.",
+  "note": "what an ability or phase of High Interrogator Gerstahn, a boss in Blackrock Depths does (title: Shadow Shield)"
+ },
+ "ej/section/4576/text": {
+  "en": "The Deep Stinger inflicts Physical damage to a player and adjacent targets.",
+  "note": "what an ability or phase of Ring of Law, a boss in Blackrock Depths does (title: Cleave)"
+ },
+ "ej/section/4577/text": {
+  "en": "The Deep Stinger inflicts Slowing Poison to players it damages in melee combat. Slowing Poison slows a player's melee attack speed by 25% and movement speed for 25 sec.",
+  "note": "what an ability or phase of Ring of Law, a boss in Blackrock Depths does (title: Slowing Poison)"
+ },
+ "ej/section/4593/text": {
+  "en": "At 50% health remaining, Grizzle increases his melee attack speed for 2 min.",
+  "note": "what an ability or phase of Ring of Law, a boss in Blackrock Depths does (title: Frenzy)"
+ },
+ "ej/section/4594/text": {
+  "en": "Grizzle inflicts Physical damage to a player and adjacent players.",
+  "note": "what an ability or phase of Ring of Law, a boss in Blackrock Depths does (title: Cleave)"
+ },
+ "ej/section/4495/text": {
+  "en": "Hurley Blackbreath increases his attack speed by 50% and his Physical damage is increased. This effect lasts for 15 sec.",
+  "note": "what an ability or phase of Hurley Blackbreath, a boss in Blackrock Depths does (title: Drunken Rage)"
+ },
+ "ej/section/4483/text": {
+  "en": "Burning Spirits will sacrifice themselves to give Burning Spirit to Ambassador Flamelash when they get within 1 yard of him.\nBurning Spirit increases the damage of Ambassador Flamelash and increases his size. Burning Spirit stacks up to 50 charges.",
+  "note": "what an ability or phase of Ambassador Flamelash, a boss in Blackrock Depths does (title: Burning Spirit)"
+ },
+ "ej/section/4417/text": {
+  "en": "Gloom'rel inflicts Physical damage to players in front of him.",
+  "note": "what an ability or phase of The Seven, a boss in Blackrock Depths does (title: Cleave)"
+ },
+ "ej/section/4421/text": {
+  "en": "Gloom'rel gains Recklessness at 25% health remaining, this effect lasts for 15 sec.\nRecklessness increases Gloom'rel's chances of scoring a critical strike by 100%.\nRecklessness decreases Gloom'rel armor by 35%.\nRecklessness makes Gloom'rel immune to fear.",
+  "note": "what an ability or phase of The Seven, a boss in Blackrock Depths does (title: Recklessness)"
+ },
+ "ej/section/4428/text": {
+  "en": "Hate'rel surrounds herself in a dark shield, absorbing damage for 30 sec.",
+  "note": "what an ability or phase of The Seven, a boss in Blackrock Depths does (title: Shadow Shield)"
+ },
+ "ej/section/4905/text": {
+  "en": "The Avatar of Hakkar lashes out at his current target, stunning them for 2 sec. In addition, Lash has a 10% chance of disarming its target.",
+  "note": "what an ability or phase of Avatar of Hakkar, a boss in The Temple of Atal'hakkar does (title: Lash)"
+ },
+ "ej/section/4524/text": {
+  "en": "When Highlord Omokk reaches 50% remaining health, he goes into a frenzy, increasing his attack speed.",
+  "note": "what an ability or phase of Highlord Omokk, a boss in Lower Blackrock Spire does (title: Frenzy)"
+ },
+ "ej/section/4584/text": {
+  "en": "Gizrul the Slavener goes into a frenzy, increasing his attack speed for 2 min.",
+  "note": "what an ability or phase of Gizrul the Slavener, a boss in Lower Blackrock Spire does (title: Frenzy)"
+ },
+ "ej/section/4915/text": {
+  "en": "The Ironbark Protector inflicts Physical damage to all players within 10 yards.",
+  "note": "what an ability or phase of Tendris Warpwood, a boss in Dire Maul - Capital Gardens does (title: Trample)"
+ },
+ "ej/section/4916/text": {
+  "en": "The Ironbark Protector inflicts Physical damage to a player and knocks them away, reducing the threat of the player by 50%.",
+  "note": "what an ability or phase of Tendris Warpwood, a boss in Dire Maul - Capital Gardens does (title: Knock Away)"
+ },
+ "ej/section/4917/text": {
+  "en": "The Ironbark Protector entangles players in roots, inflicting 40 Nature damage every 3 sec and immobilizing them for 10 sec.",
+  "note": "what an ability or phase of Tendris Warpwood, a boss in Dire Maul - Capital Gardens does (title: Entangling Roots)"
+ },
+ "ej/section/4918/text": {
+  "en": "Tendris Warpwood inflicts Physical damage to all players within 10 yards.",
+  "note": "what an ability or phase of Tendris Warpwood, a boss in Dire Maul - Capital Gardens does (title: Trample)"
+ },
+ "ej/section/4907/text": {
+  "en": "Ferra charges a player, inflicting Physical damage and stunning them for 2 sec.",
+  "note": "what an ability or phase of Illyanna Ravenoak, a boss in Dire Maul - Capital Gardens does (title: Charge)"
+ },
+ "ej/section/4908/text": {
+  "en": "Ferra inflicts Physical damage to a player.",
+  "note": "what an ability or phase of Illyanna Ravenoak, a boss in Dire Maul - Capital Gardens does (title: Maul)"
+ },
+ "ej/section/4909/text": {
+  "en": "Illyanna Ravenoak inflicts Physical damage to up 10 players in front of her.",
+  "note": "what an ability or phase of Illyanna Ravenoak, a boss in Dire Maul - Capital Gardens does (title: Multi-Shot)"
+ },
+ "ej/section/4910/text": {
+  "en": "Illyanna Ravenoak shoots a raining volley of arrows to all players in an area. Volley inflicts Arcane damage.",
+  "note": "what an ability or phase of Illyanna Ravenoak, a boss in Dire Maul - Capital Gardens does (title: Volley)"
+ },
+ "ej/section/4911/text": {
+  "en": "Illyanna Ravenoak throws an Immolation Trap nearby. The Immolation Trap lasts 1 min or until a player walks over it.\n\nThe Immolation Trap inflicts Fire damage to the player who triggers the trap.",
+  "note": "what an ability or phase of Illyanna Ravenoak, a boss in Dire Maul - Capital Gardens does (title: Immolation Trap)"
+ },
+ "ej/section/4836/text": {
+  "en": "Magister Kalendris assumes a form of Shadow at 50% health remaining. Shadowform reduces all damage received and increases Shadow damage inflicted by 40% for 4 min.",
+  "note": "what an ability or phase of Magister Kalendris, a boss in Dire Maul - Capital Gardens does (title: Shadowform)"
+ },
+ "ej/section/4839/text": {
+  "en": "Magister Kalendris inflicts Shadow damage to a player.",
+  "note": "what an ability or phase of Magister Kalendris, a boss in Dire Maul - Capital Gardens does (title: Mind Blast)"
+ },
+ "ej/section/4823/text": {
+  "en": "Eyes of Immol'thar slow player movement speed, reduce their Haste, and deal Shadow damage for 4 sec. This effect stacks.",
+  "note": "what an ability or phase of Immol'thar, a boss in Dire Maul - Capital Gardens does (title: Gaze of Immol'thar)"
+ },
+ "ej/section/4825/text": {
+  "en": "Immol'thar bites a player and their nearest ally, inflicting 45 Nature damage every 10 sec and increasing their Physical damage taken for 3 min.",
+  "note": "what an ability or phase of Immol'thar, a boss in Dire Maul - Capital Gardens does (title: Infected Bite)"
+ },
+ "ej/section/4826/text": {
+  "en": "Immol'thar increases its attack speed for 2 min.",
+  "note": "what an ability or phase of Immol'thar, a boss in Dire Maul - Capital Gardens does (title: Frenzy)"
+ },
+ "ej/section/4827/text": {
+  "en": "Immol'thar inflicts Physical damage to all players within 10 yards.",
+  "note": "what an ability or phase of Immol'thar, a boss in Dire Maul - Capital Gardens does (title: Trample)"
+ },
+ "ej/section/4755/text": {
+  "en": "Prince Tortheldrin inflicts Physical damage to all players within 8 yards and knocks them back.",
+  "note": "what an ability or phase of Prince Tortheldrin, a boss in Dire Maul - Capital Gardens does (title: Whirlwind)"
+ },
+ "ej/section/29895/text": {
+  "en": "Prince Tortheldrin inflicts Arcane damage to a distant enemy.",
+  "note": "what an ability or phase of Prince Tortheldrin, a boss in Dire Maul - Capital Gardens does (title: Arcane Shot)"
+ },
+ "ej/section/4996/text": {
+  "en": "Lethtendris curses a player with Curse of Thorns. Curse of Thorns has a 50% chance on every melee attack made by the cursed player to inflict Shadow damage to the cursed player. Curse of Thorns lasts 3 min.",
+  "note": "what an ability or phase of Lethtendris, a boss in Dire Maul - Warpwood Quarter does (title: Curse of Thorns)"
+ },
+ "ej/section/4998/text": {
+  "en": "Lethtendris inflicts Fire damage to her current target. Immolate continues to inflict Fire damage to the enemy for 21 sec.",
+  "note": "what an ability or phase of Lethtendris, a boss in Dire Maul - Warpwood Quarter does (title: Immolate)"
+ },
+ "ej/section/4999/text": {
+  "en": "Lethtendris enlarges Pimgib for 30 sec. While enlarged, Pimgib inflicts more damage and casts spells 100% faster.",
+  "note": "what an ability or phase of Lethtendris, a boss in Dire Maul - Warpwood Quarter does (title: Enlarge)"
+ },
+ "ej/section/5003/text": {
+  "en": "Pimgib inflicts Fire damage to a player and increases the Fire damage that player takes from all sources for 20 sec. This effect stacks.",
+  "note": "what an ability or phase of Lethtendris, a boss in Dire Maul - Warpwood Quarter does (title: Flame Buffet)"
+ },
+ "ej/section/5004/text": {
+  "en": "Hydrospawn reduces the Stamina of all players nearby for 1 min. This effect stacks.",
+  "note": "what an ability or phase of Hydrospawn, a boss in Dire Maul - Warpwood Quarter does (title: Submersion)"
+ },
+ "ej/section/5007/text": {
+  "en": "Hydrospawn inflicts 85 to 115 Frost damage to all players nearby and knocks them back. Players affected by Riptide are disarmed for 4 sec.",
+  "note": "what an ability or phase of Hydrospawn, a boss in Dire Maul - Warpwood Quarter does (title: Riptide)"
+ },
+ "ej/section/4923/text": {
+  "en": "Alzzin the Wildshaper inflicts 740 to 860 Nature damage to a player and leaves a withering disease, inflicting an additional 139 to 161 Nature damage every 3 sec and reduces their Strength, Intellect, or Agility for 21 sec.",
+  "note": "what an ability or phase of Alzzin the Wildshaper, a boss in Dire Maul - Warpwood Quarter does (title: Wither)"
+ },
+ "ej/section/4924/text": {
+  "en": "Alzzin the Wildshaper covers himself in Thorns, inflicting Nature damage to all players that attack Alzzin the Wildshaper.",
+  "note": "what an ability or phase of Alzzin the Wildshaper, a boss in Dire Maul - Warpwood Quarter does (title: Thorns)"
+ },
+ "ej/section/4926/text": {
+  "en": "Alzzin the Wildshaper transforms into a Tree, increasing his armor and increasing his melee damage by 25% for 30 sec. Alzzin the Wildshaper uses these abilities in Tree form.",
+  "note": "what an ability or phase of Alzzin the Wildshaper, a boss in Dire Maul - Warpwood Quarter does (title: Tree Form)"
+ },
+ "ej/section/4933/text": {
+  "en": "Alzzin the Wildshaper regains health every 2 sec for 20 sec.",
+  "note": "what an ability or phase of Alzzin the Wildshaper, a boss in Dire Maul - Warpwood Quarter does (title: Wild Regneration)"
+ },
+ "ej/section/4932/text": {
+  "en": "Alzzin the Wildshaper inflicts Physical damage to a player and knocks them back. Knock Away reduces the threat of the affected player to zero.",
+  "note": "what an ability or phase of Alzzin the Wildshaper, a boss in Dire Maul - Warpwood Quarter does (title: Knock Away)"
+ },
+ "ej/section/4928/text": {
+  "en": "Alzzin the Wildshaper inflicts Physical damage to up to 2 players in front of him.",
+  "note": "what an ability or phase of Alzzin the Wildshaper, a boss in Dire Maul - Warpwood Quarter does (title: Vicious Bite)"
+ },
+ "ej/section/4795/text": {
+  "en": "Hearthsinger Forresten shouts, reducing the Stamina and primary stats of all players within 10 yards for 30 sec.",
+  "note": "what an ability or phase of Hearthsinger Forresten, a boss in Stratholme - Main Gate does (title: Demoralizing Shout)"
+ },
+ "ej/section/4798/text": {
+  "en": "Hearthsinger Forresten inflicts Physical damage to up 10 players in front of him.",
+  "note": "what an ability or phase of Hearthsinger Forresten, a boss in Stratholme - Main Gate does (title: Multi-Shot)"
+ },
+ "ej/section/4833/text": {
+  "en": "The Unforgiven channels a wave of pain and sorrow into the victim, slowing the target and inflicting Shadow damage.",
+  "note": "what an ability or phase of The Unforgiven, a boss in Stratholme - Main Gate does (title: Unrelenting Anguish)"
+ },
+ "ej/section/29850/text": {
+  "en": "The Undead Postman inflicts Shadow damage to an enemy after 60 sec.",
+  "note": "what an ability or phase of Postmaster Malown, a boss in Stratholme - Main Gate does (title: Call of the Grave)"
+ },
+ "ej/section/29851/text": {
+  "en": "The Undead Postman's wail reduces all attributes of nearby enemies for 6 sec.",
+  "note": "what an ability or phase of Postmaster Malown, a boss in Stratholme - Main Gate does (title: Wailing Dead)"
+ },
+ "ej/section/29843/text": {
+  "en": "Postmaster Malown reduces the Physical damage dealt of nearby enemies for 2 min.",
+  "note": "what an ability or phase of Postmaster Malown, a boss in Stratholme - Main Gate does (title: Curse of Weakness)"
+ },
+ "ej/section/4801/text": {
+  "en": "When Timmy the Cruel reaches 50% remaining health, he enrages, increasing his damage dealt and attack speed by 30%.",
+  "note": "what an ability or phase of Timmy the Cruel, a boss in Stratholme - Main Gate does (title: Enrage)"
+ },
+ "ej/section/6453/text": {
+  "en": "Commander Malor reduces a player's Stamina for 20 sec.",
+  "note": "what an ability or phase of Commander Malor, a boss in Stratholme - Main Gate does (title: Head Crack)"
+ },
+ "ej/section/4802/text": {
+  "en": "Willey Hopebreaker inflicts Physical damage to his current target, knocking them away.",
+  "note": "what an ability or phase of Willey Hopebreaker, a boss in Stratholme - Main Gate does (title: Knock Away)"
+ },
+ "ej/section/4803/text": {
+  "en": "Willey Hopebreaker shoots his current target, inflicting Physical damage.",
+  "note": "what an ability or phase of Willey Hopebreaker, a boss in Stratholme - Main Gate does (title: Shoot)"
+ },
+ "ej/section/4809/text": {
+  "en": "Instructor Galford inflicts Fire damage to his current target.",
+  "note": "what an ability or phase of Instructor Galford, a boss in Stratholme - Main Gate does (title: Pyroblast)"
+ },
+ "ej/section/4828/text": {
+  "en": "Balnazzar inflicts Shadow damage to his current target.",
+  "note": "what an ability or phase of Balnazzar, a boss in Stratholme - Main Gate does (title: Mind Blast)"
+ },
+ "ej/section/4829/text": {
+  "en": "Balnazzar inflicts Shadow damage to all players nearby.",
+  "note": "what an ability or phase of Balnazzar, a boss in Stratholme - Main Gate does (title: Shadow Shock)"
+ },
+ "ej/section/4831/text": {
+  "en": "Balnazzar forces a random player to sleep, stunning them until they take damage.",
+  "note": "what an ability or phase of Balnazzar, a boss in Stratholme - Main Gate does (title: Sleep)"
+ },
+ "ej/section/4744/text": {
+  "en": "Guard Mol'dar attacks faster for 2 min.",
+  "note": "what an ability or phase of Guard Mol'dar, a boss in Dire Maul - Gordok Commons does (title: Frenzy)"
+ },
+ "ej/section/4738/text": {
+  "en": "Stomper Kreeg attacks faster for 2 min.",
+  "note": "what an ability or phase of Stomper Kreeg, a boss in Dire Maul - Gordok Commons does (title: Frenzy)"
+ },
+ "ej/section/4729/text": {
+  "en": "Guard Fengus attacks faster for 2 min.",
+  "note": "what an ability or phase of Guard Fengus, a boss in Dire Maul - Gordok Commons does (title: Frenzy)"
+ },
+ "ej/section/4686/text": {
+  "en": "Cho'Rush the Observer inflicts Arcane damage to all players nearby.",
+  "note": "what an ability or phase of Cho'Rush the Observer, a boss in Dire Maul - Gordok Commons does (title: Arcane Explosion)"
+ },
+ "ej/section/4841/text": {
+  "en": "Baroness Anastari takes control of a random player. Possess increases the target's maximum health and damage dealt by 100%, but reduces their healing received and armor. The target is controlled for 2 min or until they have reached 50% remaining health.",
+  "note": "what an ability or phase of Baroness Anastari, a boss in Stratholme - Service Entrance does (title: Possess)"
+ },
+ "ej/section/4844/text": {
+  "en": "Baroness Anastari curses all players within 10 yards, reducing their chance to hit for 12 sec.",
+  "note": "what an ability or phase of Baroness Anastari, a boss in Stratholme - Service Entrance does (title: Banshee Curse)"
+ },
+ "ej/section/4848/text": {
+  "en": "Nerub'enkan sends scarabs at players, inflicting Physical damage.",
+  "note": "what an ability or phase of Nerub'enkan, a boss in Stratholme - Service Entrance does (title: Crypt Scarabs)"
+ },
+ "ej/section/4851/text": {
+  "en": "Maleki the Pallid drains life from his current target, inflicting Shadow damage every 1 sec for 5 sec and healing himself for 100% of the amount of damage inflicted.",
+  "note": "what an ability or phase of Maleki the Pallid, a boss in Stratholme - Service Entrance does (title: Drain Life)"
+ },
+ "ej/section/4852/text": {
+  "en": "Maleki the Pallid encases himself in a layer of Frost that reduces his Physical damage taken. Melee attackers become Chilled, slowing their movement speed by 30% and reducing their haste by 25%.",
+  "note": "what an ability or phase of Maleki the Pallid, a boss in Stratholme - Service Entrance does (title: Frost Armor)"
+ },
+ "ej/section/4855/text": {
+  "en": "Magistrate Barthilas pummels all players within 10 yards, inflicting Physical damage, interrupting spellcasting for 5 sec, and knocking them back.",
+  "note": "what an ability or phase of Magistrate Barthilas, a boss in Stratholme - Service Entrance does (title: Crowd Pummel)"
+ },
+ "ej/section/4857/text": {
+  "en": "Magistrate Barthilas charges at a random target, inflicting Physical damage and stunning them.",
+  "note": "what an ability or phase of Magistrate Barthilas, a boss in Stratholme - Service Entrance does (title: Mighty Charge)"
+ },
+ "ej/section/4856/text": {
+  "en": "Magistrate Barthilas enrages, increasing Physical damage dealt and melee attack speed by 4% for 1 min. This effect stacks.",
+  "note": "what an ability or phase of Magistrate Barthilas, a boss in Stratholme - Service Entrance does (title: Furious Anger)"
+ },
+ "ej/section/4859/text": {
+  "en": "Ramstein the Gorger inflicts Physical damage to his current target, knocking them back, reducing their threat by half, and stunning them for 6 sec.",
+  "note": "what an ability or phase of Ramstein the Gorger, a boss in Stratholme - Service Entrance does (title: Knockout)"
+ },
+ "ej/section/4860/text": {
+  "en": "Ramstein the Gorger inflicts Physical damage to all players within 10 yards.",
+  "note": "what an ability or phase of Ramstein the Gorger, a boss in Stratholme - Service Entrance does (title: Trample)"
+ },
+ "ej/section/4867/text": {
+  "en": "Lord Aurius Rivendare strikes his current target, inflicting Physical damage and reducing the effectiveness of any healing by 50% for 5 sec.",
+  "note": "what an ability or phase of Lord Aurius Rivendare, a boss in Stratholme - Service Entrance does (title: Mortal Strike)"
+ },
+ "ej/instance/741/desc": {
+  "en": "The Molten Core lies at the very bottom of Blackrock Depths. It is the heart of Blackrock Mountain and the exact spot where, long ago in a desperate bid to turn the tide of the dwarven civil war, Emperor Thaurissan summoned the elemental Firelord, Ragnaros, into the world. Though the fire lord is incapable of straying far from the blazing Core, it is believed that his elemental minions command the Dark Iron dwarves, who are in the midst of creating armies out of living stone. The burning lake where Ragnaros lies sleeping acts as a rift connecting to the plane of fire, allowing the malicious elementals to pass through. Chief among Ragnaros' agents is Majordomo Executus - for this cunning elemental is the only one capable of calling the Firelord from his slumber.",
+  "note": "the Adventure Guide's description of Molten Core"
+ },
+ "ej/section/12118001/text": {
+  "en": "Lucifron places a doom upon a player that erupts after a few seconds, inflicting heavy Shadow damage.",
+  "note": "what an ability or phase of Lucifron, a boss in Molten Core does (title: Impending Doom)"
+ },
+ "ej/section/12118002/text": {
+  "en": "Lucifron curses the raid, greatly increasing the mana cost of their spells and abilities.",
+  "note": "what an ability or phase of Lucifron, a boss in Molten Core does (title: Lucifron's Curse)"
+ },
+ "ej/section/12118003/text": {
+  "en": "Lucifron blasts nearby enemies with shadow energy, inflicting Shadow damage.",
+  "note": "what an ability or phase of Lucifron, a boss in Molten Core does (title: Shadow Shock)"
+ },
+ "ej/section/11982001/text": {
+  "en": "Magmadar works itself into a frenzy, greatly increasing its attack speed. The frenzy can be soothed by a hunter's Tranquilizing Shot.",
+  "note": "what an ability or phase of Magmadar, a boss in Molten Core does (title: Frenzy)"
+ },
+ "ej/section/11982002/text": {
+  "en": "Magmadar lets out a terrifying roar, causing nearby players to flee in fear across the molten floor.",
+  "note": "what an ability or phase of Magmadar, a boss in Molten Core does (title: Panic)"
+ },
+ "ej/section/11982003/text": {
+  "en": "Magmadar hurls a lava bomb at a distant player, creating a pool of fire that inflicts heavy Fire damage to any who stand in it.",
+  "note": "what an ability or phase of Magmadar, a boss in Molten Core does (title: Lava Bomb)"
+ },
+ "ej/section/11982004/text": {
+  "en": "Magmadar spits molten rock at its enemies, inflicting Fire damage.",
+  "note": "what an ability or phase of Magmadar, a boss in Molten Core does (title: Magma Spit)"
+ },
+ "ej/section/12259001/text": {
+  "en": "Gehennas curses the raid, reducing all healing they receive by 75%.",
+  "note": "what an ability or phase of Gehennas, a boss in Molten Core does (title: Gehennas' Curse)"
+ },
+ "ej/section/12259002/text": {
+  "en": "Gehennas calls down a rain of fire, inflicting Fire damage over time to all enemies in the area.",
+  "note": "what an ability or phase of Gehennas, a boss in Molten Core does (title: Rain of Fire)"
+ },
+ "ej/section/12259003/text": {
+  "en": "Gehennas hurls a bolt of shadow at his target, inflicting heavy Shadow damage.",
+  "note": "what an ability or phase of Gehennas, a boss in Molten Core does (title: Shadow Bolt)"
+ },
+ "ej/section/12057001/text": {
+  "en": "Garr emits an antimagic pulse, dispelling beneficial magic effects from nearby players.",
+  "note": "what an ability or phase of Garr, a boss in Molten Core does (title: Antimagic Pulse)"
+ },
+ "ej/section/12057002/text": {
+  "en": "Garr shackles nearby players with magma, sharply reducing their movement speed.",
+  "note": "what an ability or phase of Garr, a boss in Molten Core does (title: Magma Shackles)"
+ },
+ "ej/section/12264001/text": {
+  "en": "Shazzrah curses a player, increasing the magic damage they take.",
+  "note": "what an ability or phase of Shazzrah, a boss in Molten Core does (title: Shazzrah's Curse)"
+ },
+ "ej/section/12264002/text": {
+  "en": "Shazzrah blinks to a random player, resetting his threat and teleporting into the midst of the raid.",
+  "note": "what an ability or phase of Shazzrah, a boss in Molten Core does (title: Gate of Shazzrah)"
+ },
+ "ej/section/12264003/text": {
+  "en": "Shazzrah counters an enemy's spell, locking that school of magic for several seconds.",
+  "note": "what an ability or phase of Shazzrah, a boss in Molten Core does (title: Counterspell)"
+ },
+ "ej/section/12264004/text": {
+  "en": "Shazzrah releases a burst of arcane energy, inflicting heavy Arcane damage to all nearby enemies.",
+  "note": "what an ability or phase of Shazzrah, a boss in Molten Core does (title: Arcane Explosion)"
+ },
+ "ej/section/12264005/text": {
+  "en": "Shazzrah shields himself, reducing the magic damage he takes.",
+  "note": "what an ability or phase of Shazzrah, a boss in Molten Core does (title: Deaden Magic)"
+ },
+ "ej/section/12056001/text": {
+  "en": "Baron Geddon turns a player into a living bomb. After several seconds they detonate, inflicting heavy Fire damage to everyone nearby and knocking them back. Move away from the raid before exploding.",
+  "note": "what an ability or phase of Baron Geddon, a boss in Molten Core does (title: Living Bomb)"
+ },
+ "ej/section/12056002/text": {
+  "en": "Baron Geddon erupts in an inferno, pulsing escalating Fire damage to all nearby players over several seconds.",
+  "note": "what an ability or phase of Baron Geddon, a boss in Molten Core does (title: Inferno)"
+ },
+ "ej/section/12056003/text": {
+  "en": "Baron Geddon ignites a player's mana, draining it and inflicting Fire damage as it burns away.",
+  "note": "what an ability or phase of Baron Geddon, a boss in Molten Core does (title: Ignite Mana)"
+ },
+ "ej/section/12056004/text": {
+  "en": "Upon nearing death, Baron Geddon unleashes Armageddon, devastating the entire raid with catastrophic Fire damage.",
+  "note": "what an ability or phase of Baron Geddon, a boss in Molten Core does (title: Armageddon)"
+ },
+ "ej/section/12098001/text": {
+  "en": "Sulfuron slams the ground with the Hand of Ragnaros, inflicting Fire damage to nearby players and knocking them back.",
+  "note": "what an ability or phase of Sulfuron Harbinger, a boss in Molten Core does (title: Hand of Ragnaros)"
+ },
+ "ej/section/12098002/text": {
+  "en": "Sulfuron inspires his Flamewaker Priests, increasing their attack and casting speed.",
+  "note": "what an ability or phase of Sulfuron Harbinger, a boss in Molten Core does (title: Inspire)"
+ },
+ "ej/section/12098003/text": {
+  "en": "Sulfuron lets out a demoralizing shout, reducing the attack power of nearby enemies.",
+  "note": "what an ability or phase of Sulfuron Harbinger, a boss in Molten Core does (title: Demoralizing Shout)"
+ },
+ "ej/section/12098004/text": {
+  "en": "Sulfuron knocks down his target, stunning them briefly.",
+  "note": "what an ability or phase of Sulfuron Harbinger, a boss in Molten Core does (title: Knockdown)"
+ },
+ "ej/section/11988001/text": {
+  "en": "Golemagg's blows splash molten rock on his target, a stacking debuff that increases the Fire damage they take.",
+  "note": "what an ability or phase of Golemagg the Incinerator, a boss in Molten Core does (title: Magma Splash)"
+ },
+ "ej/section/11988002/text": {
+  "en": "Golemagg stomps the ground, inflicting Physical damage to all nearby players and briefly stunning them.",
+  "note": "what an ability or phase of Golemagg the Incinerator, a boss in Molten Core does (title: Earthquake)"
+ },
+ "ej/section/11988003/text": {
+  "en": "Golemagg hurls a massive pyroblast at a distant enemy, inflicting heavy Fire damage.",
+  "note": "what an ability or phase of Golemagg the Incinerator, a boss in Molten Core does (title: Pyroblast)"
+ },
+ "ej/section/12018001/text": {
+  "en": "Majordomo Executus shields himself and his guards, reflecting harmful magic back at its caster. Stop casting until it fades.",
+  "note": "what an ability or phase of Majordomo Executus, a boss in Molten Core does (title: Magic Reflection)"
+ },
+ "ej/section/12018002/text": {
+  "en": "Majordomo Executus surrounds himself with a damage shield, reflecting a portion of melee damage back at attackers.",
+  "note": "what an ability or phase of Majordomo Executus, a boss in Molten Core does (title: Damage Shield)"
+ },
+ "ej/section/12018003/text": {
+  "en": "Majordomo Executus unleashes a blast wave of fire, inflicting Fire damage to nearby players and slowing them.",
+  "note": "what an ability or phase of Majordomo Executus, a boss in Molten Core does (title: Blast Wave)"
+ },
+ "ej/section/11502001/text": {
+  "en": "Ragnaros strikes a player with his wrath, inflicting Fire damage and hurling them back with tremendous force.",
+  "note": "what an ability or phase of Ragnaros, a boss in Molten Core does (title: Wrath of Ragnaros)"
+ },
+ "ej/section/11502002/text": {
+  "en": "Ragnaros slams the molten ground, inflicting Fire damage to all nearby players and knocking them back.",
+  "note": "what an ability or phase of Ragnaros, a boss in Molten Core does (title: Hand of Ragnaros)"
+ },
+ "ej/section/11502003/text": {
+  "en": "Ragnaros causes bursts of lava to erupt from the Firelands, inflicting heavy Fire damage to any player caught above them.",
+  "note": "what an ability or phase of Ragnaros, a boss in Molten Core does (title: Lava Burst)"
+ },
+ "ej/section/11502004/text": {
+  "en": "Ragnaros sears his target with elemental fire, inflicting Fire damage over time.",
+  "note": "what an ability or phase of Ragnaros, a boss in Molten Core does (title: Elemental Fire)"
+ },
+ "ej/section/11502005/title": {
+  "en": "Sons of Flame",
+  "note": "the name of an ability or phase of Ragnaros, a boss in Molten Core"
+ },
+ "ej/section/11502005/text": {
+  "en": "At intervals Ragnaros submerges into the Firelands and summons his Sons of Flame to assail the raid before re-emerging.",
+  "note": "what an ability or phase of Ragnaros, a boss in Molten Core does (title: Sons of Flame)"
+ },
+ "ej/instance/760/desc": {
+  "en": "Onyxia is the daughter of the mighty dragon Deathwing, and sister of the scheming Nefarian Lord of Blackrock Spire. It is said that Onyxia delights in corrupting the mortal races by meddling in their political affairs. To this end it is believed that she takes on various humanoid forms and uses her charm and power to influence delicate matters between the different races. Some believe that Onyxia has even assumed an alias once used by her father - the title of the royal House Prestor. When not meddling in mortal concerns, Onyxia resides in a fiery cave below the Dragonmurk, a dismal swamp located within Dustwallow Marsh. There she is guarded by her kin, the remaining members of the insidious Black Dragon Flight.",
+  "note": "the Adventure Guide's description of Onyxia's Lair"
+ },
+ "ej/section/10184001/title": {
+  "en": "Deep Breath",
+  "note": "the name of an ability or phase of Onyxia, a boss in Onyxia's Lair"
+ },
+ "ej/section/10184001/text": {
+  "en": "Onyxia inhales deeply and exhales a wall of fire across the length of the cavern, inflicting catastrophic Fire damage to any caught in its path.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Deep Breath)"
+ },
+ "ej/section/10184002/text": {
+  "en": "Onyxia breathes a cone of fire before her, inflicting heavy Fire damage to all enemies caught in it.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Flame Breath)"
+ },
+ "ej/section/10184003/text": {
+  "en": "In her final phase, Onyxia repeatedly lets out a bellowing roar, causing the entire raid to flee in fear.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Bellowing Roar)"
+ },
+ "ej/section/10184004/text": {
+  "en": "While airborne, Onyxia hurls fireballs at random players, inflicting heavy Fire damage.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Fireball)"
+ },
+ "ej/section/10184005/text": {
+  "en": "Onyxia buffets the area in front of her with her wings, inflicting Physical damage, knocking players back and reducing their threat.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Wing Buffet)"
+ },
+ "ej/section/10184006/title": {
+  "en": "Tail Sweep",
+  "note": "the name of an ability or phase of Onyxia, a boss in Onyxia's Lair"
+ },
+ "ej/section/10184006/text": {
+  "en": "Onyxia sweeps her tail, hurling players standing behind her across the cavern.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Tail Sweep)"
+ },
+ "ej/section/10184007/title": {
+  "en": "Onyxian Whelps",
+  "note": "the name of an ability or phase of Onyxia, a boss in Onyxia's Lair"
+ },
+ "ej/section/10184007/text": {
+  "en": "During her air phase, Onyxia summons waves of Onyxian Whelps from the eggs at the cavern's edges to swarm the raid.",
+  "note": "what an ability or phase of Onyxia, a boss in Onyxia's Lair does (title: Onyxian Whelps)"
+ },
+ "ej/instance/742/desc": {
+  "en": "Blackwing Lair can be found at the very height of Blackrock Spire. It is there in the dark recesses of the mountain's peak that Nefarian has begun to unfold the final stages of his plan to destroy Ragnaros once and for all and lead his army to undisputed supremacy over all the races of Azeroth.",
+  "note": "the Adventure Guide's description of Blackwing Lair"
+ },
+ "ej/section/12435001/text": {
+  "en": "Razorgore conflagrates a player, inflicting Fire damage over time and causing them to flee in confusion.",
+  "note": "what an ability or phase of Razorgore the Untamed, a boss in Blackwing Lair does (title: Conflagration)"
+ },
+ "ej/section/12435002/text": {
+  "en": "Razorgore unleashes a volley of fireballs, striking multiple enemies for Fire damage.",
+  "note": "what an ability or phase of Razorgore the Untamed, a boss in Blackwing Lair does (title: Fireball Volley)"
+ },
+ "ej/section/12435003/text": {
+  "en": "Razorgore looses an intimidating roar, causing nearby players to flee in fear.",
+  "note": "what an ability or phase of Razorgore the Untamed, a boss in Blackwing Lair does (title: Intimidating Roar)"
+ },
+ "ej/section/12435004/text": {
+  "en": "Razorgore cleaves all enemies in front of him for heavy Physical damage.",
+  "note": "what an ability or phase of Razorgore the Untamed, a boss in Blackwing Lair does (title: Cleave)"
+ },
+ "ej/section/13020001/text": {
+  "en": "Vaelastrasz grants the raid the Essence of the Red, flooding them with mana, rage, and energy so they may burn him down before his Burning Adrenaline consumes everyone.",
+  "note": "what an ability or phase of Vaelastrasz the Corrupt, a boss in Blackwing Lair does (title: Essence of the Red)"
+ },
+ "ej/section/13020002/text": {
+  "en": "Vaelastrasz afflicts a player with burning adrenaline; their casts become instant, but they build toward a fatal explosion that inflicts massive Fire damage to all nearby. The current tank is afflicted periodically and cannot survive it.",
+  "note": "what an ability or phase of Vaelastrasz the Corrupt, a boss in Blackwing Lair does (title: Burning Adrenaline)"
+ },
+ "ej/section/13020003/text": {
+  "en": "Vaelastrasz breathes a cone of fire, inflicting heavy Fire damage to all enemies in front of him.",
+  "note": "what an ability or phase of Vaelastrasz the Corrupt, a boss in Blackwing Lair does (title: Flame Breath)"
+ },
+ "ej/section/13020004/text": {
+  "en": "Vaelastrasz cleaves all enemies before him for heavy Physical damage.",
+  "note": "what an ability or phase of Vaelastrasz the Corrupt, a boss in Blackwing Lair does (title: Cleave)"
+ },
+ "ej/section/13020005/text": {
+  "en": "Vaelastrasz sweeps his tail, inflicting Physical damage and knocking back enemies behind him.",
+  "note": "what an ability or phase of Vaelastrasz the Corrupt, a boss in Blackwing Lair does (title: Tail Sweep)"
+ },
+ "ej/section/12017001/text": {
+  "en": "Broodlord Lashlayer delivers a mortal strike, inflicting heavy Physical damage and reducing the healing his target receives.",
+  "note": "what an ability or phase of Broodlord Lashlayer, a boss in Blackwing Lair does (title: Mortal Strike)"
+ },
+ "ej/section/12017002/text": {
+  "en": "Broodlord Lashlayer knocks his target away, inflicting Physical damage and sharply reducing their threat.",
+  "note": "what an ability or phase of Broodlord Lashlayer, a boss in Blackwing Lair does (title: Knock Away)"
+ },
+ "ej/section/12017003/text": {
+  "en": "Broodlord Lashlayer unleashes a blast wave of fire, inflicting Fire damage to nearby players and knocking them back.",
+  "note": "what an ability or phase of Broodlord Lashlayer, a boss in Blackwing Lair does (title: Blast Wave)"
+ },
+ "ej/section/12017004/text": {
+  "en": "Broodlord Lashlayer cleaves all enemies in front of him for heavy Physical damage.",
+  "note": "what an ability or phase of Broodlord Lashlayer, a boss in Blackwing Lair does (title: Cleave)"
+ },
+ "ej/section/11983001/text": {
+  "en": "Firemaw breathes shadowflame in a wide cone, inflicting catastrophic Shadow damage and leaving victims vulnerable.",
+  "note": "what an ability or phase of Firemaw, a boss in Blackwing Lair does (title: Shadow Flame)"
+ },
+ "ej/section/11983002/text": {
+  "en": "Firemaw buffets enemies in front of him with flame, a stacking debuff that increases the Fire damage they take until they break line of sight.",
+  "note": "what an ability or phase of Firemaw, a boss in Blackwing Lair does (title: Flame Buffet)"
+ },
+ "ej/section/11983003/text": {
+  "en": "Firemaw buffets the area before him with his wings, inflicting Physical damage, knocking players back and reducing their threat.",
+  "note": "what an ability or phase of Firemaw, a boss in Blackwing Lair does (title: Wing Buffet)"
+ },
+ "ej/section/14601001/text": {
+  "en": "Ebonroc curses his target with his shadow, healing himself whenever he strikes them. The afflicted tank must be swapped out until the debuff fades.",
+  "note": "what an ability or phase of Ebonroc, a boss in Blackwing Lair does (title: Shadow of Ebonroc)"
+ },
+ "ej/section/14601002/text": {
+  "en": "Ebonroc breathes shadowflame in a wide cone, inflicting catastrophic Shadow damage and leaving victims vulnerable.",
+  "note": "what an ability or phase of Ebonroc, a boss in Blackwing Lair does (title: Shadow Flame)"
+ },
+ "ej/section/14601003/text": {
+  "en": "Ebonroc buffets the area before him with his wings, inflicting Physical damage, knocking players back and reducing their threat.",
+  "note": "what an ability or phase of Ebonroc, a boss in Blackwing Lair does (title: Wing Buffet)"
+ },
+ "ej/section/11981001/text": {
+  "en": "Flamegor periodically enters a frenzy, increasing his attack speed. It can be soothed by a hunter's Tranquilizing Shot.",
+  "note": "what an ability or phase of Flamegor, a boss in Blackwing Lair does (title: Frenzy)"
+ },
+ "ej/section/11981002/text": {
+  "en": "Flamegor breathes shadowflame in a wide cone, inflicting catastrophic Shadow damage and leaving victims vulnerable.",
+  "note": "what an ability or phase of Flamegor, a boss in Blackwing Lair does (title: Shadow Flame)"
+ },
+ "ej/section/11981003/text": {
+  "en": "Flamegor buffets the area before him with his wings, inflicting Physical damage, knocking players back and reducing their threat.",
+  "note": "what an ability or phase of Flamegor, a boss in Blackwing Lair does (title: Wing Buffet)"
+ },
+ "ej/section/14020001/title": {
+  "en": "Brood Affliction",
+  "note": "the name of an ability or phase of Chromaggus, a boss in Blackwing Lair"
+ },
+ "ej/section/14020001/text": {
+  "en": "Chromaggus afflicts the raid with Brood Afflictions of five colors. A player carrying all five mutates into a Chromatic Drakonid, so afflictions must be grouped and cleansed carefully.",
+  "note": "what an ability or phase of Chromaggus, a boss in Blackwing Lair does (title: Brood Affliction)"
+ },
+ "ej/section/14020002/text": {
+  "en": "Chromaggus's time-lapse breath inflicts Arcane damage and warps time around its victims, sharply reducing their threat.",
+  "note": "what an ability or phase of Chromaggus, a boss in Blackwing Lair does (title: Time Lapse)"
+ },
+ "ej/section/14020003/text": {
+  "en": "Chromaggus exhales a torrent of fire, inflicting heavy Fire damage to all enemies before him.",
+  "note": "what an ability or phase of Chromaggus, a boss in Blackwing Lair does (title: Incinerate)"
+ },
+ "ej/section/14020004/text": {
+  "en": "Chromaggus breathes corrosive acid, inflicting Nature damage over time and reducing the armor of those it strikes.",
+  "note": "what an ability or phase of Chromaggus, a boss in Blackwing Lair does (title: Corrosive Acid)"
+ },
+ "ej/section/14020005/text": {
+  "en": "Chromaggus flies into a frenzy, increasing his attack speed. It can be soothed by a hunter's Tranquilizing Shot.",
+  "note": "what an ability or phase of Chromaggus, a boss in Blackwing Lair does (title: Frenzy)"
+ },
+ "ej/section/11583001/text": {
+  "en": "Nefarian breathes shadowflame, inflicting catastrophic Shadow damage to all enemies in a wide arc before him.",
+  "note": "what an ability or phase of Nefarian, a boss in Blackwing Lair does (title: Shadow Flame)"
+ },
+ "ej/section/11583002/title": {
+  "en": "Class Calls",
+  "note": "the name of an ability or phase of Nefarian, a boss in Blackwing Lair"
+ },
+ "ej/section/11583002/text": {
+  "en": "Throughout the final phase Nefarian shouts mocking commands at specific classes — turning warriors berserk, banishing hunters' ranged weapons, polymorphing the raid's mages, and more — each disrupting that class for several seconds.",
+  "note": "what an ability or phase of Nefarian, a boss in Blackwing Lair does (title: Class Calls)"
+ },
+ "ej/section/11583003/text": {
+  "en": "Nefarian lets out a bellowing roar, causing the entire raid to flee in fear.",
+  "note": "what an ability or phase of Nefarian, a boss in Blackwing Lair does (title: Bellowing Roar)"
+ },
+ "ej/section/11583004/text": {
+  "en": "Nefarian lashes his tail, inflicting Physical damage and stunning enemies standing behind him.",
+  "note": "what an ability or phase of Nefarian, a boss in Blackwing Lair does (title: Tail Lash)"
+ },
+ "ej/section/11583005/text": {
+  "en": "Nefarian cleaves all enemies in front of him for heavy Physical damage.",
+  "note": "what an ability or phase of Nefarian, a boss in Blackwing Lair does (title: Cleave)"
+ },
+ "ej/section/14507001/text": {
+  "en": "Venoxis engulfs an enemy in holy fire, inflicting Holy damage instantly and additional Holy damage over time.",
+  "note": "what an ability or phase of High Priest Venoxis, a boss in Zul'Gurub does (title: Holy Fire)"
+ },
+ "ej/section/14507002/text": {
+  "en": "Venoxis releases a burst of holy energy, inflicting Holy damage to all nearby enemies.",
+  "note": "what an ability or phase of High Priest Venoxis, a boss in Zul'Gurub does (title: Holy Nova)"
+ },
+ "ej/section/14507003/text": {
+  "en": "Venoxis renews himself, restoring health over time.",
+  "note": "what an ability or phase of High Priest Venoxis, a boss in Zul'Gurub does (title: Renew)"
+ },
+ "ej/section/14507004/title": {
+  "en": "Venom Spit",
+  "note": "the name of an ability or phase of High Priest Venoxis, a boss in Zul'Gurub"
+ },
+ "ej/section/14507004/text": {
+  "en": "At low health Venoxis transforms into a great cobra, spitting venom that inflicts Nature damage over time and poisoning the raid.",
+  "note": "what an ability or phase of High Priest Venoxis, a boss in Zul'Gurub does (title: Venom Spit)"
+ },
+ "ej/section/14517001/text": {
+  "en": "In bat form, Jeklik looses a sonic burst, inflicting heavy Physical damage and silencing those it strikes.",
+  "note": "what an ability or phase of High Priestess Jeklik, a boss in Zul'Gurub does (title: Sonic Burst)"
+ },
+ "ej/section/14517002/text": {
+  "en": "Jeklik charges a distant player, closing the gap and stunning them briefly.",
+  "note": "what an ability or phase of High Priestess Jeklik, a boss in Zul'Gurub does (title: Charge)"
+ },
+ "ej/section/14517003/text": {
+  "en": "In troll form, Jeklik unleashes a psychic scream, causing nearby players to flee in fear.",
+  "note": "what an ability or phase of High Priestess Jeklik, a boss in Zul'Gurub does (title: Psychic Scream)"
+ },
+ "ej/section/14517004/text": {
+  "en": "Jeklik channels a powerful heal to restore her own health. Interrupt it to keep the pressure on.",
+  "note": "what an ability or phase of High Priestess Jeklik, a boss in Zul'Gurub does (title: Great Heal)"
+ },
+ "ej/section/14517005/title": {
+  "en": "Bat Swarm",
+  "note": "the name of an ability or phase of High Priestess Jeklik, a boss in Zul'Gurub"
+ },
+ "ej/section/14517005/text": {
+  "en": "Jeklik summons swarms of Frenzied Bats to harry the raid throughout the fight.",
+  "note": "what an ability or phase of High Priestess Jeklik, a boss in Zul'Gurub does (title: Bat Swarm)"
+ },
+ "ej/section/14510001/text": {
+  "en": "Mar'li hurls a volley of poison bolts, inflicting Nature damage to the raid.",
+  "note": "what an ability or phase of High Priestess Mar'li, a boss in Zul'Gurub does (title: Poison Bolt Volley)"
+ },
+ "ej/section/14510002/title": {
+  "en": "Spawn of Mar'li",
+  "note": "the name of an ability or phase of High Priestess Mar'li, a boss in Zul'Gurub"
+ },
+ "ej/section/14510002/text": {
+  "en": "Mar'li transforms into a great spider and births swarms of Spawn of Mar'li that hatch and grow into deadly broodlings.",
+  "note": "what an ability or phase of High Priestess Mar'li, a boss in Zul'Gurub does (title: Spawn of Mar'li)"
+ },
+ "ej/section/14510003/text": {
+  "en": "Mar'li charges a distant player, closing the gap and stunning them.",
+  "note": "what an ability or phase of High Priestess Mar'li, a boss in Zul'Gurub does (title: Charge)"
+ },
+ "ej/section/14510004/title": {
+  "en": "Enrage",
+  "note": "the name of an ability or phase of High Priestess Mar'li, a boss in Zul'Gurub"
+ },
+ "ej/section/14510004/text": {
+  "en": "As she nears death Mar'li enrages, increasing her attack speed and the damage she deals.",
+  "note": "what an ability or phase of High Priestess Mar'li, a boss in Zul'Gurub does (title: Enrage)"
+ },
+ "ej/section/11382001/text": {
+  "en": "Mandokir fixes a player with a threatening gaze. If they move or act while watched, he charges and strikes them down — stand still until it passes.",
+  "note": "what an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub does (title: Threatening Gaze)"
+ },
+ "ej/section/11382002/title": {
+  "en": "Bloodlord's Rage",
+  "note": "the name of an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub"
+ },
+ "ej/section/11382002/text": {
+  "en": "Each player Mandokir slays empowers him, increasing his size and the damage he deals for the rest of the fight.",
+  "note": "what an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub does (title: Bloodlord's Rage)"
+ },
+ "ej/section/11382003/text": {
+  "en": "Mandokir charges a distant player, closing the gap and striking them for Physical damage.",
+  "note": "what an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub does (title: Charge)"
+ },
+ "ej/section/11382004/text": {
+  "en": "Mandokir spins in a whirlwind, inflicting Physical damage to all nearby players.",
+  "note": "what an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub does (title: Whirlwind)"
+ },
+ "ej/section/11382005/title": {
+  "en": "Ohgan",
+  "note": "the name of an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub"
+ },
+ "ej/section/11382005/text": {
+  "en": "Mandokir rides his devilsaur Ohgan into battle; once Ohgan is slain, the Bloodlord fights on foot.",
+  "note": "what an ability or phase of Bloodlord Mandokir, a boss in Zul'Gurub does (title: Ohgan)"
+ },
+ "ej/section/15114001/text": {
+  "en": "Gahz'ranka summons a massive geyser beneath a player, hurling them high into the air.",
+  "note": "what an ability or phase of Gahz'ranka, a boss in Zul'Gurub does (title: Massive Geyser)"
+ },
+ "ej/section/15114002/text": {
+  "en": "Gahz'ranka breathes a cone of frost, inflicting Frost damage and slowing those it strikes.",
+  "note": "what an ability or phase of Gahz'ranka, a boss in Zul'Gurub does (title: Frost Breath)"
+ },
+ "ej/section/15114003/title": {
+  "en": "Slam",
+  "note": "the name of an ability or phase of Gahz'ranka, a boss in Zul'Gurub"
+ },
+ "ej/section/15114003/text": {
+  "en": "Gahz'ranka slams a nearby player, inflicting heavy Physical damage.",
+  "note": "what an ability or phase of Gahz'ranka, a boss in Zul'Gurub does (title: Slam)"
+ },
+ "ej/section/14509001/title": {
+  "en": "Resurrection",
+  "note": "the name of an ability or phase of High Priest Thekal, a boss in Zul'Gurub"
+ },
+ "ej/section/14509001/text": {
+  "en": "Thekal and his two High Zealots resurrect one another unless all three are brought to defeat within moments of each other.",
+  "note": "what an ability or phase of High Priest Thekal, a boss in Zul'Gurub does (title: Resurrection)"
+ },
+ "ej/section/14509002/text": {
+  "en": "Thekal cleaves his target, inflicting heavy Physical damage and reducing the healing they receive.",
+  "note": "what an ability or phase of High Priest Thekal, a boss in Zul'Gurub does (title: Mortal Cleave)"
+ },
+ "ej/section/14509003/text": {
+  "en": "Thekal silences nearby spellcasters, preventing them from casting for several seconds.",
+  "note": "what an ability or phase of High Priest Thekal, a boss in Zul'Gurub does (title: Silence)"
+ },
+ "ej/section/14509004/title": {
+  "en": "Blood Lust",
+  "note": "the name of an ability or phase of High Priest Thekal, a boss in Zul'Gurub"
+ },
+ "ej/section/14509004/text": {
+  "en": "Thekal works himself into a blood lust, increasing his attack speed.",
+  "note": "what an ability or phase of High Priest Thekal, a boss in Zul'Gurub does (title: Blood Lust)"
+ },
+ "ej/section/14509005/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of High Priest Thekal, a boss in Zul'Gurub"
+ },
+ "ej/section/14509005/text": {
+  "en": "Revived in tiger form, Thekal enters a frenzy, savaging the raid with rapid, brutal strikes.",
+  "note": "what an ability or phase of High Priest Thekal, a boss in Zul'Gurub does (title: Frenzy)"
+ },
+ "ej/section/14515001/title": {
+  "en": "Mark of Arlokk",
+  "note": "the name of an ability or phase of High Priestess Arlokk, a boss in Zul'Gurub"
+ },
+ "ej/section/14515001/text": {
+  "en": "Arlokk marks a player and vanishes, summoning packs of panthers that fixate on and charge the marked target.",
+  "note": "what an ability or phase of High Priestess Arlokk, a boss in Zul'Gurub does (title: Mark of Arlokk)"
+ },
+ "ej/section/14515002/text": {
+  "en": "Arlokk gouges her target, inflicting Physical damage and incapacitating them briefly.",
+  "note": "what an ability or phase of High Priestess Arlokk, a boss in Zul'Gurub does (title: Gouge)"
+ },
+ "ej/section/14515003/text": {
+  "en": "Arlokk spins in a whirlwind, inflicting Physical damage to all nearby players.",
+  "note": "what an ability or phase of High Priestess Arlokk, a boss in Zul'Gurub does (title: Whirlwind)"
+ },
+ "ej/section/14515004/text": {
+  "en": "Arlokk afflicts a player with searing pain, inflicting Shadow damage over time.",
+  "note": "what an ability or phase of High Priestess Arlokk, a boss in Zul'Gurub does (title: Shadow Word: Pain)"
+ },
+ "ej/section/11380001/title": {
+  "en": "Brain Wash Totem",
+  "note": "the name of an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub"
+ },
+ "ej/section/11380001/text": {
+  "en": "Jin'do plants a Brain Wash Totem that seizes control of nearby players' minds. Destroy it quickly.",
+  "note": "what an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub does (title: Brain Wash Totem)"
+ },
+ "ej/section/11380002/title": {
+  "en": "Powerful Hex",
+  "note": "the name of an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub"
+ },
+ "ej/section/11380002/text": {
+  "en": "Jin'do hexes a player, transforming them into a harmless frog and stripping their abilities until the curse is removed.",
+  "note": "what an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub does (title: Powerful Hex)"
+ },
+ "ej/section/11380003/title": {
+  "en": "Shades of Jin'do",
+  "note": "the name of an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub"
+ },
+ "ej/section/11380003/text": {
+  "en": "Jin'do spawns shadowy Shades that pursue and drain the mana of the raid's casters.",
+  "note": "what an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub does (title: Shades of Jin'do)"
+ },
+ "ej/section/11380004/title": {
+  "en": "Healing Ward",
+  "note": "the name of an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub"
+ },
+ "ej/section/11380004/text": {
+  "en": "Jin'do summons a Healing Ward that rapidly mends him; it must be destroyed to make progress.",
+  "note": "what an ability or phase of Jin'do the Hexxer, a boss in Zul'Gurub does (title: Healing Ward)"
+ },
+ "ej/section/14834001/title": {
+  "en": "Aspects of the Hakkari",
+  "note": "the name of an ability or phase of Hakkar, a boss in Zul'Gurub"
+ },
+ "ej/section/14834001/text": {
+  "en": "Until each High Priest is slain, Hakkar wields their aspect — Jeklik's bats, Venoxis' renew, Mar'li's poison, Thekal's frenzy, and Arlokk's gaze. Clearing the priests first strips these powers away.",
+  "note": "what an ability or phase of Hakkar, a boss in Zul'Gurub does (title: Aspects of the Hakkari)"
+ },
+ "ej/section/14834002/text": {
+  "en": "Hakkar siphons the blood of the raid, draining their life to heal himself.",
+  "note": "what an ability or phase of Hakkar, a boss in Zul'Gurub does (title: Blood Siphon)"
+ },
+ "ej/section/14834003/text": {
+  "en": "Hakkar infects a player with Corrupted Blood, a virulent affliction that inflicts heavy Shadow damage and spreads to anyone standing nearby.",
+  "note": "what an ability or phase of Hakkar, a boss in Zul'Gurub does (title: Corrupted Blood)"
+ },
+ "ej/section/14834004/text": {
+  "en": "Hakkar drives a player insane, turning them against their allies for a time.",
+  "note": "what an ability or phase of Hakkar, a boss in Zul'Gurub does (title: Cause Insanity)"
+ },
+ "ej/section/15082001/text": {
+  "en": "Gri'lek charges a distant player, closing the gap and striking them for heavy Physical damage.",
+  "note": "what an ability or phase of Gri'lek, a boss in Zul'Gurub does (title: Charge)"
+ },
+ "ej/section/15082002/title": {
+  "en": "Ground Tremor",
+  "note": "the name of an ability or phase of Gri'lek, a boss in Zul'Gurub"
+ },
+ "ej/section/15082002/text": {
+  "en": "Gri'lek smashes the ground, inflicting Physical damage to nearby players and interrupting their spellcasting.",
+  "note": "what an ability or phase of Gri'lek, a boss in Zul'Gurub does (title: Ground Tremor)"
+ },
+ "ej/section/15082003/title": {
+  "en": "Maul",
+  "note": "the name of an ability or phase of Gri'lek, a boss in Zul'Gurub"
+ },
+ "ej/section/15082003/text": {
+  "en": "Gri'lek mauls his target with a savage two-handed blow for heavy Physical damage.",
+  "note": "what an ability or phase of Gri'lek, a boss in Zul'Gurub does (title: Maul)"
+ },
+ "ej/section/15083001/text": {
+  "en": "Hazza'rah lulls a player into a deep sleep, incapacitating them until they take damage.",
+  "note": "what an ability or phase of Hazza'rah, a boss in Zul'Gurub does (title: Sleep)"
+ },
+ "ej/section/15083002/title": {
+  "en": "Mana Burn",
+  "note": "the name of an ability or phase of Hazza'rah, a boss in Zul'Gurub"
+ },
+ "ej/section/15083002/text": {
+  "en": "Hazza'rah burns away a player's mana, inflicting Shadow damage in proportion to the amount destroyed.",
+  "note": "what an ability or phase of Hazza'rah, a boss in Zul'Gurub does (title: Mana Burn)"
+ },
+ "ej/section/15083003/title": {
+  "en": "Nightmare Illusions",
+  "note": "the name of an ability or phase of Hazza'rah, a boss in Zul'Gurub"
+ },
+ "ej/section/15083003/text": {
+  "en": "Hazza'rah summons Nightmare Illusions to assail the raid while he hides among them.",
+  "note": "what an ability or phase of Hazza'rah, a boss in Zul'Gurub does (title: Nightmare Illusions)"
+ },
+ "ej/section/15084001/text": {
+  "en": "Renataki assaults his target with a thousand blades, inflicting rapid bursts of heavy Physical damage.",
+  "note": "what an ability or phase of Renataki, a boss in Zul'Gurub does (title: Thousand Blades)"
+ },
+ "ej/section/15084002/text": {
+  "en": "Renataki gouges his target, inflicting Physical damage and incapacitating them briefly.",
+  "note": "what an ability or phase of Renataki, a boss in Zul'Gurub does (title: Gouge)"
+ },
+ "ej/section/15084003/title": {
+  "en": "Vanish & Ambush",
+  "note": "the name of an ability or phase of Renataki, a boss in Zul'Gurub"
+ },
+ "ej/section/15084003/text": {
+  "en": "Renataki vanishes from sight and reappears behind a random player, ambushing them for massive Physical damage.",
+  "note": "what an ability or phase of Renataki, a boss in Zul'Gurub does (title: Vanish & Ambush)"
+ },
+ "ej/section/15085001/text": {
+  "en": "Wushoolay conjures a lightning cloud over the ground, inflicting Nature damage to any player who stands beneath it.",
+  "note": "what an ability or phase of Wushoolay, a boss in Zul'Gurub does (title: Lightning Cloud)"
+ },
+ "ej/section/15085002/text": {
+  "en": "Wushoolay hurls a bolt of lightning that arcs between nearby players, inflicting Nature damage.",
+  "note": "what an ability or phase of Wushoolay, a boss in Zul'Gurub does (title: Chain Lightning)"
+ },
+ "ej/section/15085003/title": {
+  "en": "War Stomp",
+  "note": "the name of an ability or phase of Wushoolay, a boss in Zul'Gurub"
+ },
+ "ej/section/15085003/text": {
+  "en": "Wushoolay stomps the ground, stunning all nearby players for a short time.",
+  "note": "what an ability or phase of Wushoolay, a boss in Zul'Gurub does (title: War Stomp)"
+ },
+ "ej/instance/743/desc": {
+  "en": "During the final hours of the War of the Shifting Sands, the combined forces of the night elves and the four dragonflights drove the battle to the very heart of the qiraji empire, to the fortress city of Ahn'Qiraj. Yet at the city gates, the armies of Kalimdor encountered a concentration of silithid war drones more massive than any they had encountered before. Ultimately the silithid and their qiraji masters were not defeated, but merely imprisoned inside a magical barrier, and the war left the cursed city in ruins. A thousand years have passed since that day, but the qiraji forces have not been idle. A new and terrible army has been spawned from the hives, and the ruins of Ahn'Qiraj are teeming once again with swarming masses of silithid and qiraji. This threat must be eliminated, or else all of Azeroth may fall before the terrifying might of the new qiraji army.",
+  "note": "the Adventure Guide's description of Ruins of Ahn'Qiraj"
+ },
+ "ej/section/15348001/text": {
+  "en": "Kurinnaxx's strikes inflict Mortal Wounds, a stacking debuff that reduces the healing his target receives.",
+  "note": "what an ability or phase of Kurinnaxx, a boss in Ruins of Ahn'Qiraj does (title: Mortal Wound)"
+ },
+ "ej/section/15348002/text": {
+  "en": "Kurinnaxx conjures sand traps beneath the raid that erupt when disturbed, inflicting heavy Nature damage and hurling players into the air.",
+  "note": "what an ability or phase of Kurinnaxx, a boss in Ruins of Ahn'Qiraj does (title: Sand Trap)"
+ },
+ "ej/section/15348003/title": {
+  "en": "Enrage",
+  "note": "the name of an ability or phase of Kurinnaxx, a boss in Ruins of Ahn'Qiraj"
+ },
+ "ej/section/15348003/text": {
+  "en": "Over the course of the fight Kurinnaxx steadily enrages, increasing the damage he deals — he must be slain before it becomes lethal.",
+  "note": "what an ability or phase of Kurinnaxx, a boss in Ruins of Ahn'Qiraj does (title: Enrage)"
+ },
+ "ej/section/15341001/title": {
+  "en": "Summon the Army",
+  "note": "the name of an ability or phase of General Rajaxx, a boss in Ruins of Ahn'Qiraj"
+ },
+ "ej/section/15341001/text": {
+  "en": "Rajaxx commands wave after wave of the Qiraji army, each led by a captain, to assault the raid before he himself enters the fray.",
+  "note": "what an ability or phase of General Rajaxx, a boss in Ruins of Ahn'Qiraj does (title: Summon the Army)"
+ },
+ "ej/section/15341002/text": {
+  "en": "Rajaxx unleashes a thundercrack, inflicting Nature damage and stunning all nearby players.",
+  "note": "what an ability or phase of General Rajaxx, a boss in Ruins of Ahn'Qiraj does (title: Thundercrack)"
+ },
+ "ej/section/15341003/text": {
+  "en": "Rajaxx slams the ground, inflicting Nature damage to nearby players and slowing their attack speed.",
+  "note": "what an ability or phase of General Rajaxx, a boss in Ruins of Ahn'Qiraj does (title: Thunderclap)"
+ },
+ "ej/section/15340001/text": {
+  "en": "Moam drains the mana from the raid's casters, converting it into arcane energy that builds toward a devastating release.",
+  "note": "what an ability or phase of Moam, a boss in Ruins of Ahn'Qiraj does (title: Drain Mana)"
+ },
+ "ej/section/15340002/text": {
+  "en": "Once charged with stolen mana, Moam erupts with arcane energy, inflicting heavy Arcane damage to the entire raid.",
+  "note": "what an ability or phase of Moam, a boss in Ruins of Ahn'Qiraj does (title: Arcane Eruption)"
+ },
+ "ej/section/15340003/title": {
+  "en": "Summon Mana Fiends",
+  "note": "the name of an ability or phase of Moam, a boss in Ruins of Ahn'Qiraj"
+ },
+ "ej/section/15340003/text": {
+  "en": "Moam summons Mana Fiends to drain the raid and turns to stone to recharge once fully energized.",
+  "note": "what an ability or phase of Moam, a boss in Ruins of Ahn'Qiraj does (title: Summon Mana Fiends)"
+ },
+ "ej/section/15370001/text": {
+  "en": "Buru fixates on a single player and pursues them at full speed, ignoring all others. The raid must kite him among his eggs.",
+  "note": "what an ability or phase of Buru the Gorger, a boss in Ruins of Ahn'Qiraj does (title: Full Speed)"
+ },
+ "ej/section/15370002/title": {
+  "en": "Egg Explosion",
+  "note": "the name of an ability or phase of Buru the Gorger, a boss in Ruins of Ahn'Qiraj"
+ },
+ "ej/section/15370002/text": {
+  "en": "Buru takes greatly reduced damage until his eggs are destroyed. Each egg explodes violently when broken, weakening Buru but harming the raid.",
+  "note": "what an ability or phase of Buru the Gorger, a boss in Ruins of Ahn'Qiraj does (title: Egg Explosion)"
+ },
+ "ej/section/15370003/text": {
+  "en": "Once his eggs are gone, Buru afflicts the raid with a creeping plague, inflicting escalating Nature damage over time.",
+  "note": "what an ability or phase of Buru the Gorger, a boss in Ruins of Ahn'Qiraj does (title: Creeping Plague)"
+ },
+ "ej/section/15369001/text": {
+  "en": "Ayamiss paralyzes a random player and levitates them to the sacrificial altar, where her swarmers feed on them unless the raid intervenes.",
+  "note": "what an ability or phase of Ayamiss the Hunter, a boss in Ruins of Ahn'Qiraj does (title: Paralyze)"
+ },
+ "ej/section/15369002/text": {
+  "en": "Ayamiss sprays a volley of stingers, inflicting Nature damage to players in front of her.",
+  "note": "what an ability or phase of Ayamiss the Hunter, a boss in Ruins of Ahn'Qiraj does (title: Stinger Spray)"
+ },
+ "ej/section/15369003/text": {
+  "en": "While airborne, Ayamiss looses a poison stinger at a distant player, inflicting heavy Nature damage.",
+  "note": "what an ability or phase of Ayamiss the Hunter, a boss in Ruins of Ahn'Qiraj does (title: Poison Stinger)"
+ },
+ "ej/section/15339001/text": {
+  "en": "Ossirian gains a stacking buff that steadily increases his damage. It can only be stripped by luring him onto one of the Crystals scattered around the arena.",
+  "note": "what an ability or phase of Ossirian the Unscarred, a boss in Ruins of Ahn'Qiraj does (title: Strength of Ossirian)"
+ },
+ "ej/section/15339002/text": {
+  "en": "Tornadoes of sand sweep across the arena, hurling any player they touch high into the air.",
+  "note": "what an ability or phase of Ossirian the Unscarred, a boss in Ruins of Ahn'Qiraj does (title: Sand Storm)"
+ },
+ "ej/section/15339003/title": {
+  "en": "Supreme Mode",
+  "note": "the name of an ability or phase of Ossirian the Unscarred, a boss in Ruins of Ahn'Qiraj"
+ },
+ "ej/section/15339003/text": {
+  "en": "If Ossirian is not weakened at a crystal in time, he enters Supreme Mode and devastates the raid with overwhelming force.",
+  "note": "what an ability or phase of Ossirian the Unscarred, a boss in Ruins of Ahn'Qiraj does (title: Supreme Mode)"
+ },
+ "ej/instance/744/desc": {
+  "en": "At the heart of Ahn'Qiraj lies an ancient temple complex. Built in the time before recorded history, it is both a monument to unspeakable gods and a massive breeding ground for the qiraji army. Since the War of the Shifting Sands ended a thousand years ago, the Twin Emperors of the qiraji empire have been trapped inside their temple, barely contained behind the magical barrier erected by the bronze dragon Anachronos and the night elves. Now that the Scepter of the Shifting Sands has been reassembled and the seal has been broken, the way into the inner sanctum of Ahn'Qiraj is open. Beyond the crawling madness of the hives, beneath the Temple of Ahn'Qiraj, legions of qiraji prepare for invasion. They must be stopped at all costs before they can unleash their voracious insectoid armies on Kalimdor once again, and a second War of the Shifting Sands breaks loose!",
+  "note": "the Adventure Guide's description of Temple of Ahn'Qiraj"
+ },
+ "ej/section/15263001/text": {
+  "en": "Skeram seizes control of a player's mind, turning them against the raid for a time.",
+  "note": "what an ability or phase of The Prophet Skeram, a boss in Temple of Ahn'Qiraj does (title: True Fulfillment)"
+ },
+ "ej/section/15263002/text": {
+  "en": "Skeram releases a burst of arcane energy, inflicting heavy Arcane damage to all nearby players.",
+  "note": "what an ability or phase of The Prophet Skeram, a boss in Temple of Ahn'Qiraj does (title: Arcane Explosion)"
+ },
+ "ej/section/15263003/text": {
+  "en": "Skeram blasts a player with Earth Shock, inflicting Nature damage and interrupting their spellcasting.",
+  "note": "what an ability or phase of The Prophet Skeram, a boss in Temple of Ahn'Qiraj does (title: Earth Shock)"
+ },
+ "ej/section/15263004/title": {
+  "en": "Mirror Image",
+  "note": "the name of an ability or phase of The Prophet Skeram, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15263004/text": {
+  "en": "At intervals Skeram splits into illusory copies of himself, each able to cast his spells. The images must be cut down to find the true Prophet.",
+  "note": "what an ability or phase of The Prophet Skeram, a boss in Temple of Ahn'Qiraj does (title: Mirror Image)"
+ },
+ "ej/section/15511001/title": {
+  "en": "Lord Kri: Toxic Volley",
+  "note": "the name of an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15511001/text": {
+  "en": "Lord Kri looses a volley of toxic spines, inflicting Nature damage and poisoning the raid.",
+  "note": "what an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj does (title: Lord Kri: Toxic Volley)"
+ },
+ "ej/section/15511002/title": {
+  "en": "Lord Kri: Poison Cloud",
+  "note": "the name of an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15511002/text": {
+  "en": "When Lord Kri dies, his corpse bursts into a lingering cloud of poison that inflicts heavy Nature damage to any who linger in it.",
+  "note": "what an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj does (title: Lord Kri: Poison Cloud)"
+ },
+ "ej/section/15511003/title": {
+  "en": "Vem: Charge & Knock Away",
+  "note": "the name of an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15511003/text": {
+  "en": "Vem charges across the room and knocks his target away, constantly closing and resetting distance.",
+  "note": "what an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj does (title: Vem: Charge & Knock Away)"
+ },
+ "ej/section/15511004/title": {
+  "en": "Vem's Fury",
+  "note": "the name of an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15511004/text": {
+  "en": "Should Vem fall before his siblings, Princess Yauj and Lord Kri fly into an enrage for the rest of the fight — Vem must be slain last.",
+  "note": "what an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj does (title: Vem's Fury)"
+ },
+ "ej/section/15511005/title": {
+  "en": "Princess Yauj: Heal",
+  "note": "the name of an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15511005/text": {
+  "en": "Princess Yauj channels powerful heals on her brothers, undoing the raid's progress unless interrupted.",
+  "note": "what an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj does (title: Princess Yauj: Heal)"
+ },
+ "ej/section/15511006/title": {
+  "en": "Princess Yauj: Fear",
+  "note": "the name of an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15511006/text": {
+  "en": "Princess Yauj terrifies nearby players, causing them to flee, and summons Yauj Brood on her death.",
+  "note": "what an ability or phase of Silithid Royalty, a boss in Temple of Ahn'Qiraj does (title: Princess Yauj: Fear)"
+ },
+ "ej/section/15516001/text": {
+  "en": "Sartura spins in a relentless whirlwind, inflicting heavy Physical damage to all nearby players while moving unpredictably.",
+  "note": "what an ability or phase of Battleguard Sartura, a boss in Temple of Ahn'Qiraj does (title: Whirlwind)"
+ },
+ "ej/section/15516002/text": {
+  "en": "Sartura cleaves all enemies before her, inflicting heavy Physical damage.",
+  "note": "what an ability or phase of Battleguard Sartura, a boss in Temple of Ahn'Qiraj does (title: Sundering Cleave)"
+ },
+ "ej/section/15516003/text": {
+  "en": "Sartura enrages, increasing her attack speed and the damage she deals.",
+  "note": "what an ability or phase of Battleguard Sartura, a boss in Temple of Ahn'Qiraj does (title: Enrage)"
+ },
+ "ej/section/15516004/title": {
+  "en": "Royal Guards",
+  "note": "the name of an ability or phase of Battleguard Sartura, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15516004/text": {
+  "en": "Sartura fights alongside her Royal Guards, who also whirlwind and must be controlled by the raid.",
+  "note": "what an ability or phase of Battleguard Sartura, a boss in Temple of Ahn'Qiraj does (title: Royal Guards)"
+ },
+ "ej/section/15510001/text": {
+  "en": "Fankriss's strikes inflict Mortal Wounds, a stacking debuff that reduces the healing his target receives.",
+  "note": "what an ability or phase of Fankriss the Unyielding, a boss in Temple of Ahn'Qiraj does (title: Mortal Wound)"
+ },
+ "ej/section/15510002/text": {
+  "en": "Fankriss entangles a random player in webbing, rooting them in place and spawning a Spawn of Fankriss to attack them.",
+  "note": "what an ability or phase of Fankriss the Unyielding, a boss in Temple of Ahn'Qiraj does (title: Entangle)"
+ },
+ "ej/section/15510003/title": {
+  "en": "Summon Spawns",
+  "note": "the name of an ability or phase of Fankriss the Unyielding, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15510003/text": {
+  "en": "Fankriss teleports players into his brood and summons Spawns of Fankriss and Vekniss Hatchlings to overwhelm the raid.",
+  "note": "what an ability or phase of Fankriss the Unyielding, a boss in Temple of Ahn'Qiraj does (title: Summon Spawns)"
+ },
+ "ej/section/15299001/title": {
+  "en": "Frost Vulnerability",
+  "note": "the name of an ability or phase of Viscidus, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15299001/text": {
+  "en": "Viscidus is vulnerable to Frost. Enough Frost damage slows and then freezes him solid, after which a flurry of melee blows shatters him into Glob oozes.",
+  "note": "what an ability or phase of Viscidus, a boss in Temple of Ahn'Qiraj does (title: Frost Vulnerability)"
+ },
+ "ej/section/15299002/text": {
+  "en": "Viscidus hurls a volley of poison bolts, inflicting Nature damage to the raid.",
+  "note": "what an ability or phase of Viscidus, a boss in Temple of Ahn'Qiraj does (title: Poison Bolt Volley)"
+ },
+ "ej/section/15299003/text": {
+  "en": "Viscidus poisons his attackers with a virulent toxin, inflicting Nature damage over time.",
+  "note": "what an ability or phase of Viscidus, a boss in Temple of Ahn'Qiraj does (title: Toxin)"
+ },
+ "ej/section/15509001/text": {
+  "en": "Huhuran periodically enters a frenzy, increasing her attack and casting speed. It can be soothed by a hunter's Tranquilizing Shot.",
+  "note": "what an ability or phase of Princess Huhuran, a boss in Temple of Ahn'Qiraj does (title: Frenzy)"
+ },
+ "ej/section/15509002/text": {
+  "en": "Below 30% health, Huhuran goes berserk, unleashing relentless torrents of poison on the entire raid until she falls.",
+  "note": "what an ability or phase of Princess Huhuran, a boss in Temple of Ahn'Qiraj does (title: Berserk)"
+ },
+ "ej/section/15509003/text": {
+  "en": "Huhuran sprays a noxious poison, inflicting Nature damage over time to those it strikes.",
+  "note": "what an ability or phase of Princess Huhuran, a boss in Temple of Ahn'Qiraj does (title: Noxious Poison)"
+ },
+ "ej/section/15509004/text": {
+  "en": "Huhuran stings a player, sending them into a poisoned slumber until the venom runs its course.",
+  "note": "what an ability or phase of Princess Huhuran, a boss in Temple of Ahn'Qiraj does (title: Wyvern Sting)"
+ },
+ "ej/section/15276001/title": {
+  "en": "Twin Teleport & Heal",
+  "note": "the name of an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15276001/text": {
+  "en": "The emperors swap positions every thirty seconds and heal one another to full whenever they stand close together — they must be tanked far apart and brought low at the same time.",
+  "note": "what an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj does (title: Twin Teleport & Heal)"
+ },
+ "ej/section/15276002/title": {
+  "en": "Vek'lor: Shadow Bolt",
+  "note": "the name of an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15276002/text": {
+  "en": "Emperor Vek'lor hurls heavy Shadow Bolts at the raid from range.",
+  "note": "what an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj does (title: Vek'lor: Shadow Bolt)"
+ },
+ "ej/section/15276003/title": {
+  "en": "Vek'lor: Arcane Burst",
+  "note": "the name of an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15276003/text": {
+  "en": "When struck in melee, Emperor Vek'lor releases an Arcane Burst, inflicting heavy Arcane damage and knocking nearby players back — he must be fought at range.",
+  "note": "what an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj does (title: Vek'lor: Arcane Burst)"
+ },
+ "ej/section/15276004/title": {
+  "en": "Vek'lor: Blizzard",
+  "note": "the name of an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15276004/text": {
+  "en": "Emperor Vek'lor conjures a blizzard, inflicting Frost damage over a wide area.",
+  "note": "what an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj does (title: Vek'lor: Blizzard)"
+ },
+ "ej/section/15276005/title": {
+  "en": "Vek'nilash: Unbalancing Strike",
+  "note": "the name of an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15276005/text": {
+  "en": "Emperor Vek'nilash delivers an unbalancing strike, inflicting heavy Physical damage and reducing his target's defense.",
+  "note": "what an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj does (title: Vek'nilash: Unbalancing Strike)"
+ },
+ "ej/section/15276006/title": {
+  "en": "Vek'nilash: Uppercut",
+  "note": "the name of an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15276006/text": {
+  "en": "Emperor Vek'nilash launches his target into the air with a mighty uppercut.",
+  "note": "what an ability or phase of The Twin Emperors, a boss in Temple of Ahn'Qiraj does (title: Vek'nilash: Uppercut)"
+ },
+ "ej/section/15517001/text": {
+  "en": "Ouro unleashes a sand blast, inflicting massive Nature damage to players in front of him.",
+  "note": "what an ability or phase of Ouro, a boss in Temple of Ahn'Qiraj does (title: Sand Blast)"
+ },
+ "ej/section/15517002/text": {
+  "en": "When Ouro erupts from the sand, the ground ruptures beneath the raid, inflicting Physical damage and knocking players back.",
+  "note": "what an ability or phase of Ouro, a boss in Temple of Ahn'Qiraj does (title: Ground Rupture)"
+ },
+ "ej/section/15517003/title": {
+  "en": "Submerge & Summon",
+  "note": "the name of an ability or phase of Ouro, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15517003/text": {
+  "en": "Ouro periodically burrows beneath the sand, summoning Dirt Mounds and Ouro Scarabs before erupting back to the surface.",
+  "note": "what an ability or phase of Ouro, a boss in Temple of Ahn'Qiraj does (title: Submerge & Summon)"
+ },
+ "ej/section/15517004/title": {
+  "en": "Enrage",
+  "note": "the name of an ability or phase of Ouro, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15517004/text": {
+  "en": "If the fight runs long, Ouro enrages, vastly increasing the damage he deals.",
+  "note": "what an ability or phase of Ouro, a boss in Temple of Ahn'Qiraj does (title: Enrage)"
+ },
+ "ej/section/15727001/text": {
+  "en": "In its eye phase, C'Thun's great eye unleashes a rotating Dark Glare — a sweeping beam that instantly kills anything it touches. Take cover behind the chamber's pillars.",
+  "note": "what an ability or phase of C'Thun, a boss in Temple of Ahn'Qiraj does (title: Dark Glare)"
+ },
+ "ej/section/15727002/text": {
+  "en": "C'Thun's eye fires green beams that chain between nearby players, inflicting Nature damage.",
+  "note": "what an ability or phase of C'Thun, a boss in Temple of Ahn'Qiraj does (title: Eye Beam)"
+ },
+ "ej/section/15727003/title": {
+  "en": "Flesh Tentacles & Stomach",
+  "note": "the name of an ability or phase of C'Thun, a boss in Temple of Ahn'Qiraj"
+ },
+ "ej/section/15727003/text": {
+  "en": "In its body phase, C'Thun swallows players whole into its stomach, where two Flesh Tentacles must be destroyed to leave C'Thun vulnerable. Giant Claw and Eye Tentacles erupt from the body throughout.",
+  "note": "what an ability or phase of C'Thun, a boss in Temple of Ahn'Qiraj does (title: Flesh Tentacles & Stomach)"
+ },
+ "ej/section/15727004/text": {
+  "en": "Players swallowed into C'Thun's stomach are bathed in digestive acid, taking steady Nature damage until they escape.",
+  "note": "what an ability or phase of C'Thun, a boss in Temple of Ahn'Qiraj does (title: Digestive Acid)"
+ },
+ "ej/instance/754/desc": {
+  "en": "Floating above the Plaguelands, the necropolis known as Naxxramas serves as the seat of one of the Lich King's most powerful officers, the dreaded lich Kel'Thuzad. Horrors of the past and new terrors yet to be unleashed are gathering inside the necropolis as the Lich King's servants prepare their assault. Soon the Scourge will march again...",
+  "note": "the Adventure Guide's description of Naxxramas"
+ },
+ "ej/section/15956001/text": {
+  "en": "Anub'Rekhan erupts a line of impaling spikes from the ground, inflicting heavy Physical damage and hurling players into the air.",
+  "note": "what an ability or phase of Anub'Rekhan, a boss in Naxxramas does (title: Impale)"
+ },
+ "ej/section/15956002/text": {
+  "en": "Anub'Rekhan surrounds himself with a swarm of locusts, draining the life of nearby players and silencing them. The tank must kite him away until it ends.",
+  "note": "what an ability or phase of Anub'Rekhan, a boss in Naxxramas does (title: Locust Swarm)"
+ },
+ "ej/section/15956003/title": {
+  "en": "Corpse Scarabs",
+  "note": "the name of an ability or phase of Anub'Rekhan, a boss in Naxxramas"
+ },
+ "ej/section/15956003/text": {
+  "en": "Slain Crypt Guards and the boss's own corpse erupt with Corpse Scarabs that swarm the raid.",
+  "note": "what an ability or phase of Anub'Rekhan, a boss in Naxxramas does (title: Corpse Scarabs)"
+ },
+ "ej/section/15953001/text": {
+  "en": "Faerlina looses a volley of poison bolts, inflicting heavy Nature damage to the raid.",
+  "note": "what an ability or phase of Grand Widow Faerlina, a boss in Naxxramas does (title: Poison Bolt Volley)"
+ },
+ "ej/section/15953002/text": {
+  "en": "Faerlina calls down a rain of fire, inflicting Fire damage to all players in the area.",
+  "note": "what an ability or phase of Grand Widow Faerlina, a boss in Naxxramas does (title: Rain of Fire)"
+ },
+ "ej/section/15953003/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Grand Widow Faerlina, a boss in Naxxramas"
+ },
+ "ej/section/15953003/text": {
+  "en": "Faerlina enrages, vastly increasing her damage. Mind-controlling one of her Worshippers and unleashing its Widow's Embrace removes the frenzy and silences her.",
+  "note": "what an ability or phase of Grand Widow Faerlina, a boss in Naxxramas does (title: Frenzy)"
+ },
+ "ej/section/15952001/text": {
+  "en": "Maexxna hurls players against the cavern walls, cocooning them in webbing until they are freed by their allies.",
+  "note": "what an ability or phase of Maexxna, a boss in Naxxramas does (title: Web Wrap)"
+ },
+ "ej/section/15952002/text": {
+  "en": "Maexxna sprays the raid with webbing, stunning everyone for several seconds.",
+  "note": "what an ability or phase of Maexxna, a boss in Naxxramas does (title: Web Spray)"
+ },
+ "ej/section/15952003/text": {
+  "en": "Maexxna's bite injects a necrotic poison, sharply reducing the healing her target receives.",
+  "note": "what an ability or phase of Maexxna, a boss in Naxxramas does (title: Necrotic Poison)"
+ },
+ "ej/section/15952004/title": {
+  "en": "Frenzy",
+  "note": "the name of an ability or phase of Maexxna, a boss in Naxxramas"
+ },
+ "ej/section/15952004/text": {
+  "en": "Below 30% health, Maexxna enters a frenzy, attacking with greatly increased speed.",
+  "note": "what an ability or phase of Maexxna, a boss in Naxxramas does (title: Frenzy)"
+ },
+ "ej/section/15954001/text": {
+  "en": "Noth curses the raid; after a few seconds the curse erupts, inflicting heavy Shadow damage to anyone still afflicted.",
+  "note": "what an ability or phase of Noth the Plaguebringer, a boss in Naxxramas does (title: Curse of the Plaguebringer)"
+ },
+ "ej/section/15954002/text": {
+  "en": "Noth cripples a player, slowing their attack and movement speed and weakening their strength.",
+  "note": "what an ability or phase of Noth the Plaguebringer, a boss in Naxxramas does (title: Cripple)"
+ },
+ "ej/section/15954003/title": {
+  "en": "Blink & Raise Dead",
+  "note": "the name of an ability or phase of Noth the Plaguebringer, a boss in Naxxramas"
+ },
+ "ej/section/15954003/text": {
+  "en": "Noth blinks free of melee and raises Plagued Champions and Warriors, periodically teleporting to his balcony to send skeletons against the raid.",
+  "note": "what an ability or phase of Noth the Plaguebringer, a boss in Naxxramas does (title: Blink & Raise Dead)"
+ },
+ "ej/section/15936001/text": {
+  "en": "Heigan channels eruptions of plague that sweep across the floor in sequence. Players must move through the safe zones in rhythm — the infamous Safety Dance — or be killed instantly.",
+  "note": "what an ability or phase of Heigan the Unclean, a boss in Naxxramas does (title: Eruption)"
+ },
+ "ej/section/15936002/text": {
+  "en": "Heigan afflicts the raid with Decrepit Fever, a disease that inflicts Nature damage over time and reduces maximum health.",
+  "note": "what an ability or phase of Heigan the Unclean, a boss in Naxxramas does (title: Decrepit Fever)"
+ },
+ "ej/section/15936003/title": {
+  "en": "Spell Disruption",
+  "note": "the name of an ability or phase of Heigan the Unclean, a boss in Naxxramas"
+ },
+ "ej/section/15936003/text": {
+  "en": "Heigan disrupts the magic around him, sharply increasing the mana cost of the raid's spells.",
+  "note": "what an ability or phase of Heigan the Unclean, a boss in Naxxramas does (title: Spell Disruption)"
+ },
+ "ej/section/16011001/title": {
+  "en": "Necrotic Aura",
+  "note": "the name of an ability or phase of Loatheb, a boss in Naxxramas"
+ },
+ "ej/section/16011001/text": {
+  "en": "Loatheb radiates a Necrotic Aura that prevents nearly all healing. Healing lands only in brief windows between its pulses, demanding precise cooldown timing.",
+  "note": "what an ability or phase of Loatheb, a boss in Naxxramas does (title: Necrotic Aura)"
+ },
+ "ej/section/16011002/text": {
+  "en": "As the fight wears on, Loatheb inflicts Inevitable Doom at ever-shorter intervals, dealing escalating Shadow damage the healers must survive between Necrotic Aura windows.",
+  "note": "what an ability or phase of Loatheb, a boss in Naxxramas does (title: Inevitable Doom)"
+ },
+ "ej/section/16011003/title": {
+  "en": "Spores",
+  "note": "the name of an ability or phase of Loatheb, a boss in Naxxramas"
+ },
+ "ej/section/16011003/text": {
+  "en": "Loatheb periodically releases Spores; players spread out to soak them and gain the Fungal Bloom buff needed to maximize their damage.",
+  "note": "what an ability or phase of Loatheb, a boss in Naxxramas does (title: Spores)"
+ },
+ "ej/section/16061001/title": {
+  "en": "Understudies",
+  "note": "the name of an ability or phase of Instructor Razuvious, a boss in Naxxramas"
+ },
+ "ej/section/16061001/text": {
+  "en": "Razuvious can only be held by his Death Knight Understudies, which the raid must mind-control with Obedience Crystals and use to tank him.",
+  "note": "what an ability or phase of Instructor Razuvious, a boss in Naxxramas does (title: Understudies)"
+ },
+ "ej/section/16061002/text": {
+  "en": "Razuvious delivers an unbalancing strike, inflicting heavy Physical damage and reducing his target's defense.",
+  "note": "what an ability or phase of Instructor Razuvious, a boss in Naxxramas does (title: Unbalancing Strike)"
+ },
+ "ej/section/16061003/text": {
+  "en": "Razuvious lets out a disrupting shout, inflicting heavy damage to everyone near him.",
+  "note": "what an ability or phase of Instructor Razuvious, a boss in Naxxramas does (title: Disrupting Shout)"
+ },
+ "ej/section/16060001/title": {
+  "en": "Split Realm",
+  "note": "the name of an ability or phase of Gothik the Harvester, a boss in Naxxramas"
+ },
+ "ej/section/16060001/text": {
+  "en": "Gothik divides the raid across a gate into living and dead sides, sending waves of undead that cross over when slain. He cannot be reached until every add falls.",
+  "note": "what an ability or phase of Gothik the Harvester, a boss in Naxxramas does (title: Split Realm)"
+ },
+ "ej/section/16060002/text": {
+  "en": "Once he descends to fight, Gothik hurls Shadow Bolts at the raid, inflicting heavy Shadow damage.",
+  "note": "what an ability or phase of Gothik the Harvester, a boss in Naxxramas does (title: Shadow Bolt)"
+ },
+ "ej/section/16060003/text": {
+  "en": "Gothik harvests the souls of nearby players, inflicting Shadow damage.",
+  "note": "what an ability or phase of Gothik the Harvester, a boss in Naxxramas does (title: Harvest Soul)"
+ },
+ "ej/section/16065001/title": {
+  "en": "Mark of the Horsemen",
+  "note": "the name of an ability or phase of The Four Horsemen, a boss in Naxxramas"
+ },
+ "ej/section/16065001/text": {
+  "en": "Each Horseman brands their target with a Mark that stacks ever higher and more painful. Tanks and raid must rotate around the four corners of the room to keep their stacks from turning lethal.",
+  "note": "what an ability or phase of The Four Horsemen, a boss in Naxxramas does (title: Mark of the Horsemen)"
+ },
+ "ej/section/16065002/title": {
+  "en": "Meteor",
+  "note": "the name of an ability or phase of The Four Horsemen, a boss in Naxxramas"
+ },
+ "ej/section/16065002/text": {
+  "en": "Thane Korth'azz hurls fiery Meteors that inflict massive Fire damage split among nearby players.",
+  "note": "what an ability or phase of The Four Horsemen, a boss in Naxxramas does (title: Meteor)"
+ },
+ "ej/section/16065003/title": {
+  "en": "Void Zone",
+  "note": "the name of an ability or phase of The Four Horsemen, a boss in Naxxramas"
+ },
+ "ej/section/16065003/text": {
+  "en": "Lady Blaumeux conjures Void Zones of shadow on the ground that inflict heavy damage to any who stand in them.",
+  "note": "what an ability or phase of The Four Horsemen, a boss in Naxxramas does (title: Void Zone)"
+ },
+ "ej/section/16065004/text": {
+  "en": "Sir Zeliek, fighting against his will, looses Holy Wrath and chains of holy lightning across the raid.",
+  "note": "what an ability or phase of The Four Horsemen, a boss in Naxxramas does (title: Holy Wrath)"
+ },
+ "ej/section/16065005/title": {
+  "en": "Death and Decay",
+  "note": "the name of an ability or phase of The Four Horsemen, a boss in Naxxramas"
+ },
+ "ej/section/16065005/text": {
+  "en": "Baron Rivendare blankets areas of the floor in Death and Decay, inflicting Shadow damage over time to any who remain.",
+  "note": "what an ability or phase of The Four Horsemen, a boss in Naxxramas does (title: Death and Decay)"
+ },
+ "ej/section/16028001/text": {
+  "en": "Patchwerk pounds the highest-health player within melee range with a Hateful Strike for enormous Physical damage. Off-tanks must stack in close to absorb these blows.",
+  "note": "what an ability or phase of Patchwerk, a boss in Naxxramas does (title: Hateful Strike)"
+ },
+ "ej/section/16028002/text": {
+  "en": "Below 5% health, Patchwerk enrages, dramatically increasing his attack speed for a frantic final push.",
+  "note": "what an ability or phase of Patchwerk, a boss in Naxxramas does (title: Enrage)"
+ },
+ "ej/section/15931001/text": {
+  "en": "Grobbulus injects a player with a mutating agent. When it expires or is dispelled it bursts into a lingering Poison Cloud, so the afflicted must carry it to the edge of the room.",
+  "note": "what an ability or phase of Grobbulus, a boss in Naxxramas does (title: Mutating Injection)"
+ },
+ "ej/section/15931002/title": {
+  "en": "Poison Cloud",
+  "note": "the name of an ability or phase of Grobbulus, a boss in Naxxramas"
+ },
+ "ej/section/15931002/text": {
+  "en": "Grobbulus trails clouds of poison gas as he moves, which expand and inflict escalating Nature damage — the raid must keep the floor clear.",
+  "note": "what an ability or phase of Grobbulus, a boss in Naxxramas does (title: Poison Cloud)"
+ },
+ "ej/section/15931003/text": {
+  "en": "Grobbulus sprays a cone of slime, inflicting Nature damage and spawning a Fallout Slime.",
+  "note": "what an ability or phase of Grobbulus, a boss in Naxxramas does (title: Slime Spray)"
+ },
+ "ej/section/15932001/text": {
+  "en": "Gluth decimates the raid and his Zombie Chow, dropping everyone to a sliver of health. The zombies must be cut down before they reach and heal him.",
+  "note": "what an ability or phase of Gluth, a boss in Naxxramas does (title: Decimate)"
+ },
+ "ej/section/15932002/text": {
+  "en": "Gluth's bite inflicts Mortal Wounds, a stacking debuff that reduces the healing his tank receives.",
+  "note": "what an ability or phase of Gluth, a boss in Naxxramas does (title: Mortal Wound)"
+ },
+ "ej/section/15932003/text": {
+  "en": "Gluth lets out a terrifying roar, causing nearby players to flee in fear.",
+  "note": "what an ability or phase of Gluth, a boss in Naxxramas does (title: Terrifying Roar)"
+ },
+ "ej/section/15932004/title": {
+  "en": "Zombie Chow",
+  "note": "the name of an ability or phase of Gluth, a boss in Naxxramas"
+ },
+ "ej/section/15932004/text": {
+  "en": "A steady stream of Zombie Chow shambles toward Gluth; any that reach him heal him substantially.",
+  "note": "what an ability or phase of Gluth, a boss in Naxxramas does (title: Zombie Chow)"
+ },
+ "ej/section/15928001/text": {
+  "en": "Thaddius assigns every player a positive or negative charge. Like charges amplify one another; opposite charges are lethal on contact — the raid must split by polarity instantly.",
+  "note": "what an ability or phase of Thaddius, a boss in Naxxramas does (title: Polarity Shift)"
+ },
+ "ej/section/15928002/text": {
+  "en": "Thaddius unleashes chain lightning that arcs across the raid, inflicting Nature damage to all it strikes.",
+  "note": "what an ability or phase of Thaddius, a boss in Naxxramas does (title: Chain Lightning)"
+ },
+ "ej/section/15928003/title": {
+  "en": "Stalagg & Feugen",
+  "note": "the name of an ability or phase of Thaddius, a boss in Naxxramas"
+ },
+ "ej/section/15928003/text": {
+  "en": "Thaddius is guarded by the constructs Stalagg and Feugen, who must be slain within seconds of each other; their Power Surge and Static Field punish the raid until both fall.",
+  "note": "what an ability or phase of Thaddius, a boss in Naxxramas does (title: Stalagg & Feugen)"
+ },
+ "ej/section/15989001/text": {
+  "en": "Sapphiron radiates a Frost Aura, inflicting constant Frost damage to the entire raid — frost resistance is essential.",
+  "note": "what an ability or phase of Sapphiron, a boss in Naxxramas does (title: Frost Aura)"
+ },
+ "ej/section/15989002/title": {
+  "en": "Frost Breath",
+  "note": "the name of an ability or phase of Sapphiron, a boss in Naxxramas"
+ },
+ "ej/section/15989002/text": {
+  "en": "From the air, Sapphiron exhales a catastrophic Frost Breath across the chamber. Only players sheltered behind a block of ice survive it.",
+  "note": "what an ability or phase of Sapphiron, a boss in Naxxramas does (title: Frost Breath)"
+ },
+ "ej/section/15989003/text": {
+  "en": "During his flight phase, Sapphiron entombs players in blocks of ice, which then serve as cover against his Frost Breath.",
+  "note": "what an ability or phase of Sapphiron, a boss in Naxxramas does (title: Icebolt)"
+ },
+ "ej/section/15989004/text": {
+  "en": "Sapphiron drains the life of several players at once, healing himself for the damage dealt.",
+  "note": "what an ability or phase of Sapphiron, a boss in Naxxramas does (title: Life Drain)"
+ },
+ "ej/section/15989005/title": {
+  "en": "Blizzard",
+  "note": "the name of an ability or phase of Sapphiron, a boss in Naxxramas"
+ },
+ "ej/section/15989005/text": {
+  "en": "Sapphiron conjures roaming blizzards that inflict heavy Frost damage to any caught within them.",
+  "note": "what an ability or phase of Sapphiron, a boss in Naxxramas does (title: Blizzard)"
+ },
+ "ej/section/15990001/text": {
+  "en": "Kel'Thuzad hurls a massive Frostbolt at the raid, inflicting heavy Frost damage.",
+  "note": "what an ability or phase of Kel'Thuzad, a boss in Naxxramas does (title: Frostbolt)"
+ },
+ "ej/section/15990002/text": {
+  "en": "Kel'Thuzad encases a player in frost, freezing them solid and spreading lethal cold to anyone standing near them.",
+  "note": "what an ability or phase of Kel'Thuzad, a boss in Naxxramas does (title: Frost Blast)"
+ },
+ "ej/section/15990003/text": {
+  "en": "Kel'Thuzad enslaves several players with shadowy chains, turning them against the raid until the chains are broken.",
+  "note": "what an ability or phase of Kel'Thuzad, a boss in Naxxramas does (title: Chains of Kel'Thuzad)"
+ },
+ "ej/section/15990004/text": {
+  "en": "Kel'Thuzad opens shadow fissures beneath the raid; any player still standing over one when it erupts is slain.",
+  "note": "what an ability or phase of Kel'Thuzad, a boss in Naxxramas does (title: Shadow Fissure)"
+ },
+ "ej/section/15990005/title": {
+  "en": "Frostbolt Volley",
+  "note": "the name of an ability or phase of Kel'Thuzad, a boss in Naxxramas"
+ },
+ "ej/section/15990005/text": {
+  "en": "Kel'Thuzad looses a volley of frostbolts, inflicting Frost damage to all nearby players.",
+  "note": "what an ability or phase of Kel'Thuzad, a boss in Naxxramas does (title: Frostbolt Volley)"
+ },
+ "ej/section/15990006/text": {
+  "en": "Kel'Thuzad detonates the mana of the raid's casters, inflicting Arcane damage based on the amount destroyed.",
+  "note": "what an ability or phase of Kel'Thuzad, a boss in Naxxramas does (title: Mana Detonation)"
+ },
+ "ej/section/29112/text": {
+  "en": "Rhahk'Zor savagely mauls his current target, inflicting 64 to 86 Physical damage and stunning them for 3 sec.",
+  "note": "journal text (section 29112)"
+ },
+ "ej/section/4701/text": {
+  "en": "Walking Bomb detonates when it reaches its target, inflicting 200 to 300 Fire damage to all players within 10 yards.",
+  "note": "journal text (section 4701)"
+ },
+ "ej/section/29862/text": {
+  "en": "Theka hurls missiles of dark magic, inflicting 128 to 172 Shadow damage to nearby enemies.",
+  "note": "journal text (section 29862)"
+ },
+ "ej/section/4978/text": {
+  "en": "Hydromancer Velratha heals an ally for 694 to 806.",
+  "note": "journal text (section 4978)"
+ },
+ "ej/section/4986/text": {
+  "en": "Antu'sul heals an ally for 694 to 806.",
+  "note": "journal text (section 4986)"
+ },
+ "ej/section/4989/text": {
+  "en": "Antu'sul shocks a player, inflicting 164 to 180 Nature damage and interrupting spellcasting for 2 sec.",
+  "note": "journal text (section 4989)"
+ },
+ "ej/section/4990/text": {
+  "en": "Antu'sul strikes an enemy with a lightning bolt that arcs to other nearby players, inflicting 185 to 215 Nature damage and jumping to up to 3 nearby enemies.",
+  "note": "journal text (section 4990)"
+ },
+ "ej/section/5015/text": {
+  "en": "Witch Doctor Zum'rah heals an ally for 694 to 806.",
+  "note": "journal text (section 5015)"
+ },
+ "ej/section/5016/text": {
+  "en": "Witch Doctor Zum'rah hurls a bolt of dark magic at a player, inflicting 128 to 172 Shadow damage.",
+  "note": "journal text (section 5016)"
+ },
+ "ej/section/5017/text": {
+  "en": "Witch Doctor Zum'rah hurls missiles of dark magic, inflicting 128 to 172 Shadow damage to all players within 30 yards.",
+  "note": "journal text (section 5017)"
+ },
+ "ej/section/5021/text": {
+  "en": "Shadow Priest Sezz'ziz hurls a bolt of dark magic at a player, inflicting 128 to 172 Shadow damage.",
+  "note": "journal text (section 5021)"
+ },
+ "ej/section/5024/text": {
+  "en": "Shadow Priest Sezz'ziz heals an ally for 590 to 684.",
+  "note": "journal text (section 5024)"
+ },
+ "ej/section/4484/text": {
+  "en": "Ambassador Flamelash inflicts 220 to 260 Fire damage to players he hits in melee.",
+  "note": "journal text (section 4484)"
+ },
+ "ej/section/4919/text": {
+  "en": "Tendris Warpwood inflicts 525 to 675 Physical damage to all players within 10 yards, knocking them down and immobilizing them for 10 sec.",
+  "note": "journal text (section 4919)"
+ },
+ "ej/section/4754/text": {
+  "en": "Prince Tortheldrin inflicts 875 to 1125 Arcane damage to a player and knocks them back.",
+  "note": "journal text (section 4754)"
+ },
+ "ej/section/4994/text": {
+  "en": "Lethtendris inflicts 925 to 1075 Shadow damage to her target.",
+  "note": "journal text (section 4994)"
+ },
+ "ej/section/4995/text": {
+  "en": "Lethtendris inflicts 128 to 172 Shadow damage to all players within 30 yards.",
+  "note": "journal text (section 4995)"
+ },
+ "ej/section/5001/text": {
+  "en": "Pimgib inflicts 122 to 140 Fire damage to all players within 10 yards and reduces their movement speed by 50% for 6 sec.",
+  "note": "journal text (section 5001)"
+ },
+ "ej/section/5008/text": {
+  "en": "Hydrospawn summons a Massive Geyser that inflicts 463 to 537 Frost damage to all players within 10 yards and knocks them back.",
+  "note": "journal text (section 5008)"
+ },
+ "ej/section/29563/text": {
+  "en": "Zevrim Thornhoof hurls missiles of dark magic, inflicting 128 to 172 Shadow damage to nearby enemies within 30 yards.",
+  "note": "journal text (section 29563)"
+ },
+ "ej/section/6463/text": {
+  "en": "Vengeful Phantom shocks player with ice, inflicting 89 to 95 Frost damage and reducing their movement speed by 50% for 8 sec.",
+  "note": "journal text (section 6463)"
+ },
+ "ej/section/4800/text": {
+  "en": "Timmy the Cruel lashes out, inflicting 925 to 1075 Physical damage to all enemies in front of him and healing himself for 100% of damage dealt.",
+  "note": "journal text (section 4800)"
+ },
+ "ej/section/6452/text": {
+  "en": "Commander Malor smashes the ground, inflicting 96 to 128 Physical damage to all players within 10 yards and stunning them for 3 sec.",
+  "note": "journal text (section 6452)"
+ },
+ "ej/section/6454/text": {
+  "en": "Commander Malor hurls missiles of dark magic, inflicting 128 to 172 Shadow damage to all players within 30 yards.",
+  "note": "journal text (section 6454)"
+ },
+ "ej/section/4808/text": {
+  "en": "Instructor Galford unleashes a fire nova, inflicting 197 to 227 Fire damage to all enemies within 10 yards.",
+  "note": "journal text (section 4808)"
+ },
+ "ej/section/4842/text": {
+  "en": "Baroness Anastari wails with anguish, inflicting 128 to 172 Shadow damage to her current target.",
+  "note": "journal text (section 4842)"
+ },
+ "ej/section/4854/text": {
+  "en": "Maleki the Pallid inflicts 48 to 64 Frost damage to his current target, reducing their movement speed by 50% for 4 sec.",
+  "note": "journal text (section 4854)"
+ },
+ "ej/section/29936/text": {
+  "en": "Lord Aurius Rivendare hurls a bolt of dark magic at a player, inflicting 128 to 172 Shadow damage.",
+  "note": "journal text (section 29936)"
+ },
+ "ej/section/4866/text": {
+  "en": "Lord Aurius Rivendare hurls a large bolt of dark magic at a player, inflicting 288 to 388 Shadow damage.",
+  "note": "journal text (section 4866)"
+ }
+}

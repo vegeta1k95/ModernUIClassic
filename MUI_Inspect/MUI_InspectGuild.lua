@@ -9,9 +9,9 @@
 -- achievements. The sheet (Interface\GuildFrame\GuildInspect-Parts),
 -- which Era's UI never draws, ships as assets/textures/skin/inspect.
 
+local L = MUI.L
+
 local SHEET = MUI.TEX_SKIN .. "inspect\\guild-inspect"
--- Retail's INSPECT_GUILD_REALM, which Era lacks.
-local REALM_FORMAT = "Realm: %s"
 
 -- A tabard with no design, as Blizzard's SetGuildTabardTextures draws it.
 local PLAIN_BANNER = { 0.2245, 0.2088, 0.1794 }
@@ -96,7 +96,7 @@ class "InspectGuild" : extends "CharacterPane" {
         local name, realm, members = self:ReadGuild(unit)
         local _, faction = UnitFactionGroup(unit)
         self._name:SetText(name or "")
-        self._realm:SetText(REALM_FORMAT:format(realm))
+        self._realm:SetText(L.INSPECT_GUILD_REALM:format(realm))
         self._faction:SetText(faction and INSPECT_GUILD_FACTION:format(faction) or "")
         self._members:SetText(members > 0 and INSPECT_GUILD_NUM_MEMBERS:format(members) or "")
         self:_UpdateTabard(unit)

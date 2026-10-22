@@ -71,7 +71,7 @@ class "UnitFramePlayer" {
         Texture(PlayerFrameTexture):SetTexture("")
         Texture(PlayerStatusTexture):SetTexture("")
 
-        self.frame = UnitFrameEditable(PlayerFrame, "Player")
+        self.frame = UnitFrameEditable(PlayerFrame, HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
         self.frame:ClearAllPoints()
         self.frame:SetSize(171, 58)
         self.frame:SetPoint("BOTTOMRIGHT", MUI_ModuleActionBars.bars.MAIN1, "TOPLEFT", -38, 162)

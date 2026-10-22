@@ -8,6 +8,8 @@
 -- Construction:
 --   MapLegendTab(parent)   parent — the map module's tab holder
 
+local L = MUI.L
+
 local LOG_TEX    = MUI.TEX_SKIN .. "worldmap\\questlog"
 local LOG_BG_TEX = MUI.TEX_SKIN .. "worldmap\\questlog-bg"
 
@@ -24,30 +26,30 @@ local function LegendCategories()
     local faction = UnitFactionGroup("player")
     if faction ~= "Horde" and faction ~= "Alliance" then faction = "Neutral" end
     return {
-        { title = "Quests", rows = {
-            { pin = "Quest",                 label = "Available Quest" },
-            { pin = "QuestPvP",              label = "Available PvP" },
-            { pin = "QuestRepeatable",       label = "Repeatable" },
-            { pin = "QuestRepeatableTurnIn", label = "Repeat. Turn-in" },
-            { pin = "Hub",                   label = "Quest Hub" },
-            { poi = "inprogress",            label = "In Progress" },
-            { poi = "turnin",                label = "Turn-in" },
-            { poi = "kill",                  label = "Kill Quest" },
-            { poi = "loot",                  label = "Collect Quest" },
-            { poi = "elite",                 label = "Elite Quest" },
-            { poi = "dungeon",               label = "Dungeon Quest" },
-            { poi = "raid",                  label = "Raid Quest" },
-            { poi = "pvp",                   label = "PvP Quest" },
+        { title = L.MAP_LEGEND_CATEGORY_QUESTS, rows = {
+            { pin = "Quest",                 label = AVAILABLE_QUEST },
+            { pin = "QuestPvP",              label = L.MAP_LEGEND_AVAILABLE_PVP },
+            { pin = "QuestRepeatable",       label = L.MAP_LEGEND_REPEATABLE },
+            { pin = "QuestRepeatableTurnIn", label = L.MAP_LEGEND_REPEATABLE_TURN_IN },
+            { pin = "Hub",                   label = L.MAP_LEGEND_HUB },
+            { poi = "inprogress",            label = IN_PROGRESS },
+            { poi = "turnin",                label = L.MAP_LEGEND_TURNIN },
+            { poi = "kill",                  label = L.MAP_LEGEND_KILL_QUEST },
+            { poi = "loot",                  label = L.MAP_LEGEND_COLLECT_QUEST },
+            { poi = "elite",                 label = L.MAP_LEGEND_ELITE_QUEST },
+            { poi = "dungeon",               label = L.MAP_LEGEND_DUNGEON_QUEST },
+            { poi = "raid",                  label = L.MAP_LEGEND_RAID_QUEST },
+            { poi = "pvp",                   label = L.MAP_LEGEND_PVP_QUEST },
         } },
-        { title = "Activities", rows = {
-            { pin = "Dungeon", label = "Dungeon" },
-            { pin = "Raid",    label = "Raid" },
+        { title = L.MAP_LEGEND_CATEGORY_ACTIVITIES, rows = {
+            { pin = "Dungeon", label = CALENDAR_TYPE_DUNGEON },
+            { pin = "Raid",    label = CALENDAR_TYPE_RAID },
         } },
-        { title = "Movement", rows = {
-            { pin = "FlightMaster" .. faction, pinPrefix = "FlightMaster", label = "Flight Point" },
-            { pin = "Transport" .. faction,    pinPrefix = "Transport",    label = "Transport" },
-            { pin = "Waypoint",                pinPrefix = "Waypoint",     label = "Waypoint" },
-            { pin = "TravelArrow",                                         label = "Travel Waypoint" },
+        { title = L.MAP_LEGEND_CATEGORY_MOVEMENT, rows = {
+            { pin = "FlightMaster" .. faction, pinPrefix = "FlightMaster", label = L.MAP_LEGEND_FLIGHTPOINT },
+            { pin = "Transport" .. faction,    pinPrefix = "Transport",    label = L.MAP_LEGEND_TRANSPORT },
+            { pin = "Waypoint",                pinPrefix = "Waypoint",     label = L.MAP_PIN },
+            { pin = "TravelArrow",                                         label = L.MAP_TRAVEL_WAYPOINT },
         } },
     }
 end
@@ -263,7 +265,7 @@ class "MapLegendTab" : extends "Frame" {
         title:SetShadowOffset(1, -1)
         title:SetTextColor(1, 0.82, 0, 1)
         title:AlignParentTop(4)
-        title:SetText("Map Legend")
+        title:SetText(L.MAP_LEGEND_FRAME_LABEL)
 
         self.scroll = ScrollFrame(container)
         self.scroll:FillParentPadding(2, 4, 2, 4)

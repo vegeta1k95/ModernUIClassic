@@ -14,7 +14,9 @@
 -- The calendar button beside the minimap opens it (MinimapCalendarButton);
 -- so do the "Toggle Calendar" key binding and /muicalendar.
 
-BINDING_NAME_MUI_TOGGLE_CALENDAR = "Toggle Calendar"
+local L = MUI.L
+
+BINDING_NAME_MUI_TOGGLE_CALENDAR = L.CAL_TOGGLE
 
 object "ModuleCalendar" : extends "Module" {
     __init = function(self)

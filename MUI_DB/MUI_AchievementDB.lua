@@ -11,7 +11,10 @@
 -- `hardcoreOnly` hide it from characters it can't apply to, `account` gives it retail's blue
 -- account-wide header instead of the red one. Ids are stable (they live in
 -- SavedVariables): never reuse one. `icon` is a retail FileDataID shipped
--- as assets/textures/achievementicons/<id>.blp.
+-- as assets/textures/achievementicons/<id>.blp. What the client names in
+-- its own language a criterion gives by id: areas, instances (`maps`),
+-- buffs, beasts (`npcs`), skill lines, a scoreboard's column (`col`, with
+-- the English `label`).
 
 object "AchievementDB" {
     __init = function(self)
@@ -53,7 +56,7 @@ object "AchievementDB" {
             { id = 109, cat = 1, name = "Master of Arms", desc = "Raise four weapon skills to 300.", pts = 25, icon = 132349,
               crit = { t = "skillCount", at = 300, n = 4, weapon = true } },
             { id = 110, cat = 1, name = "Knuckle Sandwich", desc = "Raise your unarmed skill to 300.", pts = 25, icon = 132356,
-              crit = { t = "skill", line = "Unarmed", n = 300 } },
+              crit = { t = "skill", line = 162, n = 300 } },
             { id = 111, cat = 1, name = "Safe Deposit", desc = "Buy all 6 additional bank bag slots.", pts = 10, icon = 132594,
               crit = { t = "banks", n = 6 } },
             { id = 112, cat = 1, name = "Menagerie", desc = "Own 5 unique companion pets.", pts = 10, icon = 132599, account = true,
@@ -357,23 +360,23 @@ object "AchievementDB" {
             { id = 343, cat = 3, name = "World Explorer", desc = "Explore both continents of Azeroth.", pts = 50, icon = 237381, account = true,
               crit = { t = "meta", ids = { 341, 342 } } },
             { id = 344, cat = 3, name = "Civic Pride", desc = "Visit the three capital cities of the Alliance.", pts = 5, icon = 134166, facOnly = "A", account = true,
-              crit = { t = "visit", areas = { "Stormwind City", "Ironforge", "Darnassus" } } },
+              crit = { t = "visit", areas = { 1519, 1537, 1657 } } },
             { id = 345, cat = 3, name = "Civic Pride", desc = "Visit the three capital cities of the Horde.", pts = 5, icon = 134170, facOnly = "H", account = true,
-              crit = { t = "visit", areas = { "Orgrimmar", "Thunder Bluff", "Undercity" } } },
+              crit = { t = "visit", areas = { 1637, 1638, 1497 } } },
             { id = 346, cat = 3, name = "Behind Enemy Lines", desc = "Set foot inside all three enemy capital cities.", pts = 25, icon = 132320, facOnly = "A", account = true,
-              crit = { t = "visit", areas = { "Orgrimmar", "Thunder Bluff", "Undercity" } } },
+              crit = { t = "visit", areas = { 1637, 1638, 1497 } } },
             { id = 347, cat = 3, name = "Behind Enemy Lines", desc = "Set foot inside all three enemy capital cities.", pts = 25, icon = 132320, facOnly = "H", account = true,
-              crit = { t = "visit", areas = { "Stormwind City", "Ironforge", "Darnassus" } } },
+              crit = { t = "visit", areas = { 1519, 1537, 1657 } } },
             { id = 348, cat = 3, name = "Off the Beaten Path", desc = "Discover the secret corners of Azeroth.", pts = 25, icon = 134269, account = true,
-              crit = { t = "visit", areas = { "Karazhan", "Caverns of Time", "Valley of the Watchers", "Janeiro's Point", "Isle of Dread", "Alcaz Island" } } },
+              crit = { t = "visit", areas = { 2562, 2300, 990, 312, 1121, 2079 } } },
             { id = 349, cat = 3, name = "Dungeon Delver", desc = "Set foot in every dungeon of vanilla Azeroth.", pts = 25, icon = 134245, account = true,
-              crit = { t = "visitInstance", names = { "Ragefire Chasm", "Wailing Caverns", "The Deadmines", "Shadowfang Keep", "Blackfathom Deeps", "Gnomeregan", "The Stockade", "Razorfen Kraul", "Scarlet Monastery", "Razorfen Downs", "Uldaman", "Zul'Farrak", "Maraudon", "The Temple of Atal'Hakkar", "Blackrock Depths", "Blackrock Spire", "Dire Maul", "Scholomance", "Stratholme" } } },
+              crit = { t = "visitInstance", maps = { 389, 43, 36, 33, 48, 90, 34, 47, 189, 129, 70, 209, 349, 109, 230, 229, 429, 289, 329 } } },
             { id = 350, cat = 3, name = "Dream a Little Dream", desc = "Find all four portals of the Emerald Dream.", pts = 25, icon = 136090, account = true,
-              crit = { t = "visit", areas = { "Twilight Grove", "Seradane", "Dream Bough", "Bough Shadow" } } },
+              crit = { t = "visit", areas = { 856, 356, 1111, 438 } } },
             { id = 351, cat = 3, name = "Pilgrimage", desc = "Pay your respects at Azeroth's forgotten landmarks.", pts = 25, icon = 133750, account = true,
-              crit = { t = "visit", areas = { "Demon Fall Canyon", "The Greymane Wall", "Grim Batol", "The Scarab Wall", "Ravenholdt Manor", "Fray Island", "Land's End Beach", "Morgan's Plot" } } },
+              crit = { t = "visit", areas = { 435, 230, 1037, 2737, 3486, 720, 987, 2563 } } },
             { id = 352, cat = 3, name = "Mind the Gap", desc = "Ride the Deeprun Tram.", pts = 10, icon = 134064, account = true,
-              crit = { t = "visit", areas = { "Deeprun Tram" } } },
+              crit = { t = "visit", areas = { 2257 } } },
             { id = 401, cat = 4, name = "Ragefire Chasm", desc = "Defeat the bosses of Ragefire Chasm.", pts = 10, icon = 136216,
               crit = { t = "killAll", list = { { label = "Oggleflint", npc = { 11517 } }, { label = "Taragaman the Hungerer", npc = { 11520 }, quests = { 5761 } }, { label = "Jergosh the Invoker", npc = { 11518 }, quests = { 5728 } }, { label = "Bazzalan", npc = { 11519 }, quests = { 5728 } } } } },
             { id = 402, cat = 4, name = "Deadmines", desc = "Defeat Edwin VanCleef.", pts = 10, icon = 236409,
@@ -643,19 +646,19 @@ object "AchievementDB" {
             { id = 703, cat = 7, name = "Double Artisan", desc = "Raise both primary professions to 300 skill.", pts = 50, icon = 134063,
               crit = { t = "profBoth", n = 300 } },
             { id = 704, cat = 7, name = "Skills to Pay the Bills", desc = "Raise cooking, fishing and first aid to 300 skill.", pts = 50, icon = 134328,
-              crit = { t = "skillCount", at = 300, lines = { "Cooking", "Fishing", "First Aid" }, n = 3 } },
+              crit = { t = "skillCount", at = 300, lines = { 185, 356, 129 }, n = 3 } },
             { id = 705, cat = 7, name = "Artisan Cook", desc = "Raise cooking to 300 skill.", pts = 25, icon = 133971,
-              crit = { t = "skill", line = "Cooking", n = 300 } },
+              crit = { t = "skill", line = 185, n = 300 } },
             { id = 706, cat = 7, name = "Artisan Fisherman", desc = "Raise fishing to 300 skill.", pts = 25, icon = 136245,
-              crit = { t = "skill", line = "Fishing", n = 300 } },
+              crit = { t = "skill", line = 356, n = 300 } },
             { id = 707, cat = 7, name = "Artisan First Aid", desc = "Raise first aid to 300 skill.", pts = 10, icon = 135966,
-              crit = { t = "skill", line = "First Aid", n = 300 } },
+              crit = { t = "skill", line = 129, n = 300 } },
             { id = 708, cat = 7, name = "Lunch Lady", desc = "Learn 25 cooking recipes.", pts = 10, icon = 134022,
-              crit = { t = "recipes", n = 25, prof = "Cooking" } },
+              crit = { t = "recipes", n = 25, prof = 185 } },
             { id = 709, cat = 7, name = "Short Order Cook", desc = "Learn 50 cooking recipes.", pts = 25, icon = 134021, prev = 708,
-              crit = { t = "recipes", n = 50, prof = "Cooking" } },
+              crit = { t = "recipes", n = 50, prof = 185 } },
             { id = 710, cat = 7, name = "Sous Chef", desc = "Learn 75 cooking recipes.", pts = 50, icon = 133969, prev = 709,
-              crit = { t = "recipes", n = 75, prof = "Cooking" } },
+              crit = { t = "recipes", n = 75, prof = 185 } },
             { id = 711, cat = 7, name = "Stocking Up", desc = "Create 500 Heavy Runecloth Bandages.", pts = 25, icon = 133674,
               crit = { t = "create", item = { 14530 }, label = "Heavy Runecloth Bandage", n = 500 } },
             { id = 712, cat = 7, name = "Ultimate Triage", desc = "Use a bandage on a player below 5% health.", pts = 25, icon = 134470,
@@ -834,7 +837,7 @@ object "AchievementDB" {
               crit = { t = "rank", n = 3 } },
             { id = 923, cat = 9, name = "Rank: Knight", desc = "Attain PvP rank 6.", pts = 25, icon = 236582, prev = 922, noHardcore = true,
               crit = { t = "rank", n = 6 } },
-            { id = 924, cat = 9, name = "Rank: Commander", desc = "Attain PvP rank 10.", pts = 50, icon = 236586, prev = 923, noHardcore = true,
+            { id = 924, cat = 9, name = "Rank: Lieutenant Commander", desc = "Attain PvP rank 10.", pts = 50, icon = 236586, prev = 923, noHardcore = true,
               crit = { t = "rank", n = 10 } },
             { id = 925, cat = 9, name = "Rank: Grand Marshal", desc = "Attain PvP rank 14.", pts = 100, icon = 236590, prev = 924, noHardcore = true,
               crit = { t = "rank", n = 14 } },
@@ -853,19 +856,19 @@ object "AchievementDB" {
             { id = 932, cat = 9, name = "Warsong Gulch Veteran", desc = "Win 100 battles in Warsong Gulch.", pts = 50, icon = 236384, prev = 931, noHardcore = true,
               crit = { t = "bgwin", bg = "wsg", n = 100 } },
             { id = 933, cat = 9, name = "Alterac Grave Robber", desc = "Take 25 graveyards in Alterac Valley.", pts = 25, icon = 236399, noHardcore = true,
-              crit = { t = "bgcol", bg = "av", col = "Graveyards Assaulted", n = 25 } },
+              crit = { t = "bgcol", bg = "av", col = 1, label = "Graveyards Assaulted", n = 25 } },
             { id = 934, cat = 9, name = "Tower Defense", desc = "Defend 25 towers in Alterac Valley.", pts = 25, icon = 236351, noHardcore = true,
-              crit = { t = "bgcol", bg = "av", col = "Towers Defended", n = 25 } },
+              crit = { t = "bgcol", bg = "av", col = 4, label = "Towers Defended", n = 25 } },
             { id = 935, cat = 9, name = "Me and the Cappin' Makin' it Happen", desc = "Capture 25 bases in Arathi Basin.", pts = 25, icon = 236373, noHardcore = true,
-              crit = { t = "bgcol", bg = "ab", col = "Bases Assaulted", n = 25 } },
+              crit = { t = "bgcol", bg = "ab", col = 1, label = "Bases Assaulted", n = 25 } },
             { id = 936, cat = 9, name = "To The Rescue!", desc = "Defend 25 bases in Arathi Basin.", pts = 25, icon = 132365, noHardcore = true,
-              crit = { t = "bgcol", bg = "ab", col = "Bases Defended", n = 25 } },
+              crit = { t = "bgcol", bg = "ab", col = 2, label = "Bases Defended", n = 25 } },
             { id = 937, cat = 9, name = "Capture the Flag", desc = "Carry and capture the enemy flag in Warsong Gulch.", pts = 10, icon = 236350, noHardcore = true,
               crit = { t = "wsgcap", n = 1 } },
             { id = 938, cat = 9, name = "Quick Cap", desc = "Carry and capture the enemy flag in under 75 seconds.", pts = 25, icon = 236353, noHardcore = true,
               crit = { t = "quickcap", secs = 75 } },
             { id = 939, cat = 9, name = "Supreme Defender", desc = "Return 25 flags in Warsong Gulch.", pts = 25, icon = 236360, noHardcore = true,
-              crit = { t = "bgcol", bg = "wsg", col = "Flags Returned", n = 25 } },
+              crit = { t = "bgcol", bg = "wsg", col = 2, label = "Flags Returned", n = 25 } },
             { id = 940, cat = 9, name = "Ironman", desc = "Carry and capture 3 flags in a single Warsong Gulch battle without dying.", pts = 50, icon = 236344, noHardcore = true,
               crit = { t = "ironman" } },
             { id = 941, cat = 9, name = "Warsong Perfection", desc = "Win Warsong Gulch with a score of 3 to 0.", pts = 25, icon = 236397, noHardcore = true,
@@ -879,9 +882,9 @@ object "AchievementDB" {
             { id = 945, cat = 9, name = "Battlemaster", desc = "Complete the battleground achievements.", pts = 100, icon = 236591, account = true, noHardcore = true,
               crit = { t = "meta", ids = { 928, 930, 932, 933, 934, 935, 936, 938, 939, 940 } } },
             { id = 946, cat = 9, name = "Take the Base", desc = "Capture a base in Arathi Basin.", pts = 10, icon = 236373, noHardcore = true,
-              crit = { t = "bgcol", bg = "ab", col = "Bases Assaulted", n = 1 } },
+              crit = { t = "bgcol", bg = "ab", col = 1, label = "Bases Assaulted", n = 1 } },
             { id = 947, cat = 9, name = "Storm the Tower", desc = "Assault a tower in Alterac Valley.", pts = 10, icon = 236351, noHardcore = true,
-              crit = { t = "bgcol", bg = "av", col = "Towers Assaulted", n = 1 } },
+              crit = { t = "bgcol", bg = "av", col = 3, label = "Towers Assaulted", n = 1 } },
             { id = 948, cat = 9, name = "Drek'Thar's Downfall", desc = "Slay Drek'Thar, the Frostwolf General.", pts = 10, icon = 132486, facOnly = "A", noHardcore = true,
               crit = { t = "kill", label = "Drek'Thar", npc = { 11946 } } },
             { id = 949, cat = 9, name = "The Fall of Vanndar", desc = "Slay Vanndar Stormpike, the Stormpike General.", pts = 10, icon = 132485, facOnly = "H", noHardcore = true,
@@ -937,7 +940,7 @@ object "AchievementDB" {
             { id = 1032, cat = 10, name = "Pack Leader", desc = "Tame beasts from 5 different pet families.", pts = 25, icon = 132164, classOnly = "HUNTER",
               crit = { t = "petFamilies", n = 5 } },
             { id = 1033, cat = 10, name = "Legendary Patience", desc = "Tame one of Azeroth's famous rare beasts.", pts = 25, icon = 132185, classOnly = "HUNTER",
-              crit = { t = "petRare", names = { "Broken Tooth", "Lupos", "Takk the Leaper", "Snarler", "Bloodaxe Worg" } } },
+              crit = { t = "petRare", npcs = { 2850, 521, 5842, 5356, 9696 } } },
             { id = 1034, cat = 10, name = "The Ancient Leaf", desc = "Earn Rhok'delar and Lok'delar from the ancients.", pts = 100, icon = 135496, classOnly = "HUNTER",
               crit = { t = "quest", any = { 7636 }, label = "Stave of the Ancients" } },
             { id = 1035, cat = 10, name = "When Pigs Cast", desc = "Learn Polymorph: Pig.", pts = 25, icon = 135997, classOnly = "MAGE",
@@ -953,7 +956,7 @@ object "AchievementDB" {
             { id = 1040, cat = 10, name = "Benediction", desc = "Earn Benediction, the staff of the Light.", pts = 100, icon = 135167, classOnly = "PRIEST",
               crit = { t = "quest", any = { 7622 }, label = "The Balance of Light and Shadow" } },
             { id = 1041, cat = 10, name = "Master Locksmith", desc = "Raise lockpicking to 300 skill.", pts = 25, icon = 134238, classOnly = "ROGUE",
-              crit = { t = "skill", line = "Lockpicking", n = 300 } },
+              crit = { t = "skill", line = 633, n = 300 } },
             { id = 1042, cat = 10, name = "Cat Burglar", desc = "Pick 100 locks.", pts = 10, icon = 133644, classOnly = "ROGUE",
               crit = { t = "castCount", label = "Pick Lock", n = 100, spell = { 1804, 6461, 6463, 6480 } } },
             { id = 1043, cat = 10, name = "Spirit Speaker", desc = "Complete the call of all four elements.", pts = 10, icon = 136012, classOnly = "SHAMAN",
@@ -965,7 +968,7 @@ object "AchievementDB" {
             { id = 1046, cat = 10, name = "Stance Dancer", desc = "Know all three warrior stances.", pts = 10, icon = 132349, classOnly = "WARRIOR",
               crit = { t = "spellAll", list = { { any = { 2457, 2467, 7165 }, label = "Battle Stance" }, { any = { 71, 1612, 7164 }, label = "Defensive Stance" }, { any = { 2458, 2468, 7366 }, label = "Berserker Stance" } } } },
             { id = 1047, cat = 10, name = "Bubble Hearth", desc = "Use your Hearthstone with Divine Shield active. The Horde will sing of it.", pts = 25, icon = 524354, classOnly = "PALADIN",
-              crit = { t = "bubbleHearth", hearth = { 8690 }, shield = "Divine Shield" } },
+              crit = { t = "bubbleHearth", hearth = { 8690 }, shield = 642 } },
             { id = 1048, cat = 10, name = "Played Dead", desc = "Feign death.", pts = 10, icon = 132293, classOnly = "HUNTER",
               crit = { t = "castSpell", label = "Feign Death", spell = { 5384, 5385 } } },
             { id = 1049, cat = 10, name = "Light Fingers", desc = "Pick 100 pockets.", pts = 10, icon = 133624, classOnly = "ROGUE",
@@ -1077,7 +1080,7 @@ object "AchievementDB" {
             { id = 5006, cat = 1, name = "Make Love, Not Warcraft", desc = "Emote /hug on a dead enemy before they release corpse.", pts = 10, icon = 135767, noHardcore = true,
               crit = { t = "flag", key = "hugDeadEnemy", label = "Hug a dead enemy player" } },
             { id = 5007, cat = 1, name = "Buffed to the Gills", desc = "Carry Rallying Cry of the Dragonslayer, Warchief's Blessing, Spirit of Zandalar, Songflower Serenade and the three Gordok tribute buffs at once.", pts = 25, icon = 132352,
-              crit = { t = "flag", auras = { "Rallying Cry of the Dragonslayer", "Warchief's Blessing", "Spirit of Zandalar", "Songflower Serenade", "Fengus' Ferocity", "Mol'dar's Moxie", "Slip'kik's Savvy" }, key = "worldBuffs", label = "Every world buff at once" } },
+              crit = { t = "flag", auras = { 22888, 16609, 24425, 15366, 22817, 22818, 22820 }, key = "worldBuffs", label = "Every world buff at once" } },
             { id = 5008, cat = 1, name = "Chronoboon", desc = "Store your world buffs in a Chronoboon Displacer.", pts = 10, icon = 133713,
               crit = { t = "inv", any = { 184938 }, label = "Hold a Supercharged Chronoboon Displacer" } },
             { id = 5009, cat = 1, name = "Hardcore Sixty", desc = "Reach level 60 on a Hardcore realm.", pts = 100, icon = 236567, hardcoreOnly = true,
@@ -1111,7 +1114,7 @@ object "AchievementDB" {
             { id = 5024, cat = 4, name = "Lone Wolf", desc = "Defeat a dungeon end boss alone at level 60.", pts = 25, icon = 132148,
               crit = { t = "soloKill", npcs = { 639, 1716, 1853, 2748, 3654, 3974, 3975, 3977, 4275, 4421, 4829, 5709, 6487, 7267, 7358, 7800, 9019, 9027, 9028, 9029, 9030, 9031, 9032, 9568, 10363, 10440, 10813, 10917, 11486, 11492, 11501, 11517, 11518, 11519, 11520, 12201 } } },
             { id = 5025, cat = 5, name = "Raid Tourist", desc = "Set foot in every raid of Azeroth.", pts = 10, icon = 133176,
-              crit = { t = "visitInstance", names = { "Molten Core", "Onyxia's Lair", "Blackwing Lair", "Zul'Gurub", "Ruins of Ahn'Qiraj", "Ahn'Qiraj", "Naxxramas" } } },
+              crit = { t = "visitInstance", maps = { 409, 249, 469, 309, 509, 531, 533 } } },
             { id = 5026, cat = 5, name = "Attuned", desc = "Hold every raid attunement.", pts = 25, icon = 135921, account = true,
               crit = { t = "meta", ids = { 501, 502, 503, 504 } } },
             { id = 5027, cat = 5, name = "Qiraji Battle Tanks", desc = "Own the red, blue, green and yellow Qiraji battle tanks.", pts = 50, icon = 132188,
@@ -1139,7 +1142,7 @@ object "AchievementDB" {
             { id = 5038, cat = 3, name = "Relics of a Fallen Empire", desc = "Deliver a Hakkari Bijou to Zanza the Restless on Yojamba Isle.", pts = 10, icon = 132528, account = true,
               crit = { t = "quest", any = { 8240 }, label = "A Bijou for Zanza" } },
             { id = 5039, cat = 7, name = "The Fishing Diplomat", desc = "Fish something up in Orgrimmar and in Stormwind City.", pts = 10, icon = 133146,
-              crit = { t = "setHas", keys = { "Orgrimmar", "Stormwind City" }, set = "fishedZones" } },
+              crit = { t = "setHas", maps = { 1454, 1453 }, set = "fishedZones" } },
             { id = 5040, cat = 7, name = "Accomplished Angler", desc = "Complete the fishing achievements listed below.", pts = 25, icon = 4620674, account = true,
               crit = { t = "meta", ids = { 706, 714, 5012, 715, 713, 716, 731, 733, 5039, 5023 } } },
             { id = 5041, cat = 6, name = "Cartel Connections", desc = "Earn Exalted reputation with Booty Bay, Everlook, Gadgetzan and Ratchet.", pts = 25, icon = 236687, account = true,
@@ -1506,6 +1509,15 @@ object "AchievementDB" {
 
         -- quest zones that are instances (dungeon quests)
         self._instanceZones = { [209] = true, [491] = true, [717] = true, [718] = true, [719] = true, [721] = true, [722] = true, [796] = true, [1176] = true, [1337] = true, [1477] = true, [1581] = true, [1583] = true, [1584] = true, [1977] = true, [2017] = true, [2057] = true, [2100] = true, [2159] = true, [2437] = true, [2557] = true, [2677] = true, [2717] = true, [3428] = true, [3429] = true, [3456] = true }
+
+        -- what the store's sets and battleground columns held by name before the
+        -- criteria went by id, and the ids (petNames moves to petNpcs)
+        self._keysByName = {
+            bg = { ab = { ["Bases Assaulted"] = 1, ["Bases Defended"] = 2 }, av = { ["Graveyards Assaulted"] = 1, ["Graveyards Defended"] = 2, ["Leaders Killed"] = 6, ["Mines Captured"] = 5, ["Secondary Objectives"] = 7, ["Towers Assaulted"] = 3, ["Towers Defended"] = 4 }, wsg = { ["Flags Captured"] = 1, ["Flags Returned"] = 2 } },
+            petNames = { ["Bloodaxe Worg"] = 9696, ["Broken Tooth"] = 2850, Lupos = 521, Snarler = 5356, ["Takk the Leaper"] = 5842 },
+            visited = { ["Alcaz Island"] = 2079, ["Bough Shadow"] = 438, ["Caverns of Time"] = 2300, Darnassus = 1657, ["Deeprun Tram"] = 2257, ["Demon Fall Canyon"] = 435, ["Dream Bough"] = 1111, ["Fray Island"] = 720, ["Grim Batol"] = 1037, Ironforge = 1537, ["Isle of Dread"] = 1121, ["Janeiro's Point"] = 312, Karazhan = 2562, ["Land's End Beach"] = 987, ["Morgan's Plot"] = 2563, Orgrimmar = 1637, ["Ravenholdt Manor"] = 3486, Seradane = 356, ["Stormwind City"] = 1519, ["The Greymane Wall"] = 230, ["The Scarab Wall"] = 2737, ["Thunder Bluff"] = 1638, ["Twilight Grove"] = 856, Undercity = 1497, ["Valley of the Watchers"] = 990 },
+            visitedInstances = { ["ahn'qiraj"] = 531, ["blackfathom deeps"] = 48, ["blackrock depths"] = 230, ["blackrock spire"] = 229, ["blackwing lair"] = 469, ["dire maul"] = 429, gnomeregan = 90, maraudon = 349, ["molten core"] = 409, naxxramas = 533, ["onyxia's lair"] = 249, ["ragefire chasm"] = 389, ["razorfen downs"] = 129, ["razorfen kraul"] = 47, ["ruins of ahn'qiraj"] = 509, ["scarlet monastery"] = 189, scholomance = 289, ["shadowfang keep"] = 33, stratholme = 329, ["the deadmines"] = 36, ["the stockade"] = 34, ["the temple of atal'hakkar"] = 109, uldaman = 70, ["wailing caverns"] = 43, ["zul'farrak"] = 209, ["zul'gurub"] = 309 },
+        }
     end;
 
     GetCategories = function(self) return self._categories end;
@@ -1522,4 +1534,23 @@ object "AchievementDB" {
     GetDungeonSet = function(self, class) return self._dungeonSets[class] end;
     GetDungeonSet2 = function(self, class) return self._dungeonSets2[class] end;
     IsInstanceZone = function(self, zone) return self._instanceZones[zone] == true end;
+    GetKeysByName = function(self) return self._keysByName end;
+
+    -- The text in the client's language, from MUI_DB/Locale: cats[id] = name,
+    -- ach[id] = { name, desc, label, labels = { [i] = ... }, list = { [i] =
+    -- an entry's label }, items = { [i] = an item's label } }.
+    Localize = function(self, text)
+        for _, c in ipairs(self._categories) do c.name = text.cats[c.id] or c.name end
+        for _, a in ipairs(self._list) do
+            local t = text.ach[a.id]
+            if t then
+                a.name, a.desc = t.name or a.name, t.desc or a.desc
+                local crit = a.crit
+                crit.label = t.label or crit.label
+                for i, v in pairs(t.labels or {}) do crit.labels[i] = v end
+                for i, v in pairs(t.list or {}) do crit.list[i].label = v end
+                for i, v in pairs(t.items or {}) do crit.items[i].label = v end
+            end
+        end
+    end;
 }

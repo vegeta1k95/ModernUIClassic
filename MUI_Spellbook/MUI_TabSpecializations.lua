@@ -1,3 +1,4 @@
+local L = MUI.L
 
 local TEX_THUMBNAILS = MUI.TEX_SKIN .. "talents\\spec-thumbnails"
 local TEX            = MUI.TEX_SKIN .. "talents\\spec"
@@ -53,50 +54,50 @@ local SPEC_THUMBNAILS = {
 
 local SPEC_FLAVOR = {
     [1] = {                 -- WARRIOR
-        "A battle-hardened master of weapons, using mobility and overpowering attacks to strike their opponents down.",
-        "A furious dual-wielding berserker unleashing a flurry of attacks to carve their opponents to pieces.",
-        "A stalwart protector who uses a shield to safeguard themselves and their allies.",
+        L.SPELLBOOK_SPEC_ARMS,
+        L.SPELLBOOK_SPEC_FURY,
+        L.SPELLBOOK_SPEC_PROTECTION_WARRIOR,
     },
     [2] = {                 -- PALADIN
-        "Invokes the power of the Light to heal and protect allies and vanquish evil from the darkest corners of the world.",
-        "Uses Holy magic to shield themselves and defend allies from attackers.",
-        "A righteous crusader who judges and punishes opponents with weapons and Holy magic.",
+        L.SPELLBOOK_SPEC_HOLY_PALADIN,
+        L.SPELLBOOK_SPEC_PROTECTION_PALADIN,
+        L.SPELLBOOK_SPEC_RETRIBUTION,
     },
     [3] = {                 -- HUNTER
-        "A master of the wild who can tame a wide variety of beasts to assist them in combat.",
-        "A master sharpshooter who excels in bringing down enemies from afar.",
-        "An adaptive ranger who favors using explosives, animal venom, and coordinated attacks with their bonded beast.",
+        L.SPELLBOOK_SPEC_BEAST_MASTERY,
+        L.SPELLBOOK_SPEC_MARKSMANSHIP,
+        L.SPELLBOOK_SPEC_SURVIVAL,
     },
     [4] = {                 -- ROGUE
-        "A deadly master of poisons who dispatches victims with vicious dagger strikes.",
-        "A ruthless fugitive who uses agility and guile to stand toe-to-toe with enemies.",
-        "A dark stalker who leaps from the shadows to ambush their unsuspecting prey.",
+        L.SPELLBOOK_SPEC_ASSASSINATION,
+        L.SPELLBOOK_SPEC_COMBAT,
+        L.SPELLBOOK_SPEC_SUBTLETY,
     },
     [5] = {                 -- PRIEST
-        "Shields allies from harm and cures their wounds by smiting enemies.",
-        "A versatile healer who can reverse damage on individuals or groups and even heal from beyond the grave.",
-        "Uses sinister Shadow magic and terrifying Void magic to eradicate enemies.",
+        L.SPELLBOOK_SPEC_DISCIPLINE,
+        L.SPELLBOOK_SPEC_HOLY_PRIEST,
+        L.SPELLBOOK_SPEC_SHADOW,
     },
     [6] = { "", "", "" },   -- (none — DK reserved)
     [7] = {                 -- SHAMAN
-        "A spellcaster who harnesses the destructive forces of nature and the elements.",
-        "A totemic warrior who strikes foes with weapons imbued with elemental power.",
-        "A healer who calls upon ancestral spirits and the cleansing power of water to mend allies' wounds.",
+        L.SPELLBOOK_SPEC_ELEMENTAL,
+        L.SPELLBOOK_SPEC_ENHANCEMENT,
+        L.SPELLBOOK_SPEC_RESTORATION_SHAMAN,
     },
     [8] = {                 -- MAGE
-        "Manipulates raw Arcane magic, destroying enemies with overwhelming power.",
-        "Focuses the pure essence of Fire magic, assaulting enemies with combustive flames.",
-        "Freezes enemies in their tracks and shatters them with Frost magic.",
+        L.SPELLBOOK_SPEC_ARCANE,
+        L.SPELLBOOK_SPEC_FIRE,
+        L.SPELLBOOK_SPEC_FROST,
     },
     [9] = {                 -- WARLOCK
-        "A master of shadow magic who specializes in drains and damage-over-time spells.",
-        "A commander of demons who twists the souls of their army into devastating power.",
-        "A master of chaos who calls down fire to burn and demolish enemies.",
+        L.SPELLBOOK_SPEC_AFFLICTION,
+        L.SPELLBOOK_SPEC_DEMONOLOGY,
+        L.SPELLBOOK_SPEC_DESTRUCTION,
     },
     [11] = {                -- DRUID
-        "Can shapeshift into a powerful Moonkin, balancing the power of Arcane and Nature magic to destroy enemies.",
-        "Takes on the form of a great cat to deal damage with bleeds and bites or a mighty bear to absorb damage and protect allies.",
-        "Channels powerful Nature magic to regenerate and revitalize allies.",
+        L.SPELLBOOK_SPEC_BALANCE,
+        L.SPELLBOOK_SPEC_FERAL,
+        L.SPELLBOOK_SPEC_RESTORATION_DRUID,
     },
 }
 
@@ -256,7 +257,7 @@ class "SpecColumn" : extends "SecureActionButton" {
         local spellsHeader = FontString(self)
         spellsHeader:Below(self._flavorText, 44)
         spellsHeader:SetFontSize(13)
-        spellsHeader:SetText("Abilities showcase")
+        spellsHeader:SetText(L.SPELLBOOK_ABILITIES_SHOWCASE)
         spellsHeader:SetSize(spellsHeader:GetStringWidth() + 2, 13)
 
         local spells = Frame("Frame", self)
@@ -363,13 +364,13 @@ class "SpecColumn" : extends "SecureActionButton" {
         
         if role == "dps" then
             self._roleIcon:SetTextureRegion(MUI.TEX_BASE .. "roles", 2048, 2048, 0, 1804, 59, 59)
-            self._roleName:SetText("Damage")
+            self._roleName:SetText(DAMAGER)
         elseif role == "heal" then
             self._roleIcon:SetTextureRegion(MUI.TEX_BASE .. "roles", 2048, 2048, 0, 1930, 59, 59)
-            self._roleName:SetText("Healer")
+            self._roleName:SetText(HEALER)
         elseif role == "tank" then
             self._roleIcon:SetTextureRegion(MUI.TEX_BASE .. "roles", 2048, 2048, 189, 1804, 59, 59)
-            self._roleName:SetText("Tank")
+            self._roleName:SetText(TANK)
         end
 
         self._role:SetSize(self._roleIcon:GetWidth() + 4 + self._roleName:GetStringWidth(), self._roleIcon:GetHeight())

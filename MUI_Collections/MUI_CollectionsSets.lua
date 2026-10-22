@@ -76,7 +76,7 @@ class "CollectionsSets" : extends "Frame" {
         self._search:SetSize(145, 20)
         self._search:AlignParentTopLeft(9, 15)
         self._search.OnTextChanged = function(_, text)
-            local query = strlower(text or "")
+            local query = MUI.Fold(text or "")
             if query == self._query then return end
             self._query = query
             if self:IsVisible() then self:Refresh() end
@@ -193,8 +193,8 @@ class "CollectionsSets" : extends "Frame" {
         -- The sets one faction earns are the ones won from other players.
         if not (set.faction and filters.pvp or not set.faction and filters.pve) then return false end
         if self._query ~= "" then
-            local name   = strlower(MUI_ItemSetDB:GetName(set))
-            local source = strlower(MUI_ItemSetDB:GetSource(set))
+            local name   = MUI.Fold(MUI_ItemSetDB:GetName(set))
+            local source = MUI.Fold(MUI_ItemSetDB:GetSource(set))
             if not strfind(name, self._query, 1, true) and not strfind(source, self._query, 1, true) then
                 return false
             end

@@ -71,7 +71,7 @@ local function _clusterSpecs(specs, rangeYards)
                     end
                 end
                 -- Representative spec carries the cluster's first source's
-                -- targetId / targetName. Pin-name uniqueness is maintained by
+                -- targetId / slot. Pin-name uniqueness is maintained by
                 -- spawnIdx, which is the per-objective cluster index.
                 local rep = {}
                 for k, v in pairs(p.spec) do rep[k] = v end

@@ -1,0 +1,350 @@
+{
+ "story/A New Plague": {
+  "en": "A New Plague",
+  "note": "a chapter of the zone story of Tirisfal Glades"
+ },
+ "story/Against the Hatecrest": {
+  "en": "Against the Hatecrest",
+  "note": "a chapter of the zone story of Feralas"
+ },
+ "story/Alas, Andorhal": {
+  "en": "Alas, Andorhal",
+  "note": "a chapter of the zone story of Western Plaguelands"
+ },
+ "story/Arugal's Folly": {
+  "en": "Arugal's Folly",
+  "note": "a chapter of the zone story of Silverpine Forest"
+ },
+ "story/Bandits & Pirates": {
+  "en": "Bandits & Pirates",
+  "note": "a chapter of the zone story of Tanaris"
+ },
+ "story/Battle of Hillsbrad": {
+  "en": "Battle of Hillsbrad",
+  "note": "a chapter of the zone story of Hillsbrad Foothills"
+ },
+ "story/Beasts of Winterspring": {
+  "en": "Beasts of Winterspring",
+  "note": "a chapter of the zone story of Winterspring"
+ },
+ "story/Beasts of the Barrens": {
+  "en": "Beasts of the Barrens",
+  "note": "a chapter of the zone story of The Barrens"
+ },
+ "story/Bloodvenom Post": {
+  "en": "Bloodvenom Post",
+  "note": "a chapter of the zone story of Felwood"
+ },
+ "story/Cleansing the Wells": {
+  "en": "Cleansing the Wells",
+  "note": "a chapter of the zone story of Mulgore"
+ },
+ "story/Crushridge Ogres": {
+  "en": "Crushridge Ogres",
+  "note": "a chapter of the zone story of Alterac Mountains"
+ },
+ "story/Darkshire": {
+  "en": "Darkshire",
+  "note": "a chapter of the zone story of Duskwood"
+ },
+ "story/Darrowshire": {
+  "en": "Darrowshire",
+  "note": "a chapter of the zone story of Eastern Plaguelands"
+ },
+ "story/Eastvale Logging Camp": {
+  "en": "Eastvale Logging Camp",
+  "note": "a chapter of the zone story of Elwynn Forest"
+ },
+ "story/Farstrider Lodge": {
+  "en": "Farstrider Lodge",
+  "note": "a chapter of the zone story of Loch Modan"
+ },
+ "story/Gaxim's Experiments": {
+  "en": "Gaxim's Experiments",
+  "note": "a chapter of the zone story of Stonetalon Mountains"
+ },
+ "story/Goblin Sponsorship": {
+  "en": "Goblin Sponsorship",
+  "note": "a chapter of the zone story of Thousand Needles"
+ },
+ "story/Heroes of Old": {
+  "en": "Heroes of Old",
+  "note": "a chapter of the zone story of Blasted Lands"
+ },
+ "story/Hints of a New Plague?": {
+  "en": "Hints of a New Plague?",
+  "note": "a chapter of the zone story of Hillsbrad Foothills"
+ },
+ "story/Into the Plaguelands": {
+  "en": "Into the Plaguelands",
+  "note": "a chapter of the zone story of Western Plaguelands"
+ },
+ "story/Lydon's Elixirs": {
+  "en": "Lydon's Elixirs",
+  "note": "a chapter of the zone story of Hillsbrad Foothills"
+ },
+ "story/Mor'shan Rampart": {
+  "en": "Mor'shan Rampart",
+  "note": "a chapter of the zone story of The Barrens"
+ },
+ "story/Nothing But The Truth": {
+  "en": "Nothing But The Truth",
+  "note": "a chapter of the zone story of Duskwood"
+ },
+ "story/Princess Myzrael": {
+  "en": "Princess Myzrael",
+  "note": "a chapter of the zone story of Arathi Highlands"
+ },
+ "story/Raene's Cleansing": {
+  "en": "Raene's Cleansing",
+  "note": "a chapter of the zone story of Ashenvale"
+ },
+ "story/Raiders of the Barrens": {
+  "en": "Raiders of the Barrens",
+  "note": "a chapter of the zone story of The Barrens"
+ },
+ "story/Reclaimers Inc.": {
+  "en": "Reclaimers Inc.",
+  "note": "a chapter of the zone story of Desolace"
+ },
+ "story/Rites of the Earthmother": {
+  "en": "Rites of the Earthmother",
+  "note": "a chapter of the zone story of Mulgore"
+ },
+ "story/Samophlange": {
+  "en": "Samophlange",
+  "note": "a chapter of the zone story of The Barrens"
+ },
+ "story/Solomon's Plea": {
+  "en": "Solomon's Plea",
+  "note": "a chapter of the zone story of Redridge Mountains"
+ },
+ "story/Starfall Village": {
+  "en": "Starfall Village",
+  "note": "a chapter of the zone story of Winterspring"
+ },
+ "story/Stonefields & Maclures": {
+  "en": "Stonefields & Maclures",
+  "note": "a chapter of the zone story of Elwynn Forest"
+ },
+ "story/Study of the Elements": {
+  "en": "Study of the Elements",
+  "note": "a chapter of the zone story of Badlands"
+ },
+ "story/Swamp Eye Jarl": {
+  "en": "Swamp Eye Jarl",
+  "note": "a chapter of the zone story of Dustwallow Marsh"
+ },
+ "story/Tarren Mill": {
+  "en": "Tarren Mill",
+  "note": "a chapter of the zone story of Hillsbrad Foothills"
+ },
+ "story/Tests of the Plainstalker": {
+  "en": "Tests of the Plainstalker",
+  "note": "a chapter of the zone story of Thousand Needles"
+ },
+ "story/The Abyssal Council": {
+  "en": "The Abyssal Council",
+  "note": "a chapter of the zone story of Silithus"
+ },
+ "story/The Ashenvale Hunt": {
+  "en": "The Ashenvale Hunt",
+  "note": "a chapter of the zone story of Ashenvale"
+ },
+ "story/The Black Shield": {
+  "en": "The Black Shield",
+  "note": "a chapter of the zone story of Dustwallow Marsh"
+ },
+ "story/The Blackrock Menace": {
+  "en": "The Blackrock Menace",
+  "note": "a chapter of the zone story of Redridge Mountains"
+ },
+ "story/The Bloodsail Buccaneers": {
+  "en": "The Bloodsail Buccaneers",
+  "note": "a chapter of the zone story of Stranglethorn Vale"
+ },
+ "story/The Brassbolts Brothers": {
+  "en": "The Brassbolts Brothers",
+  "note": "a chapter of the zone story of Thousand Needles"
+ },
+ "story/The Brood of Onyxia": {
+  "en": "The Brood of Onyxia",
+  "note": "a chapter of the zone story of Dustwallow Marsh"
+ },
+ "story/The Burning Blade": {
+  "en": "The Burning Blade",
+  "note": "a chapter of the zone story of Durotar"
+ },
+ "story/The Centaur Clans": {
+  "en": "The Centaur Clans",
+  "note": "a chapter of the zone story of Desolace"
+ },
+ "story/The Corrupter": {
+  "en": "The Corrupter",
+  "note": "a chapter of the zone story of Desolace"
+ },
+ "story/The Crown of Will": {
+  "en": "The Crown of Will",
+  "note": "a chapter of the zone story of Hillsbrad Foothills"
+ },
+ "story/The Deathstalkers": {
+  "en": "The Deathstalkers",
+  "note": "a chapter of the zone story of Silverpine Forest"
+ },
+ "story/The Defias Brotherhood": {
+  "en": "The Defias Brotherhood",
+  "note": "a chapter of the zone story of Westfall"
+ },
+ "story/The Dragonmaw Orcs": {
+  "en": "The Dragonmaw Orcs",
+  "note": "a chapter of the zone story of Wetlands"
+ },
+ "story/The Embalmer": {
+  "en": "The Embalmer",
+  "note": "a chapter of the zone story of Duskwood"
+ },
+ "story/The Gordunni": {
+  "en": "The Gordunni",
+  "note": "a chapter of the zone story of Feralas"
+ },
+ "story/The Grimtotem": {
+  "en": "The Grimtotem",
+  "note": "a chapter of the zone story of Stonetalon Mountains"
+ },
+ "story/The Highborne Ruins": {
+  "en": "The Highborne Ruins",
+  "note": "a chapter of the zone story of Darkshore"
+ },
+ "story/The Jadefire Satyrs": {
+  "en": "The Jadefire Satyrs",
+  "note": "a chapter of the zone story of Felwood"
+ },
+ "story/The Legend of Stalvan": {
+  "en": "The Legend of Stalvan",
+  "note": "a chapter of the zone story of Duskwood"
+ },
+ "story/The Missing Courier": {
+  "en": "The Missing Courier",
+  "note": "a chapter of the zone story of Feralas"
+ },
+ "story/The Muisek Vessel": {
+  "en": "The Muisek Vessel",
+  "note": "a chapter of the zone story of Feralas"
+ },
+ "story/The Old Sea Dogs": {
+  "en": "The Old Sea Dogs",
+  "note": "a chapter of the zone story of Stranglethorn Vale"
+ },
+ "story/The People's Militia": {
+  "en": "The People's Militia",
+  "note": "a chapter of the zone story of Westfall"
+ },
+ "story/The Plagued Farms": {
+  "en": "The Plagued Farms",
+  "note": "a chapter of the zone story of Western Plaguelands"
+ },
+ "story/The Rebel Camp": {
+  "en": "The Rebel Camp",
+  "note": "a chapter of the zone story of Stranglethorn Vale"
+ },
+ "story/The Redridge Gnolls": {
+  "en": "The Redridge Gnolls",
+  "note": "a chapter of the zone story of Redridge Mountains"
+ },
+ "story/The Riverpaw Gnolls": {
+  "en": "The Riverpaw Gnolls",
+  "note": "a chapter of the zone story of Elwynn Forest"
+ },
+ "story/The Rot Hide Gnolls": {
+  "en": "The Rot Hide Gnolls",
+  "note": "a chapter of the zone story of Silverpine Forest"
+ },
+ "story/The Scourge Cauldrons": {
+  "en": "The Scourge Cauldrons",
+  "note": "a chapter of the zone story of Western Plaguelands"
+ },
+ "story/The Sprite Darters": {
+  "en": "The Sprite Darters",
+  "note": "a chapter of the zone story of Feralas"
+ },
+ "story/The Stonewrought Dam": {
+  "en": "The Stonewrought Dam",
+  "note": "a chapter of the zone story of Loch Modan"
+ },
+ "story/The Syndicate": {
+  "en": "The Syndicate",
+  "note": "a chapter of the zone story of Alterac Mountains"
+ },
+ "story/The Thandol Span": {
+  "en": "The Thandol Span",
+  "note": "a chapter of the zone story of Wetlands"
+ },
+ "story/The Torch of Retribution": {
+  "en": "The Torch of Retribution",
+  "note": "a chapter of the zone story of Searing Gorge"
+ },
+ "story/The Tower of Althalaxx": {
+  "en": "The Tower of Althalaxx",
+  "note": "a chapter of the zone story of Darkshore"
+ },
+ "story/The Tower of Ilgalar": {
+  "en": "The Tower of Ilgalar",
+  "note": "a chapter of the zone story of Redridge Mountains"
+ },
+ "story/The True Masters": {
+  "en": "The True Masters",
+  "note": "a chapter of the zone story of Burning Steppes"
+ },
+ "story/The Valley of Kings": {
+  "en": "The Valley of Kings",
+  "note": "a chapter of the zone story of Loch Modan"
+ },
+ "story/The Vilebranch": {
+  "en": "The Vilebranch",
+  "note": "a chapter of the zone story of The Hinterlands"
+ },
+ "story/The Westfall Coast": {
+  "en": "The Westfall Coast",
+  "note": "a chapter of the zone story of Westfall"
+ },
+ "story/The Westfall Farms": {
+  "en": "The Westfall Farms",
+  "note": "a chapter of the zone story of Westfall"
+ },
+ "story/The Winterfall": {
+  "en": "The Winterfall",
+  "note": "a chapter of the zone story of Winterspring"
+ },
+ "story/Threat From the Sea": {
+  "en": "Threat From the Sea",
+  "note": "a chapter of the zone story of Swamp of Sorrows"
+ },
+ "story/Timbermaw Hold": {
+  "en": "Timbermaw Hold",
+  "note": "a chapter of the zone story of Felwood"
+ },
+ "story/Trelane's Tower": {
+  "en": "Trelane's Tower",
+  "note": "a chapter of the zone story of Arathi Highlands"
+ },
+ "story/Tremors of the Earth": {
+  "en": "Tremors of the Earth",
+  "note": "a chapter of the zone story of Badlands"
+ },
+ "story/Trol'kalar": {
+  "en": "Trol'kalar",
+  "note": "a chapter of the zone story of Arathi Highlands"
+ },
+ "story/Twilight Cultists": {
+  "en": "Twilight Cultists",
+  "note": "a chapter of the zone story of Silithus"
+ },
+ "story/Washed Ashore": {
+  "en": "Washed Ashore",
+  "note": "a chapter of the zone story of Darkshore"
+ },
+ "story/Whelgar's Excavation": {
+  "en": "Whelgar's Excavation",
+  "note": "a chapter of the zone story of Wetlands"
+ }
+}

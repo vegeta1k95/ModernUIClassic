@@ -13,6 +13,8 @@
 --                       selected and we render the recipe from
 --                       MUI_RecipeDB[profKey][spellID].
 
+local L = MUI.L
+
 class "ProfessionsRecipePane" : extends "Frame" {
 
     -- Quality-tinted border atlas regions, keyed by Enum.ItemQuality value.
@@ -109,7 +111,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         self._recipeRequires:SetFontSize(11)
         self._recipeRequires:AlignLeft(self._recipeName)
         self._recipeRequires:Below(self._recipeName, 4)
-        self._recipeRequires:SetText("Requires:")
+        self._recipeRequires:SetText(REQUIRES_LABEL)
 
         self._recipeDescription = FontString(self._recipeFrame)
         self._recipeDescription:SetFontSize(10.5)
@@ -128,7 +130,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         unknownIcon:AlignParentLeft()
 
         local unknownText = FontString(self._recipeUnknown)
-        unknownText:SetText("Recipe is not known")
+        unknownText:SetText(L.PROFESSIONS_RECIPE_UNLEARNED)
         unknownText:SetFontSize(12)
         unknownText:SetTextColor(1, 0.82, 0, 1)
         unknownText:RightOf(unknownIcon, 4)
@@ -140,7 +142,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         self._recipeUnknown:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             local src = self._recipeSource
             if not src then
-                tooltip:AddLine("Unknown — no source on file.", 0.7, 0.7, 0.7, true)
+                tooltip:AddLine(L.PROF_NO_SOURCE, 0.7, 0.7, 0.7, true)
                 return
             end
             local ctx = {
@@ -157,7 +159,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         -- checkbox with a grey label, here in the pane's bottom-left corner.
         -- Ticking it puts the recipe into the quest tracker's Profession
         -- category.
-        self._trackCheck = CheckBox(self._recipeFrame, "MUI_ProfessionsTrackRecipe", "Track Recipe")
+        self._trackCheck = CheckBox(self._recipeFrame, "MUI_ProfessionsTrackRecipe", L.PROFESSIONS_TRACK_RECIPE)
         self._trackCheck.label:SetFontSize(11)
         self._trackCheck.label:SetTextColor(0.7, 0.7, 0.7, 1)
         self._trackCheck:SetWidth(30 + 6 + self._trackCheck.label:GetStringWidth() + 2)
@@ -177,7 +179,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         self._reagentsHeader:SetFont(MUI.FONT, 10,  "")
         self._reagentsHeader:SetShadowOffset(1, -1)
         self._reagentsHeader:SetTextColor(1, 0.82, 0, 1)
-        self._reagentsHeader:SetText("Reagents:")
+        self._reagentsHeader:SetText(SPELL_REAGENTS)
         self._reagentsHeader:Hide()
 
         self._reagentRows = {}
@@ -283,7 +285,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
         -- line shows white for satisfied requirements, red for unsatisfied.
         local reqStr = BuildColoredListString(adapter:GetTools(idx))
         if reqStr then
-            self._recipeRequires:SetText("|cffffd200Requires: |r" .. reqStr)
+            self._recipeRequires:SetText("|cffffd200" .. REQUIRES_LABEL .. " |r" .. reqStr)
             self._recipeRequires:Show()
         else
             self._recipeRequires:Hide()
@@ -360,7 +362,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
 
         self._iconFrame:Show()
         local name = GetSpellInfo(spellID)
-        self._recipeName:SetText(name or ("Spell #" .. tostring(spellID)))
+        self._recipeName:SetText(name or UNKNOWN)
 
         -- Era's GetSpellTexture / GetSpellInfo return the same generic
         -- crafting placeholder (file 136192) for every tradeskill spell —
@@ -419,7 +421,7 @@ class "ProfessionsRecipePane" : extends "Frame" {
             local itemName, itemLink, quality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemId)
             local owned = C_Item.GetItemCount(itemId) or 0
             row:SetData(itemTexture, quality or 1, owned, req,
-                        itemName or ("Item #" .. tostring(itemId)), itemLink)
+                        itemName or RETRIEVING_ITEM_INFO, itemLink)
             row:Show()
         end
         for i = #reagents + 1, #self._reagentRows do

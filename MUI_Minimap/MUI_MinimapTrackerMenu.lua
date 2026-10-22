@@ -4,6 +4,8 @@
 -- player's learned tracking spells (Track Humanoids / Find Herbs / etc.)
 -- as a one-of radio group. Toggled externally via Show / Hide / Toggle.
 
+local L = MUI.L
+
 local OBJECTS_ATLAS = "Interface\\AddOns\\ModernUI\\assets\\textures\\objecticonsatlas"
 
 -- Classic Era has no GetNumTrackingTypes — enumerate by C_SpellBook.IsSpellInSpellBook
@@ -92,24 +94,24 @@ class "MinimapTrackerMenu" {
     -- without per-row scripting.
     _BuildItems = function(self)
         local items = {
-            { type = "text", label = "Clear All",
+            { type = "text", label = CLEAR_ALL,
               closeOnClick = false,
               OnClick = function() self:ClearAll() end },
-            self:_FilterItem("Auctioneer",         "Auctioneer",            385, 757, 32, 32),
-            self:_FilterItem("Banker",             "Banker",                385, 859, 32, 32),
-            self:_FilterItem("Battlemaster",       "Battlemaster",          385, 927, 32, 32),
-            self:_FilterItem("Innkeeper",          "Innkeeper",             521, 451, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_AUCTIONEER,         "Auctioneer",        385, 757, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_BANKER,             "Banker",            385, 859, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_BATTLEMASTER,       "Battlemaster",      385, 927, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_INNKEEPER,          "Innkeeper",         521, 451, 32, 32),
             -- Flight Master intentionally omitted: always shown regardless
             -- of this menu (see MinimapTracker:Rebuild — builds the
             -- FlightMaster filter unconditionally).
-            self:_FilterItem("Repair",             "Repair",                555, 927, 32, 32),
-            self:_FilterItem("Mailbox",            "Mailbox",               453, 519, 32, 32),
-            self:_FilterItem("Stable Master",      "Stablemaster",          963, 588, 32, 32),
-            self:_FilterItem("Profession Trainer", "ProfessionTrainer",     864, 521, 29, 29),
-            self:_FilterItem("Class Trainer",      "ClassTrainer",          487, 416, 32, 32),
-            self:_QuestItem("Quest Objectives",    "showMinimapObjectivePins",     759, 757, 32, 32),
-            self:_QuestItem("Quest Area",          "showMinimapObjectiveAreas",    895, 553, 32, 32),
-            self:_QuestItem("Low-Level Quests",    "showLowLevelAvailableQuests",  828, 621, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_REPAIR,             "Repair",            555, 927, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_MAILBOX,            "Mailbox",           453, 519, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_STABLEMASTER,       "Stablemaster",      963, 588, 32, 32),
+            self:_FilterItem(MINIMAP_TRACKING_TRAINER_PROFESSION, "ProfessionTrainer", 864, 521, 29, 29),
+            self:_FilterItem(MINIMAP_TRACKING_TRAINER_CLASS,      "ClassTrainer",      487, 416, 32, 32),
+            self:_QuestItem(QUEST_OBJECTIVES,                "showMinimapObjectivePins",     759, 757, 32, 32),
+            self:_QuestItem(L.MINIMAP_QUEST_AREA,            "showMinimapObjectiveAreas",    895, 553, 32, 32),
+            self:_QuestItem(MINIMAP_TRACKING_TRIVIAL_QUESTS, "showLowLevelAvailableQuests",  828, 621, 32, 32),
         }
 
         for _, spellID in ipairs(TRACKING_SPELL_IDS) do

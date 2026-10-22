@@ -20,6 +20,7 @@
 --               healer, heroic, deadly, important, interruptible, magic,
 --               curse, poison, disease, enrage, mythic, bleed), sub? }
 -- _items[item id] = { name (enUS), quality }
+-- MUI_DB/Locale puts the text in the client's language (Localize).
 
 object "EncounterJournalDB" {
     -- The dungeons (raid = false) or the raids, in display order.
@@ -46,6 +47,34 @@ object "EncounterJournalDB" {
     GetItem = function(self, itemId)
         local item = self._items[itemId]
         if item then return item[1], item[2] end
+    end;
+
+    -- The text in the client's language, from MUI_DB/Locale: instances[id]
+    -- and encounters[id] = { name, desc, creatures = { [i] = name } },
+    -- sections[id] = { title, text }, items[id] = name.
+    Localize = function(self, text)
+        local function localizeSections(list)
+            for _, s in ipairs(list or {}) do
+                local t = text.sections[s.id]
+                if t then s.title, s.text = t.title or s.title, t.text or s.text end
+                localizeSections(s.sub)
+            end
+        end
+        for _, instance in ipairs(self._instances) do
+            local t = text.instances[instance.id]
+            if t then instance.name, instance.desc = t.name or instance.name, t.desc or instance.desc end
+            for _, encounter in ipairs(instance.encounters) do
+                t = text.encounters[encounter.id]
+                if t then
+                    encounter.name, encounter.desc = t.name or encounter.name, t.desc or encounter.desc
+                    for i, name in pairs(t.creatures or {}) do encounter.creatures[i].name = name end
+                end
+                localizeSections(encounter.sections)
+            end
+        end
+        for id, name in pairs(text.items) do
+            if self._items[id] then self._items[id][1] = name end
+        end
     end;
 
     __init = function(self)

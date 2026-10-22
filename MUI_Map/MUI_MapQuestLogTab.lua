@@ -10,6 +10,8 @@
 --     parent — host frame (e.g. ModuleMap.bgFrame). Tab anchors to its
 --              top-right edge with the standard 211-wide column layout.
 
+local L = MUI.L
+
 local LOG_TEX        = MUI.TEX_SKIN .. "worldmap\\questlog"
 local LOG_BG_TEX     = MUI.TEX_SKIN .. "worldmap\\questlog-bg"
 local CATEGORIES_GAP = 4
@@ -101,13 +103,13 @@ class "MapQuestLogTab" : extends "Frame" {
         self._empty:FillWidth(30, 46)
         self._empty:SetFont(MUI.FONT_CAL, 15)
         self._empty:SetTextColor(1, 1, 1, 1)
-        self._empty:SetText("No quests available\n\n Accept new quests from characters marked by |TInterface\\GossipFrame\\AvailableQuestIcon:14:14|t sign over their head")
+        self._empty:SetText(L.QUEST_LOG_NO_QUESTS)
 
         self._notFound = FontString(self.scrollChild)
         self._notFound:SetFontSize(13)
         self._notFound:FillWidth(30, 46)
         self._notFound:AlignParentTop(20)
-        self._notFound:SetText("Results not found")
+        self._notFound:SetText(CATALOG_SHOP_NO_SEARCH_RESULTS)
         self._notFound:Hide()
 
         -- Zone story banner for the displayed zone, above the categories.
@@ -187,7 +189,7 @@ class "MapQuestLogTab" : extends "Frame" {
         self._settingsMenu:SetItems({
             {
                 type    = "checkbox",
-                label   = "Show quest objectives",
+                label   = L.QUEST_LOG_SHOW_OBJECTIVES,
                 checked = MUI_DB.settings.questHelper.showObjectivesInQuestLog,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.showObjectivesInQuestLog = checked
@@ -196,7 +198,7 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
-                label   = "Show quest level",
+                label   = L.MAP_SHOW_QUEST_LEVEL,
                 checked = MUI_DB.settings.questHelper.showQuestLevel,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.showQuestLevel = checked
@@ -206,7 +208,7 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
-                label   = "Color quests by level",
+                label   = L.MAP_COLOR_QUESTS_BY_LEVEL,
                 checked = MUI_DB.settings.questHelper.showQuestDifficultyColor,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.showQuestDifficultyColor = checked
@@ -216,7 +218,7 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
-                label   = "Quest type icons",
+                label   = L.MAP_QUEST_TYPE_ICONS,
                 checked = MUI_DB.settings.questHelper.questTypeIcons,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.questTypeIcons = checked
@@ -227,7 +229,7 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
-                label   = "Zone story",
+                label   = L.MAP_ZONE_STORY,
                 checked = MUI_DB.settings.questHelper.showZoneStory,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.showZoneStory = checked
@@ -236,7 +238,7 @@ class "MapQuestLogTab" : extends "Frame" {
             },
             {
                 type    = "checkbox",
-                label   = "Auto-collapse categories",
+                label   = L.MAP_AUTO_COLLAPSE,
                 checked = MUI_DB.settings.questHelper.autoCollapseQuestCategories,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.autoCollapseQuestCategories = checked
@@ -272,7 +274,7 @@ class "MapQuestLogTab" : extends "Frame" {
     -- Search box, sits to the left of the gear icon.
     _BuildSearchBar = function(self)
         self._searchBox = SearchBox(self, "MUI_QuestLogSeachBox")
-        self._searchBox:SetHint("Search in the quest list")
+        self._searchBox:SetHint(L.SEARCH_QUEST_LOG)
         self._searchBox:SetScale(0.6)
         self._searchBox:SetWidth(166 / 0.6)
 
@@ -296,8 +298,8 @@ class "MapQuestLogTab" : extends "Frame" {
         self._countText:CenterInParent()
         self._countCard:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             local _, numQuests = GetNumQuestLogEntries()
-            tooltip:AddLine("Quest Log", 1, 1, 1, false, 13)
-            tooltip:AddLine(numQuests .. " of " .. C_QuestLog.GetMaxNumQuestsCanAccept() .. " quests", 1, 0.82, 0)
+            tooltip:AddLine(QUEST_LOG, 1, 1, 1, false, 13)
+            tooltip:AddLine(QUEST_LOG_COUNT_TEMPLATE:format(numQuests, C_QuestLog.GetMaxNumQuestsCanAccept()), 1, 0.82, 0)
         end)
 
         self._searchBox:LeftOf(self._countCard, 3, 0)
@@ -362,8 +364,8 @@ class "MapQuestLogTab" : extends "Frame" {
     -- stack top-down on scrollChild, and update the slider math.
     Refresh = function(self)
         local byZone, zoneOrder = {}, {}
-        local zone = "Misc"
-        local filter      = (self._filter or ""):lower()
+        local zone = OTHER
+        local filter      = MUI.Fold(self._filter or "")
         local hasAnyQuest = false   -- any quest in the log, ignoring the filter
 
         local _, numQuests = GetNumQuestLogEntries()
@@ -379,11 +381,11 @@ class "MapQuestLogTab" : extends "Frame" {
             local title, level, _, isHeader, _, isComplete, _, questID
                 = GetQuestLogTitle(i)
             if isHeader then
-                zone = title or "Misc"
+                zone = title or OTHER
             elseif questID and questID > 0 then
                 hasAnyQuest = true
                 local matches = filter == ""
-                    or string.find((title or ""):lower(), filter, 1, true) ~= nil
+                    or string.find(MUI.Fold(title or ""), filter, 1, true) ~= nil
                 if matches then
                     local objectives = {}
                     local numObj = GetNumQuestLeaderBoards(i) or 0

@@ -21,6 +21,8 @@
 --     AchievementSearch           the header's search box, preview and results
 --     AchievementStatistics       the Statistics tab's rows
 
+local L = MUI.L
+
 local TEX = MUI.TEX_BASE .. "achievements\\"
 local function Art(name) return TEX .. "ui-achievement-" .. name end
 
@@ -735,9 +737,9 @@ class "AchievementRow" : extends "Frame" {
         end)
         self.shield:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             if not self.completed then return end
-            tooltip:AddLine("Completed", 1, 1, 1)
+            tooltip:AddLine(L.CRITERIA_COMPLETED, 1, 1, 1)
             if self.backfilled then
-                tooltip:AddLine("Earned before achievement tracking began.", 0.6, 0.6, 0.6, true)
+                tooltip:AddLine(L.ACH_EARNED_BEFORE_TRACKING, 0.6, 0.6, 0.6, true)
             end
         end)
 
@@ -782,7 +784,7 @@ class "AchievementRow" : extends "Frame" {
         self.trackCheck:Hide()
 
         -- (the minimap tracking menu's checkbox: an 11 px box, 10.5 label)
-        self.tracked = CheckBoxThin(self, nil, "Track")
+        self.tracked = CheckBoxThin(self, nil, TRACK_ACHIEVEMENT)
         self.tracked:SetSize(50, 13)
         self.tracked:SetBoxSize(11, 11)
         self.tracked.label:SetFontSize(10.5)
@@ -790,8 +792,8 @@ class "AchievementRow" : extends "Frame" {
         self.tracked:Hide()
         self.tracked.OnChanged = function() self:_ToggleTracking() end
         self.tracked:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine(self.tracked:IsChecked() and "Stop tracking this achievement."
-                or "Track this achievement on the objectives list.", 1, 1, 1, true)
+            tooltip:AddLine(self.tracked:IsChecked() and UNTRACK_ACHIEVEMENT_TOOLTIP
+                or TRACK_ACHIEVEMENT_TOOLTIP, 1, 1, 1, true)
         end)
 
         self.highlight = AchievementRowHighlight(self)
@@ -830,8 +832,8 @@ class "AchievementRow" : extends "Frame" {
         end
         local ok, reason = engine:Track(id)
         if not ok then
-            UIErrorsFrame:AddMessage(reason == "max" and "You may only track 10 achievements at a time."
-                or "You may not track completed achievements.", 1, 0.1, 0.1, 1)
+            UIErrorsFrame:AddMessage(reason == "max" and ACHIEVEMENT_WATCH_TOO_MANY:format(10)
+                or L.ACH_CANT_TRACK_COMPLETED, 1, 0.1, 0.1, 1)
             self:SetTracked(false)
             return
         end
@@ -1164,10 +1166,10 @@ class "AchievementSummary" : extends "Frame" {
         recent:SetHeight(RECENT_BLOCK_H * S)
         recent:AlignParentTopLeft(10 * S, 5 * S)
         recent:AlignParentTopRight(10 * S, 5 * S)
-        local recentHeader = self:_Plate(recent, "Latest Unlocked Achievements")
+        local recentHeader = self:_Plate(recent, LATEST_UNLOCKED_ACHIEVEMENTS)
         self.emptyText = Label(recent, 12, 1, 1, 1, "BACKGROUND")
         self.emptyText:AlignParentTop(30 * S)
-        self.emptyText:SetText("You have not completed any achievements yet.")
+        self.emptyText:SetText(NO_COMPLETED_ACHIEVEMENTS)
         self.recent = {}
         for i = 1, RECENT_ROWS do
             local row = self:_RecentRow(recent)
@@ -1187,10 +1189,10 @@ class "AchievementSummary" : extends "Frame" {
         progress:SetHeight(226 * S)
         progress:SetPoint("TOPLEFT", recent, "BOTTOMLEFT", 0, 6 * S)
         progress:SetPoint("TOPRIGHT", recent, "BOTTOMRIGHT", 0, 6 * S)
-        local progressHeader = self:_Plate(progress, "Category Progress")
+        local progressHeader = self:_Plate(progress, ACHIEVEMENT_CATEGORY_PROGRESS)
         self.total = self:_Bar(progress, 488 * S)
         self.total:Below(progressHeader, 6 * S)
-        self.total.title:SetText("Achievements Completed")
+        self.total.title:SetText(ACHIEVEMENTS_COMPLETED)
         self.bars = {}
         local left
         for _, cat in ipairs(owner.engine.categories) do
@@ -1676,7 +1678,7 @@ class "AchievementSearch" : extends "Frame" {
             end
         end
         if n > PREVIEWS then
-            pc.showAll.text:SetText(string.format("Show all %d results", n))
+            pc.showAll.text:SetText(string.format(ENCOUNTER_JOURNAL_SHOW_SEARCH_RESULTS, n))
             pc.showAll:Show()
             last = pc.showAll
         else
@@ -1738,7 +1740,7 @@ class "AchievementSearch" : extends "Frame" {
         local res, engine = self.results, self.owner.engine
         self.preview:Hide()
         self.box:ClearFocus()
-        res.title:SetText(string.format("Search results: %s (%d)", self.box:GetText() or "", #self.found))
+        res.title:SetText(string.format(ENCOUNTER_JOURNAL_SEARCH_RESULTS, self.box:GetText() or "", #self.found))
         for i, def in ipairs(self.found) do
             local row = res.rows[i]
             if not row then
@@ -1749,7 +1751,7 @@ class "AchievementSearch" : extends "Frame" {
             row.name:SetText(def.name)
             row.icon:SetTexture(engine:IconPath(def))
             row.path:SetText(self.owner:CategoryName(def.sub or def.cat))
-            row.kind:SetText(engine:IsEarned(def.id) and "Completed" or "Incomplete")
+            row.kind:SetText(engine:IsEarned(def.id) and ACHIEVEMENTFRAME_FILTER_COMPLETED or ACHIEVEMENTFRAME_FILTER_INCOMPLETE)
             row:Show()
         end
         for i = #self.found + 1, #res.rows do res.rows[i]:Hide() end
@@ -1766,7 +1768,7 @@ class "AchievementSearch" : extends "Frame" {
 -- ---------------------------------------------------------------------
 local SUMMARY = 0    -- the Summary page's pseudo-category id
 local FILTER_H = 22  -- our dropdown art against the search box's unscaled 20-high border
-local FILTERS = { { 1, "All" }, { 2, "Completed" }, { 3, "Incomplete" } }
+local FILTERS = { { 1, ACHIEVEMENTFRAME_FILTER_ALL }, { 2, ACHIEVEMENTFRAME_FILTER_COMPLETED }, { 3, ACHIEVEMENTFRAME_FILTER_INCOMPLETE } }
 
 class "AchievementWindow" : extends "Frame" {
     __init = function(self, engine)
@@ -1914,7 +1916,7 @@ class "AchievementWindow" : extends "Frame" {
         local title = Label(h, 12, 1, 0.82, 0, "BORDER")
         title:SetSize(150 * S, 20 * S)
         title:AlignTop(pointsBorder, -12 * S)
-        title:SetText("Achievement Points")
+        title:SetText(ACHIEVEMENT_TITLE)
 
         self.points = Label(h, 12, 1, 1, 1, "ARTWORK")
         self.points:SetHeight(12 * S)
@@ -1946,7 +1948,7 @@ class "AchievementWindow" : extends "Frame" {
         c.scroll:SetScrollChild(c.content)
         c.bar = self:MakeScrollBar(c, c.scroll)
 
-        self.categoryRows = { AchievementCategoryRow(c.content, self, { id = SUMMARY, name = "Summary" }) }
+        self.categoryRows = { AchievementCategoryRow(c.content, self, { id = SUMMARY, name = ACHIEVEMENT_SUMMARY_CATEGORY }) }
         for _, cat in ipairs(self.engine.categories) do
             table.insert(self.categoryRows, AchievementCategoryRow(c.content, self, cat))
         end
@@ -1972,7 +1974,7 @@ class "AchievementWindow" : extends "Frame" {
         streaks:SetHorizTile(true)
         streaks:FillParent()
 
-        self.back = ButtonGold(d, nil, "Back")
+        self.back = ButtonGold(d, nil, BACK)
         self.back:SetSize(100 * S, 22 * S)
         self.back:AlignParentTopLeft(10 * S, 6 * S)
         self.back.label:SetFontSize(12 * S)
@@ -2048,9 +2050,9 @@ class "AchievementWindow" : extends "Frame" {
     end;
 
     _BuildTabs = function(self)
-        self.tabAchievements = AchievementTab(self, "Achievements", function() self:_SelectTab(1) end)
+        self.tabAchievements = AchievementTab(self, ACHIEVEMENTS, function() self:_SelectTab(1) end)
         self.tabAchievements:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 17 * S, 3 * S)
-        self.tabStatistics = AchievementTab(self, "Statistics", function() self:_SelectTab(2) end)
+        self.tabStatistics = AchievementTab(self, STATISTICS, function() self:_SelectTab(2) end)
         self.tabStatistics:SetPoint("LEFT", self.tabAchievements, "RIGHT", -5 * S, 0)
         self:_SelectTab(1)
     end;

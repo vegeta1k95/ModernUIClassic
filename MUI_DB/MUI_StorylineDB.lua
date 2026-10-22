@@ -11,6 +11,16 @@ object "StorylineDB" {
         return self._data[areaId]
     end;
 
+    -- The chapters' names in the client's language, from MUI_DB/Locale:
+    -- English name -> name.
+    Localize = function(self, names)
+        for _, chapters in pairs(self._data) do
+            for _, chapter in ipairs(chapters) do
+                chapter.name = names[chapter.name] or chapter.name
+            end
+        end
+    end;
+
     _data = {
         [12] = {  -- Elwynn Forest
             { name = "Northshire Valley", steps = {

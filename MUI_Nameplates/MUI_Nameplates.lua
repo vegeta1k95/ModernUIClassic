@@ -3,6 +3,8 @@
 -- (an icon beside the plate of an NPC an accepted quest still needs), and
 -- the unit's level, which Blizzard only shows in its "Classic" plate style.
 
+local L = MUI.L
+
 local ICON_SIZE = 18
 local ICON_GAP = 4        -- between the marker and whatever is beside it
 local LEVEL_GAP = 3        -- between the level and the name
@@ -242,8 +244,8 @@ object "ModuleNameplates" : extends "Module" {
             categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
             variable     = "MUI_Nameplate_ShowLevel",
             type         = "checkbox",
-            label        = "Show level",
-            tooltip      = "Show the unit's level on its nameplate (Blizzard only does in the Classic style).",
+            label        = L.NAMEPLATES_SHOW_LEVEL,
+            tooltip      = L.NAMEPLATES_SHOW_LEVEL_TOOLTIP,
             default      = true,
             tbl          = MUI_DB.settings.nameplates,
             key          = "showLevel",
@@ -255,12 +257,12 @@ object "ModuleNameplates" : extends "Module" {
             categoryId   = "NAMEPLATE_OPTIONS_CATEGORY_ID",
             variable     = "MUI_Nameplate_QuestIcons",
             type         = "checkbox",
-            label        = "Show quest objective icon",
-            tooltip      = "Mark nameplates of NPCs an accepted quest still needs: a sword to kill, a bag to loot.",
+            label        = L.NAMEPLATES_QUEST_ICON,
+            tooltip      = L.NAMEPLATES_QUEST_ICON_TOOLTIP,
             default      = true,
             tbl          = MUI_DB.settings.nameplates,
             key          = "questIcons",
-            after        = "Show level",
+            after        = L.NAMEPLATES_SHOW_LEVEL,
             onChange     = function() self:UpdateAllQuestIcons() end,
         })
     end;

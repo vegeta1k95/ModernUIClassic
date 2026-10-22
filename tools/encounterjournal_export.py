@@ -3,11 +3,18 @@ Port NewEra's Adventure Guide dataset into MUI_DB/MUI_EncounterJournalDB.lua
 and copy the journal art it ships into assets/textures/skin/adventureguide/.
 
     python tools/encounterjournal_export.py <db2 dir> [path to NewEra]
+                                            [--retail <dir> --era <dir>]
 
 <db2 dir> holds CSV exports of the client build's tables (wago.tools/db2, the
 build in .build.info): SpellEffect, SpellMisc, SpellDuration, SpellRadius,
 SpellRange, SpellAuraOptions, SpellTargetRestrictions, ItemSparse,
 CreatureDisplayInfo, CreatureModelData.
+
+With --retail and --era (folders of <lang>/<Table>.csv of a retail build:
+JournalInstance, JournalEncounter, JournalEncounterSection,
+JournalEncounterCreature; and of the Era build: SpellName, GlobalStrings,
+ItemSparse) it also writes the journal's text in every client language into
+MUI_DB/Locale (the end of this file).
 
 Needs lupa (the source files are Lua and are evaluated, not parsed).
 
@@ -41,10 +48,17 @@ import sys
 from lupa.lua51 import LuaRuntime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if len(sys.argv) < 2:
+ARGS = sys.argv[1:]
+LOCALIZE = {}
+for flag in ("--retail", "--era"):
+    if flag in ARGS:
+        at = ARGS.index(flag)
+        LOCALIZE[flag[2:]] = ARGS[at + 1]
+        del ARGS[at:at + 2]
+if not ARGS:
     sys.exit(__doc__)
-DB2 = sys.argv[1]
-NEWERA = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(ROOT), "NewEra")
+DB2 = ARGS[0]
+NEWERA = ARGS[1] if len(ARGS) > 1 else os.path.join(os.path.dirname(ROOT), "NewEra")
 SRC = os.path.join(NEWERA, "EncounterJournal")
 SRC_ART = os.path.join(NEWERA, "Art", "EncounterJournal")
 OUT = os.path.join(ROOT, "MUI_DB", "MUI_EncounterJournalDB.lua")
@@ -282,6 +296,7 @@ TOKEN = re.compile(r"\$(\d+)([a-zA-Z])(\d*)")
 EXPRESSION = re.compile(r"\$\{([^}]*)\}")
 GAP = "\x00"                      # stands in for a placeholder with no value
 stats = {"filled": 0, "dropped": 0}
+token_log = None                  # while set: placeholder -> the value fill gave it (None: dropped)
 
 # Retail has reworked some of these spells since: an effect that is a
 # percentage or a damage amount in its text can be something else in Era's
@@ -317,6 +332,8 @@ def fill_token(match, mismatched=()):
         text = match.string
         if spell in mismatched or not fits(spell, index, text[:match.start()], text[match.end():]):
             v = None
+    if token_log is not None:
+        token_log[spell, var, index] = v
     if v is None:
         stats["dropped"] += 1
         return GAP
@@ -341,8 +358,12 @@ def fill_expression(match):
             raise ValueError
         result = eval(source, {"__builtins__": {}})
     except (ValueError, SyntaxError, ZeroDivisionError):
+        if token_log is not None:
+            token_log["expr", match.group(1)] = None
         stats["dropped"] += 1
         return GAP
+    if token_log is not None:
+        token_log["expr", match.group(1)] = result
     stats["filled"] += 1
     return num(result)
 
@@ -386,6 +407,16 @@ def fill(text):
     text = re.sub(r"[ \t]{2,}", " ", text)
     text = re.sub(r"\s+([.,;])", r"\1", text)
     return text.strip()
+
+
+def fill_logged(text):
+    """fill(text), and what each of its placeholders came to."""
+    global token_log
+    token_log = {}
+    try:
+        return fill(text), token_log
+    finally:
+        token_log = None
 
 
 # ---------------------------------------------------------------------------
@@ -485,10 +516,12 @@ def section_tree(encounter):
             seen.add(sid)
             s = by_id[sid]
             display = int(s.cdisp or 0)
-            node = {"id": sid, "title": s.title, "text": fill(s.body), "icon": icon(s),
+            text, tokens = fill_logged(s.body)
+            node = {"id": sid, "title": s.title, "text": text, "icon": icon(s),
                     "flags": int(s.flags or 0), "display": display,
                     "cam": camera(display) if display else None,
-                    "sub": chain(s.child)}
+                    "sub": chain(s.child),
+                    "raw": s.body or "", "tokens": tokens, "spell": int(s.spell or 0)}
             out.append(node)
             sid = int(s.sib or 0)
         return out
@@ -526,17 +559,21 @@ for inst in seq(ne.DATA.instances):
         creatures = []
         for c in seq(e.creatures):
             creatures.append({"name": c.name, "display": int(c.display), "cam": camera(int(c.display))})
+        desc, tokens = fill_logged(e.desc)
         encounters.append({
-            "id": int(e.id), "name": e.name, "desc": fill(e.desc),
+            "id": int(e.id), "name": e.name, "desc": desc,
             "portrait": portrait(e.creatures[1]),
             "creatures": creatures, "loot": loot(e), "sections": section_tree(e),
+            "raw": e.desc or "", "tokens": tokens,
         })
     art("buttons", f"{inst.buttonFDID}.blp", "", button_source(inst.buttonFDID))
     art("lore", f"{inst.loreFDID}.blp", "Lore", f"{inst.loreFDID}.blp")
     art("backdrops", f"{inst.bgFDID}.blp", "Backdrops", f"{inst.bgFDID}.blp")
+    raw = inst.desc or RAID_DESCRIPTIONS.get(int(inst.id), "")
+    desc, tokens = fill_logged(raw)
     instances.append({
         "id": int(inst.id), "name": inst.name, "raid": bool(inst.isRaid),
-        "desc": fill(inst.desc or RAID_DESCRIPTIONS.get(int(inst.id), "")),
+        "desc": desc, "raw": raw, "tokens": tokens, "own_desc": not inst.desc,
         "map": code, "floor": floor, "area": area,
         "button": int(inst.buttonFDID), "lore": int(inst.loreFDID), "bg": int(inst.bgFDID),
         "encounters": encounters,
@@ -644,6 +681,7 @@ HEADER = '''-- EncounterJournalDB: the Adventure Guide's dungeons and raids, the
 --               healer, heroic, deadly, important, interruptible, magic,
 --               curse, poison, disease, enrage, mythic, bleed), sub? }
 -- _items[item id] = { name (enUS), quality }
+-- MUI_DB/Locale puts the text in the client's language (Localize).
 
 object "EncounterJournalDB" {
     -- The dungeons (raid = false) or the raids, in display order.
@@ -670,6 +708,34 @@ object "EncounterJournalDB" {
     GetItem = function(self, itemId)
         local item = self._items[itemId]
         if item then return item[1], item[2] end
+    end;
+
+    -- The text in the client's language, from MUI_DB/Locale: instances[id]
+    -- and encounters[id] = { name, desc, creatures = { [i] = name } },
+    -- sections[id] = { title, text }, items[id] = name.
+    Localize = function(self, text)
+        local function localizeSections(list)
+            for _, s in ipairs(list or {}) do
+                local t = text.sections[s.id]
+                if t then s.title, s.text = t.title or s.title, t.text or s.text end
+                localizeSections(s.sub)
+            end
+        end
+        for _, instance in ipairs(self._instances) do
+            local t = text.instances[instance.id]
+            if t then instance.name, instance.desc = t.name or instance.name, t.desc or instance.desc end
+            for _, encounter in ipairs(instance.encounters) do
+                t = text.encounters[encounter.id]
+                if t then
+                    encounter.name, encounter.desc = t.name or encounter.name, t.desc or encounter.desc
+                    for i, name in pairs(t.creatures or {}) do encounter.creatures[i].name = name end
+                end
+                localizeSections(encounter.sections)
+            end
+        end
+        for id, name in pairs(text.items) do
+            if self._items[id] then self._items[id][1] = name end
+        end
     end;
 
     __init = function(self)
@@ -720,3 +786,305 @@ print(f"section icons: {icon_stats}")
 print(f"{copied} textures -> {ART_OUT}")
 if missing_art:
     print("not shipped by NewEra:", ", ".join(sorted(set(missing_art))))
+
+
+# ---------------------------------------------------------------------------
+# the text in other languages (--retail, --era): MUI_DB/Locale/<lang>.lua
+# ---------------------------------------------------------------------------
+# Retail's journal rows give a text where its English is ours, with each
+# placeholder the value the English got (numbers and durations as Era's
+# client writes them in that language). Bosses and their creatures are named
+# by retail's journal, loot by Era's ItemSparse, vanilla abilities by Era's
+# spell names; Questie's lookups (which have mistakes) only name what those
+# don't. A text whose
+# English lost a placeholder, or that no language's row can give, is ours:
+# tools/i18n/<lang>.json, listed with its English in
+# tools/i18n/source/encounterjournal.json.
+class Missing(Exception):
+    pass
+
+
+def russian_plural(n, forms):
+    if n != int(n):
+        return forms[min(1, len(forms) - 1)]
+    n = int(n)
+    if n % 10 == 1 and n % 100 != 11:
+        return forms[0]
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return forms[min(1, len(forms) - 1)]
+    return forms[-1]
+
+
+def localized(template, tokens, gs):
+    """A language's journal text with the English text's values, or None."""
+    sep = gs.get("DECIMAL_SEPERATOR") or "."
+
+    def number(v):
+        return num(v).replace(".", sep)
+
+    def duration(seconds):
+        if seconds < 60:
+            n, fmt = seconds, gs["INT_SPELL_DURATION_SEC"]
+        elif seconds < 3600:
+            n, fmt = seconds / 60, gs["INT_SPELL_DURATION_MIN"]
+        else:
+            n, fmt = seconds / 3600, gs["INT_SPELL_DURATION_HOURS"]
+        return fmt.replace("%d", number(n))
+
+    def expression(m):
+        v = tokens.get(("expr", m.group(1)))
+        if v is None:
+            raise Missing
+        return number(v)
+
+    def token(m):
+        key = (int(m.group(1)), m.group(2), m.group(3))
+        v = tokens.get(key)
+        if v is None or isinstance(v, tuple):
+            raise Missing
+        return duration(v) if key[1] == "d" else number(v)
+
+    def plural(m):
+        before = re.findall(r"\d+(?:[.,]\d+)?", m.string[:m.start()])
+        n = float(before[-1].replace(",", ".")) if before else 1
+        return russian_plural(n, m.group(1).split(":"))
+
+    try:
+        text = EXPRESSION.sub(expression, template.replace("\r", ""))
+        text = TOKEN.sub(token, text)
+    except Missing:
+        return None
+    text = re.sub(r"\$l([^;]*);", plural, text)
+    if "$" in text:
+        return None
+    return re.sub(r"[ \t]{2,}", " ", text).strip()
+
+
+if LOCALIZE.get("retail") and LOCALIZE.get("era"):
+    import json
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    sys.path.insert(0, os.path.join(ROOT, "tools", "questdb_export"))
+    import locale_data
+    import locale_export
+
+    RETAIL, ERA = LOCALIZE["retail"], LOCALIZE["era"]
+    QUESTIE = os.path.join(ROOT, "tools", "vendor", "Questie")
+    I18N = os.path.join(ROOT, "tools", "i18n")
+
+    def rows(folder, lang, name):
+        with open(os.path.join(folder, lang, name + ".csv"), encoding="utf-8", newline="") as f:
+            return {int(r["ID"]): r for r in csv.DictReader(f)}
+
+    def era_strings(lang):
+        with open(os.path.join(ERA, lang, "GlobalStrings.csv"), encoding="utf-8", newline="") as f:
+            return {r["BaseTag"]: r["TagText_lang"] for r in csv.DictReader(f)}
+
+    npc_english = {i: r.get("name") for i, r in locale_export.english("MUI_NpcDB.lua").items()}
+    npc_by_name = {}
+    for i, name in npc_english.items():
+        if name:
+            npc_by_name[name] = None if name in npc_by_name else i
+    en_inst = rows(RETAIL, "enUS", "JournalInstance")
+    en_enc = rows(RETAIL, "enUS", "JournalEncounter")
+    en_sec = rows(RETAIL, "enUS", "JournalEncounterSection")
+    en_creature = rows(RETAIL, "enUS", "JournalEncounterCreature")
+    en_spell = {i: r["Name_lang"] for i, r in rows(ERA, "enUS", "SpellName").items()}
+
+    def retail_encounter(instance_id, name, raw):
+        """The retail encounter row of ours: same instance and name (or description)."""
+        hits = [i for i, r in en_enc.items() if int(r["JournalInstanceID"]) == instance_id
+                and (r["Name_lang"] == name or (raw and r["Description_lang"] == raw))]
+        return hits[0] if hits else None
+
+    def retail_creature(encounter_id, name):
+        """The retail journal row of a creature of ours: same encounter and name."""
+        hits = [i for i, r in en_creature.items() if int(r["JournalEncounterID"]) == encounter_id
+                and r["Name_lang"] == name]
+        return hits[0] if hits else None
+
+    # each text: ("retail", table, id, column[, template, tokens]) | ("npc", id) | ("spell", id) | ours;
+    # fallback: a second source, for a language the first has no text in
+    plan, fallback, ours = {}, {}, {}
+
+    def own(key, english, note):
+        ours[key] = {"en": english, "note": note}
+
+    for inst in instances:
+        iid = inst["id"]
+        if iid in en_inst and en_inst[iid]["Name_lang"] == inst["name"]:
+            plan["i", iid, "name"] = ("retail", "JournalInstance", iid, "Name_lang")
+        else:
+            own(f"ej/instance/{iid}/name", inst["name"], "a dungeon or raid")
+        if inst["desc"]:
+            if not inst["own_desc"] and iid in en_inst and en_inst[iid]["Description_lang"] == inst["raw"]:
+                plan["i", iid, "desc"] = ("retail", "JournalInstance", iid, "Description_lang", inst["tokens"])
+            else:
+                own(f"ej/instance/{iid}/desc", inst["desc"], f"the Adventure Guide's description of {inst['name']}")
+        for e in inst["encounters"]:
+            eid = e["id"]
+            rid = retail_encounter(iid, e["name"], e["raw"])
+            npc = eid if npc_english.get(eid) == e["name"] else npc_by_name.get(e["name"])
+            # retail's journal names a boss; Questie's lookups only where it has no row
+            if rid and en_enc[rid]["Name_lang"] == e["name"]:
+                plan["e", eid, "name"] = ("retail", "JournalEncounter", rid, "Name_lang")
+                if npc:
+                    fallback["e", eid, "name"] = ("npc", npc)
+            elif npc:
+                plan["e", eid, "name"] = ("npc", npc)
+            else:
+                own(f"ej/encounter/{eid}/name", e["name"], f"a boss in {inst['name']}")
+            if e["desc"]:
+                if rid and e["raw"] and en_enc[rid]["Description_lang"] == e["raw"]:
+                    plan["e", eid, "desc"] = ("retail", "JournalEncounter", rid, "Description_lang", e["tokens"])
+                else:
+                    own(f"ej/encounter/{eid}/desc", e["desc"], f"the story of {e['name']}, a boss in {inst['name']}")
+            for n, c in enumerate(e["creatures"], 1):
+                cid = rid and retail_creature(rid, c["name"])
+                if cid:
+                    plan["c", eid, n] = ("retail", "JournalEncounterCreature", cid, "Name_lang")
+                    if npc_by_name.get(c["name"]):
+                        fallback["c", eid, n] = ("npc", npc_by_name[c["name"]])
+                elif c["name"] == e["name"] and ("e", eid, "name") in plan:
+                    plan["c", eid, n] = plan["e", eid, "name"]
+                    if ("e", eid, "name") in fallback:
+                        fallback["c", eid, n] = fallback["e", eid, "name"]
+                elif npc_by_name.get(c["name"]):
+                    plan["c", eid, n] = ("npc", npc_by_name[c["name"]])
+                elif c["name"] != e["name"]:
+                    own(f"ej/encounter/{eid}/creature/{n}", c["name"], f"a creature of the boss fight {e['name']} in {inst['name']}")
+
+            def walk(nodes):
+                for s in nodes:
+                    sid = s["id"]
+                    where = f"an ability or phase of {e['name']}, a boss in {inst['name']}"
+                    if sid in en_sec and en_sec[sid]["Title_lang"] == s["title"]:
+                        plan["s", sid, "title"] = ("retail", "JournalEncounterSection", sid, "Title_lang")
+                    elif s["spell"] and en_spell.get(s["spell"]) == s["title"]:
+                        plan["s", sid, "title"] = ("spell", s["spell"])
+                    else:
+                        own(f"ej/section/{sid}/title", s["title"], f"the name of {where}")
+                    if s["text"]:
+                        lost = any(v is None for v in s["tokens"].values())
+                        if not lost and sid in en_sec and en_sec[sid]["BodyText_lang"] == s["raw"]:
+                            plan["s", sid, "text"] = ("retail", "JournalEncounterSection", sid, "BodyText_lang", s["tokens"])
+                        # ours too where a language's row can't be filled (decided per language below)
+                        if lost or ("s", sid, "text") not in plan:
+                            own(f"ej/section/{sid}/text", s["text"], f"what {where} does (title: {s['title']})")
+                    walk(s["sub"])
+
+            walk(e["sections"])
+
+    languages = list(locale_data.LANGUAGES)
+    tables = {lang: {name: rows(RETAIL, lang, name) for name in
+                     ("JournalInstance", "JournalEncounter", "JournalEncounterSection",
+                      "JournalEncounterCreature")} for lang in languages}
+    globals_by_lang = {lang: era_strings(lang) for lang in languages}
+    os.makedirs(os.path.join(I18N, "source"), exist_ok=True)
+
+    def english_of(key):
+        kind, xid, field = key
+        for inst in instances:
+            if kind == "i" and inst["id"] == xid:
+                return inst[field]
+            for e in inst["encounters"]:
+                if kind == "e" and e["id"] == xid:
+                    return e[field]
+                stack = list(e["sections"])
+                while stack:
+                    s = stack.pop()
+                    if kind == "s" and s["id"] == xid:
+                        return s[field]
+                    stack.extend(s["sub"])
+
+    # a retail text some language's row can't be filled for is ours as well
+    for key, source in plan.items():
+        if source[0] == "retail" and len(source) == 5:
+            failing = [lang for lang in languages
+                       if tables[lang][source[1]].get(source[2], {}).get(source[3])
+                       and localized(tables[lang][source[1]][source[2]][source[3]], source[4], globals_by_lang[lang]) is None]
+            if failing:
+                kind, xid, field = key
+                path = {"i": "instance", "e": "encounter", "s": "section"}[kind]
+                own(f"ej/{path}/{xid}/{field}", english_of(key), f"journal text ({path} {xid})")
+    with open(os.path.join(I18N, "source", "encounterjournal.json"), "w", encoding="utf-8", newline="\n") as f:
+        json.dump(ours, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+
+    for lang in languages:
+        gs = globals_by_lang[lang]
+        spells = {i: r["Name_lang"] for i, r in rows(ERA, lang, "SpellName").items()}
+        npcs = locale_export.npc_names(QUESTIE, RETAIL, lang, npc_english)
+        # the client's own item names (Era's ItemSparse), Questie's for one it lacks
+        items = {**locale_export.lookup(QUESTIE, "lookupItems", lang), **locale_export.item_names(ERA, lang)}
+        mine = {}
+        path = os.path.join(I18N, lang + ".json")
+        if os.path.exists(path):
+            mine = json.load(open(path, encoding="utf-8"))
+
+        def source_text(source):
+            if source and source[0] == "retail":
+                template = tables[lang][source[1]].get(source[2], {}).get(source[3], "")
+                if template:
+                    return localized(template, source[4], gs) if len(source) == 5 else template.replace("\r", "").strip()
+            elif source and source[0] == "npc":
+                return npcs.get(source[1])
+            elif source and source[0] == "spell":
+                return spells.get(source[1])
+
+        def text_for(key, own_key):
+            return source_text(plan.get(key)) or source_text(fallback.get(key)) or mine.get(own_key)
+
+        out = {"instances": {}, "encounters": {}, "sections": {}, "items": {}}
+        missing = 0
+        for inst in instances:
+            iid = inst["id"]
+            t = {}
+            for field in ("name", "desc"):
+                if inst[field]:
+                    v = text_for(("i", iid, field), f"ej/instance/{iid}/{field}")
+                    if v and v != inst[field]:
+                        t[field] = v
+                    elif not v:
+                        missing += 1
+            if t:
+                out["instances"][iid] = t
+            for e in inst["encounters"]:
+                eid = e["id"]
+                t = {}
+                for field in ("name", "desc"):
+                    if e[field]:
+                        v = text_for(("e", eid, field), f"ej/encounter/{eid}/{field}")
+                        if v and v != e[field]:
+                            t[field] = v
+                        elif not v:
+                            missing += 1
+                for n, c in enumerate(e["creatures"], 1):
+                    v = text_for(("c", eid, n), f"ej/encounter/{eid}/creature/{n}")
+                    if not v and c["name"] == e["name"]:
+                        v = t.get("name")
+                    if v and v != c["name"]:
+                        t.setdefault("creatures", {})[n] = v
+                if t:
+                    out["encounters"][eid] = t
+                stack = list(e["sections"])
+                while stack:
+                    s = stack.pop()
+                    stack.extend(s["sub"])
+                    t = {}
+                    for field in ("title", "text"):
+                        if s[field]:
+                            v = text_for(("s", s["id"], field), f"ej/section/{s['id']}/{field}")
+                            if v and v != s[field]:
+                                t[field] = v
+                            elif not v:
+                                missing += 1
+                    if t:
+                        out["sections"][s["id"]] = t
+        for item_id, (name, quality) in item_names.items():
+            if isinstance(items.get(item_id), str) and items[item_id] != name:
+                out["items"][item_id] = items[item_id]
+        lines = [f"MUI_EncounterJournalDB:Localize({locale_data.loadstring(out)})"]
+        locale_data.write_block(lang, "the Adventure Guide", "tools/encounterjournal_export.py", lines)
+        print(f"{lang}: {len(out['sections'])} sections, {len(out['encounters'])} encounters, "
+              f"{len(out['items'])} items in the language; {missing} texts still English")
+    print(f"ours to translate: {len(ours)} (tools/i18n/source/encounterjournal.json)")

@@ -306,7 +306,7 @@ class "LootWindow" : extends {"Panel", "Editable"} {
 
         self:SeatDefault()
         Editable.__init(self)
-        self:EditModeSetLabel("Loot Window")
+        self:EditModeSetLabel(HUD_EDIT_MODE_LOOT_FRAME_LABEL)
         self:EditModeSetOption("loot")
         self:EditModeSetDragAnchor("TOPLEFT")
         self:EditModeSetDefaultPosition(function() self:SeatDefault() end)

@@ -6,28 +6,29 @@ local TABS_ART = "Interface\\PaperDollInfoFrame\\PaperDollSidebarTabs"
 
 local TAB_W, TAB_H, TAB_GAP = 33, 35, 4
 
--- The stat sheet, as CharacterStatSheet takes it.
+-- The stat sheet, as CharacterStatSheet takes it (titles as Cata's sheet has
+-- them; the rows name CharacterStatSource's methods).
 local SECTIONS = {
-    { "General", {
+    { STAT_CATEGORY_GENERAL, {
         { "Health" }, { "Power" },
     } },
-    { "Attributes", {
+    { STAT_CATEGORY_ATTRIBUTES, {
         { "Attribute", 1 }, { "Attribute", 2 }, { "Attribute", 3 }, { "Attribute", 4 }, { "Attribute", 5 },
     } },
-    { "Melee", {
+    { STAT_CATEGORY_MELEE, {
         { "Damage" }, { "DamagePerSecond" }, { "AttackPower" }, { "AttackSpeed" }, { "Attack" }, { "Hit" }, { "Crit" },
     } },
-    { "Ranged", {
+    { STAT_CATEGORY_RANGED, {
         { "RangedDamage" }, { "RangedDamagePerSecond" }, { "RangedAttackPower" }, { "RangedAttackSpeed" },
         { "RangedAttack" }, { "Hit" }, { "RangedCrit" },
     } },
-    { "Spell", {
+    { STAT_CATEGORY_SPELL, {
         { "SpellDamage" }, { "SpellHealing" }, { "SpellHit" }, { "SpellCrit" }, { "ManaRegen" },
     } },
-    { "Defense", {
+    { STAT_CATEGORY_DEFENSE, {
         { "Armor" }, { "Defense" }, { "Dodge" }, { "Parry" }, { "Block" },
     } },
-    { "Resistances", {
+    { STAT_CATEGORY_RESISTANCE, {
         { "Resistance", 6 }, { "Resistance", 2 }, { "Resistance", 3 }, { "Resistance", 4 }, { "Resistance", 5 },
     } },
 }
@@ -92,7 +93,7 @@ class "CharacterSidebar" : extends "Frame" {
         -- Paladins, shamans and druids hold a relic where a ranged weapon goes.
         local sections = {}
         for _, section in ipairs(SECTIONS) do
-            if section[1] ~= "Ranged" or not UnitHasRelicSlot("player") then
+            if section[1] ~= STAT_CATEGORY_RANGED or not UnitHasRelicSlot("player") then
                 sections[#sections + 1] = section
             end
         end
@@ -116,11 +117,11 @@ class "CharacterSidebar" : extends "Frame" {
         flourishRight:SetSize(28, 13)
         flourishRight:AlignParentBottomRight()
 
-        local manager = CharacterSidebarTab(strip, "Equipment Manager")
+        local manager = CharacterSidebarTab(strip, PAPERDOLL_EQUIPMENTMANAGER)
         manager:AlignParentBottomRight(0, 30)
         manager.icon:SetTexture(TABS_ART)
         manager.icon:SetTexCoord(0.015625, 0.53125, 0.46875, 0.60546875)
-        local stats = CharacterSidebarTab(strip, "Character Stats")
+        local stats = CharacterSidebarTab(strip, PAPERDOLL_SIDEBAR_STATS)
         stats:LeftOf(manager, TAB_GAP)
         stats.icon:SetSize(29, 31)
         stats.icon:ClearAllPoints()

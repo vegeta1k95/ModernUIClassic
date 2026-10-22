@@ -22,6 +22,8 @@
 -- button shows "armed" while the player is placing AND while a
 -- waypoint sits on the map.
 
+local L = MUI.L
+
 local PIN_FRAME_NAME    = "MUI_MapWaypointPin"
 local FOCUS_KEY         = "user"
 
@@ -230,7 +232,7 @@ class "MapWaypointManager" : extends "Frame" {
                 }
             end,
             FillTooltip = function()
-                MUI_Tooltip:AddTitle("Waypoint")
+                MUI_Tooltip:AddTitle(L.MAP_PIN)
             end,
         })
     end;
@@ -275,20 +277,20 @@ class "MapWaypointManager" : extends "Frame" {
             function() return MUI_FocusManager:IsFocused("waypoint", FOCUS_KEY) end
         )
         pin:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine("Waypoint", 1, 1, 1, false, 13)
+            tooltip:AddLine(L.MAP_PIN, 1, 1, 1, false, 13)
             local wp = self._waypoint
             local coordLine
             if wp and wp.zoneName and wp.zoneNormX and wp.zoneNormY then
                 coordLine = string.format(
-                    "Map coordinates: %.1f, %.1f (%s)",
+                    L.MAP_PIN_COORDS,
                     wp.zoneNormX * 100, wp.zoneNormY * 100, wp.zoneName)
             else
-                coordLine = "Map coordinates: ?"
+                coordLine = L.MAP_PIN_COORDS_UNKNOWN
             end
             tooltip:AddLine(coordLine, 1, 0.82, 0, true)
             tooltip:AddBlank()
-            tooltip:AddLine("<Shift-click to share coordinates in chat>", 0, 1, 0, true)
-            tooltip:AddLine("<Ctrl-Left Click to remove pin>", 0, 1, 0, true)
+            tooltip:AddLine(L.MAP_PIN_SHARE_HINT, 0, 1, 0, true)
+            tooltip:AddLine(L.MAP_PIN_REMOVE, 0, 1, 0, true)
         end)
         self._mapPin = pin
     end;

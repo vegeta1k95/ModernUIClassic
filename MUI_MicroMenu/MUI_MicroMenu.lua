@@ -83,7 +83,7 @@ class "MicroMenuFrame" : extends {"Frame", "Editable"} {
     __init = function(self)
         Frame.__init(self, "Frame", MUI_Root, "MUI_MicroMenuBar")
         Editable.__init(self)
-        self:EditModeSetLabel("Micro Menu")
+        self:EditModeSetLabel(HUD_EDIT_MODE_MICRO_MENU_LABEL)
         self:EditModeSetupSettings(function(content) end)
     end
 }
@@ -365,18 +365,18 @@ object "ModuleMicroMenu" : extends "Module" {
             end)
         end
 
-        tip(Frame(MainMenuMicroButton),  "Game Menu",             "TOGGLEGAMEMENU")
-        tip(Frame(CharacterMicroButton), "Character Info",        "TOGGLECHARACTER0")
-        tip(self._btnShop,           "Shop")
-        tip(self._btnAdventureGuide, "Adventure Guide",       "MUI_TOGGLE_ADVENTUREGUIDE")
-        tip(self._btnCollections,    COLLECTIONS,             "MUI_TOGGLE_COLLECTIONS")
-        tip(self._btnGroupFinder,    "Group Finder",          "TOGGLEGROUPFINDER")
-        tip(self._btnGuild,          "Guild",                 "TOGGLEGUILDTAB")
-        tip(self._btnSpellbook,      "Spellbook & Abilities", "TOGGLESPELLBOOK")
-        tip(self._btnQuestLog,       "Quest Log",             "TOGGLEQUESTLOG")
-        tip(self._btnAchievements,   "Achievements")
-        tip(self._btnTalents,        "Talents",               "TOGGLETALENTS")
-        tip(self._btnProfessions,    "Professions")
+        tip(Frame(MainMenuMicroButton),  MAINMENU_BUTTON,            "TOGGLEGAMEMENU")
+        tip(Frame(CharacterMicroButton), CHARACTER_BUTTON,           "TOGGLECHARACTER0")
+        tip(self._btnShop,           BLIZZARD_STORE)
+        tip(self._btnAdventureGuide, ADVENTURE_JOURNAL,          "MUI_TOGGLE_ADVENTUREGUIDE")
+        tip(self._btnCollections,    COLLECTIONS,                "MUI_TOGGLE_COLLECTIONS")
+        tip(self._btnGroupFinder,    DUNGEONS_BUTTON,            "TOGGLEGROUPFINDER")
+        tip(self._btnGuild,          GUILD,                      "TOGGLEGUILDTAB")
+        tip(self._btnSpellbook,      SPELLBOOK_ABILITIES_BUTTON, "TOGGLESPELLBOOK")
+        tip(self._btnQuestLog,       QUESTLOG_BUTTON,            "TOGGLEQUESTLOG")
+        tip(self._btnAchievements,   ACHIEVEMENT_BUTTON)
+        tip(self._btnTalents,        TALENTS,                    "TOGGLETALENTS")
+        tip(self._btnProfessions,    TRADE_SKILLS)
     end;
 
     -- Our achievements panel (Era has none of its own): the button toggles it.

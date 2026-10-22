@@ -37,10 +37,16 @@ Two things are ours on top of NewEra's data:
     and casting a resurrection (Reincarnation, Rebirth), which Hardcore
     disables.
 
-    python tools/achievements/export.py
+    python tools/achievements/export.py [--retail <dir> --era <dir>]
+
+With --retail and --era (folders of <lang>/<Table>.csv, wago.tools/db2, of a
+retail build and of the Era build) it also writes the achievements' text in
+every client language, see localize.py.
 """
+import argparse
 import os
 import re
+import sys
 
 from lupa import LuaRuntime, lua_type
 
@@ -199,6 +205,7 @@ OVERKILL = {100: 100, 1000: 500, 5000: 1000}
 DUNGEONS_LUA = os.path.join(ROOT, "MUI_DB", "MUI_DungeonDB.lua")
 dungeons = LuaRuntime(unpack_returned_tuples=True)
 dungeons.execute('object = function(name) return function(t) _G[name] = t end end')
+dungeons.execute('C_Map = { GetAreaInfo = function() end }')   # the client's names, which __init asks for
 dungeons.execute(open(DUNGEONS_LUA, encoding="utf-8").read())
 dungeons.execute('DungeonDB.__init(DungeonDB)')
 INSTANCE_ZONES = sorted(int(k) for k in dungeons.globals().DungeonDB._dungeons.keys())
@@ -380,6 +387,10 @@ for d in defs:
         d["sub"] = 31 if 1415 <= c["map"] <= 1437 else 32
     if c["t"] == "mount":
         d["desc"] = d["desc"].replace(" ground mount", " mount")   # every Era mount is one
+    if c["t"] == "rank" and c["n"] == 10:
+        # NewEra's "Rank: Commander": rank 10, whose badge its icon is, is the
+        # Lieutenant Commander (Commander is rank 11)
+        d["name"] = "Rank: Lieutenant Commander"
     if c["t"] == "speed":
         # NewEra's 220%: an epic mount with every riding boost reaches about
         # 218% in Era, so ask for the mount plus any one boost
@@ -418,6 +429,68 @@ for d in defs:
         d["account"] = True
     if no_hardcore(d):
         d["noHardcore"] = True
+
+# ---- ours: ids for what NewEra's data names in English ----------------------------
+# The client answers in its own language (the zone texts, GetInstanceInfo, a pet's
+# name, the skill window, a buff, a scoreboard column), so a criterion holds the id
+# and the engine asks the client for the name. KEYS_BY_NAME is what the store held
+# by those names: the engine moves a character's progress to the ids once.
+AREAS = {"Stormwind City": 1519, "Ironforge": 1537, "Darnassus": 1657, "Orgrimmar": 1637,
+         "Thunder Bluff": 1638, "Undercity": 1497, "Karazhan": 2562, "Caverns of Time": 2300,
+         "Valley of the Watchers": 990, "Janeiro's Point": 312, "Isle of Dread": 1121,
+         "Alcaz Island": 2079, "Twilight Grove": 856, "Seradane": 356, "Dream Bough": 1111,
+         "Bough Shadow": 438, "Demon Fall Canyon": 435, "The Greymane Wall": 230, "Grim Batol": 1037,
+         "The Scarab Wall": 2737, "Ravenholdt Manor": 3486, "Fray Island": 720,
+         "Land's End Beach": 987, "Morgan's Plot": 2563, "Deeprun Tram": 2257}       # AreaTable
+INSTANCES = {"Ragefire Chasm": 389, "Wailing Caverns": 43, "The Deadmines": 36, "Shadowfang Keep": 33,
+             "Blackfathom Deeps": 48, "Gnomeregan": 90, "The Stockade": 34, "Razorfen Kraul": 47,
+             "Scarlet Monastery": 189, "Razorfen Downs": 129, "Uldaman": 70, "Zul'Farrak": 209,
+             "Maraudon": 349, "The Temple of Atal'Hakkar": 109, "Blackrock Depths": 230,
+             "Blackrock Spire": 229, "Dire Maul": 429, "Scholomance": 289, "Stratholme": 329,
+             "Molten Core": 409, "Onyxia's Lair": 249, "Blackwing Lair": 469, "Zul'Gurub": 309,
+             "Ruins of Ahn'Qiraj": 509, "Ahn'Qiraj": 531, "Naxxramas": 533}   # Map, GetInstanceInfo's 8th
+CITY_MAPS = {"Orgrimmar": 1454, "Stormwind City": 1453}                     # uiMapID
+SPELLS = {"Rallying Cry of the Dragonslayer": 22888, "Warchief's Blessing": 16609,
+          "Spirit of Zandalar": 24425, "Songflower Serenade": 15366, "Fengus' Ferocity": 22817,
+          "Mol'dar's Moxie": 22818, "Slip'kik's Savvy": 22820, "Divine Shield": 642}
+BEASTS = {"Lupos": 521, "Broken Tooth": 2850, "Snarler": 5356, "Takk the Leaper": 5842, "Bloodaxe Worg": 9696}
+SKILL_LINES = {"Cooking": 185, "First Aid": 129, "Fishing": 356, "Unarmed": 162, "Lockpicking": 633}
+# a battleground's scoreboard columns in order (GetBattlefieldStatInfo)
+BG_COLUMNS = {"wsg": ["Flags Captured", "Flags Returned"],
+              "ab": ["Bases Assaulted", "Bases Defended"],
+              "av": ["Graveyards Assaulted", "Graveyards Defended", "Towers Assaulted", "Towers Defended",
+                     "Mines Captured", "Leaders Killed", "Secondary Objectives"]}
+
+for d in defs:
+    c = d["crit"]
+    if c["t"] == "visit":
+        c["areas"] = [AREAS[a] for a in c["areas"]]
+    elif c["t"] == "visitInstance":
+        c["maps"] = [INSTANCES[n] for n in c.pop("names")]
+    elif c["t"] == "setHas" and c["set"] == "fishedZones":
+        c["maps"] = [CITY_MAPS[k] for k in c.pop("keys")]
+    elif c["t"] == "flag" and "auras" in c:
+        c["auras"] = [SPELLS[n] for n in c["auras"]]
+    elif c["t"] == "bubbleHearth":
+        c["shield"] = SPELLS[c["shield"]]
+    elif c["t"] == "petRare":
+        c["npcs"] = [BEASTS[n] for n in c.pop("names")]
+    elif c["t"] == "skill":
+        c["line"] = SKILL_LINES[c["line"]]
+    elif c["t"] == "skillCount" and "lines" in c:
+        c["lines"] = [SKILL_LINES[n] for n in c["lines"]]
+    elif c["t"] == "recipes":
+        c["prof"] = SKILL_LINES[c["prof"]]
+    elif c["t"] == "bgcol":
+        c["label"] = c["col"]
+        c["col"] = BG_COLUMNS[c["bg"]].index(c["col"]) + 1
+
+KEYS_BY_NAME = {
+    "visited": AREAS,
+    "visitedInstances": {name.lower(): id for name, id in INSTANCES.items()},
+    "petNames": BEASTS,
+    "bg": {bg: {name: i + 1 for i, name in enumerate(cols)} for bg, cols in BG_COLUMNS.items()},
+}
 
 # ---- checks ---------------------------------------------------------------------
 ids = {d["id"] for d in defs}
@@ -467,7 +540,10 @@ out.append('''-- MUI_AchievementDB.lua  (AUTO-GENERATED — do not edit)
 -- `hardcoreOnly` hide it from characters it can't apply to, `account` gives it retail's blue
 -- account-wide header instead of the red one. Ids are stable (they live in
 -- SavedVariables): never reuse one. `icon` is a retail FileDataID shipped
--- as assets/textures/achievementicons/<id>.blp.
+-- as assets/textures/achievementicons/<id>.blp. What the client names in
+-- its own language a criterion gives by id: areas, instances (`maps`),
+-- buffs, beasts (`npcs`), skill lines, a scoreboard's column (`col`, with
+-- the English `label`).
 
 object "AchievementDB" {
     __init = function(self)
@@ -507,7 +583,13 @@ for cls in sorted(DUNGEON_SETS_2):
     out.append("            %s = %s," % (cls, lua_val({"name": name, "items": ids}, ["name", "items"])))
 out.append("        }\n")
 out.append("        -- quest zones that are instances (dungeon quests)")
-out.append("        self._instanceZones = { %s }" % ", ".join("[%d] = true" % z for z in INSTANCE_ZONES))
+out.append("        self._instanceZones = { %s }\n" % ", ".join("[%d] = true" % z for z in INSTANCE_ZONES))
+out.append("        -- what the store's sets and battleground columns held by name before the")
+out.append("        -- criteria went by id, and the ids (petNames moves to petNpcs)")
+out.append("        self._keysByName = {")
+for key in sorted(KEYS_BY_NAME):
+    out.append("            %s = %s," % (key, lua_val(KEYS_BY_NAME[key])))
+out.append("        }")
 out.append('''    end;
 
     GetCategories = function(self) return self._categories end;
@@ -524,6 +606,25 @@ out.append('''    end;
     GetDungeonSet = function(self, class) return self._dungeonSets[class] end;
     GetDungeonSet2 = function(self, class) return self._dungeonSets2[class] end;
     IsInstanceZone = function(self, zone) return self._instanceZones[zone] == true end;
+    GetKeysByName = function(self) return self._keysByName end;
+
+    -- The text in the client's language, from MUI_DB/Locale: cats[id] = name,
+    -- ach[id] = { name, desc, label, labels = { [i] = ... }, list = { [i] =
+    -- an entry's label }, items = { [i] = an item's label } }.
+    Localize = function(self, text)
+        for _, c in ipairs(self._categories) do c.name = text.cats[c.id] or c.name end
+        for _, a in ipairs(self._list) do
+            local t = text.ach[a.id]
+            if t then
+                a.name, a.desc = t.name or a.name, t.desc or a.desc
+                local crit = a.crit
+                crit.label = t.label or crit.label
+                for i, v in pairs(t.labels or {}) do crit.labels[i] = v end
+                for i, v in pairs(t.list or {}) do crit.list[i].label = v end
+                for i, v in pairs(t.items or {}) do crit.items[i].label = v end
+            end
+        end
+    end;
 }
 ''')
 open(OUT, "w", encoding="utf-8", newline="\n").write("\n".join(out))
@@ -531,3 +632,12 @@ targets = [d["crit"] for d in defs if d["crit"]["t"] == "kill"] + [
     e for d in defs if d["crit"]["t"] in ("killAll", "killAnyCount") for e in d["crit"]["list"]]
 print("kill targets with a quest fallback: %d of %d" % (sum(1 for t in targets if t.get("quests")), len(targets)))
 print("wrote %s: %d categories, %d achievements, %d quests" % (OUT, len(categories), len(defs), len(quests)))
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--retail")
+parser.add_argument("--era")
+args = parser.parse_args()
+if args.retail and args.era:
+    sys.path.insert(0, HERE)
+    import localize
+    localize.write(defs, categories, args.retail, args.era)

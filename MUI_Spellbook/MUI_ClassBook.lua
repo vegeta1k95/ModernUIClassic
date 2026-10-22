@@ -6,7 +6,7 @@ object "ClassBookFrame" : extends {"PanelPortrait", "SecureFrame"} {
 
     __init = function(self)
         SecureFrame.__init(self, nil, "MUI_ClassBookFrame", "Frame")
-        PanelPortrait.__init(self, nil, nil, "Specializations")
+        PanelPortrait.__init(self, nil, nil, SPECIALIZATION)
 
         self:Hide()
         self:SetFrameStrata("DIALOG")
@@ -45,17 +45,17 @@ object "ClassBookFrame" : extends {"PanelPortrait", "SecureFrame"} {
         self._tabs:AlignLeft(self, 23)
         self._tabs.OnTabSelected = function(_, tab)
             if tab == 1 then
-                self:SetTitle("Specializations")
+                self:SetTitle(SPECIALIZATION)
             elseif tab == 2 then
-                self:SetTitle("Talents")
+                self:SetTitle(TALENTS)
             else
-                self:SetTitle("Spellbook")
+                self:SetTitle(SPELLBOOK)
             end
         end
 
-        local t1 = self._tabs:AddTab("MUI_ClassbookTabBtnSpecs", "Specializations", self._tabSpecs, 98, 200, 4)
-        local t2 = self._tabs:AddTab("MUI_ClassbookTabBtnTalents", "Talents", self._tabTalents, 98, 200, 4)
-        local t3 = self._tabs:AddTab("MUI_ClassbookTabBtnSpellbook", "Spellbook", self._tabSpellbook, 98, 200, 4)
+        local t1 = self._tabs:AddTab("MUI_ClassbookTabBtnSpecs", SPECIALIZATION, self._tabSpecs, 98, 200, 4)
+        local t2 = self._tabs:AddTab("MUI_ClassbookTabBtnTalents", TALENTS, self._tabTalents, 98, 200, 4)
+        local t3 = self._tabs:AddTab("MUI_ClassbookTabBtnSpellbook", SPELLBOOK, self._tabSpellbook, 98, 200, 4)
 
         local script = [[ -- (self, button, down)
             local oldIndex = group:GetAttribute("index")

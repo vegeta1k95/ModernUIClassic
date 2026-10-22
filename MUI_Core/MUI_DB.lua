@@ -2,6 +2,8 @@
 -- Access directly: MUI_DB.settings.actionbars.lockBars = true
 -- Initialized with defaults on ADDON_LOADED, merged with saved data
 
+local L = MUI.L
+
 local DEFAULTS = {
     settings = {
         nameplates = {
@@ -214,7 +216,7 @@ local function RunMigrations(db)
     if frames then
         if next(frames) then
             local layouts = db.settings.editmodeLayouts
-            tinsert(layouts.list, { name = "Custom", frames = frames })
+            tinsert(layouts.list, { name = CUSTOM, frames = frames })
             layouts.active = #layouts.list
         end
         db.settings.editmode = nil
@@ -249,7 +251,7 @@ MUI_Mod:RegisterEventHandler("PLAYER_LOGIN", function(self)
         if MUI_SavedVars._identity and MUI_SavedVars._identity ~= current then
             wipe(MUI_SavedVars)
             MergeDefaults(MUI_SavedVars, DEFAULTS)
-            MUI.Print("|cffffd200ModernUI:|r new character on this name slot, settings reset to defaults.")
+            MUI.Print("|cffffd200ModernUI:|r " .. L.CORE_SETTINGS_RESET)
         end
         MUI_SavedVars._identity = current
     end

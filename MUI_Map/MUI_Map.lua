@@ -13,57 +13,60 @@
 -- Re-apply on every OnShow because Blizzard's own scripts re-anchor /
 -- re-show internal pieces when the frame opens.
 
+local L = MUI.L
+
 -- NavBar classes (MapNavBar, MapNavButton, MapNavHomeButton, MapNavDropdownButton)
 -- and the texcoord/size constants live in MUI_MapNavigation.lua.
 
--- Era zone level ranges (vanilla 1.15.x). Used to append "(min-max)" to the
--- hover ZoneLabel. Keys must match C_Map.GetMapChildrenInfo's `name` field
--- (localized — these are en-us). Capital cities / battlegrounds / Moonglade
--- are intentionally omitted (no leveling content or trivial range).
+-- Era zone level ranges (vanilla 1.15.x), by uiMapID. Used to append
+-- "(min-max)" to the hover ZoneLabel, which is handed the zone's name in the
+-- client's language: C_Map's name for each id. Capital cities /
+-- battlegrounds / Moonglade are intentionally omitted (no leveling content
+-- or trivial range).
 
 local TEX = MUI.TEX_BASE .. "objecticonsatlas"
 local ZONE_LEVELS = {
     -- Eastern Kingdoms
-    ["Elwynn Forest"]        = {  1, 10 },
-    ["Dun Morogh"]           = {  1, 10 },
-    ["Tirisfal Glades"]      = {  1, 10 },
-    ["Westfall"]             = { 10, 20 },
-    ["Loch Modan"]           = { 10, 20 },
-    ["Silverpine Forest"]    = { 10, 20 },
-    ["Redridge Mountains"]   = { 15, 25 },
-    ["Duskwood"]             = { 18, 30 },
-    ["Wetlands"]             = { 20, 30 },
-    ["Hillsbrad Foothills"]  = { 20, 30 },
-    ["Alterac Mountains"]    = { 30, 40 },
-    ["Arathi Highlands"]     = { 30, 40 },
-    ["Stranglethorn Vale"]   = { 30, 45 },
-    ["Badlands"]             = { 35, 45 },
-    ["Swamp of Sorrows"]     = { 35, 45 },
-    ["The Hinterlands"]      = { 40, 50 },
-    ["Searing Gorge"]        = { 45, 55 },
-    ["Blasted Lands"]        = { 45, 55 },
-    ["Burning Steppes"]      = { 50, 58 },
-    ["Western Plaguelands"]  = { 51, 58 },
-    ["Eastern Plaguelands"]  = { 53, 60 },
-    ["Deadwind Pass"]        = { 55, 60 },
+    [1429] = {  1, 10 },   -- Elwynn Forest
+    [1426] = {  1, 10 },   -- Dun Morogh
+    [1420] = {  1, 10 },   -- Tirisfal Glades
+    [1436] = { 10, 20 },   -- Westfall
+    [1432] = { 10, 20 },   -- Loch Modan
+    [1421] = { 10, 20 },   -- Silverpine Forest
+    [1433] = { 15, 25 },   -- Redridge Mountains
+    [1431] = { 18, 30 },   -- Duskwood
+    [1437] = { 20, 30 },   -- Wetlands
+    [1424] = { 20, 30 },   -- Hillsbrad Foothills
+    [1416] = { 30, 40 },   -- Alterac Mountains
+    [1417] = { 30, 40 },   -- Arathi Highlands
+    [1434] = { 30, 45 },   -- Stranglethorn Vale
+    [1418] = { 35, 45 },   -- Badlands
+    [1435] = { 35, 45 },   -- Swamp of Sorrows
+    [1425] = { 40, 50 },   -- The Hinterlands
+    [1427] = { 45, 55 },   -- Searing Gorge
+    [1419] = { 45, 55 },   -- Blasted Lands
+    [1428] = { 50, 58 },   -- Burning Steppes
+    [1422] = { 51, 58 },   -- Western Plaguelands
+    [1423] = { 53, 60 },   -- Eastern Plaguelands
+    [1430] = { 55, 60 },   -- Deadwind Pass
     -- Kalimdor
-    ["Teldrassil"]           = {  1, 10 },
-    ["Durotar"]              = {  1, 10 },
-    ["Mulgore"]              = {  1, 10 },
-    ["Darkshore"]            = { 10, 20 },
-    ["The Barrens"]          = { 10, 25 },
-    ["Stonetalon Mountains"] = { 15, 27 },
-    ["Ashenvale"]            = { 18, 30 },
-    ["Thousand Needles"]     = { 25, 35 },
-    ["Desolace"]             = { 30, 40 },
-    ["Dustwallow Marsh"]     = { 35, 45 },
-    ["Feralas"]              = { 40, 50 },
-    ["Tanaris"]              = { 40, 50 },
-    ["Azshara"]              = { 45, 55 },
-    ["Felwood"]              = { 48, 55 },
-    ["Un'Goro Crater"]       = { 48, 55 },
-    ["Winterspring"]         = { 53, 60 },
-    ["Silithus"]             = { 55, 60 },
+    [1438] = {  1, 10 },   -- Teldrassil
+    [1411] = {  1, 10 },   -- Durotar
+    [1412] = {  1, 10 },   -- Mulgore
+    [1439] = { 10, 20 },   -- Darkshore
+    [1413] = { 10, 25 },   -- The Barrens
+    [1442] = { 15, 27 },   -- Stonetalon Mountains
+    [1440] = { 18, 30 },   -- Ashenvale
+    [1441] = { 25, 35 },   -- Thousand Needles
+    [1443] = { 30, 40 },   -- Desolace
+    [1445] = { 35, 45 },   -- Dustwallow Marsh
+    [1444] = { 40, 50 },   -- Feralas
+    [1446] = { 40, 50 },   -- Tanaris
+    [1447] = { 45, 55 },   -- Azshara
+    [1448] = { 48, 55 },   -- Felwood
+    [1449] = { 48, 55 },   -- Un'Goro Crater
+    [1452] = { 53, 60 },   -- Winterspring
+    [1451] = { 55, 60 },   -- Silithus
 }
 
 -- Area IDs for capital cities (0 - Alliance, 1 - Horde)
@@ -215,7 +218,7 @@ object "ModuleMap" : extends "Module" {
         self.filterButton.icon:SetTextureRegion(MUI.TEX_SKIN .. "worldmap\\button-filter", 128, 64, 51, 1, 48, 48)
         self.filterButton:AlignParentTopRight(1, 2.5)
         self.filterButton:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine("Map filters", 1,1,1,false, 13)
+            tooltip:AddLine(L.MAP_FILTER, 1,1,1,false, 13)
         end)
 
         -- Filter dropdown: master toggles for what's drawn on the
@@ -232,7 +235,7 @@ object "ModuleMap" : extends "Module" {
         self._filterMenu:SetItems({
             {
                 type    = "checkbox",
-                label   = "Show quest objectives",
+                label   = L.QUEST_LOG_SHOW_OBJECTIVES,
                 checked = MUI_DB.settings.questHelper.showObjectivesOnMap,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.showObjectivesOnMap = checked
@@ -244,7 +247,7 @@ object "ModuleMap" : extends "Module" {
             },
             {
                 type    = "checkbox",
-                label   = "Show low-level quests",
+                label   = L.MAP_SHOW_LOW_LEVEL_QUESTS,
                 checked = MUI_DB.settings.questHelper.showLowLevelAvailableQuestsOnMap,
                 OnChanged = function(_, checked)
                     MUI_QuestHelper:SetShowLowLevelAvailableQuestsOnMap(checked)
@@ -252,7 +255,7 @@ object "ModuleMap" : extends "Module" {
             },
             {
                 type    = "checkbox",
-                label   = "Show dungeons",
+                label   = L.MAP_SHOW_DUNGEONS,
                 checked = MUI_DB.settings.questHelper.showDungeonsOnMap,
                 OnChanged = function(_, checked)
                     MUI_DB.settings.questHelper.showDungeonsOnMap = checked
@@ -267,10 +270,10 @@ object "ModuleMap" : extends "Module" {
         self.pinButton.icon:SetTextureRegion(MUI.TEX_BASE .. "objecticonsatlas", 1024, 1024, 898, 726, 27, 26)
         self.pinButton:Below(self.filterButton, 0.5)
         self.pinButton:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine("Map waypoint", 1,1,1,false, 13)
-            tooltip:AddLine("You can place a trackable pin on the map to help you navigate to it.", 1, 0.82, 0, true)
+            tooltip:AddLine(L.MAP_PIN, 1,1,1,false, 13)
+            tooltip:AddLine(L.MAP_PIN_TOOLTIP, 1, 0.82, 0, true)
             tooltip:AddBlank()
-            tooltip:AddLine("To place a pin, click this button, then on the map. Or <Ctrl-click directly on the map>.", 0, 1, 0, true)
+            tooltip:AddLine(L.MAP_PIN_TOOLTIP_INSTRUCTIONS, 0, 1, 0, true)
         end)
 
         self.waypointManager = MapWaypointManager(function(isPlacementMode)
@@ -462,7 +465,7 @@ object "ModuleMap" : extends "Module" {
         self._questsSideTab:SetScale(0.6)
         self._questsSideTab:AlignParentTopRight(40, -44.3)
         self._questsSideTab:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine("Quests", 1, 1, 1, false, 13)
+            tooltip:AddLine(QUESTS_LABEL, 1, 1, 1, false, 13)
         end)
         self._questsSideTab.OnClick = function() self:ShowQuestLog() end
 
@@ -470,7 +473,7 @@ object "ModuleMap" : extends "Module" {
         self._legendSideTab:SetScale(0.6)
         self._legendSideTab:Below(self._questsSideTab, 3)
         self._legendSideTab:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine("Map Legend", 1, 1, 1, false, 13)
+            tooltip:AddLine(L.MAP_LEGEND_FRAME_LABEL, 1, 1, 1, false, 13)
         end)
         self._legendSideTab.OnClick = function() self:ShowLegend() end
 
@@ -655,7 +658,7 @@ object "ModuleMap" : extends "Module" {
 		portrait:SetSize(40, 40)
 		
 		local title = FontString(self.border)
-		title:SetText("World Map and Quest Log")
+		title:SetText(MAP_AND_QUEST_LOG)
 		title:SetFontSize(7.5)
 		title:SetShadowOffset(1, -1)
 		title:SetTextColor(1, 0.82, 0, 1)
@@ -743,10 +746,14 @@ object "ModuleMap" : extends "Module" {
         -- Hook SetLabel: prefix the name with " (min-max)" before the
         -- frame stores it in labelInfoByType. EvaluateLabels then renders
         -- the augmented name.
+        local levelsByName = {}
+        for mapID, range in pairs(ZONE_LEVELS) do
+            levelsByName[C_Map.GetMapInfo(mapID).name] = range
+        end
         local origSetLabel = label.SetLabel
         label.SetLabel = function(lbl, areaLabelType, name, description, ...)
-            if name and ZONE_LEVELS[name] then
-                local r = ZONE_LEVELS[name]
+            local r = name and levelsByName[name]
+            if r then
                 name = self:FormatLevelRange(name, r[1], r[2])
             end
             return origSetLabel(lbl, areaLabelType, name, description, ...)

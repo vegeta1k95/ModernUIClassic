@@ -50,7 +50,7 @@ class "AchievementToastPlate" : extends "Frame" {
         self.unlocked:SetTextColor(0, 0, 0, 1)
         self.unlocked:SetSize(200, 12)
         self.unlocked:AlignParentTop(23.5, 7)
-        self.unlocked:SetText("Achievement Earned!")
+        self.unlocked:SetText(ACHIEVEMENT_UNLOCKED)
 
         self.name = FontString(self, nil, "BACKGROUND")
         self.name:SetFont(MUI.FONT, 12)

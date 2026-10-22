@@ -12,7 +12,7 @@ class "ProfessionsActionBar" : extends "Frame" {
         Frame.__init(self, "Frame", parent)
         self:SetSize(1, 1)
 
-        self._btnCreate = ButtonGold(parent, nil, "Create")
+        self._btnCreate = ButtonGold(parent, nil, CREATE_PROFESSION)
         self._btnCreate:SetSize(85.5, 21)
         self._btnCreate:AlignParentBottomRight(7.5, 8.5)
         self._btnCreate:SetScale(0.9)
@@ -41,7 +41,7 @@ class "ProfessionsActionBar" : extends "Frame" {
         self._btnDecrement:LeftOf(self._editQuantity, 0.5)
         self._btnDecrement:SetEnabled(false)
 
-        self._btnCreateAll = ButtonGold(parent, nil, "Create All [0]")
+        self._btnCreateAll = ButtonGold(parent, nil, CREATE_ALL .. " [0]")
         self._btnCreateAll:SetSize(124, 21)
         self._btnCreateAll:LeftOf(self._btnDecrement, 2)
         self._btnCreateAll:SetScale(0.9)
@@ -142,7 +142,7 @@ class "ProfessionsActionBar" : extends "Frame" {
             self._craftBtnWrapper:SetEnabled(craftable)
         end
 
-        self._btnCreateAll:SetText("Create All [" .. available .. "]")
+        self._btnCreateAll:SetText(CREATE_ALL .. " [" .. available .. "]")
 
         -- Editbox flow:
         --   1. Selection changed         → reset to 1 (or 0 if not craftable).

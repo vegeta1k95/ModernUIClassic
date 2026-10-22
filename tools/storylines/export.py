@@ -5,6 +5,11 @@ MUI_DB/MUI_StorylineDB.lua.
     python tools/storylines/export.py            # write the DB + print the report
     python tools/storylines/export.py --report   # report only
     python tools/storylines/export.py 44 10      # report only, these zones
+    python tools/storylines/export.py --era <dir> --retail <dir>
+                            # and the chapters' names in every client language
+                            # (<dir>/<lang>/AreaTable.csv of the Era build;
+                            # JournalEncounter, JournalEncounterCreature of a
+                            # retail build, for bosses)
 
 Needs lupa: the generated MUI_*DB.lua files are evaluated to resolve quest
 names, chains and quest-giver positions. Each chapter entry in chapters.py
@@ -415,6 +420,16 @@ def emit(all_zones):
         "        return self._data[areaId]",
         "    end;",
         "",
+        "    -- The chapters' names in the client's language, from MUI_DB/Locale:",
+        "    -- English name -> name.",
+        "    Localize = function(self, names)",
+        "        for _, chapters in pairs(self._data) do",
+        "            for _, chapter in ipairs(chapters) do",
+        "                chapter.name = names[chapter.name] or chapter.name",
+        "            end",
+        "        end",
+        "    end;",
+        "",
         "    _data = {",
     ]
     for zoneId, name, chapters in all_zones:
@@ -432,8 +447,86 @@ def emit(all_zones):
     return "\n".join(lines)
 
 
+def localize(all_zones, era, retail):
+    """The chapters' names in every client language: an area's, a quest's or
+    a creature's name where the English is the one of that name (the Era
+    client's AreaTable, retail's journal for a boss, Questie's lookups for the
+    rest); the rest is ours, tools/i18n/<lang>.json, listed in
+    tools/i18n/source/storylines.json."""
+    import csv
+    import json
+    tools = os.path.join(ROOT, "tools")
+    sys.path.insert(0, tools)
+    sys.path.insert(0, os.path.join(tools, "questdb_export"))
+    import locale_data
+    import locale_export
+
+    def areas(lang):
+        with open(os.path.join(era, lang, "AreaTable.csv"), encoding="utf-8", newline="") as f:
+            return {int(r["ID"]): r["AreaName_lang"] for r in csv.DictReader(f)}
+
+    def unique(names):
+        seen = {}
+        for i, name in names.items():
+            if name:
+                seen[name] = None if name in seen else i
+        return seen
+
+    english_npcs = {i: r.get("name") for i, r in locale_export.english("MUI_NpcDB.lua").items()}
+    english = {
+        "area": unique(areas("enUS")),
+        "quest": unique({i: r.get("name") for i, r in locale_export.english("MUI_QuestDB.lua").items()}),
+        "npc": unique(english_npcs),
+    }
+    names = sorted({ch["name"] for _, _, chapters in all_zones for ch in chapters if ch["name"]})
+    plan, ours = {}, {}
+    for name in names:
+        source = next(((kind, english[kind][name]) for kind in ("area", "quest", "npc") if english[kind].get(name)), None)
+        if source:
+            plan[name] = source
+        else:
+            zones = sorted({z for z, _, chapters in all_zones for ch in chapters if ch["name"] == name})
+            ours["story/" + name] = {"en": name, "note": "a chapter of the zone story of " + ", ".join(
+                n for z, n, _ in all_zones if z in zones)}
+    i18n = os.path.join(tools, "i18n")
+    os.makedirs(os.path.join(i18n, "source"), exist_ok=True)
+    with open(os.path.join(i18n, "source", "storylines.json"), "w", encoding="utf-8", newline="\n") as f:
+        json.dump(ours, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    questie = os.path.join(tools, "vendor", "Questie")
+    for lang in locale_data.LANGUAGES:
+        local = {"area": areas(lang), "quest": {},
+                 "npc": locale_export.npc_names(questie, retail, lang, english_npcs)}
+        for i, e in locale_export.lookup(questie, "lookupQuests", lang).items():
+            if isinstance(e, list) and e and isinstance(e[0], str):
+                local["quest"][i] = e[0]
+        path = os.path.join(i18n, lang + ".json")
+        mine = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+        out, missing = {}, []
+        for name in names:
+            text = local[plan[name][0]].get(plan[name][1]) if name in plan else mine.get("story/" + name)
+            if text and text != name:
+                out[name] = text
+            elif not text:
+                missing.append(name)
+        lines = [f"MUI_StorylineDB:Localize({locale_data.loadstring(out)})"]
+        locale_data.write_block(lang, "zone stories", "tools/storylines/export.py", lines)
+        print(f"{lang}: {len(out)} of {len(names)} chapter names in the language; {len(missing)} still English"
+              + (" (" + ", ".join(missing[:5]) + ")" if missing else ""))
+    print(f"ours to translate: {len(ours)} (tools/i18n/source/storylines.json)")
+
+
 def main():
     args = sys.argv[1:]
+    era = retail = None
+    if "--era" in args:
+        at = args.index("--era")
+        era = args[at + 1]
+        del args[at:at + 2]
+    if "--retail" in args:
+        at = args.index("--retail")
+        retail = args[at + 1]
+        del args[at:at + 2]
     only = [int(a) for a in args if a.isdigit()]
     write = not only and "--report" not in args
     all_zones = []
@@ -448,6 +541,8 @@ def main():
         with open(OUT, "w", encoding="utf-8", newline="\n") as f:
             f.write(text)
         print("\nwrote %s (%d zones)" % (OUT, len(all_zones)))
+        if era and retail:
+            localize(all_zones, era, retail)
 
 
 if __name__ == "__main__":

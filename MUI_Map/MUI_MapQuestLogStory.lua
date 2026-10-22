@@ -28,6 +28,8 @@
 -- Force"), done once either is. Quests the character's race or class can
 -- never take are dropped, and so is a chapter left with no steps.
 
+local L = MUI.L
+
 local BANNER_H    = 69     -- retail's StoryHeader: 304 x 69 ...
 local BG_DROP     = 5      -- ... with its parchment hanging 5 px below the frame
 local DIVIDER_H   = 15
@@ -128,22 +130,22 @@ class "QuestLogStoryStep" : extends "Frame" {
         tooltip:SetMinimumWidth(200)
         tooltip:AddTitle(s.name, true)
         if s.giver then
-            tooltip:AddLine("Starts at: " .. s.giver, 1, 1, 1, true)
+            tooltip:AddLine(L.MAP_STORY_STARTS_AT:format(s.giver), 1, 1, 1, true)
         end
         if s.any then
-            tooltip:AddLine("Only one of these quests can be taken; either one completes the step.", 0.7, 0.7, 0.7, true)
+            tooltip:AddLine(L.MAP_STORY_EITHER_QUEST, 0.7, 0.7, 0.7, true)
         end
         tooltip:AddBlank()
         if s.complete then
-            tooltip:AddLine("Completed", _GREEN[1], _GREEN[2], _GREEN[3])
+            tooltip:AddLine(L.CRITERIA_COMPLETED, _GREEN[1], _GREEN[2], _GREEN[3])
         elseif s.onQuest then
-            tooltip:AddLine("In your quest log", _GOLD[1], _GOLD[2], _GOLD[3])
+            tooltip:AddLine(L.MAP_STORY_IN_QUEST_LOG, _GOLD[1], _GOLD[2], _GOLD[3])
         else
-            tooltip:AddLine("Not completed", 0.7, 0.7, 0.7)
+            tooltip:AddLine(L.CRITERIA_NOT_COMPLETED, 0.7, 0.7, 0.7)
         end
         if s.onQuest then
             tooltip:AddBlank()
-            tooltip:AddLine("<Click for more details>", 0, 1, 0)
+            tooltip:AddLine("<" .. CLICK_FOR_DETAILS .. ">", 0, 1, 0)
         end
     end;
 }
@@ -366,7 +368,7 @@ class "QuestLogStory" : extends "Frame" {
         self._chapters = chapters
         self._done     = done
         self.title:SetText(zoneName or "")
-        self.progress:SetText(string.format("%d/%d Chapters", done, #chapters))
+        self.progress:SetText(STORY_CHAPTERS:format(done, #chapters))
         self:_Layout()
         return true
     end;
@@ -530,8 +532,8 @@ class "QuestLogStory" : extends "Frame" {
         tooltip:SetMinimumWidth(240)
         tooltip:AddLine(self.title:GetText() or "", 1, 1, 1, true, 14)
         tooltip:AddBlank()
-        tooltip:AddLine("Story Progress", _GOLD[1], _GOLD[2], _GOLD[3])
-        tooltip:AddLine(string.format("%d/%d Chapters", self._done, #self._chapters), 1, 1, 1, false, 10)
+        tooltip:AddLine(STORY_PROGRESS, _GOLD[1], _GOLD[2], _GOLD[3])
+        tooltip:AddLine(STORY_CHAPTERS:format(self._done, #self._chapters), 1, 1, 1, false, 10)
         tooltip:AddBlank()
         for _, ch in ipairs(self._chapters) do
             if ch.complete then
@@ -542,6 +544,6 @@ class "QuestLogStory" : extends "Frame" {
         end
         tooltip:AddBlank()
         tooltip:AddLine(MUI_DB.settings.questHelper.zoneStoryCollapsed
-            and "<Click to show the chapters>" or "<Click to hide the chapters>", 0, 1, 0)
+            and L.MAP_STORY_SHOW_CHAPTERS or L.MAP_STORY_HIDE_CHAPTERS, 0, 1, 0)
     end;
 }

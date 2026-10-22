@@ -1,0 +1,424 @@
+# Literals tools/locale_audit.py would count that are not text: keys of the
+# addon's own tables, names of regions and atlas cells. One per line,
+# "<file>: <text>", the file from the addon's folder with forward slashes.
+# Only for a text that is never shown anywhere in that file.
+
+# MUI_MapPinIcons, the pin icons' atlas cells
+MUI_Map/MUI_MapPin.lua: Waypoint
+MUI_Map/MUI_MapPin.lua: Quest
+MUI_Map/MUI_MapPin.lua: Hub
+MUI_Map/MUI_MapPin.lua: Dungeon
+MUI_Map/MUI_MapPin.lua: Raid
+MUI_Map/MUI_MapPin.lua: Focused
+MUI_Gossip/MUI_Gossip.lua: Quest
+MUI_QuestHelper/MUI_QuestHelper.lua: Quest
+
+# MUI_MinimapPinIcons, the minimap pins' atlas cells, and the tracker's
+# filters named after them
+MUI_Minimap/MUI_MinimapPin.lua: Waypoint
+MUI_Minimap/MUI_MinimapPin.lua: Repair
+MUI_Minimap/MUI_MinimapPin.lua: Innkeeper
+MUI_Minimap/MUI_MinimapPin.lua: Stablemaster
+MUI_Minimap/MUI_MinimapPin.lua: Battlemaster
+MUI_Minimap/MUI_MinimapPin.lua: Mailbox
+MUI_Minimap/MUI_MinimapPin.lua: Banker
+MUI_Minimap/MUI_MinimapPin.lua: Auctioneer
+MUI_Minimap/MUI_MinimapTracker.lua: Repair
+MUI_Minimap/MUI_MinimapTracker.lua: Innkeeper
+MUI_Minimap/MUI_MinimapTracker.lua: Stablemaster
+MUI_Minimap/MUI_MinimapTracker.lua: Battlemaster
+MUI_Minimap/MUI_MinimapTracker.lua: Mailbox
+MUI_Minimap/MUI_MinimapTracker.lua: Banker
+MUI_Minimap/MUI_MinimapTracker.lua: Auctioneer
+
+# MUI_CollectionsStyle, the pieces of retail's art
+MUI_Collections/MUI_CollectionsStyle.lua: Corner
+MUI_Collections/MUI_CollectionsStyle.lua: Favorite
+MUI_Collections/MUI_CollectionsStyle.lua: Row
+MUI_Collections/MUI_CollectionsStyle.lua: Border
+
+# The class book's tabs: the mouse button its key bindings click with
+MUI_Spellbook/MUI_ClassBook.lua: Macro
+MUI_Spellbook/MUI_ClassBook.lua: Keybind
+
+# The character window: Era's frame names (Character<Slot>Slot, the edge's
+# <name>Middle), atlas cell names, and CharacterStatSource's method names in
+# the stat sheets' rows
+MUI_Character/MUI_CharacterFrame.lua: Middle
+MUI_Character/MUI_CharacterFrame.lua: Active
+MUI_Character/MUI_CharacterFrame.lua: Highlight
+MUI_Character/MUI_CharacterPaperDoll.lua: Head
+MUI_Character/MUI_CharacterPaperDoll.lua: Neck
+MUI_Character/MUI_CharacterPaperDoll.lua: Shoulder
+MUI_Character/MUI_CharacterPaperDoll.lua: Back
+MUI_Character/MUI_CharacterPaperDoll.lua: Chest
+MUI_Character/MUI_CharacterPaperDoll.lua: Shirt
+MUI_Character/MUI_CharacterPaperDoll.lua: Tabard
+MUI_Character/MUI_CharacterPaperDoll.lua: Wrist
+MUI_Character/MUI_CharacterPaperDoll.lua: Hands
+MUI_Character/MUI_CharacterPaperDoll.lua: Waist
+MUI_Character/MUI_CharacterPaperDoll.lua: Legs
+MUI_Character/MUI_CharacterPaperDoll.lua: Feet
+MUI_Character/MUI_CharacterPaperDoll.lua: Ranged
+MUI_Character/MUI_CharacterPaperDoll.lua: Character
+MUI_Character/MUI_CharacterPaperDoll.lua: Slot
+MUI_Character/MUI_CharacterPaperDoll.lua: Ammo
+MUI_Character/MUI_CharacterPet.lua: Attribute
+MUI_Character/MUI_CharacterPet.lua: Damage
+MUI_Character/MUI_CharacterPet.lua: Attack
+MUI_Character/MUI_CharacterPet.lua: Armor
+MUI_Character/MUI_CharacterPet.lua: Defense
+MUI_Character/MUI_CharacterPet.lua: Resistance
+MUI_Character/MUI_CharacterSidebar.lua: Health
+MUI_Character/MUI_CharacterSidebar.lua: Power
+MUI_Character/MUI_CharacterSidebar.lua: Attribute
+MUI_Character/MUI_CharacterSidebar.lua: Damage
+MUI_Character/MUI_CharacterSidebar.lua: Attack
+MUI_Character/MUI_CharacterSidebar.lua: Hit
+MUI_Character/MUI_CharacterSidebar.lua: Crit
+MUI_Character/MUI_CharacterSidebar.lua: Armor
+MUI_Character/MUI_CharacterSidebar.lua: Defense
+MUI_Character/MUI_CharacterSidebar.lua: Dodge
+MUI_Character/MUI_CharacterSidebar.lua: Parry
+MUI_Character/MUI_CharacterSidebar.lua: Block
+MUI_Character/MUI_CharacterSidebar.lua: Resistance
+
+# The auction house: its display modes, art names, and the auction addons
+# it stands down for
+MUI_AuctionHouse/MUI_AuctionHouse.lua: Auctionator
+MUI_AuctionHouse/MUI_AuctionHouseAuctions.lua: Index
+MUI_AuctionHouse/MUI_AuctionHouseBrowse.lua: Index
+MUI_AuctionHouse/MUI_AuctionHouseBuy.lua: Buy
+MUI_AuctionHouse/MUI_AuctionHouseCategories.lua: Categories
+MUI_AuctionHouse/MUI_AuctionHouseFrame.lua: Buy
+MUI_AuctionHouse/MUI_AuctionHouseFrame.lua: Auctions
+MUI_AuctionHouse/MUI_AuctionHouseWidgets.lua: Active
+
+# The micro menu: atlas cells (<prefix>Up / Down / Disabled / Mouseover),
+# button names, and the method its hook is on
+MUI_MicroMenu/MUI_MicroMenu.lua: Up
+MUI_MicroMenu/MUI_MicroMenu.lua: Down
+MUI_MicroMenu/MUI_MicroMenu.lua: Disabled
+MUI_MicroMenu/MUI_MicroMenu.lua: Mouseover
+MUI_MicroMenu/MUI_MicroMenu.lua: Shop
+MUI_MicroMenu/MUI_MicroMenu.lua: Collections
+MUI_MicroMenu/MUI_MicroMenu.lua: Guild
+MUI_MicroMenu/MUI_MicroMenu.lua: Spellbook
+MUI_MicroMenu/MUI_MicroMenu.lua: Achievements
+MUI_MicroMenu/MUI_MicroMenu.lua: Professions
+MUI_MicroMenu/MUI_MicroMenu.lua: Character
+MUI_MicroMenu/MUI_MicroMenu.lua: Layout
+
+# Atlas cells, frame-name pieces and hooked method names of the smaller
+# modules; the focus manager's developer error line
+MUI_ActionBars/MUI_ActionBars.lua: Left
+MUI_ActionBars/MUI_ActionBars.lua: Right
+MUI_ActionBars/MUI_ActionBars.lua: Middle
+MUI_ActionBars/MUI_ActionBars.lua: Update
+MUI_Chat/MUI_Chat.lua: Background
+MUI_Chat/MUI_Chat.lua: Tab
+MUI_GameMenu/MUI_GameMenu.lua: Layout
+MUI_GameMenu/MUI_GameMenu.lua: Highlight
+MUI_GameMenu/MUI_GameMenu.lua: Left
+MUI_GameMenu/MUI_GameMenu.lua: Right
+MUI_GameMenu/MUI_GameMenu.lua: Center
+MUI_GameMenu/MUI_GameMenu.lua: Pressed
+MUI_GameMenu/MUI_GameMenu.lua: Normal
+MUI_Gossip/MUI_Gossip.lua: Setup
+MUI_QuestFrame/MUI_QuestFrame.lua: Material
+MUI_QuestFrame/MUI_QuestFrame.lua: Quest
+MUI_Taxi/MUI_Taxi.lua: Highlight
+MUI_Focus/MUI_FocusManager.lua: |cffff4040MUI_FocusManager|r listener error: 
+
+# Art pieces and atlas cells of the guide, collections, dressing room, toasts
+# and XP bar; the sample achievement the toast test command shows
+MUI_AdventureGuide/MUI_AdventureGuideSearch.lua: Highlight
+MUI_AdventureGuide/MUI_AdventureGuideSections.lua: Select
+MUI_AdventureGuide/MUI_AdventureGuideSections.lua: Down
+MUI_AdventureGuide/MUI_AdventureGuideSections.lua: Up
+MUI_Collections/MUI_CollectionsMountList.lua: Row
+MUI_Collections/MUI_CollectionsMountList.lua: Favorite
+MUI_Collections/MUI_CollectionsSetDetails.lua: Border
+MUI_Collections/MUI_CollectionsSetList.lua: Row
+MUI_Collections/MUI_CollectionsSetList.lua: Favorite
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Inset
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Highlight
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Expand
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Condense
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Normal
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Pressed
+MUI_DressingRoom/MUI_DressingRoomFrame.lua: Disabled
+MUI_Toasts/MUI_AchievementToast.lua: Background
+MUI_Toasts/MUI_AchievementToast.lua: Shield
+MUI_Toasts/MUI_AchievementToast.lua: Glow
+MUI_Toasts/MUI_AchievementToast.lua: Shine
+MUI_Toasts/MUI_Toasts.lua: Level 10
+MUI_XPBar/MUI_XPBar.lua: Pip
+MUI_XPBar/MUI_XPBar.lua: Left
+MUI_XPBar/MUI_XPBar.lua: Right
+
+# Frame-name pieces, hooked method names, art and the companion addons the
+# bags, bank, inspect window, social window and unit frames read
+MUI_Bags/MUI_Bags.lua: Layout
+MUI_Bags/MUI_Bags.lua: Slot
+MUI_Bags/MUI_Bags.lua: Show
+MUI_Bags/MUI_Bags.lua: Hide
+MUI_Bags/MUI_Bags.lua: Item
+MUI_Bags/MUI_Bags.lua: Portrait
+MUI_Bags/MUI_Bags.lua: Highlight
+MUI_Bags/MUI_Bags.lua: Gold
+MUI_Bags/MUI_Bags.lua: Silver
+MUI_Bags/MUI_Bags.lua: Copper
+MUI_Bank/MUI_Bank.lua: Bagnon
+MUI_Bank/MUI_Bank.lua: Bagshui
+MUI_Bank/MUI_Bank.lua: Baganator
+MUI_Bank/MUI_Bank.lua: Combuctor
+MUI_Bank/MUI_Bank.lua: Sorted
+MUI_Bank/MUI_BankFrame.lua: Bottom
+MUI_Bank/MUI_BankFrame.lua: Left
+MUI_Bank/MUI_BankFrame.lua: Right
+MUI_Bank/MUI_BankGrid.lua: Item
+MUI_Inspect/MUI_InspectFrame.lua: Inset
+MUI_Inspect/MUI_InspectFrame.lua: Highlight
+MUI_Inspect/MUI_InspectPaperDoll.lua: Head
+MUI_Inspect/MUI_InspectPaperDoll.lua: Neck
+MUI_Inspect/MUI_InspectPaperDoll.lua: Shoulder
+MUI_Inspect/MUI_InspectPaperDoll.lua: Back
+MUI_Inspect/MUI_InspectPaperDoll.lua: Chest
+MUI_Inspect/MUI_InspectPaperDoll.lua: Shirt
+MUI_Inspect/MUI_InspectPaperDoll.lua: Tabard
+MUI_Inspect/MUI_InspectPaperDoll.lua: Wrist
+MUI_Inspect/MUI_InspectPaperDoll.lua: Hands
+MUI_Inspect/MUI_InspectPaperDoll.lua: Waist
+MUI_Inspect/MUI_InspectPaperDoll.lua: Legs
+MUI_Inspect/MUI_InspectPaperDoll.lua: Feet
+MUI_Inspect/MUI_InspectPaperDoll.lua: Ranged
+MUI_Inspect/MUI_InspectPaperDoll.lua: Inspect
+MUI_Inspect/MUI_InspectPaperDoll.lua: Slot
+MUI_Social/MUI_SocialGuildTab.lua: Zone
+MUI_Social/MUI_SocialGuildTab.lua: Class
+MUI_Social/MUI_SocialGuildTab.lua: Rank
+MUI_Social/MUI_SocialGuildTab.lua: Online
+MUI_Social/MUI_SocialGuildTab.lua: Note
+MUI_Social/MUI_SocialRaidTab.lua: Highlight
+MUI_Social/MUI_SocialWhoTab.lua: Variable
+MUI_Social/MUI_SocialWhoTab.lua: Level
+MUI_Social/MUI_SocialWhoTab.lua: Class
+MUI_UnitFrames/MUI_ComboBar.lua: Icon
+MUI_UnitFrames/MUI_ComboBar.lua: Slash
+MUI_UnitFrames/MUI_ComboBar.lua: Deplete
+MUI_UnitFrames/MUI_ComboBar.lua: Smoke
+MUI_UnitFrames/MUI_UnitFrameParty.lua: Health
+MUI_UnitFrames/MUI_UnitFrameParty.lua: Mana
+MUI_UnitFrames/MUI_UnitFramePet.lua: Layout
+MUI_UnitFrames/MUI_UnitFramePet.lua: Update
+MUI_UnitFrames/MUI_UnitFrameTarget.lua: Update
+MUI_UnitFrames/MUI_UnitFrameTargetAuras.lua: Icon
+MUI_UnitFrames/MUI_UnitFrameTargetAuras.lua: Count
+MUI_UnitFrames/MUI_UnitFrameTargetAuras.lua: Border
+MUI_UnitFrames/MUI_UnitFrameTargetOfTarget.lua: Update
+
+# Core diagnostics (the class system, module errors), the position debugger
+# (a developer tool), the minimap / quest helper / tracker developer error
+# lines, filter keys, method names and atlas cells
+MUI_Core/MUI_Core.lua: |cffff0000ModernUI: Module '
+MUI_Core/MUI_Core.lua: ' error: 
+MUI_Core/MUI_Core.lua: Unknown
+MUI_Core/MUI_IconOverrides.lua: Update
+MUI_Core/MUI_Lua.lua: Class 
+MUI_Core/MUI_Lua.lua:  already exists!
+MUI_Core/MUI_Lua.lua: Base class 
+MUI_Core/MUI_Lua.lua:  not found!
+MUI_Core/MUI_PositionDebugger.lua: Position Debugger
+MUI_Core/MUI_PositionDebugger.lua: <anon>
+MUI_Core/MUI_PositionDebugger.lua: <unnamed>
+MUI_Core/MUI_PositionDebugger.lua: Target: (none)
+MUI_Core/MUI_PositionDebugger.lua: Width
+MUI_Core/MUI_PositionDebugger.lua: Height
+MUI_Core/MUI_PositionDebugger.lua: Detach
+MUI_Core/MUI_PositionDebugger.lua: Anchor %d
+MUI_Core/MUI_PositionDebugger.lua: Target: 
+MUI_Core/MUI_PositionDebugger.lua: Anchor %d  %s @ %s.%s
+MUI_Minimap/MUI_Minimap.lua: Layout
+MUI_Minimap/MUI_MinimapEdgeArrow.lua: |cffff4040MUI_MinimapEdgeArrow|r unknown icon type: 
+MUI_Minimap/MUI_MinimapPin.lua: |cffff4040MUI_MinimapPin|r unknown icon type: 
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Auctioneer
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Banker
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Battlemaster
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Innkeeper
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Repair
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Mailbox
+MUI_Minimap/MUI_MinimapTrackerMenu.lua: Stablemaster
+MUI_QuestHelper/MUI_QuestAvailability.lua: |cffff4040MUI_QuestAvailability|r listener error: 
+MUI_QuestHelper/MUI_QuestHelper.lua: |cffff4040MUI_QuestHelper|r cluster listener error: 
+MUI_QuestHelper/MUI_QuestHelper.lua: |cffff4040MUI_QuestHelper|r hover listener error: 
+MUI_QuestHelper/MUI_QuestHelper.lua: |cffff4040MUI_QuestHelper|r tracking listener error: 
+MUI_QuestHelper/MUI_QuestLinks.lua: Questie
+MUI_QuestHelper/MUI_QuestLogWatcher.lua: QuestLogWatcher: unknown callback 
+MUI_QuestHelper/MUI_QuestLogWatcher.lua: |cffff4040MUI_QuestHelper|r callback 
+MUI_QuestHelper/MUI_QuestLogWatcher.lua:  error: 
+MUI_QuestHelper/MUI_QuestTracker.lua: Primary
+MUI_QuestHelper/MUI_QuestTracker.lua: Secondary
+MUI_QuestHelper/MUI_QuestTracker.lua: Collapse
+MUI_QuestHelper/MUI_QuestTracker.lua: Expand
+MUI_QuestHelper/MUI_QuestTracker.lua: Pressed
+MUI_QuestHelper/MUI_QuestTracker.lua: Boss
+MUI_QuestHelper/MUI_QuestTracker.lua: Dragon
+MUI_QuestHelper/MUI_QuestTracker.lua: Kill
+MUI_QuestHelper/MUI_QuestTracker.lua: Loot
+MUI_QuestHelper/MUI_QuestTracker.lua: Bg
+
+# The shared widgets' atlas cells, region and frame-name pieces and method
+# names; the debug log pane (a developer tool) and the texture wrapper's
+# developer error
+MUI_Shared/MUI_ButtonRed.lua: Highlight
+MUI_Shared/MUI_ButtonRed.lua: Pressed
+MUI_Shared/MUI_ButtonRed.lua: Normal
+MUI_Shared/MUI_ButtonRed.lua: Left
+MUI_Shared/MUI_ButtonRed.lua: Right
+MUI_Shared/MUI_ButtonRed.lua: Center
+MUI_Shared/MUI_ButtonRed.lua: Disabled
+MUI_Shared/MUI_CastBar.lua: Textbox
+MUI_Shared/MUI_CastBar.lua: Background
+MUI_Shared/MUI_CastBar.lua: Pip
+MUI_Shared/MUI_CastBar.lua: Shield
+MUI_Shared/MUI_CastBar.lua: Interrupted
+MUI_Shared/MUI_CheckBox.lua: Background
+MUI_Shared/MUI_CloseButton.lua: Highlight
+MUI_Shared/MUI_DebugLog.lua: Clear
+MUI_Shared/MUI_Dropdown.lua: Hover
+MUI_Shared/MUI_Dropdown.lua: Open
+MUI_Shared/MUI_Dropdown.lua: Popup
+MUI_Shared/MUI_Dropdown.lua: Backdrop
+MUI_Shared/MUI_Dropdown.lua: Btn
+MUI_Shared/MUI_DropdownMenu.lua: Bg
+MUI_Shared/MUI_NativeScrollBar.lua: Down
+MUI_Shared/MUI_NativeScrollBar.lua: Over
+MUI_Shared/MUI_NineSlice.lua: Top
+MUI_Shared/MUI_NineSlice.lua: Left
+MUI_Shared/MUI_NineSlice.lua: Right
+MUI_Shared/MUI_NineSlice.lua: Bottom
+MUI_Shared/MUI_PanelChrome.lua: Highlight
+MUI_Shared/MUI_PanelTab.lua: Active
+MUI_Shared/MUI_PanelTab.lua: Sync
+MUI_Shared/MUI_PanelTab.lua: Fit
+MUI_Shared/MUI_PanelTab.lua: Left
+MUI_Shared/MUI_PanelTab.lua: Right
+MUI_Shared/MUI_PanelTab.lua: Middle
+MUI_Shared/MUI_PanelTab.lua: Tab
+MUI_Shared/MUI_Slider.lua: Left
+MUI_Shared/MUI_Slider.lua: Right
+MUI_Shared/MUI_Slider.lua: Middle
+MUI_Shared/MUI_Texture.lua: ModernUI: Atlas region not found: 
+
+# The calendar's texture names (Highlights, the holiday art's Start /
+# Ongoing / End pieces)
+MUI_Calendar/MUI_CalendarDay.lua: Highlights
+MUI_Calendar/MUI_CalendarFrame.lua: Highlights
+MUI_Calendar/MUI_CalendarHolidays.lua: Start
+MUI_Calendar/MUI_CalendarHolidays.lua: Ongoing
+MUI_Calendar/MUI_CalendarHolidays.lua: End
+
+# The spellbook's texture names
+MUI_Spellbook/MUI_SpellbookItem.lua: Bg
+MUI_Spellbook/MUI_TabTalents.lua: Particles
+
+# Achievements: UnitRace's race tokens, an atlas cell, a counter's key
+# suffix, the engine's developer error line
+MUI_Achievements/MUI_AchievementEngine.lua: Human
+MUI_Achievements/MUI_AchievementEngine.lua: Dwarf
+MUI_Achievements/MUI_AchievementEngine.lua: Gnome
+MUI_Achievements/MUI_AchievementEngine.lua: Orc
+MUI_Achievements/MUI_AchievementEngine.lua: Scourge
+MUI_Achievements/MUI_AchievementEngine.lua: Tauren
+MUI_Achievements/MUI_AchievementEngine.lua: Troll
+MUI_Achievements/MUI_AchievementEngine.lua: Best
+MUI_Achievements/MUI_AchievementEngine.lua: ModernUI: achievement sweep failed: 
+MUI_Achievements/MUI_AchievementFrame.lua: Highlight
+
+# The world map: pin icon types, atlas cells, a method name, a frame-name
+# piece, the faction suffix of the flight master / transport pin types and
+# the pin's developer error line
+MUI_Map/MUI_Map.lua: Highlight
+MUI_Map/MUI_Map.lua: Refresh
+MUI_Map/MUI_MapLegendTab.lua: Neutral
+MUI_Map/MUI_MapNavigation.lua: Home
+MUI_Map/MUI_MapPin.lua: |cffff4040MUI_MapPin|r unknown icon type: 
+MUI_Map/MUI_MapQuestDescriptionTab.lua: Background
+MUI_Map/MUI_MapQuestDescriptionTab.lua: Tile
+MUI_Map/MUI_MapQuestDescriptionTab.lua: Nineslice
+MUI_Map/MUI_MapQuestLogStory.lua: Check
+MUI_Map/MUI_MapQuestLogStory.lua: Banner
+MUI_Map/MUI_MapQuestLogStory.lua: Divider
+MUI_Map/MUI_MapStaticPinManager.lua: Raid
+MUI_Map/MUI_MapStaticPinManager.lua: Dungeon
+MUI_Map/MUI_MapStaticPinManager.lua: Quest
+MUI_Map/MUI_MapStaticPinManager.lua: Hub
+
+# The professions overview's placeholder names, replaced before a slot shows
+MUI_Professions/MUI_ProfessionsOverview.lua: Spell Name
+MUI_Professions/MUI_ProfessionsOverview.lua: Herbalism
+
+# The holidays' texture names (Noblegarden, Midsummer, Fireworks pieces)
+MUI_Calendar/MUI_CalendarHolidays.lua: Noblegarden
+MUI_Calendar/MUI_CalendarHolidays.lua: Midsummer
+MUI_Calendar/MUI_CalendarHolidays.lua: Fireworks
+
+# The world map: the legend's and the waypoint's pin types, and the map's
+# disabled coordinate read-out (a developer overlay)
+MUI_Map/MUI_Map.lua: cursor 
+MUI_Map/MUI_MapLegendTab.lua: Quest
+MUI_Map/MUI_MapLegendTab.lua: Hub
+MUI_Map/MUI_MapLegendTab.lua: Dungeon
+MUI_Map/MUI_MapLegendTab.lua: Raid
+MUI_Map/MUI_MapLegendTab.lua: Transport
+MUI_Map/MUI_MapLegendTab.lua: Waypoint
+MUI_Map/MUI_MapWaypoint.lua: Waypoint
+
+# Professions: MUI_RecipeDB's English categories, factions and event, which
+# the list and the source lines look their text up by; placeholders
+# replaced before they show; the /muispells developer command's lines
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Axe
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Bag
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Boots
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Bracer
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Chest
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Cloak
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Cloth Armor
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Consumable
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Dagger
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Elixir
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Engineered Item
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Flask
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Gloves
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Gun
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Item Enhancement
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Leather Armor
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Mace
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Mail Armor
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Material
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Misc Armor
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Oil
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Other
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Plate Armor
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Polearm
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Potion
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Reagent
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Rods
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Shield
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Shirt
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Sword
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Trade Goods
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Weapon
+MUI_Professions/MUI_ProfessionsTradeSkillList.lua: Weapon Coating
+MUI_Professions/MUI_ProfessionsTradeSkillResolver.lua: Argent Dawn
+MUI_Professions/MUI_ProfessionsTradeSkillResolver.lua: Cenarion Circle
+MUI_Professions/MUI_ProfessionsTradeSkillResolver.lua: Thorium Brotherhood
+MUI_Professions/MUI_ProfessionsTradeSkillResolver.lua: Timbermaw Hold
+MUI_Professions/MUI_ProfessionsTradeSkillResolver.lua: Zandalar Tribe
+MUI_Professions/MUI_ProfessionsTradeSkillResolver.lua: Feast of Winter Veil
+MUI_Professions/MUI_ProfessionsOverview.lua: Apprentice Herbalism
+MUI_Professions/MUI_ProfessionsTradeSkillRecipe.lua: Recipe name
+MUI_Professions/MUI_ProfessionsTradeSkillRecipe.lua: This is the description of the item/recipe.
+MUI_Spellbook/MUI_Spells.lua: |cffffd200MUI:|r spell DB cleared.
+MUI_Spellbook/MUI_Spells.lua: |cffffd200MUI:|r /muispells reset — wipe the spell DB and re-scan.

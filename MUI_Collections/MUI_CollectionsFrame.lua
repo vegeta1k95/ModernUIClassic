@@ -54,7 +54,7 @@ class "CollectionsWindow" : extends "PanelPortrait" {
         -- A page to a tab under the window's bottom edge, the sets first,
         -- each with retail's portrait for it.
         self._pages = {
-            { page = self._sets,   text = "Sets", portrait = "Interface\\Icons\\INV_Chest_Cloth_17" },
+            { page = self._sets,   text = WARDROBE_SETS, portrait = "Interface\\Icons\\INV_Chest_Cloth_17" },
             { page = self._mounts, text = MOUNTS, portrait = Style.ART .. "portrait" },
         }
         local x = TAB_LEFT

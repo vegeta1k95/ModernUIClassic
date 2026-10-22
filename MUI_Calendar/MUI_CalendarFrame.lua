@@ -15,6 +15,8 @@
 --     :Toggle()
 --     :Update()            the month on view, again
 
+local L = MUI.L
+
 local Style = MUI_CalendarStyle
 local S = Style.S
 local DARK = CalendarDayButton.DARK
@@ -36,11 +38,11 @@ local MONTH_NAMES = {
 }
 
 local FILTERS = {
-    { key = "holidays",      label = "Holidays" },
+    { key = "holidays",      label = L.CALENDAR_FILTER_HOLIDAYS },
     { key = "darkmoon",      label = CALENDAR_FILTER_DARKMOON },
     { key = "lockouts",      label = CALENDAR_FILTER_RAID_LOCKOUTS },
     { key = "weekly",        label = CALENDAR_FILTER_WEEKLY_HOLIDAYS },
-    { key = "battlegrounds", label = "Battleground Weekends" },
+    { key = "battlegrounds", label = L.CAL_BATTLEGROUND_WEEKENDS },
 }
 
 local POPUP_DELETE = "MUI_CALENDAR_DELETE_EVENT"

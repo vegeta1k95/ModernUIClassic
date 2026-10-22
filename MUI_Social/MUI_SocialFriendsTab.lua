@@ -8,6 +8,8 @@
 -- ours laid over the tab: while it is up the list Blizzard's selection stands
 -- for is hidden, and its header tab is drawn as not selected.
 
+local L = MUI.L
+
 -- Retail's ScrollBox: 8 in from the window's left edge, 87 below its top, and
 -- as wide as the window less the scroll bar's gutter.
 local LIST_X, LIST_Y, LIST_W = 8, 87, 349
@@ -20,7 +22,7 @@ local HEADER_X, HEADER_Y, HEADER_H, HEADER_GAP = 18, 60, 24, 1
 local BUTTON_W = 134
 local HEADER_IGNORE = 2
 
-local ALLIES_LABEL = CONTACTS_RECENT_ALLIES_TAB_NAME or "Recent Allies"
+local ALLIES_LABEL = L.CONTACTS_RECENT_ALLIES_TAB_NAME
 
 class "SocialFriendsTab" {
 

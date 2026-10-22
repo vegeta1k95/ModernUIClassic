@@ -5,6 +5,8 @@
 -- lives right of it. Caller is responsible for making the frame wide enough to
 -- cover the label area if they want label clicks to toggle.
 
+local LABEL_GAP = 6   -- between the square and the label
+
 class "CheckBox" : extends "Frame" {
     __init = function(self, parent, name, text)
         Frame.__init(self, "Frame", parent, name)
@@ -61,7 +63,7 @@ class "CheckBox" : extends "Frame" {
             self.label:SetText(text)
             self.label:SetFontSize(12)
             self.label:SetTextColor(1, 1, 1, 1)
-            self.label:RightOf(self._box, 6, 1)
+            self.label:RightOf(self._box, LABEL_GAP, 1)
         end
 
         -- Click anywhere on the frame toggles. MouseIsOver mirrors standard
@@ -97,6 +99,13 @@ class "CheckBox" : extends "Frame" {
 
     SetBoxSize = function(self, w, h)
         self._box:SetSize(w, h)
+    end;
+
+    -- The width the square and its label take side by side.
+    GetContentWidth = function(self)
+        local w = self._box:GetWidth()
+        if self.label then w = w + LABEL_GAP + self.label:GetStringWidth() end
+        return w
     end;
 
     SetChecked = function(self, checked)

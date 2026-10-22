@@ -12,6 +12,8 @@
 -- Blizzard's is overridden. With Questie loaded, its own filter does the
 -- converting and ours stays off.
 
+local L = MUI.L
+
 local LINK_TYPE = "muiquest"
 
 -- "[[<level>] <name> (<questId>)]" and the level-less "[<name> (<questId>)]".
@@ -87,7 +89,7 @@ object "ModuleQuestLinks" : extends "Module" {
         if not ChatFrameUtil.GetActiveWindow() then return false end
         local q = MUI_QuestDB:Get(questId)
         local entry = MUI_QuestHelper.watcher:GetEntry(questId)
-        local name = (q and q.name) or (entry and entry.title)
+        local name = (q and MUI_QuestDB:LocalizeQuestName(questId)) or (entry and entry.title)
         if not name then return false end
         local level = (entry and entry.level) or (q and q.questLevel) or 0
         ChatFrameUtil.InsertLink(string.format("[[%d] %s (%d)]", level, name, questId))
@@ -115,7 +117,7 @@ object "ModuleQuestLinks" : extends "Module" {
     -- Clickable link showing the quest's title as our tooltips format it.
     _Hyperlink = function(self, questId)
         local q = MUI_QuestDB:Get(questId)
-        local title, r, g, b = MUI_QuestHelper:FormatQuestTitle({ title = q.name, level = q.questLevel }, questId)
+        local title, r, g, b = MUI_QuestHelper:FormatQuestTitle({ title = MUI_QuestDB:LocalizeQuestName(questId), level = q.questLevel }, questId)
         return string.format("|cff%02x%02x%02x|H%s:%d|h[%s]|h|r",
             math.floor(r * 255), math.floor(g * 255), math.floor(b * 255), LINK_TYPE, questId, title)
     end;
@@ -154,55 +156,55 @@ object "ModuleQuestLinks" : extends "Module" {
         local ready = entry and (entry.isComplete or #entry.objectives == 0)
         local completed = C_QuestLog.IsQuestFlaggedCompleted(questId)
 
-        local title, r, g, b = MUI_QuestHelper:FormatQuestTitle({ title = q.name, level = q.questLevel }, questId)
+        local title, r, g, b = MUI_QuestHelper:FormatQuestTitle({ title = MUI_QuestDB:LocalizeQuestName(questId), level = q.questLevel }, questId)
         tip:AddLine(title, r, g, b, true, 13)
 
         local avail = MUI_QuestHelper.availability
         if entry then
             if ready then
-                tip:AddLine("You are on this quest (|cff19ff19Complete|r)", 1, 1, 1)
+                tip:AddLine(QUEST_TOOLTIP_ACTIVE .. " (|cff19ff19" .. COMPLETE .. "|r)", 1, 1, 1)
             else
-                tip:AddLine("You are on this quest", GREEN[1], GREEN[2], GREEN[3])
+                tip:AddLine(QUEST_TOOLTIP_ACTIVE, GREEN[1], GREEN[2], GREEN[3])
             end
         elseif completed then
-            tip:AddLine("You have completed this quest", GREEN[1], GREEN[2], GREEN[3])
+            tip:AddLine(L.QUEST_COMPLETED_BEFORE, GREEN[1], GREEN[2], GREEN[3])
         elseif avail and avail:IsAvailable(questId) then
-            local text = avail:IsRepeatable(questId) and "This quest is repeatable" or "You have not done this quest"
+            local text = avail:IsRepeatable(questId) and L.QUEST_REPEATABLE or L.QUEST_NOT_DONE
             tip:AddLine(text, YELLOW[1], YELLOW[2], YELLOW[3])
         else
-            tip:AddLine("You are ineligible for this quest", RED[1], RED[2], RED[3])
+            tip:AddLine(L.QUEST_INELIGIBLE, RED[1], RED[2], RED[3])
         end
 
         tip:AddBlank()
         local described = false
-        for _, line in ipairs(q.objectivesText or {}) do
+        for _, line in ipairs(MUI_QuestHelper:GetObjectivesText(questId) or {}) do
             if line ~= "" then
                 tip:AddLine(line, 1, 1, 1, true)
                 described = true
             end
         end
         if not described then
-            tip:AddLine("This quest is an automatic completion quest and does not contain an objective.", 1, 1, 1, true)
+            tip:AddLine(L.QUEST_AUTO_COMPLETE, 1, 1, 1, true)
         end
 
         local dungeon = q.zoneOrSort and q.zoneOrSort > 0 and MUI_DungeonDB:GetDungeonEntrance(q.zoneOrSort)
         if dungeon then
             tip:AddBlank()
-            tip:AddLine("Instance: " .. dungeon.name, GREY[1], GREY[2], GREY[3])
+            tip:AddLine(L.QUEST_INSTANCE:format(dungeon.name), GREY[1], GREY[2], GREY[3])
         end
 
         if not entry and not completed then
             local names = self:_ObjectiveNames(q)
             if #names > 0 then
                 tip:AddBlank()
-                tip:AddLine("Objectives", GOLD[1], GOLD[2], GOLD[3])
+                tip:AddLine(OBJECTIVES_LABEL, GOLD[1], GOLD[2], GOLD[3])
                 for _, name in ipairs(names) do tip:AddLine(name, 1, 1, 1) end
             end
         end
 
         if entry and not ready then
             tip:AddBlank()
-            tip:AddLine("Your progress:", 1, 1, 1)
+            tip:AddLine(L.QUEST_YOUR_PROGRESS, 1, 1, 1)
             for _, o in ipairs(entry.objectives) do
                 if o.text and o.text ~= "" then
                     if o.failed then
@@ -214,9 +216,9 @@ object "ModuleQuestLinks" : extends "Module" {
                 end
             end
         elseif entry then
-            self:_AddGiver(tip, "Ended by: ", q.finishedBy, q)
+            self:_AddGiver(tip, L.QUEST_ENDED_BY, q.finishedBy, q)
         elseif not completed then
-            self:_AddGiver(tip, "Started by: ", q.startedBy, q)
+            self:_AddGiver(tip, L.QUEST_STARTED_BY, q.startedBy, q)
         end
     end;
 
@@ -239,11 +241,11 @@ object "ModuleQuestLinks" : extends "Module" {
         zone = zone or _ZoneName(q.zoneOrSort)
         if name then
             tip:AddBlank()
-            tip:AddLine(label .. "|cff999999" .. name .. "|r", 1, 1, 1)
+            tip:AddLine(label:format("|cff999999" .. name .. "|r"), 1, 1, 1)
         end
         if zone then
             if not name then tip:AddBlank() end
-            tip:AddLine("Found in: |cff999999" .. zone .. "|r", 1, 1, 1)
+            tip:AddLine(L.QUEST_FOUND_IN:format("|cff999999" .. zone .. "|r"), 1, 1, 1)
         end
     end;
 

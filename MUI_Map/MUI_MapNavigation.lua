@@ -286,7 +286,7 @@ class "MapNavBar" : extends "Frame" {
         -- Home button: fixed at the bar's left edge, navigates to the
         -- topmost map in the current chain (set per Refresh).
         self.homeBtn = MapNavHomeButton(self, name and (name .. "Home") or nil)
-        self.homeBtn:SetText(WORLD or "World")
+        self.homeBtn:SetText(WORLD)
         self.homeBtn:ClearAllPoints()
         self.homeBtn:SetPoint("LEFT", self, "LEFT", 0, 0)
         self.homeBtn:Show()

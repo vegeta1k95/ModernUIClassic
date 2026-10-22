@@ -1,5 +1,7 @@
 -- Modern minimap reskin
 
+local L = MUI.L
+
 local TEX = MUI.TEX_SKIN .. "minimap\\"
 
 -- Addon "minimap button" bin. Collects the addon settings buttons scattered
@@ -295,13 +297,13 @@ object "ModuleMinimap" : extends "Module" {
 
         self.timeFrame:SetTooltip("ANCHOR_BOTTOMLEFT", function(tooltip)
             local hour, minute = GetGameTime()
-            tooltip:AddLine("Time information", 1,1,1, false, 13)
-            tooltip:AddDoubleLine("Local time:", date("%H:%M"),
+            tooltip:AddLine(TIMEMANAGER_TOOLTIP_TITLE, 1,1,1, false, 13)
+            tooltip:AddDoubleLine(TIMEMANAGER_TOOLTIP_LOCALTIME, date("%H:%M"),
                 1, 0.82, 0,
                 1, 1, 1,
                 10.5
             )
-            tooltip:AddDoubleLine("Server time:", string.format("%02d:%02d", hour, minute),
+            tooltip:AddDoubleLine(TIMEMANAGER_TOOLTIP_REALMTIME, string.format("%02d:%02d", hour, minute),
                 1, 0.82, 0,
                 1, 1, 1,
                 10.5
@@ -340,16 +342,16 @@ object "ModuleMinimap" : extends "Module" {
             local territory
             
             if pvpType == "contested" then
-                territory = "Contested"
+                territory = CONTESTED_TERRITORY
             elseif (pvpType == "friendly" or pvpType == "hostile") and factionName and factionName ~= "" then
-                territory = factionName
+                territory = FACTION_CONTROLLED_TERRITORY:format(factionName)
             end
 
             if territory then
-                tooltip:AddLine("(" .. territory .. " Territory)", r, g, b, true, 10.5)
+                tooltip:AddLine("(" .. territory .. ")", r, g, b, true, 10.5)
             end
 
-            tooltip:AddLine("World map (M)", 1, 0.82, 0, true, 10.5)
+            tooltip:AddLine(MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP"), 1, 0.82, 0, true, 10.5)
         end)
 
     end;
@@ -397,7 +399,7 @@ object "ModuleMinimap" : extends "Module" {
 
     SkinDurability = function(self)
         if not DurabilityFrame then return end
-        self.durability = DurabilityEditable(DurabilityFrame, "Durability")
+        self.durability = DurabilityEditable(DurabilityFrame, HUD_EDIT_MODE_DURABILITY_FRAME_LABEL)
         self.durability:EditModeSetOption("durability")
         self.durability:ClearAllPoints()
         self.durability:Below(MUI_Minimap, 4)
@@ -441,8 +443,8 @@ object "ModuleMinimap" : extends "Module" {
         self.binToggle:Hide()
         self.binToggle.OnClick = function() self:ToggleBin() end
         self.binToggle:SetTooltip("ANCHOR_LEFT", function(tooltip)
-            tooltip:AddLine("Addon Buttons", 1, 1, 1, false, 13)
-            tooltip:AddLine("Collected minimap buttons.", 1, 0.82, 0, true, 10.5)
+            tooltip:AddLine(L.MINIMAP_ADDON_BUTTONS, 1, 1, 1, false, 13)
+            tooltip:AddLine(L.MINIMAP_ADDON_BUTTONS_TOOLTIP, 1, 0.82, 0, true, 10.5)
         end)
 
         -- Bin grows to the LEFT of the toggle, into the empty space beside the

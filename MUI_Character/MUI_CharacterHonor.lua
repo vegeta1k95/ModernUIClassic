@@ -9,11 +9,11 @@ local ROW_H    = 15
 
 -- title, column (-1 left, 1 right, 0 centre), top, rows
 local BLOCKS = {
-    { key = "today",     title = "Today",     column = -1, top = 96,  rows = { "Honorable Kills", "Dishonorable Kills" } },
-    { key = "yesterday", title = "Yesterday", column = 1,  top = 96,  rows = { "Honorable Kills", "Honor" } },
-    { key = "thisWeek",  title = "This Week", column = -1, top = 172, rows = { "Honorable Kills", "Honor" } },
-    { key = "lastWeek",  title = "Last Week", column = 1,  top = 172, rows = { "Honorable Kills", "Honor", "Standing" } },
-    { key = "lifetime",  title = "Lifetime",  column = 0,  top = 262, rows = { "Honorable Kills", "Dishonorable Kills", "Highest Rank" } },
+    { key = "today",     title = HONOR_THIS_SESSION, column = -1, top = 96,  rows = { HONORABLE_KILLS, DISHONORABLE_KILLS } },
+    { key = "yesterday", title = HONOR_YESTERDAY,    column = 1,  top = 96,  rows = { HONORABLE_KILLS, HONOR } },
+    { key = "thisWeek",  title = HONOR_THISWEEK,     column = -1, top = 172, rows = { HONORABLE_KILLS, HONOR } },
+    { key = "lastWeek",  title = HONOR_LASTWEEK,     column = 1,  top = 172, rows = { HONORABLE_KILLS, HONOR, HONOR_STANDING } },
+    { key = "lifetime",  title = HONOR_LIFETIME,     column = 0,  top = 262, rows = { HONORABLE_KILLS, DISHONORABLE_KILLS, HONOR_HIGHEST_RANK } },
 }
 
 class "CharacterHonor" : extends "CharacterPane" {

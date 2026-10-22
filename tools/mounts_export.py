@@ -2,13 +2,17 @@
 Build MUI_DB/MUI_MountDB.lua, the mounts the Collections window lists, from
 the Era client's own tables.
 
-    python tools/mounts_export.py <db2 dir>
+    python tools/mounts_export.py <db2 dir> [--retail <dir> --era <dir>]
 
 <db2 dir> holds CSV exports of the client build's tables (wago.tools/db2, the
 build in .build.info): ItemEffect, SpellEffect, SpellName, ItemSparse,
 CreatureDisplayInfo, CreatureModelData, AreaTable; and, in <db2 dir>/retail,
 retail's Mount and MountXDisplay (the same site, no build given). Needs lupa
 (MUI_ItemDB and MUI_NpcDB are read for where a mount comes from).
+
+With --retail and --era (folders of <lang>/<Table>.csv: retail's Mount, the
+Era build's SpellName) it also writes the mounts' names, lore and vendors
+in every client language into MUI_DB/Locale (the end of this file).
 
 Era has no mount journal: a mount is an item in the bags (two classes cast
 theirs). What goes in, and how:
@@ -36,9 +40,16 @@ import sys
 from lupa import LuaRuntime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if len(sys.argv) < 2:
+ARGS = sys.argv[1:]
+LOCALIZE = {}
+for flag in ("--retail", "--era"):
+    if flag in ARGS:
+        at = ARGS.index(flag)
+        LOCALIZE[flag[2:]] = ARGS[at + 1]
+        del ARGS[at:at + 2]
+if not ARGS:
     sys.exit(__doc__)
-DB2 = sys.argv[1]
+DB2 = ARGS[0]
 OUT = os.path.join(ROOT, "MUI_DB", "MUI_MountDB.lua")
 
 csv.field_size_limit(10 ** 9)
@@ -145,12 +156,13 @@ def source_of(item):
     vendors, drops, quests = seq(entry.vendors), seq(entry.npcDrops), seq(entry.questRewards)
     if vendors:
         npc = vendors[0]
-        return {"vendor": NPCS[npc].name, "area": npc_area(npc), "cost": int(SPARSE[item]["BuyPrice"])}
+        return {"vendor": NPCS[npc].name, "vendorNpc": npc, "area": npc_area(npc), "cost": int(SPARSE[item]["BuyPrice"])}
     if drops:
         # one keeper is named; a mount that anything in a place may drop is the place's
         source = {"area": npc_area(drops[0])}
         if len(drops) <= 2:
             source["drop"] = NPCS[drops[0]].name
+            source["dropNpc"] = drops[0]
         else:
             source["zoneDrop"] = True
         return source
@@ -242,6 +254,19 @@ object "MountDB" {
         return C_Spell.GetSpellTexture(mount.spell)
     end;
 
+    -- The text in the client's language, from MUI_DB/Locale: [spell] =
+    -- { name, lore, vendor, drop }; the list is sorted by the names again.
+    Localize = function(self, text)
+        for _, mount in ipairs(self._mounts) do
+            local t = text[mount.spell]
+            if t then
+                mount.name, mount.lore = t.name or mount.name, t.lore or mount.lore
+                mount.vendor, mount.drop = t.vendor or mount.vendor, t.drop or mount.drop
+            end
+        end
+        table.sort(self._mounts, function(a, b) return strcmputf8i(a.name, b.name) < 0 end)
+    end;
+
     __init = function(self)
         self._mounts = {
 '''
@@ -283,3 +308,44 @@ print(f"  {sides['Alliance']} Alliance, {sides['Horde']} Horde, {sides[None]} ei
 print("  no lore:", [m["name"] for m in mounts if not m["lore"]])
 print("  cameras:", ", ".join(f"{m['name']} {m['dist']}/{m['eye']}" for m in mounts if m["display"] in
                               (2404, 14584, 10718, 15678, 12246, 14339, 14372, 6080, 2327)))
+
+
+# ---- the text in other languages (--retail, --era): MUI_DB/Locale/<lang>.lua
+# A mount's name and lore are its retail journal row's in that language (by
+# spell; Era's spell name where the English is Era's), its vendor's or
+# keeper's name retail's journal's for a boss, else Questie's (by creature id).
+if LOCALIZE.get("retail") and LOCALIZE.get("era"):
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    sys.path.insert(0, os.path.join(ROOT, "tools", "questdb_export"))
+    import locale_data
+    import locale_export
+
+    def rows(folder, lang, name):
+        with open(os.path.join(folder, lang, name + ".csv"), encoding="utf-8", newline="") as f:
+            return list(csv.DictReader(f))
+
+    QUESTIE = os.path.join(ROOT, "tools", "vendor", "Questie")
+    npc_english = {i: r.get("name") for i, r in locale_export.english("MUI_NpcDB.lua").items()}
+    for lang in locale_data.LANGUAGES:
+        journal = {int(r["SourceSpellID"]): r for r in rows(LOCALIZE["retail"], lang, "Mount")}
+        spells = {int(r["ID"]): r["Name_lang"] for r in rows(LOCALIZE["era"], lang, "SpellName")}
+        npcs = locale_export.npc_names(QUESTIE, LOCALIZE["retail"], lang, npc_english)
+        out = {}
+        for m in mounts:
+            t = {}
+            row = journal.get(m["spell"]) if m["spell"] in RETAIL else None
+            name = row["Name_lang"] if row else (spells.get(m["spell"]) if m["name"] == SPELL_NAMES.get(m["spell"]) else None)
+            if name and name != m["name"]:
+                t["name"] = name
+            lore = row["Description_lang"].replace("\r", "").strip() if row else ""
+            if lore and lore != m["lore"]:
+                t["lore"] = lore
+            for key in ("vendor", "drop"):
+                npc = m.get(key + "Npc")
+                if npc and npcs.get(npc) and npcs[npc] != m.get(key):
+                    t[key] = npcs[npc]
+            if t:
+                out[m["spell"]] = t
+        lines = [f"MUI_MountDB:Localize({locale_data.loadstring(out)})"]
+        locale_data.write_block(lang, "mounts", "tools/mounts_export.py", lines)
+        print(f"{lang}: {len(out)} of {len(mounts)} mounts in the language")

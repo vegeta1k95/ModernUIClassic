@@ -1,3 +1,4 @@
+local L = MUI.L
 
 local ACTIVE_SETTING_PANEL = nil
 
@@ -540,7 +541,7 @@ class "EditModePanelSettings" : extends "DiamondBorder" {
         self._label = FontString(self)
         self._label:SetFont(MUI.FONT, 14, "")
         self._label:AlignParentTop(12)
-        self._label:SetText(editable:EditModeGetLabelText() .. " Settings")
+        self._label:SetText(L.EDITMODE_SETTINGS_TITLE:format(editable:EditModeGetLabelText()))
 
         local labelScale = FontString(self)
         labelScale:Below(self._label, 20)
@@ -583,7 +584,7 @@ class "EditModePanelSettings" : extends "DiamondBorder" {
         self._content:Below(self._sliderScale, 10)
         content(self._content, editable)
 
-        self._btnResetChanges = ButtonGold(self, nil, "Reset changes")
+        self._btnResetChanges = ButtonGold(self, nil, HUD_EDIT_MODE_REVERT_CHANGES)
         self._btnResetChanges:SetSize(140, 24)
         self._btnResetChanges.label:SetFontSize(10.5)
         self._btnResetChanges:Below(self._content, 10)
@@ -591,7 +592,7 @@ class "EditModePanelSettings" : extends "DiamondBorder" {
         self._btnResetChanges.OnClick = function() editable:EditModeResetChanges() end
         self._btnResetChanges:SetEnabled(false)
 
-        self._btnResetPosition = ButtonGold(self, nil, "Restore default position")
+        self._btnResetPosition = ButtonGold(self, nil, HUD_EDIT_MODE_RESET_POSITION)
         self._btnResetPosition:FillWidth(20)
         self._btnResetPosition:SetHeight(24)
         self._btnResetPosition.label:SetFontSize(10.5)
@@ -762,7 +763,7 @@ class "EditModeDropdownRow" : extends "Frame" {
 -- is not written to, and saving it makes a new layout instead.
 local PRESET_NAME = HUD_EDIT_MODE_PRESET_LAYOUT:format(LAYOUT_STYLE_MODERN)
 local MAX_LAYOUTS = Constants.EditModeConsts.EditModeMaxLayoutsPerType
-local MAX_LAYOUTS_TEXT = "Only " .. MAX_LAYOUTS .. " layouts are allowed."
+local MAX_LAYOUTS_TEXT = L.EDITMODE_MAX_LAYOUTS:format(MAX_LAYOUTS)
 -- What the text of a shared layout starts with: ours, and how it is packed.
 local SHARE_PREFIX = "MUI1:"
 local NEW_LAYOUT          = HUD_EDIT_MODE_NEW_LAYOUT:format(CreateAtlasMarkup("editmode-new-layout-plus"))
@@ -785,7 +786,7 @@ local OPTIONS = {
     { key = "castBar",    category = 2, basic = true, text = HUD_EDIT_MODE_CAST_BAR_LABEL },
     { key = "stanceBar",  category = 2,               text = HUD_EDIT_MODE_STANCE_BAR_LABEL },
     { key = "petBar",     category = 2,               text = HUD_EDIT_MODE_PET_ACTION_BAR_LABEL },
-    { key = "repBar",     category = 3,               text = "Reputation Bar" },
+    { key = "repBar",     category = 3,               text = L.EDITMODE_REPUTATION_BAR },
     { key = "durability", category = 3,               text = HUD_EDIT_MODE_DURABILITY_FRAME_LABEL },
     { key = "loot",       category = 3,               text = HUD_EDIT_MODE_LOOT_FRAME_LABEL },
 }
@@ -819,7 +820,7 @@ class "EditModeSettings" : extends "DiamondBorder" {
         -- persists immediately (separate from the layout Save/Reset flow). The
         -- checkbox and value readout share the slider's height and top so the
         -- slider stays level between them.
-        self._chkGrid = CheckBox(self, nil, "Grid")
+        self._chkGrid = CheckBox(self, nil, L.EDITMODE_GRID)
         self._chkGrid.label:SetFontSize(12)
         self._chkGrid:SetSize(64, 29)
         self._chkGrid:SetBoxSize(24, 24)
@@ -878,7 +879,7 @@ class "EditModeSettings" : extends "DiamondBorder" {
         self:_BuildOptions()
 
         -- This button persistently saves all changes made during this session
-        self._btnSave = ButtonGold(self, nil, "Save")
+        self._btnSave = ButtonGold(self, nil, HUD_EDIT_MODE_SAVE_LAYOUT)
         self._btnSave:SetSize(200, 24)
         self._btnSave.label:SetFontSize(10.5)
         self._btnSave:AlignParentBottomRight(14, 20)
@@ -886,7 +887,7 @@ class "EditModeSettings" : extends "DiamondBorder" {
         self._btnSave:SetEnabled(false)
 
         -- This button resets all changes made during this session
-        self._btnReset = ButtonGold(self, nil, "Reset all changes")
+        self._btnReset = ButtonGold(self, nil, HUD_EDIT_MODE_REVERT_ALL_CHANGES)
         self._btnReset:SetSize(200, 24)
         self._btnReset.label:SetFontSize(10.5)
         self._btnReset:AlignParentBottomLeft(14, 20)
@@ -1928,7 +1929,7 @@ object "EditMode" {
         self._prompt:Open({
             title     = HUD_EDIT_MODE_COPY_TO_CLIPBOARD,
             code      = self:_Encode(self:_Capture()),
-            codeLabel = "Press Ctrl+C to copy:",
+            codeLabel = L.EDITMODE_PRESS_TO_COPY,
             readOnly  = true,
             cancel    = CLOSE,
         })

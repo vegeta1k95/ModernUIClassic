@@ -118,7 +118,7 @@ class "ButtonSilver" : extends "Button" {
             self.label:SetText(key)
             self.label:SetTextColor(1, 1, 1, 1)
         else
-            self.label:SetText("Not Bound")
+            self.label:SetText(NOT_BOUND)
             self.label:SetTextColor(0.6, 0.6, 0.6, 0.5)
         end
     end;

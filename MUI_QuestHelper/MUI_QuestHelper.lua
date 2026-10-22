@@ -7,9 +7,11 @@
 -- HasVisibleMinimapTurnInPinInRange, SetMinimapObjectivePinsVisible) so
 -- future world-map equivalents can coexist without ambiguity.
 
--- Resolver targetKind → quest-log leaderboard type. Used by IsSpecFinished
--- to restrict name matches to the correct leaderboard category (prevents an
--- NPC spec from matching an item leaderboard that happens to share its name).
+local L = MUI.L
+
+-- Resolver targetKind → quest-log leaderboard type, the `type` of a
+-- GetQuestLogLeaderBoard line (the same on every client). IsSpecFinished
+-- finds a spec's line by it.
 
 -- Inline texture escapes for tooltip objective bullets.
 --   _CHECK_ICON  — green TrackerCheck atlas (questtracker.tga, 1024×512),
@@ -167,15 +169,10 @@ object "QuestHelper" : extends "Module" {
     end;
 
     -- Returns true when the given objective spec corresponds to a quest-log
-    -- leaderboard whose `finished` flag is set. Matching is by leaderboard
-    -- TYPE + TARGET NAME rather than by index, because the resolver tags
-    -- specs with their DB category (1=creature, 2=object, 3=item, 5=killCredit)
-    -- while the quest log numbers leaderboards 1..N sequentially — the two
-    -- numberings diverge for any multi-objective quest (e.g. "slay 15 X and
-    -- 15 Y" stores both as category 1 but surfaces them as leaderboards 1 & 2).
-    -- Name-based matching also sidesteps reputation / spell objectives (which
-    -- have no geographic spec but still occupy a leaderboard slot and would
-    -- shift the index mapping).
+    -- leaderboard whose `finished` flag is set: the spec's `slot`-th line of
+    -- its leaderboard type. Counting within the type keeps reputation and
+    -- spell lines, which have no spec, from shifting it; the lines' text is
+    -- in the client's language and can't be matched with MUI_QuestDB's names.
     IsSpecFinished = function(self, spec, entry)
         if not entry then return false end
         -- isComplete short-circuit: when the quest itself is flagged complete
@@ -189,23 +186,53 @@ object "QuestHelper" : extends "Module" {
         if spec.sourceItemId then
             return C_Item.GetItemCount(spec.sourceItemId) > 0
         end
-        if not entry.objectives then return false end
-        local name = spec.targetName or ""
-        -- Item specs carry "ItemName <SourceName>"; the quest log shows only
-        -- "ItemName: X/Y", so strip the source suffix before prefix-matching.
-        local anglePos = name:find(" <", 1, true)
-        if anglePos then name = name:sub(1, anglePos - 1) end
-        if name == "" then return false end
-        local wantType = _LEADER_TYPE[spec.targetKind]
-        local nameLen  = #name
-        for _, o in ipairs(entry.objectives) do
-            if o and o.finished
-               and (not wantType or o.type == wantType)
-               and o.text and o.text:sub(1, nameLen) == name then
-                return true
+        local line = self:GetObjectiveLine(entry, _LEADER_TYPE[spec.targetKind], spec.slot)
+        return line ~= nil and line.finished
+    end;
+
+    -- The `slot`-th line of a leaderboard type ("monster", "item" …) in a
+    -- quest-log entry, or nil.
+    GetObjectiveLine = function(self, entry, kind, slot)
+        local seen = 0
+        for _, o in ipairs(entry.objectives or {}) do
+            if o.type == kind then
+                seen = seen + 1
+                if seen == slot then return o end
             end
         end
-        return false
+    end;
+
+    -- What each line of a quest-log entry is about, in MUI_QuestDB ids: the
+    -- k-th line of a type is the quest's k-th objective of that type,
+    -- creatures [1] then kill credits [5] for "monster", objects [2] for
+    -- "object", items [3] for "item" (Questie's order, as the clusters and
+    -- IsSpecFinished count). Line index -> { npcs = { [id] = true } },
+    -- { object = id } or { item = id }.
+    GetObjectiveTargets = function(self, questId, entry)
+        local q = MUI_QuestDB:Get(questId)
+        local objs = q and q.objectives
+        local out = {}
+        if not objs or not entry.objectives then return out end
+        local slots = { monster = {}, object = {}, item = {} }
+        for _, e in ipairs(objs[1] or {}) do
+            slots.monster[#slots.monster + 1] = { npcs = e[1] and { [e[1]] = true } or {} }
+        end
+        for _, e in ipairs(objs[5] or {}) do
+            local npcs = {}
+            for _, id in ipairs(e[1]) do npcs[id] = true end
+            slots.monster[#slots.monster + 1] = { npcs = npcs }
+        end
+        for _, e in ipairs(objs[2] or {}) do slots.object[#slots.object + 1] = { object = e[1] } end
+        for _, e in ipairs(objs[3] or {}) do slots.item[#slots.item + 1] = { item = e[1] } end
+        local seen = {}
+        for i, o in ipairs(entry.objectives) do
+            local list = slots[o.type]
+            if list then
+                seen[o.type] = (seen[o.type] or 0) + 1
+                out[i] = list[seen[o.type]]
+            end
+        end
+        return out
     end;
 
     -- ---- auto-focus --------------------------------------------------
@@ -448,7 +475,7 @@ object "QuestHelper" : extends "Module" {
     AddAvailableQuestLine = function(self, questId)
         local q = MUI_QuestDB:Get(questId)
         if not q then return end
-        local title, r, g, b = self:FormatQuestTitle({ title = q.name, level = q.questLevel }, questId)
+        local title, r, g, b = self:FormatQuestTitle({ title = MUI_QuestDB:LocalizeQuestName(questId), level = q.questLevel }, questId)
         local line = self:GetQuestIconEscape("available", questId) .. " " .. title
         if not MUI_Tooltip:HasLine(line) then
             MUI_Tooltip:AddLine(line, r, g, b, nil, 13)
@@ -517,7 +544,7 @@ object "QuestHelper" : extends "Module" {
             local item = MUI_ItemDB:Get(itemId)
             out[#out + 1] = {
                 itemId   = itemId,
-                name     = item and item.name or ("item " .. itemId),
+                name     = item and item.name or RETRIEVING_ITEM_INFO,
                 finished = C_Item.GetItemCount(itemId) > 0,
             }
         end
@@ -635,13 +662,31 @@ object "QuestHelper" : extends "Module" {
         return self:GetQuestTag(questId) == Enum.QuestTag.PvP
     end;
 
+    -- A quest's objectives text, its lines: the quest log's for a quest in
+    -- it (GetQuestLogQuestText, Blizzard's text in the client's language;
+    -- the log's selection is put back after), the table's (MUI_DB/Locale's)
+    -- for any other.
+    GetObjectivesText = function(self, questId)
+        local index = GetQuestLogIndexByID(questId)
+        if index and index > 0 then
+            local selected = GetQuestLogSelection() or 0
+            SelectQuestLogEntry(index)
+            local _, objectives = GetQuestLogQuestText()
+            SelectQuestLogEntry(selected)
+            objectives = objectives and objectives:gsub("^%s+", ""):gsub("%s+$", "")
+            if objectives and objectives ~= "" then return { objectives } end
+        end
+        local q = MUI_QuestDB:Get(questId)
+        return q and q.objectivesText
+    end;
+
     -- A quest name as every ModernUI surface shows it: "(Elite)",
     -- "(Dungeon)" or "(Raid)" appended, like Era's quest log tags them.
     GetQuestDisplayName = function(self, questId, name)
         local tag = self:GetQuestTag(questId)
-        if tag == Enum.QuestTag.Group then return name .. " (Elite)" end
-        if tag == Enum.QuestTag.Dungeon then return name .. " (Dungeon)" end
-        if tag == Enum.QuestTag.Raid then return name .. " (Raid)" end
+        if tag == Enum.QuestTag.Group then return name .. " (" .. ELITE .. ")" end
+        if tag == Enum.QuestTag.Dungeon then return name .. " (" .. CALENDAR_TYPE_DUNGEON .. ")" end
+        if tag == Enum.QuestTag.Raid then return name .. " (" .. CALENDAR_TYPE_RAID .. ")" end
         return name
     end;
 
@@ -650,7 +695,7 @@ object "QuestHelper" : extends "Module" {
     -- is on, difficulty colour when showQuestDifficultyColor is on, gold
     -- otherwise. Returns text, r, g, b.
     FormatQuestTitle = function(self, entry, questId)
-        local title = self:GetQuestDisplayName(questId, entry.title or ("quest " .. questId))
+        local title = self:GetQuestDisplayName(questId, entry.title or UNKNOWN)
         local level = entry.level
         local s = MUI_DB and MUI_DB.settings and MUI_DB.settings.questHelper
         if s and s.showQuestLevel and level and level > 0 then
@@ -707,8 +752,7 @@ object "QuestHelper" : extends "Module" {
                 end
             end
             if not emittedAny then
-                local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-                local lines = q and q.objectivesText
+                local lines = self:GetObjectivesText(questId)
                 if lines and #lines > 0 then
                     local text = type(lines) == "table"
                             and table.concat(lines, "\n")

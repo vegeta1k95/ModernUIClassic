@@ -28,6 +28,8 @@
 -- Query methods follow retail's GetAchievementInfo and friends, so the
 -- panel can be a transcription of Blizzard_AchievementUI.
 
+local L = MUI.L
+
 local SCHEMA = 2         -- the first store held a mock-up; this one NewEra's set
 local MAX_TRACKED = 10
 local DAY = 86400
@@ -70,7 +72,7 @@ local function itemSetRows(set)
     for _, id in ipairs(set.items) do
         local owned = (C_Item.GetItemCount(id, true) or 0) > 0
         if not owned then all = false end
-        rows[#rows + 1] = { label = C_Item.GetItemInfo(id) or ("item " .. id), done = owned }
+        rows[#rows + 1] = { label = C_Item.GetItemInfo(id) or RETRIEVING_ITEM_INFO, done = owned }
     end
     return all, rows
 end
@@ -91,26 +93,28 @@ local function exaltedCount()
     return n
 end
 
--- skill lines by name under their header ("Professions", "Secondary Skills",
--- "Weapon Skills"); modifier is the temporary bonus from gear and enchants
+-- skill line categories (MUI_SkillLineDB)
+local WEAPON_SKILLS, SECONDARY_SKILLS, PROFESSIONS = 6, 9, 11
+local MINING, SMELTING = 186, 2656
+
+-- skill lines by id, with their category: a row names its line in the
+-- client's language and MUI_SkillLineDB tells which it is; modifier is the
+-- temporary bonus from gear and enchants
 local function skillScan()
-    local out, header = {}, nil
+    local out = {}
     for i = 1, GetNumSkillLines() do
         local name, isHeader, _, rank, _, modifier = GetSkillLineInfo(i)
-        if isHeader then
-            header = name
-        elseif name then
-            out[name] = { rank = rank or 0, header = header, modifier = modifier or 0 }
+        local id, cat = MUI_SkillLineDB:GetByName(name)
+        if id and not isHeader then
+            out[id] = { rank = rank or 0, cat = cat, modifier = modifier or 0 }
         end
     end
     return out
 end
 
 local CLASSES = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" }
-local RACE_LABEL = {
-    Human = "Human", Dwarf = "Dwarf", NightElf = "Night Elf", Gnome = "Gnome",
-    Orc = "Orc", Scourge = "Undead", Tauren = "Tauren", Troll = "Troll",
-}
+-- UnitRace's race tokens by ChrRaces id, which the client names.
+local RACE_ID = { Human = 1, Orc = 2, Dwarf = 3, NightElf = 4, Scourge = 5, Tauren = 6, Gnome = 7, Troll = 8 }
 local EPIC_SLOTS = { 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 }
 -- the class mounts are spells, not bag items: Felsteed, Summon Warhorse,
 -- Dreadsteed, Summon Charger
@@ -157,20 +161,20 @@ local CRIT = {}
 
 CRIT.level = function(engine, c)
     local level = math.max(UnitLevel("player") or 1, engine.level or 1)
-    return level >= c.n, { barRow("Level", level, c.n) }
+    return level >= c.n, { barRow(GUILD_RECRUITMENT_LEVEL, level, c.n) }
 end
 
 CRIT.mount = function(engine, c)
     local epic = c.q >= 4
     local done = engine:SetCount(epic and "mountsEpic" or "mounts") > 0
         or anySpellKnown(epic and CLASS_MOUNTS_EPIC or CLASS_MOUNTS)
-    return done, { { label = epic and "Own an epic mount" or "Own a mount", done = done } }
+    return done, { { label = epic and L.ACH_OWN_EPIC_MOUNT or L.ACH_OWN_MOUNT, done = done } }
 end
 
 CRIT.skill = function(engine, c)
     local sk = skillScan()
     local rank = sk[c.line] and sk[c.line].rank or 0
-    return rank >= c.n, { barRow(c.line, rank, c.n) }
+    return rank >= c.n, { barRow(MUI_SkillLineDB:GetName(c.line), rank, c.n) }
 end
 
 CRIT.skillCount = function(engine, c)
@@ -178,16 +182,16 @@ CRIT.skillCount = function(engine, c)
     if c.weapon then
         local n = 0
         for _, info in pairs(sk) do
-            if info.header == "Weapon Skills" and info.rank >= c.at then n = n + 1 end
+            if info.cat == WEAPON_SKILLS and info.rank >= c.at then n = n + 1 end
         end
-        return n >= c.n, { barRow(string.format("Weapon skills at %d", c.at), n, c.n) }
+        return n >= c.n, { barRow(L.ACH_WEAPON_SKILLS_AT:format(c.at), n, c.n) }
     end
     local rows, all = {}, true
     for _, line in ipairs(c.lines) do
         local rank = sk[line] and sk[line].rank or 0
         local done = rank >= c.at
         if not done then all = false end
-        rows[#rows + 1] = { label = string.format("%s (%d)", line, c.at), done = done }
+        rows[#rows + 1] = { label = string.format("%s (%d)", MUI_SkillLineDB:GetName(line), c.at), done = done }
     end
     return all, rows
 end
@@ -195,42 +199,43 @@ end
 CRIT.profAny = function(engine, c)
     local sk, best = skillScan(), 0
     for _, info in pairs(sk) do
-        if info.header == "Professions" and info.rank > best then best = info.rank end
+        if info.cat == PROFESSIONS and info.rank > best then best = info.rank end
     end
-    return best >= c.n, { barRow("Primary profession skill", best, c.n) }
+    return best >= c.n, { barRow(L.ACH_PRIMARY_PROFESSION_SKILL, best, c.n) }
 end
 
 CRIT.profBoth = function(engine, c)
     local sk, n = skillScan(), 0
     for _, info in pairs(sk) do
-        if info.header == "Professions" and info.rank >= c.n then n = n + 1 end
+        if info.cat == PROFESSIONS and info.rank >= c.n then n = n + 1 end
     end
-    return n >= 2, { barRow(string.format("Professions at %d", c.n), n, 2) }
+    return n >= 2, { barRow(L.ACH_PROFESSIONS_AT:format(c.n), n, 2) }
 end
 
 CRIT.skillOver = function(engine, c)
     local sk, best = skillScan(), 0
     for _, info in pairs(sk) do
-        if info.header == "Professions" or info.header == "Secondary Skills" then
+        if info.cat == PROFESSIONS or info.cat == SECONDARY_SKILLS then
             best = math.max(best, info.rank + info.modifier)
         end
     end
-    return best > c.n, { barRow("Highest effective skill", best, c.n + 1) }
+    return best > c.n, { barRow(L.ACH_HIGHEST_SKILL, best, c.n + 1) }
 end
 
+-- recipes_<skill line id>: the most the trade skill window has listed
 CRIT.recipes = function(engine, c)
     local n = engine:Counter("recipes_" .. c.prof)
-    return n >= c.n, { barRow(string.format("%s recipes known", c.prof), n, c.n) }
+    return n >= c.n, { barRow(L.ACH_RECIPES_KNOWN:format(MUI_SkillLineDB:GetName(c.prof)), n, c.n) }
 end
 
 CRIT.banks = function(engine, c)
     local n = GetNumBankSlots() or 0
-    return n >= c.n, { barRow("Bank bag slots purchased", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_BANK_SLOTS, n, c.n) }
 end
 
 CRIT.companions = function(engine, c)
     local n = engine:SetCount("companions")
-    return n >= c.n, { barRow("Unique companions", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_COMPANIONS, n, c.n) }
 end
 
 CRIT.fall = function(engine)
@@ -240,39 +245,39 @@ end
 CRIT.use = function(engine, c)
     local food = c.kind == "food"
     local n = engine:TallyKinds(food and "foodKinds" or "drinkKinds")
-    return n >= c.n, { barRow(food and "Different foods" or "Different drinks", n, c.n) }
+    return n >= c.n, { barRow(food and L.ACH_FOODS or L.ACH_DRINKS, n, c.n) }
 end
 
 CRIT.book = function(engine, c)
     local n = engine:SetCount("books")
-    return n >= c.n, { barRow("Books read", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_BOOKS, n, c.n) }
 end
 
 CRIT.emoteLove = function(engine, c)
     local n = engine:SetCount("loved")
-    return n >= c.n, { barRow("Critter species loved", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_CRITTERS_LOVED, n, c.n) }
 end
 
 CRIT.emoteCount = function(engine, c)
     local n = engine:Counter(c.kind)
-    local label = c.kind == "dance" and "Dances" or c.kind == "silly" and "Jokes told" or c.kind
+    local label = c.kind == "dance" and L.ACH_DANCES or c.kind == "silly" and L.ACH_JOKES or c.kind
     return n >= c.n, { barRow(label, n, c.n) }
 end
 
 CRIT.hugSet = function(engine, c)
     local n = engine:SetCount("hugged")
-    return n >= c.n, { barRow("Players hugged", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_HUGS, n, c.n) }
 end
 
 -- base run speed is 7 yards a second
 CRIT.speed = function(engine, c)
     local done = engine:Counter("speedTop") >= 7 * c.mult
-    return done, { { label = "Ride faster than an epic mount", done = done } }
+    return done, { { label = L.ACH_FASTER_THAN_EPIC_MOUNT, done = done } }
 end
 
 CRIT.critterHit = function(engine, c)
     local done = engine:Counter("critterTop") >= c.n
-    return done, { { label = string.format("Hit a level 1 critter for %d damage", c.n), done = done } }
+    return done, { { label = L.ACH_CRITTER_HIT:format(c.n), done = done } }
 end
 
 CRIT.drunk = function(engine) return engine:Counter("drunk") > 0, nil end
@@ -284,17 +289,17 @@ CRIT.lowKill = function(engine) return engine:Counter("lowKill") > 0, nil end
 
 CRIT.interrupt = function(engine, c)
     local n = engine:Counter("interrupts")
-    return n >= c.n, { barRow("Spells interrupted", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_INTERRUPTS, n, c.n) }
 end
 
 CRIT.blocks = function(engine, c)
     local n = engine:Counter("blocks")
-    return n >= c.n, { barRow("Attacks blocked", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_BLOCKS, n, c.n) }
 end
 
 CRIT.clutchHeal = function(engine)
     local done = engine:Counter("clutchHeal") > 0
-    return done, { { label = "Save a player from 1% health", done = done } }
+    return done, { { label = L.ACH_CLUTCH_HEAL, done = done } }
 end
 
 CRIT.bandage = function(engine) return engine:Counter("triage") > 0, nil end
@@ -303,7 +308,7 @@ CRIT.bandage = function(engine) return engine:Counter("triage") > 0, nil end
 
 CRIT.deathCount = function(engine, c)
     local n = engine:Counter("deaths")
-    return n >= c.n, { barRow("Deaths", n, c.n) }
+    return n >= c.n, { barRow(DEATHS, n, c.n) }
 end
 
 CRIT.envDeath = function(engine, c)
@@ -322,7 +327,7 @@ end
 
 CRIT.selfKill = function(engine)
     local done = engine:Counter("selfKill") > 0
-    return done, { { label = "Engineer your own demise", done = done } }
+    return done, { { label = L.ACH_SELF_KILL, done = done } }
 end
 
 CRIT.slainBy = function(engine, c)
@@ -353,12 +358,12 @@ end
 
 CRIT.killCount = function(engine, c)
     local n = engine:Counter("creaturesKilled")
-    return n >= c.n, { barRow("Creatures killed", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_CREATURES_KILLED, n, c.n) }
 end
 
 CRIT.killTimed = function(engine, c)
     local done = engine:Counter("leeroy") > 0
-    return done, { { label = string.format("Kill %d within %d seconds", c.n, c.secs), done = done } }
+    return done, { { label = L.ACH_KILL_WITHIN:format(c.n, c.secs), done = done } }
 end
 
 -- Every boss killed inside one rolling window, which stands in for the
@@ -369,17 +374,18 @@ CRIT.killLockout = function(engine, c)
         local t = engine.store.lockout[npc]
         if t and now - t <= c.days * DAY then n = n + 1 end
     end
-    return n >= #c.npcs, { barRow("Bosses this lockout", n, #c.npcs) }
+    return n >= #c.npcs, { barRow(L.ACH_BOSSES_THIS_LOCKOUT, n, #c.npcs) }
 end
 
 CRIT.timedBoss = function(engine, c)
     local done = engine:Counter("deadmansprint") > 0
-    return done, { { label = string.format("Baron Rivendare within %d minutes", c.mins), done = done } }
+    local boss = MUI_NpcDB:Get(c.npc[1])
+    return done, { { label = L.ACH_BOSS_WITHIN:format(boss and boss.name or UNKNOWN, c.mins), done = done } }
 end
 
 CRIT.nodeaths = function(engine)
     local done = engine:Counter("untouchable") > 0
-    return done, { { label = "Flawless end-boss kill", done = done } }
+    return done, { { label = L.ACH_FLAWLESS_END_BOSS, done = done } }
 end
 
 CRIT.killingSpell = function(engine, c)
@@ -417,14 +423,14 @@ end
 
 CRIT.qcount = function(engine, c)
     local n = engine:Counter("qcount")
-    return n >= c.n, { barRow("Quests completed", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_QUESTS_COMPLETED, n, c.n) }
 end
 
 CRIT.qzone = function(engine, c)
     local need = engine:ForFaction(c.n)
     if not need or need == 0 then return false, nil end
     local n = engine:Counter("qz" .. c.zos)
-    return n >= need, { barRow("Quests completed", n, need) }
+    return n >= need, { barRow(L.ACH_QUESTS_COMPLETED, n, need) }
 end
 
 -- Every story chapter of the zone, as the map's zone story banner counts
@@ -443,17 +449,17 @@ end
 
 CRIT.questMoney = function(engine, c)
     local n = engine:Counter("goldQuest")
-    return n >= c.n, { barRow("Gold earned from quests", math.floor(n / 10000), math.floor(c.n / 10000)) }
+    return n >= c.n, { barRow(L.ACH_GOLD_FROM_QUESTS, math.floor(n / 10000), math.floor(c.n / 10000)) }
 end
 
 CRIT.questsDay = function(engine, c)
     local n = engine.store.day.best or 0
-    return n >= c.n, { barRow("Most quests in one day", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_QUESTS_IN_A_DAY, n, c.n) }
 end
 
 CRIT.questBurst = function(engine, c)
     local done = engine:Counter("questBurst") > 0
-    return done, { { label = string.format("Turn in %d quests within %d minutes", c.n, math.floor(c.secs / 60)), done = done } }
+    return done, { { label = L.ACH_QUESTS_WITHIN:format(c.n, math.floor(c.secs / 60)), done = done } }
 end
 
 -- ---- the world ------------------------------------------------------
@@ -462,27 +468,29 @@ CRIT.explore = function(engine, c)
     local base = MUI_AchievementDB:GetExploreBase(c.map)
     local textures = C_MapExplorationInfo.GetExploredMapTextures(c.map)
     local n = textures and #textures or 0
-    return base > 0 and n >= base, { barRow("Areas explored", n, math.max(base, 1)) }
+    return base > 0 and n >= base, { barRow(L.ACH_AREAS_EXPLORED, n, math.max(base, 1)) }
 end
 
+-- areas by id, named by the client
 CRIT.visit = function(engine, c)
     local set = engine:Set("visited")
     local rows, all = {}, true
     for _, area in ipairs(c.areas) do
         local done = set[area] == true
         if not done then all = false end
-        rows[#rows + 1] = { label = area, done = done }
+        rows[#rows + 1] = { label = C_Map.GetAreaInfo(area), done = done }
     end
     return all, rows
 end
 
+-- instances by id (GetInstanceInfo's), named by the client
 CRIT.visitInstance = function(engine, c)
     local set = engine:Set("visitedInstances")
     local rows, all = {}, true
-    for _, name in ipairs(c.names) do
-        local done = set[name:lower()] == true
+    for _, map in ipairs(c.maps) do
+        local done = set[map] == true
         if not done then all = false end
-        rows[#rows + 1] = { label = name, done = done }
+        rows[#rows + 1] = { label = GetRealZoneText(map), done = done }
     end
     return all, rows
 end
@@ -496,7 +504,7 @@ end
 
 CRIT.repCount = function(engine, c)
     local n = exaltedCount()
-    return n >= c.n, { barRow("Exalted reputations", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_EXALTED_REPUTATIONS, n, c.n) }
 end
 
 CRIT.repAll = function(engine, c)
@@ -516,7 +524,7 @@ CRIT.repAndItem = function(engine, c)
     local itemDone = anyItemOwned(c.item)
     return repDone and itemDone, {
         { label = c.label .. " — " .. _G["FACTION_STANDING_LABEL" .. c.standing], done = repDone },
-        { label = C_Item.GetItemInfo(c.item[1]) or ("item " .. c.item[1]), done = itemDone },
+        { label = C_Item.GetItemInfo(c.item[1]) or RETRIEVING_ITEM_INFO, done = itemDone },
     }
 end
 
@@ -558,12 +566,12 @@ end
 
 CRIT.bubbleHearth = function(engine)
     local done = engine:Counter("bubbleHearth") > 0
-    return done, { { label = "Hearth inside Divine Shield", done = done } }
+    return done, { { label = L.ACH_BUBBLE_HEARTH, done = done } }
 end
 
-CRIT.aura = function(engine)
+CRIT.aura = function(engine, c)
     local done = engine:Counter("gordok") > 0
-    return done, { { label = "King of the Gordok", done = done } }
+    return done, { { label = C_Spell.GetSpellName(c.spell[1]), done = done } }
 end
 
 CRIT.auraAll = function(engine, c)
@@ -582,14 +590,14 @@ end
 
 CRIT.createQuality = function(engine)
     local done = engine:Counter("createEpic") > 0
-    return done, { { label = "Craft an epic item", done = done } }
+    return done, { { label = L.ACH_CRAFT_EPIC, done = done } }
 end
 
 CRIT.fishSchool = function(engine) return engine:Counter("fishSchool") > 0, nil end
 
 CRIT.fish = function(engine, c)
     local n = engine:Counter("fishAll")
-    return n >= c.n, { barRow("Fish caught", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_FISH_CAUGHT, n, c.n) }
 end
 
 CRIT.loot = function(engine, c)
@@ -615,29 +623,29 @@ end
 
 CRIT.lootQuality = function(engine, c)
     local n = engine:Counter("epicsLooted")
-    if c.n <= 1 then return n >= 1, { { label = "Loot an epic item", done = n >= 1 } } end
-    return n >= c.n, { barRow("Epic items looted", n, c.n) }
+    if c.n <= 1 then return n >= 1, { { label = L.ACH_LOOT_EPIC, done = n >= 1 } } end
+    return n >= c.n, { barRow(L.ACH_EPICS_LOOTED, n, c.n) }
 end
 
 CRIT.lootCount = function(engine, c)
     local n = engine:Counter("itemsLooted")
-    return n >= c.n, { barRow("Items looted", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_ITEMS_LOOTED, n, c.n) }
 end
 
 CRIT.gather = function(engine, c)
     local n = engine:Counter("gather_" .. c.kind)
-    local label = c.kind == "mining" and "Ores mined" or c.kind == "herbs" and "Herbs gathered" or "Creatures skinned"
+    local label = c.kind == "mining" and L.ACH_ORES_MINED or c.kind == "herbs" and L.ACH_HERBS_GATHERED or L.ACH_CREATURES_SKINNED
     return n >= c.n, { barRow(label, n, c.n) }
 end
 
 CRIT.moneyLoot = function(engine, c)
     local n = engine:Counter("goldLoot")
-    return n >= c.n, { barRow("Gold looted", math.floor(n / 10000), math.floor(c.n / 10000)) }
+    return n >= c.n, { barRow(L.ACH_GOLD_LOOTED, math.floor(n / 10000), math.floor(c.n / 10000)) }
 end
 
 CRIT.moneyHeld = function(engine, c)
     local n = GetMoney() or 0
-    return n >= c.n, { barRow("Gold held", math.floor(n / 10000), math.floor(c.n / 10000)) }
+    return n >= c.n, { barRow(L.ACH_GOLD_HELD, math.floor(n / 10000), math.floor(c.n / 10000)) }
 end
 
 -- Every slot at `q` quality or better: 4 epic (the default), 3 superior.
@@ -649,7 +657,7 @@ CRIT.epicSlots = function(engine, c)
         local quality = link and select(3, C_Item.GetItemInfo(link))
         if quality and quality >= want then n = n + 1 end
     end
-    return n >= #EPIC_SLOTS, { barRow(want >= 4 and "Epic-quality slots" or "Superior-quality slots", n, #EPIC_SLOTS) }
+    return n >= #EPIC_SLOTS, { barRow(want >= 4 and L.ACH_EPIC_SLOTS or L.ACH_SUPERIOR_SLOTS, n, #EPIC_SLOTS) }
 end
 
 CRIT.inv = function(engine, c)
@@ -671,7 +679,7 @@ end
 
 CRIT.dmfTickets = function(engine, c)
     local n = engine:Counter("dmfTickets")
-    return n >= c.n, { barRow("Tickets spent", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_TICKETS_SPENT, n, c.n) }
 end
 
 CRIT.dmfDeck = function(engine, c)
@@ -683,20 +691,20 @@ end
 
 CRIT.hk = function(engine, c)
     local n = math.max(GetPVPLifetimeStats() or 0, engine:Counter("hk"))
-    return n >= c.n, { barRow("Honorable kills", n, c.n) }
+    return n >= c.n, { barRow(HONORABLE_KILLS, n, c.n) }
 end
 
 -- The lifetime stats' highest rank is offset by four (rank 1 reads 5).
 CRIT.rank = function(engine, c)
     local _, _, highest = GetPVPLifetimeStats()
     local done = (highest or 0) - 4 >= c.n
-    return done, { { label = string.format("Attain rank %d", c.n), done = done } }
+    return done, { { label = L.ACH_ATTAIN_RANK:format(c.n), done = done } }
 end
 
 CRIT.duel = function(engine, c)
     local n = engine:Counter("duelsWon")
-    if c.n <= 1 then return n >= 1, { { label = "Win a duel", done = n >= 1 } } end
-    return n >= c.n, { barRow("Duels won", n, c.n) }
+    if c.n <= 1 then return n >= 1, { { label = L.ACH_WIN_DUEL, done = n >= 1 } } end
+    return n >= c.n, { barRow(L.ACH_DUELS_WON, n, c.n) }
 end
 
 CRIT.kb = function(engine, c)
@@ -718,64 +726,65 @@ CRIT.kb = function(engine, c)
         for _, race in ipairs(races) do
             local done = set[race] == true
             if not done then all = false end
-            rows[#rows + 1] = { label = RACE_LABEL[race] or race, done = done }
+            rows[#rows + 1] = { label = C_CreatureInfo.GetRaceInfo(RACE_ID[race]).raceName, done = done }
         end
         return all, rows
     end
     local n = engine:Counter("kbCity")
-    return n >= c.n, { barRow("Killing blows in home cities", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_CITY_KILLING_BLOWS, n, c.n) }
 end
 
 CRIT.bgwin = function(engine, c)
     local n = engine:Counter("bgwin_" .. c.bg)
-    if c.n <= 1 then return n >= 1, { { label = "Win the battle", done = n >= 1 } } end
-    return n >= c.n, { barRow("Victories", n, c.n) }
+    if c.n <= 1 then return n >= 1, { { label = L.ACH_WIN_BATTLE, done = n >= 1 } } end
+    return n >= c.n, { barRow(L.ACH_VICTORIES, n, c.n) }
 end
 
 CRIT.bgcol = function(engine, c)
     local n = engine:BattlegroundColumn(c.bg, c.col)
-    return n >= c.n, { barRow(c.col, n, c.n) }
+    return n >= c.n, { barRow(c.label, n, c.n) }
 end
 
 CRIT.bgstat = function(engine, c)
     local n = engine:Counter(c.stat .. (c.bg or "") .. "Best")
-    local label = c.stat == "hk" and "Most kills in one battle"
-        or c.stat == "damage" and "Most damage in one battle" or "Best flawless killing blows"
+    local label = c.stat == "hk" and L.ACH_MOST_KILLS_BATTLE
+        or c.stat == "damage" and L.ACH_MOST_DAMAGE_BATTLE or L.ACH_FLAWLESS_KILLING_BLOWS
     return n >= c.n, { barRow(label, n, c.n) }
 end
 
 CRIT.wsgcap = function(engine, c)
     local n = engine:Counter("wsgCaps")
-    return n >= c.n, { { label = "Capture the flag", done = n >= c.n } }
+    return n >= c.n, { { label = L.ACH_CAPTURE_FLAG, done = n >= c.n } }
 end
 
 CRIT.quickcap = function(engine, c)
     local done = engine:Counter("quickcap") > 0
-    return done, { { label = string.format("Capture in under %d seconds", c.secs), done = done } }
+    return done, { { label = L.ACH_CAPTURE_UNDER:format(c.secs), done = done } }
 end
 
 CRIT.ironman = function(engine)
     local done = engine:Counter("ironman") > 0
-    return done, { { label = "3 captures, no deaths, one battle", done = done } }
+    return done, { { label = L.ACH_IRONMAN_CAPTURES, done = done } }
 end
 
 CRIT.perfection = function(engine, c)
     local done = engine:Counter("perfect_" .. c.bg) > 0
-    return done, { { label = "Win without conceding a point", done = done } }
+    return done, { { label = L.ACH_PERFECT_WIN, done = done } }
 end
 
 -- ---- hunter pets ----------------------------------------------------
 
 CRIT.petFamilies = function(engine, c)
     local n = engine:SetCount("petFams")
-    return n >= c.n, { barRow("Pet families tamed", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_PET_FAMILIES, n, c.n) }
 end
 
+-- the beasts by the creature a pet was tamed from (its GUID's)
 CRIT.petRare = function(engine, c)
-    local set = engine:Set("petNames")
+    local set = engine:Set("petNpcs")
     local done = false
-    for _, name in ipairs(c.names) do if set[name] then done = true break end end
-    return done, { { label = "Tame a famous rare beast", done = done } }
+    for _, npc in ipairs(c.npcs) do if set[npc] then done = true break end end
+    return done, { { label = L.ACH_TAME_RARE, done = done } }
 end
 
 -- ---- metas ----------------------------------------------------------
@@ -799,7 +808,7 @@ end
 
 CRIT.talentGroups = function(engine)
     local done = (GetNumSpecGroups() or 1) >= 2
-    return done, { { label = "Activate a second talent group", done = done } }
+    return done, { { label = L.ACH_SECOND_TALENT_GROUP, done = done } }
 end
 
 -- A deed done once: the trackers set its counter.
@@ -810,7 +819,7 @@ end
 
 CRIT.soloKill = function(engine)
     local done = engine:Counter("soloBoss") > 0
-    return done, { { label = "Defeat a dungeon end boss alone", done = done } }
+    return done, { { label = L.ACH_SOLO_END_BOSS, done = done } }
 end
 
 CRIT.count = function(engine, c)
@@ -842,14 +851,15 @@ CRIT.setCount = function(engine, c)
     return n >= c.n, { barRow(c.label, n, c.n) }
 end
 
--- A set holding every key (strings) or item id (`items`, with labels).
+-- A set holding every map (`maps`, named by the client) or item id
+-- (`items`, with labels).
 CRIT.setHas = function(engine, c)
     local set = engine:Set(c.set)
     local rows, all = {}, true
-    for _, key in ipairs(c.keys or {}) do
-        local done = set[key] == true
+    for _, map in ipairs(c.maps or {}) do
+        local done = set[map] == true
         if not done then all = false end
-        rows[#rows + 1] = { label = key, done = done }
+        rows[#rows + 1] = { label = C_Map.GetMapInfo(map).name, done = done }
     end
     for _, item in ipairs(c.items or {}) do
         local done = set[item.id] == true
@@ -871,7 +881,7 @@ end
 
 CRIT.qdungeon = function(engine, c)
     local n = engine:Counter("qdungeon")
-    return n >= c.n, { barRow("Dungeon quests completed", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_DUNGEON_QUESTS, n, c.n) }
 end
 
 -- Mounts in the bags, plus the class mounts known.
@@ -880,12 +890,12 @@ CRIT.mountCount = function(engine, c)
     for _, id in ipairs(CLASS_MOUNTS) do
         if C_SpellBook.IsSpellKnown(id) then n = n + 1 end
     end
-    return n >= c.n, { barRow("Mounts owned", n, c.n) }
+    return n >= c.n, { barRow(L.ACH_MOUNTS_OWNED, n, c.n) }
 end
 
 CRIT.playedDays = function(engine, c)
     local days = math.floor(engine:Counter("played") / DAY)
-    return days >= c.n, { barRow("Days played", days, c.n) }
+    return days >= c.n, { barRow(L.ACH_DAYS_PLAYED, days, c.n) }
 end
 
 -- Every flight path of a continent known; the flight master's map gave
@@ -906,7 +916,7 @@ CRIT.bags16 = function(engine)
     for bag = 1, 4 do
         if (C_Container.GetContainerNumSlots(bag) or 0) >= 16 then n = n + 1 end
     end
-    return n >= 4, { barRow("Bags of 16 slots or more", n, 4) }
+    return n >= 4, { barRow(L.ACH_BIG_BAGS, n, 4) }
 end
 
 CRIT.ds2 = function(engine)
@@ -931,6 +941,10 @@ class "AchievementEngine" {
             wipe(store.tracked)
             store.backfilled = false
             store.schema = SCHEMA
+        end
+        if not store.keysById then
+            self:_KeysToIds()
+            store.keysById = true
         end
 
         self.faction = UnitFactionGroup("player")
@@ -979,6 +993,51 @@ class "AchievementEngine" {
         self.categories = {}
         for _, cat in ipairs(MUI_AchievementDB:GetCategories()) do
             if self:GetCategoryNum(cat.id) > 0 then table.insert(self.categories, cat) end
+        end
+    end;
+
+    -- What the store kept by name until the criteria went by id, moved to
+    -- the ids once: places visited, instances entered, rare beasts tamed and
+    -- scoreboard columns by their English names (which only an English
+    -- client recorded), and the cities fished in and the skills' tallies by
+    -- the client's own names.
+    _KeysToIds = function(self)
+        local store, old = self.store, MUI_AchievementDB:GetKeysByName()
+        local function move(from, to, ids)
+            for name, id in pairs(ids) do
+                if from[name] ~= nil then
+                    to[id] = from[name]
+                    from[name] = nil
+                end
+            end
+        end
+        move(self:Set("visited"), self:Set("visited"), old.visited)
+        move(self:Set("visitedInstances"), self:Set("visitedInstances"), old.visitedInstances)
+        move(self:Set("petNames"), self:Set("petNpcs"), old.petNames)
+        for bg, columns in pairs(old.bg) do
+            if store.bg[bg] then move(store.bg[bg].cols, store.bg[bg].cols, columns) end
+        end
+
+        local cities = {}
+        for _, def in ipairs(MUI_AchievementDB:GetAll()) do
+            for _, map in ipairs(def.crit.t == "setHas" and def.crit.maps or {}) do
+                cities[C_Map.GetMapInfo(map).name] = map
+            end
+        end
+        move(self:Set("fishedZones"), self:Set("fishedZones"), cities)
+
+        -- skillmax_<line> and recipes_<line> (the Smelting window's under Mining)
+        local smelting, renamed = C_Spell.GetSpellName(SMELTING), {}
+        for key in pairs(store.counters) do
+            local kind, name = key:match("^(%a+)_(.+)$")
+            if (kind == "skillmax" or kind == "recipes") and not tonumber(name) then
+                local line = MUI_SkillLineDB:GetByName(name) or (name == smelting and MINING)
+                if line then renamed[key] = kind .. "_" .. line end
+            end
+        end
+        for from, to in pairs(renamed) do
+            store.counters[to] = math.max(store.counters[to] or 0, store.counters[from])
+            store.counters[from] = nil
         end
     end;
 
@@ -1131,13 +1190,13 @@ class "AchievementEngine" {
     Search = function(self, text)
         local out = {}
         if not text or #text < 2 then return out end
-        text = text:lower()
+        text = MUI.Fold(text)
         for _, def in ipairs(self.list) do
-            if def.name:lower():find(text, 1, true) or def.desc:lower():find(text, 1, true) then
+            if MUI.Fold(def.name):find(text, 1, true) or MUI.Fold(def.desc):find(text, 1, true) then
                 out[#out + 1] = def
             end
         end
-        table.sort(out, function(a, b) return a.name < b.name end)
+        table.sort(out, function(a, b) return strcmputf8i(a.name, b.name) < 0 end)
         return out
     end;
 
@@ -1206,6 +1265,8 @@ class "AchievementEngine" {
     end;
 
     -- A battleground's scoreboard column, summed over its matches.
+    -- A scoreboard column's total, by its place on the board (the names
+    -- are the client's language).
     BattlegroundColumn = function(self, bg, column)
         local t = self.store.bg[bg]
         return t and t.cols[column] or 0
@@ -1250,10 +1311,10 @@ class "AchievementEngine" {
         return tostring(v)
     end;
 
-    _SkillRank = function(self, name)
+    _SkillRank = function(self, line)
         for i = 1, GetNumSkillLines() do
             local skillName, isHeader, _, rank = GetSkillLineInfo(i)
-            if not isHeader and skillName == name then return rank end
+            if not isHeader and MUI_SkillLineDB:GetByName(skillName) == line then return rank end
         end
         return nil
     end;
@@ -1369,7 +1430,7 @@ class "AchievementEngine" {
         if not self._quiet then
             MUI_ModuleToasts:ShowAchievement({ id = def.id, name = def.name, pts = def.pts, icon = self:IconPath(def) })
             -- retail's own earn line in chat
-            DEFAULT_CHAT_FRAME:AddMessage(string.format("You have earned the achievement [%s]!", def.name), 1, 1, 0)
+            DEFAULT_CHAT_FRAME:AddMessage(ACHIEVEMENT_BROADCAST_SELF:format("[" .. def.name .. "]"), 1, 1, 0)
         end
         self:Untrack(def.id)
         self:_NotifyDirty(def.id)
@@ -1445,9 +1506,7 @@ class "AchievementEngine" {
                 store.backfilled = true
                 local n = self:GetNumEarned()
                 if n > 0 then
-                    DEFAULT_CHAT_FRAME:AddMessage(string.format(
-                        "ModernUI: %d achievement%s (%d points) granted for past deeds.",
-                        n, n == 1 and "" or "s", self:GetTotalPoints()), 1, 0.82, 0)
+                    DEFAULT_CHAT_FRAME:AddMessage(L.ACH_GRANTED:format(n, self:GetTotalPoints()), 1, 0.82, 0)
                 end
             end
             self._quiet = false

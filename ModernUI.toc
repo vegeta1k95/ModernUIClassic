@@ -1,6 +1,15 @@
 ## Interface: 11509
 ## Title: ModernUI
 ## Notes: Modern UI overhaul for Classic
+## Notes-deDE: Moderne Überarbeitung der Benutzeroberfläche für Classic
+## Notes-esES: Renovación moderna de la interfaz para Classic
+## Notes-esMX: Renovación moderna de la interfaz para Classic
+## Notes-frFR: Refonte moderne de l'interface pour Classic
+## Notes-ptBR: Reformulação moderna da interface para o Classic
+## Notes-ruRU: Современная переработка интерфейса для Classic
+## Notes-koKR: 클래식을 위한 현대적인 인터페이스 개편
+## Notes-zhCN: 经典旧世的现代界面改造
+## Notes-zhTW: 經典版的現代介面改造
 ## Author: ModernUI Team
 ## License: GPL-3.0-or-later
 ## SavedVariablesPerCharacter: MUI_SavedVars
@@ -8,6 +17,18 @@
 MUI_Core\MUI_Lua.lua
 MUI_Core\MUI_Constants.lua
 MUI_Core\MUI_ChatCommands.lua
+
+MUI_Locale\MUI_Locale.lua
+MUI_Locale\enUS.lua
+MUI_Locale\deDE.lua
+MUI_Locale\esES.lua
+MUI_Locale\esMX.lua
+MUI_Locale\frFR.lua
+MUI_Locale\ptBR.lua
+MUI_Locale\ruRU.lua
+MUI_Locale\koKR.lua
+MUI_Locale\zhCN.lua
+MUI_Locale\zhTW.lua
 
 MUI_Shared\MUI_ScriptObject.lua
 MUI_Shared\MUI_Widget.lua
@@ -45,6 +66,17 @@ MUI_DB\MUI_RecipeDB.lua
 MUI_DB\MUI_EncounterJournalDB.lua
 MUI_DB\MUI_ItemSetDB.lua
 MUI_DB\MUI_MountDB.lua
+MUI_DB\MUI_SkillLineDB.lua
+MUI_DB\MUI_ItemStatDB.lua
+MUI_DB\Locale\deDE.lua
+MUI_DB\Locale\esES.lua
+MUI_DB\Locale\esMX.lua
+MUI_DB\Locale\frFR.lua
+MUI_DB\Locale\ptBR.lua
+MUI_DB\Locale\ruRU.lua
+MUI_DB\Locale\koKR.lua
+MUI_DB\Locale\zhCN.lua
+MUI_DB\Locale\zhTW.lua
 
 MUI_Tooltip\MUI_Tooltip.lua
 MUI_Tooltip\MUI_TooltipHooks.lua

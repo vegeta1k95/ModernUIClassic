@@ -1,5 +1,7 @@
 -- Retail-style experience/reputation bar
 
+local L = MUI.L
+
 local ATLAS = MUI_AtlasRegistry.XPBar
 local BAR_WIDTH = 504
 local HALF_WIDTH = BAR_WIDTH / 2
@@ -65,7 +67,7 @@ object "ModuleXPBar" : extends "Module" {
     end;
 
     CreateBar = function(self)
-        self.bar = XPBarEditable("MUI_XPBar", "Experience Bar")
+        self.bar = XPBarEditable("MUI_XPBar", HUD_EDIT_MODE_EXPERIENCE_BAR_LABEL)
         self.bar:SetSize(BAR_WIDTH, FRAME_H)
         self.bar:AlignParentBottom(5)
         self.bar:SetFrameStrata("MEDIUM")
@@ -132,12 +134,12 @@ object "ModuleXPBar" : extends "Module" {
             local remaining = maxXP - currXP
             local exhaustion = GetXPExhaustion() or 0
 
-            tooltip:AddLine("Experience", 1, 1, 1, true, 13)
-            tooltip:AddDoubleLine("Current:", currXP .. " / " .. maxXP)
-            tooltip:AddDoubleLine("Remaining:", remaining)
+            tooltip:AddLine(POWER_TYPE_EXPERIENCE, 1, 1, 1, true, 13)
+            tooltip:AddDoubleLine(L.XPBAR_CURRENT, currXP .. " / " .. maxXP)
+            tooltip:AddDoubleLine(L.XPBAR_REMAINING, remaining)
 
             if exhaustion > 0 then
-                tooltip:AddDoubleLine("Rested:", exhaustion, 0.2, 0.6, 1, 0.2, 0.6, 1)
+                tooltip:AddDoubleLine(L.XPBAR_RESTED, exhaustion, 0.2, 0.6, 1, 0.2, 0.6, 1)
             end
         end)
 
@@ -229,7 +231,7 @@ object "ModuleXPBar" : extends "Module" {
     end;
 
     CreateRepBar = function(self)
-        self.repBar = XPBarEditable("MUI_RepBar", "Reputation Bar")
+        self.repBar = XPBarEditable("MUI_RepBar", L.EDITMODE_REPUTATION_BAR)
         self.repBar:EditModeSetOption("repBar")
         self.repBar:SetSize(BAR_WIDTH, FRAME_H)
         -- Default sits at the bottom at max level (no XP bar), else above the XP
@@ -292,8 +294,8 @@ object "ModuleXPBar" : extends "Module" {
             local range = data.nextReactionThreshold - data.currentReactionThreshold
             local current = data.currentStanding - data.currentReactionThreshold
             tooltip:AddLine(data.name, 1, 1, 1, false, 13)
-            tooltip:AddDoubleLine("Standing:", standingText)
-            tooltip:AddDoubleLine("Reputation:", current .. " / " .. range)
+            tooltip:AddDoubleLine(STANDING .. HEADER_COLON, standingText)
+            tooltip:AddDoubleLine(COMBAT_FACTION_CHANGE .. HEADER_COLON, current .. " / " .. range)
         end)
     end;
 

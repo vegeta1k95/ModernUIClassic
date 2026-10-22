@@ -2,6 +2,8 @@
 -- class's spells & talents, laid out per spec across COLS×ROWS slots.
 -- Used as the LEFT grid in TabTalents.
 
+local L = MUI.L
+
 local COLS = 9
 local ROWS = 10
 
@@ -130,7 +132,7 @@ class "ClassTree" : extends "SpellGrid" {
             if (a.source == "talent") ~= (b.source == "talent") then
                 return a.source == "talent"
             end
-            return a.name < b.name
+            return strcmputf8i(a.name, b.name) < 0
         end)
 
         local chunks = {}
@@ -522,14 +524,14 @@ class "ClassTree" : extends "SpellGrid" {
             if not displayRank.isKnown and not isReplaced then
                 tooltip:AddBlank()
                 if displayRank.source == "talent" then
-                    tooltip:AddLine("Talent at level |cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(L.SPELLBOOK_TALENT_AT_LEVEL:format("|cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00"), 0, 1, 0, false, 10.5)
                 elseif displayRank.source == "quest" then
-                    tooltip:AddLine("Quest at level |cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(L.SPELLBOOK_QUEST_AT_LEVEL:format("|cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00"), 0, 1, 0, false, 10.5)
                 elseif isLearnable then
-                    tooltip:AddLine("Available at trainer", 0, 1, 0, false, 10.5)
-                    tooltip:AddLine("Cost:   " .. C_CurrencyInfo.GetCoinTextureString(displayRank.cost), 1, 1, 1)
+                    tooltip:AddLine(SPELLBOOK_TRAINABLE, 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(COSTS_LABEL .. "   " .. C_CurrencyInfo.GetCoinTextureString(displayRank.cost), 1, 1, 1)
                 else
-                    tooltip:AddLine("Next rank at level |cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(L.SPELLBOOK_NEXT_RANK_AT_LEVEL:format("|cffFFFFFF" .. displayRank.levelReq .. "|cff00ff00"), 0, 1, 0, false, 10.5)
                 end
                 
             end
@@ -693,7 +695,7 @@ class "ClassTree" : extends "SpellGrid" {
         for _, band in ipairs(bands) do
             table.sort(band, function(a, b)
                 if a.specIdx ~= b.specIdx then return a.specIdx < b.specIdx end
-                return a.name < b.name
+                return strcmputf8i(a.name, b.name) < 0
             end)
         end
 

@@ -220,8 +220,7 @@ object "ModuleToasts" : extends "Module" {
         reached:SetShadowOffset(1, -1)
         reached:SetTextColor(1, 1, 1)
         reached:Above(level, TEXT_GAP)
-        -- Retail's LEVEL_UP_YOU_REACHED; Era's string table may not carry it.
-        reached:SetText("You've Reached")
+        reached:SetText(LEVEL_UP_YOU_REACHED)
 
         self.levelToast = { frame = content, level = level, anim = self:_ContentAnimation(content) }
     end;

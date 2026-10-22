@@ -145,7 +145,7 @@ class "AdventureGuideInstances" : extends "Frame" {
             end
             table.sort(ordered, function(a, b)
                 if level[a] ~= level[b] then return level[a] < level[b] end
-                return a.name < b.name
+                return strcmputf8i(a.name, b.name) < 0
             end)
         end
         return ordered

@@ -61,7 +61,7 @@ class "CharacterSkills" : extends "CharacterPane" {
         self._text:AlignParentTopLeft(24, 4)
         self._text:AlignParentBottomRight(2, 4)
 
-        self._unlearn = ButtonGold(detail, nil, "Unlearn")
+        self._unlearn = ButtonGold(detail, nil, UNLEARN)
         self._unlearn:SetSize(80, 20)
         self._unlearn:AlignParentTopRight(4, 4)
         self._unlearn.OnClick = function()

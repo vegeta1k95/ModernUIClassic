@@ -11,7 +11,7 @@
 --   "top"      the kind with the highest tally, as "Name (n)"
 --   "set"      how many entries sets[key] holds
 --   "perday"   counters[key] over the days the tallies have been running
---   "skill"    the current rank of skill line `skill`
+--   "skill"    the current rank of skill line `skill` (its id)
 --   "skillmax" the highest rank seen for skill line `skill`
 --   "hk"       lifetime honorable kills, from the client
 -- `fmt` is "money" (the value is copper) or "pct" (a speed, as % of run speed).
@@ -155,29 +155,30 @@ object "StatisticsDB" {
         add(4, "Quests completed", "qcount")
         add(4, "Average quests completed per day", "quests", "perday")
         add(4, "Quests abandoned", "questsAbandoned")
-        -- Skills
-        add(51, "Cooking skill", "skill_Cooking", "skill", nil, "Cooking")
-        add(51, "Cooking Recipes known", "recipes_Cooking")
-        add(51, "First Aid skill", "skill_First Aid", "skill", nil, "First Aid")
-        add(51, "First Aid Manuals learned", "recipes_First Aid")
-        add(51, "Fishing skill", "skill_Fishing", "skill", nil, "Fishing")
+        -- Skills, by skill line id (Cooking 185, First Aid 129, Fishing 356)
+        add(51, "Cooking skill", "skill_185", "skill", nil, 185)
+        add(51, "Cooking Recipes known", "recipes_185")
+        add(51, "First Aid skill", "skill_129", "skill", nil, 129)
+        add(51, "First Aid Manuals learned", "recipes_129")
+        add(51, "Fishing skill", "skill_356", "skill", nil, 356)
         add(51, "Fish caught", "fish")
         add(51, "Fish and other things caught", "fishAll")
+        -- { skill line, name, recipes line }; Mining's recipes are Smelting's
         local professions = {
-            { "Alchemy",        "Alchemy Recipes learned" },
-            { "Blacksmithing",  "Blacksmithing Plans learned" },
-            { "Enchanting",     "Enchanting formulae learned" },
-            { "Engineering",    "Engineering Schematics learned" },
-            { "Herbalism" },
-            { "Leatherworking", "Leatherworking Patterns learned" },
-            { "Mining",         "Smelting Recipes learned", "Smelting" },
-            { "Skinning" },
-            { "Tailoring",      "Tailoring Patterns learned" },
+            { 171, "Alchemy",        "Alchemy Recipes learned" },
+            { 164, "Blacksmithing",  "Blacksmithing Plans learned" },
+            { 333, "Enchanting",     "Enchanting formulae learned" },
+            { 202, "Engineering",    "Engineering Schematics learned" },
+            { 182, "Herbalism" },
+            { 165, "Leatherworking", "Leatherworking Patterns learned" },
+            { 186, "Mining",         "Smelting Recipes learned" },
+            { 393, "Skinning" },
+            { 197, "Tailoring",      "Tailoring Patterns learned" },
         }
         for _, p in ipairs(professions) do
-            add(52, "Highest " .. p[1] .. " skill", "skillmax_" .. p[1], "skillmax", nil, p[1])
-            if p[2] then add(52, p[2], "recipes_" .. (p[3] or p[1])) end
-            if p[1] == "Enchanting" then
+            add(52, "Highest " .. p[2] .. " skill", "skillmax_" .. p[1], "skillmax", nil, p[1])
+            if p[3] then add(52, p[3], "recipes_" .. p[1]) end
+            if p[2] == "Enchanting" then
                 add(52, "Materials produced from disenchanting", "disenchantMats")
                 add(52, "Items disenchanted", "disenchants")
             end
@@ -223,4 +224,13 @@ object "StatisticsDB" {
     GetCategories = function(self) return self._categories end;
     GetAll = function(self) return self._list end;
     GetFinalBosses = function(self) return self._bosses end;
+
+    -- The names in the client's language, from MUI_DB/Locale: cats[id],
+    -- stats[key] (key .. "/" .. kind for one read another way).
+    Localize = function(self, text)
+        for _, c in ipairs(self._categories) do c.name = text.cats[c.id] or c.name end
+        for _, s in ipairs(self._list) do
+            s.name = text.stats[s.kind and (s.key .. "/" .. s.kind) or s.key] or s.name
+        end
+    end;
 }

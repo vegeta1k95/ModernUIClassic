@@ -1,8 +1,10 @@
+local L = MUI.L
+
 -- Colored status suffixes for the talent-group dropdown button + menu rows.
-local STATUS_ACTIVE   = " |cff00ff00(Active)|r"
-local STATUS_INACTIVE = " |cff808080(Inactive)|r"
+local STATUS_ACTIVE   = " |cff00ff00(" .. L.TALENTS_ACTIVE .. ")|r"
+local STATUS_INACTIVE = " |cff808080(" .. L.TALENTS_INACTIVE .. ")|r"
 -- The secondary group while dual specialization is not bought yet.
-local STATUS_LOCKED   = " |cffff2020(Not purchased)|r"
+local STATUS_LOCKED   = " |cffff2020(" .. L.TALENTS_NOT_PURCHASED .. ")|r"
 
 local SPEC_BACKGROUNDS = {
     [1] = {                 -- WARRIOR
@@ -62,7 +64,7 @@ local SPEC_BACKGROUNDS = {
 -- which never loads since we rebuild the talent frame from scratch. Define
 -- our own so it always exists.
 StaticPopupDialogs["MUI_CONFIRM_LEARN_PREVIEW_TALENTS"] = {
-    text = CONFIRM_LEARN_PREVIEW_TALENTS or "Learn these preview talents?",
+    text = CONFIRM_LEARN_PREVIEW_TALENTS,
     button1 = YES,
     button2 = NO,
     OnAccept = function() LearnPreviewTalents(false) end,
@@ -113,7 +115,7 @@ class "SpecGridColumn" : extends "Frame" {
         self._name:Below(self._icon, 10)
         self._name:SetFont(MUI.FONT, 22, "")
         self._name:SetShadowOffset(2, -2)
-        self._name:SetText(string.upper(specName))
+        self._name:SetText(MUI.Upper(specName))
 
         self._points = FontString(self)
         self._points:SetFont(MUI.FONT, 28, "")
@@ -189,7 +191,7 @@ class "TabTalents" : extends "SecureFrame" {
             self:SetPreviewGroup(C_SpecializationInfo.GetActiveSpecGroup())
 
             local className, _, classID = UnitClass("player")
-            self._className:SetText(string.upper(className))
+            self._className:SetText(MUI.Upper(className))
             self:_UpdateLevel();
 
             self._specIcon1 = MUI_SPEC_ICONS[classID][1]
@@ -255,7 +257,7 @@ class "TabTalents" : extends "SecureFrame" {
     _UpdateTalents = function(self)
         if self._showSpec > 0 then
             local _, name = C_SpecializationInfo.GetSpecializationInfo(self._showSpec)
-            self._specName:SetText(string.upper(name))
+            self._specName:SetText(MUI.Upper(name))
             self._specHeader:SetWidth(self._specName:GetStringWidth() + self._specPoints:GetStringWidth() + 20)
             self._specGrid:UpdateFromSpec(self._showSpec)
         end
@@ -273,7 +275,7 @@ class "TabTalents" : extends "SecureFrame" {
         local color = (available > 0) and "|cff00ff00" or "|cff666666"
         self._btnApply:SetEnabled(stashed > 0)
         self._btnReset:SetEnabled(stashed > 0)
-        self._pointsAvailable:SetText("AVAILABLE TALENT POINTS: " .. color .. available)
+        self._pointsAvailable:SetText(L.TALENTS_POINTS_AVAILABLE:format(color .. available))
     end;
 
     _UpdateBackground = function(self)
@@ -298,7 +300,7 @@ class "TabTalents" : extends "SecureFrame" {
         self._bottomBar:SetHeight(74.5)
         self._bottomBar:SetFromTextureRegion("skin\\talents\\talents", 2048, 2048, 0, 0, 1614, 84, 1, 20, 1, 2, 0.37)
 
-        self._btnApply = ButtonGold(self._bottomBar, nil, "Apply changes")
+        self._btnApply = ButtonGold(self._bottomBar, nil, L.TALENT_FRAME_APPLY_BUTTON_TEXT)
         self._btnApply:CenterInParent(0, 3)
         self._btnApply:SetSize(146, 20)
         self._btnApply.label:SetFontSize(10.5)
@@ -322,19 +324,19 @@ class "TabTalents" : extends "SecureFrame" {
         self._pointsAvailable:Above(self._bottomBar, 30)
         self._pointsAvailable:SetSize(300, 20)
         self._pointsAvailable:SetJustifyH("LEFT")
-        self._pointsAvailable:SetText("AVAILABLE TALENT POINTS: 0")
+        self._pointsAvailable:SetText(L.TALENTS_POINTS_AVAILABLE:format(0))
 
-        self._btnMode = ButtonGold(self._bottomBar, nil, "Full view")
+        self._btnMode = ButtonGold(self._bottomBar, nil, L.TALENTS_FULL_VIEW)
         self._btnMode:AlignParentRight(30)
         self._btnMode:SetSize(120, 20)
         self._btnMode.label:SetFontSize(10.5)
         self._btnMode.OnClick = function()
             if self._showSpec == 0 then
                 self:SetSpec(1)
-                self._btnMode:SetText("Full view")
+                self._btnMode:SetText(L.TALENTS_FULL_VIEW)
             else
                 self:SetSpec(0)
-                self._btnMode:SetText("Detail view")
+                self._btnMode:SetText(L.TALENTS_DETAIL_VIEW)
             end
         end
 
@@ -351,8 +353,8 @@ class "TabTalents" : extends "SecureFrame" {
         end)
         -- Build the rows ONCE; _RefreshPresetMenu only re-texts them afterward.
         self._presetItems = {
-            { label = "Primary",   OnClick = function() self:SetPreviewGroup(1) end },
-            { label = "Secondary", OnClick = function() self:SetPreviewGroup(2) end },
+            { label = L.TALENTS_PRIMARY,   OnClick = function() self:SetPreviewGroup(1) end },
+            { label = L.TALENTS_SECONDARY, OnClick = function() self:SetPreviewGroup(2) end },
         }
         self._presetMenu:SetItems(self._presetItems)
         self._ddPreset.OnClick = function()
@@ -360,7 +362,7 @@ class "TabTalents" : extends "SecureFrame" {
             self._presetMenu:Toggle()
         end
 
-        self._btnPresetActivate = ButtonGold(self._bottomBar, nil, "Activate")
+        self._btnPresetActivate = ButtonGold(self._bottomBar, nil, TALENT_SPEC_ACTIVATE)
         self._btnPresetActivate:RightOf(self._ddPreset, 10)
         self._btnPresetActivate:SetSize(100, 20)
         self._btnPresetActivate.label:SetFontSize(10.5)
@@ -378,7 +380,7 @@ class "TabTalents" : extends "SecureFrame" {
     SetPreviewGroup = function(self, group)
         self._previewGroup = group
         local desat = group ~= C_SpecializationInfo.GetActiveSpecGroup()
-        self._ddPreset:SetText((group == 1 and "Primary" or "Secondary")
+        self._ddPreset:SetText((group == 1 and L.TALENTS_PRIMARY or L.TALENTS_SECONDARY)
                                .. (desat and STATUS_INACTIVE or STATUS_ACTIVE))
         self._btnPresetActivate:SetEnabled(desat)
         self._bg:SetDesaturated(desat)
@@ -398,8 +400,8 @@ class "TabTalents" : extends "SecureFrame" {
         if bought then
             secondary = active == 2 and STATUS_ACTIVE or STATUS_INACTIVE
         end
-        self._presetMenu:SetItemLabel(1, "Primary"   .. (active == 1 and STATUS_ACTIVE or STATUS_INACTIVE))
-        self._presetMenu:SetItemLabel(2, "Secondary" .. secondary)
+        self._presetMenu:SetItemLabel(1, L.TALENTS_PRIMARY   .. (active == 1 and STATUS_ACTIVE or STATUS_INACTIVE))
+        self._presetMenu:SetItemLabel(2, L.TALENTS_SECONDARY .. secondary)
         self._presetMenu:SetItemEnabled(2, bought)
     end;
 
@@ -554,7 +556,7 @@ class "TabTalents" : extends "SecureFrame" {
         self._classMessage = FontString(containerL)
         self._classMessage:SetFont(MUI.FONT, 20, "")
         self._classMessage:SetWidth(300)
-        self._classMessage:SetText("Visit one of the class trainers in a major city to unlock the full tree")
+        self._classMessage:SetText(L.TALENTS_VISIT_TRAINER)
         self._classMessage:SetTextColor(1, 0.82, 0, 1)
         self._classMessage:CenterAt(self._classTree)
 

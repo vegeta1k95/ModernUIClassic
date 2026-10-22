@@ -86,7 +86,7 @@ object "ModuleCastBar" : extends "Module" {
     OnEnable = function(self)
         Frame(PlayerCastingBarFrame):Kill()
 
-        self.playerBar = CastBarEditable(nil, "MUI_CastBar_Player", "player", 186, 9.5, "Cast Bar")
+        self.playerBar = CastBarEditable(nil, "MUI_CastBar_Player", "player", 186, 9.5, HUD_EDIT_MODE_CAST_BAR_LABEL)
         self.playerBar:SetFrameStrata("HIGH")
         self.playerBar:EditModeSetOption("castBar")
         self.playerBar:AlignParentBottom(231)

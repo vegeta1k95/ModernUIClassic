@@ -1,3 +1,5 @@
+local L = MUI.L
+
 local TEX = MUI.TEX_SKIN .. "spellbook\\spellbook-elements"
 
 local preloadTip
@@ -137,11 +139,11 @@ class "SpellButton" : extends "SecureActionButton" {
             if not spell.isKnown then
                 tooltip:AddBlank()
                 if spell.source == "talent" then
-                    tooltip:AddLine("Talent at level |cffFFFFFF" .. spell.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(L.SPELLBOOK_TALENT_AT_LEVEL:format("|cffFFFFFF" .. spell.levelReq .. "|cff00ff00"), 0, 1, 0, false, 10.5)
                 elseif spell.source == "quest" then
-                    tooltip:AddLine("Quest at level |cffFFFFFF" .. spell.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(L.SPELLBOOK_QUEST_AT_LEVEL:format("|cffFFFFFF" .. spell.levelReq .. "|cff00ff00"), 0, 1, 0, false, 10.5)
                 else
-                    tooltip:AddLine("Learned at level |cffFFFFFF" .. spell.levelReq .. "|cff00ff00", 0, 1, 0, false, 10.5)
+                    tooltip:AddLine(L.SPELLBOOK_LEARNED_AT_LEVEL:format("|cffFFFFFF" .. spell.levelReq .. "|cff00ff00"), 0, 1, 0, false, 10.5)
                 end
             end
         end)
@@ -420,11 +422,11 @@ class "SpellbookItem" : extends "SecureFrame" {
             local source
 
             if display.source == "quest" then
-                source = "Quest"
+                source = BATTLE_PET_SOURCE_2
             elseif display.source == "talent" then
-                source = "Talent"
+                source = TALENT
             elseif display.source == "trainer" then
-                source = "Trainer"
+                source = L.SPELLBOOK_SOURCE_TRAINER
             end
 
             -- A pet's ability and a starting spell have no source to name,
@@ -433,7 +435,7 @@ class "SpellbookItem" : extends "SecureFrame" {
             if not source and display.levelReq == 0 then
                 sub = display.rank
             else
-                sub = "Level " .. display.levelReq .. (source and (" (" .. source .. ")") or "")
+                sub = SPELLBOOK_AVAILABLE_AT:format(display.levelReq) .. (source and (" (" .. source .. ")") or "")
             end
             self._displayRank:SetText(sub)
         elseif not display.spec then

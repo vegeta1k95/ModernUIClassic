@@ -22,7 +22,7 @@
 -- click on a dungeon / raid entrance on the world map, which opens it on
 -- that instance.
 
-BINDING_NAME_MUI_TOGGLE_ADVENTUREGUIDE = "Toggle Adventure Guide"
+BINDING_NAME_MUI_TOGGLE_ADVENTUREGUIDE = BINDING_NAME_TOGGLEENCOUNTERJOURNAL
 
 object "ModuleAdventureGuide" : extends "Module" {
     __init = function(self)

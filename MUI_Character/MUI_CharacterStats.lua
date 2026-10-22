@@ -8,6 +8,8 @@
 --     sections = { { title, { { method, argument }, ... } }, ... }
 --     :Refresh()
 
+local L = MUI.L
+
 local SHEET  = "Interface\\PaperDollInfoFrame\\PaperDollInfoPart1"
 local SHEET2 = "Interface\\PaperDollInfoFrame\\PaperDollInfoPart2"
 
@@ -28,14 +30,25 @@ local PANE_W, PANE_H = 197, 355
 local ROW_W, ROW_H   = 187, 15
 local PLATE_H        = 40
 
+-- A school's name as a label, its first letter a capital: the Russian
+-- client's are lower case but for Arcane's ("огонь", "Тайная магия").
+local function Capitalized(name)
+    local first, rest = name:match("^([%z\1-\127\194-\244][\128-\191]*)(.*)$")
+    return first and MUI.Upper(first) .. rest or name
+end
+
 local ATTRIBUTES = { "STRENGTH", "AGILITY", "STAMINA", "INTELLECT", "SPIRIT" }
-local SCHOOLS    = { [2] = "Fire", [3] = "Nature", [4] = "Frost", [5] = "Shadow", [6] = "Arcane" }
+-- A resistance row's label, as Cata's sheet has it.
+local SCHOOLS    = { [2] = Capitalized(SPELL_SCHOOL2_CAP), [3] = Capitalized(SPELL_SCHOOL3_CAP),
+                     [4] = Capitalized(SPELL_SCHOOL4_CAP), [5] = Capitalized(SPELL_SCHOOL5_CAP),
+                     [6] = Capitalized(SPELL_SCHOOL6_CAP) }
 -- Era's strip of resistance tiles (32x256, one every 29 px), and how far
 -- down it each school's tile is.
 local RESISTANCE_TILES = "Interface\\PaperDollInfoFrame\\UI-Character-ResistanceIcons"
 local RESISTANCE_TILE  = { [2] = 0, [3] = 29, [6] = 58, [4] = 87, [5] = 116 }
 -- The spell schools a caster's bonuses come in (2 holy .. 7 arcane).
-local SPELL_SCHOOLS = { "Holy", "Fire", "Nature", "Frost", "Shadow", "Arcane" }
+local SPELL_SCHOOLS = { Capitalized(DAMAGE_SCHOOL2), Capitalized(DAMAGE_SCHOOL3), Capitalized(DAMAGE_SCHOOL4),
+                        Capitalized(DAMAGE_SCHOOL5), Capitalized(DAMAGE_SCHOOL6), Capitalized(DAMAGE_SCHOOL7) }
 
 -- The slots an average item level counts: everything but shirt and tabard.
 local LEVEL_SLOTS = { 1, 2, 3, 15, 5, 9, 10, 6, 7, 8, 11, 12, 13, 14, 16, 17, 18 }
@@ -167,21 +180,21 @@ object "CharacterStatSource" {
         local low, high, _, _, pos, neg, percent = UnitDamage(unit)
         local _, _, dps = self:_Swing(low, high, pos, neg, percent, speed)
         local value = string.format("%.1f", dps)
-        row:Set("Damage per Second", value, "Damage per Second " .. value,
-            "The damage your main hand weapon deals each second, on average.")
+        row:Set(STAT_DPS_SHORT, value, STAT_DPS_SHORT .. " " .. value,
+            L.CHAR_STAT_MELEE_DPS)
     end;
 
     AttackSpeed = function(self, row, unit)
         local speed, offSpeed = UnitAttackSpeed(unit)
         local value = string.format("%.2f", speed)
         if offSpeed then value = value .. " / " .. string.format("%.2f", offSpeed) end
-        row:Set("Attack Speed", value, "Attack Speed " .. value, "The seconds between your melee swings.")
+        row:Set(WEAPON_SPEED, value, WEAPON_SPEED .. " " .. value, L.CHAR_STAT_MELEE_SPEED)
     end;
 
     AttackPower = function(self, row, unit)
         local base, pos, neg = UnitAttackPower(unit)
         local total = base + pos + neg
-        row:Set("Attack Power", self:_Tint(total, pos, neg),
+        row:Set(STAT_ATTACK_POWER, self:_Tint(total, pos, neg),
             self:_Breakdown(MELEE_ATTACK_POWER, total, base, pos, neg),
             MELEE_ATTACK_POWER_TOOLTIP:format(math.max(total, 0) / ATTACK_POWER_MAGIC_NUMBER))
     end;
@@ -189,18 +202,18 @@ object "CharacterStatSource" {
     -- The skill with the weapon in the main hand; a pet's attack rating.
     Attack = function(self, row, unit)
         local base, modifier = UnitAttackBothHands(unit)
-        row:Set(unit == "player" and "Weapon Skill" or "Attack", self:_Tint(base + modifier, modifier, modifier),
+        row:Set(unit == "player" and COMBAT_RATING_NAME1 or STAT_CATEGORY_ATTACK, self:_Tint(base + modifier, modifier, modifier),
             ATTACK_TOOLTIP, ATTACK_TOOLTIP_SUBTEXT)
     end;
 
     Hit = function(self, row)
         local value = string.format("%.2f%%", GetHitModifier() or 0)
-        row:Set("Hit Chance", value, "Hit Chance " .. value, "Your bonus chance to hit with melee and ranged attacks.")
+        row:Set(STAT_HIT_CHANCE, value, STAT_HIT_CHANCE .. " " .. value, L.CHAR_STAT_HIT)
     end;
 
     Crit = function(self, row)
         local value = string.format("%.2f%%", GetCritChance())
-        row:Set("Crit Chance", value, "Crit Chance " .. value, "Your chance to critically strike with melee attacks.")
+        row:Set(MELEE_CRIT_CHANCE, value, MELEE_CRIT_CHANCE .. " " .. value, L.CHAR_STAT_MELEE_CRIT)
     end;
 
     -- ---- ranged --------------------------------------------------------
@@ -220,35 +233,35 @@ object "CharacterStatSource" {
 
     RangedDamagePerSecond = function(self, row, unit)
         if not self:_HasRanged() then
-            row:Set("Damage per Second", NOT_APPLICABLE, "Damage per Second")
+            row:Set(STAT_DPS_SHORT, NOT_APPLICABLE, STAT_DPS_SHORT)
             return
         end
         local speed, low, high, pos, neg, percent = UnitRangedDamage(unit)
         local _, _, dps = self:_Swing(low, high, pos, neg, percent, speed)
         local value = string.format("%.1f", dps)
-        row:Set("Damage per Second", value, "Damage per Second " .. value,
-            "The damage your ranged weapon deals each second, on average.")
+        row:Set(STAT_DPS_SHORT, value, STAT_DPS_SHORT .. " " .. value,
+            L.CHAR_STAT_RANGED_DPS)
     end;
 
     RangedAttackSpeed = function(self, row, unit)
         if not self:_HasRanged() then
-            row:Set("Attack Speed", NOT_APPLICABLE, "Attack Speed")
+            row:Set(WEAPON_SPEED, NOT_APPLICABLE, WEAPON_SPEED)
             return
         end
         local value = string.format("%.2f", (UnitRangedDamage(unit)))
-        row:Set("Attack Speed", value, "Attack Speed " .. value, "The seconds between your ranged attacks.")
+        row:Set(WEAPON_SPEED, value, WEAPON_SPEED .. " " .. value, L.CHAR_STAT_RANGED_SPEED)
     end;
 
     -- A wand takes nothing from attack power.
     RangedAttackPower = function(self, row, unit)
         if not self:_HasRanged() then
-            row:Set("Attack Power", NOT_APPLICABLE, RANGED_ATTACK_POWER)
+            row:Set(STAT_ATTACK_POWER, NOT_APPLICABLE, RANGED_ATTACK_POWER)
         elseif HasWandEquipped() then
-            row:Set("Attack Power", "--", RANGED_ATTACK_POWER)
+            row:Set(STAT_ATTACK_POWER, "--", RANGED_ATTACK_POWER)
         else
             local base, pos, neg = UnitRangedAttackPower(unit)
             local total = base + pos + neg
-            row:Set("Attack Power", self:_Tint(total, pos, neg),
+            row:Set(STAT_ATTACK_POWER, self:_Tint(total, pos, neg),
                 self:_Breakdown(RANGED_ATTACK_POWER, total, base, pos, neg),
                 RANGED_ATTACK_POWER_TOOLTIP:format(math.max(total, 0) / ATTACK_POWER_MAGIC_NUMBER))
         end
@@ -256,16 +269,16 @@ object "CharacterStatSource" {
 
     RangedAttack = function(self, row, unit)
         if not self:_HasRanged() then
-            row:Set("Weapon Skill", NOT_APPLICABLE, RANGED_ATTACK_TOOLTIP)
+            row:Set(COMBAT_RATING_NAME1, NOT_APPLICABLE, RANGED_ATTACK_TOOLTIP)
             return
         end
         local base, modifier = UnitRangedAttack(unit)
-        row:Set("Weapon Skill", self:_Tint(base + modifier, modifier, modifier), RANGED_ATTACK_TOOLTIP, ATTACK_TOOLTIP_SUBTEXT)
+        row:Set(COMBAT_RATING_NAME1, self:_Tint(base + modifier, modifier, modifier), RANGED_ATTACK_TOOLTIP, ATTACK_TOOLTIP_SUBTEXT)
     end;
 
     RangedCrit = function(self, row)
         local value = string.format("%.2f%%", GetRangedCritChance())
-        row:Set("Crit Chance", value, "Crit Chance " .. value, "Your chance to critically strike with ranged attacks.")
+        row:Set(RANGED_CRIT_CHANCE, value, RANGED_CRIT_CHANCE .. " " .. value, L.CHAR_STAT_RANGED_CRIT)
     end;
 
     -- ---- spell ---------------------------------------------------------
@@ -278,17 +291,17 @@ object "CharacterStatSource" {
             best = math.max(best, bonus)
             lines[#lines + 1] = { SPELL_SCHOOLS[school - 1], tostring(bonus) }
         end
-        row:Set("Bonus Damage", best, "Bonus Damage " .. best, unpack(lines))
+        row:Set(BONUS_DAMAGE, best, BONUS_DAMAGE .. " " .. best, unpack(lines))
     end;
 
     SpellHealing = function(self, row)
         local value = GetSpellBonusHealing()
-        row:Set("Bonus Healing", value, "Bonus Healing " .. value, "Increases the healing your spells and effects do.")
+        row:Set(BONUS_HEALING, value, BONUS_HEALING .. " " .. value, L.CHAR_STAT_HEALING)
     end;
 
     SpellHit = function(self, row)
         local value = string.format("%.2f%%", GetSpellHitModifier() or 0)
-        row:Set("Hit Chance", value, "Hit Chance " .. value, "Your bonus chance to hit with spells.")
+        row:Set(STAT_HIT_CHANCE, value, STAT_HIT_CHANCE .. " " .. value, L.CHAR_STAT_SPELL_HIT)
     end;
 
     SpellCrit = function(self, row)
@@ -299,15 +312,15 @@ object "CharacterStatSource" {
             lines[#lines + 1] = { SPELL_SCHOOLS[school - 1], string.format("%.2f%%", chance) }
         end
         local value = string.format("%.2f%%", best)
-        row:Set("Crit Chance", value, "Crit Chance " .. value, unpack(lines))
+        row:Set(SPELL_CRIT_CHANCE, value, SPELL_CRIT_CHANCE .. " " .. value, unpack(lines))
     end;
 
     ManaRegen = function(self, row)
         local base, casting = GetManaRegen()
         local value = string.format("%.0f", base * 5)
-        row:Set("Mana Regen", value, "Mana Regen " .. value,
-            { "Every 5 sec. while not casting", string.format("%.1f", base * 5) },
-            { "Every 5 sec. while casting", string.format("%.1f", casting * 5) })
+        row:Set(MANA_REGEN, value, MANA_REGEN .. " " .. value,
+            { L.CHAR_STAT_REGEN_NOT_CASTING, string.format("%.1f", base * 5) },
+            { L.CHAR_STAT_REGEN_CASTING, string.format("%.1f", casting * 5) })
     end;
 
     -- ---- defense -------------------------------------------------------
@@ -330,19 +343,19 @@ object "CharacterStatSource" {
 
     Dodge = function(self, row)
         local value = string.format("%.2f%%", GetDodgeChance())
-        row:Set("Dodge", value, "Dodge " .. value, "Your chance to dodge melee attacks.")
+        row:Set(STAT_DODGE, value, STAT_DODGE .. " " .. value, L.CHAR_STAT_DODGE)
     end;
 
     Parry = function(self, row)
         local value = string.format("%.2f%%", GetParryChance())
-        row:Set("Parry", value, "Parry " .. value, "Your chance to parry melee attacks from the front.")
+        row:Set(STAT_PARRY, value, STAT_PARRY .. " " .. value, L.CHAR_STAT_PARRY)
     end;
 
     Block = function(self, row)
         local value = string.format("%.2f%%", GetBlockChance())
-        row:Set("Block", value, "Block " .. value,
-            "Your chance to block attacks from the front with a shield.",
-            { "Damage blocked", tostring(GetShieldBlock()) })
+        row:Set(STAT_BLOCK, value, STAT_BLOCK .. " " .. value,
+            L.CHAR_STAT_BLOCK,
+            { L.CHAR_STAT_DAMAGE_BLOCKED, tostring(GetShieldBlock()) })
     end;
 
     -- argument: the school's resistance id (2 fire .. 6 arcane).
@@ -474,7 +487,7 @@ class "CharacterStatSheet" : extends "Frame" {
 
         local y = 2
         if withItemLevel then
-            self:_Plate(content, "Item Level", y)
+            self:_Plate(content, STAT_AVERAGE_ITEM_LEVEL, y)
             y = y + PLATE_H
             y = y + self:_BuildItemLevel(content, y)
         end
@@ -531,8 +544,8 @@ class "CharacterStatSheet" : extends "Frame" {
         self._itemLevel:SetTextColor(1, 1, 1, 1)
         self._itemLevel:CenterInParent()
         holder:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine(string.format("Item Level %.2f", self._itemLevelValue or 0), 1, 1, 1, false, 13)
-            tooltip:AddLine("The average item level of your equipped items.", 1, 0.82, 0, true)
+            tooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL .. " " .. string.format("%.2f", self._itemLevelValue or 0), 1, 1, 1, false, 13)
+            tooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL_TOOLTIP, 1, 0.82, 0, true)
         end)
         return 29
     end;

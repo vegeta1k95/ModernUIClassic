@@ -6,7 +6,7 @@ local TEX_PATH = MUI.TEX_SKIN .. "professions\\"
 -- Key Bindings panel label for the binding declared in Bindings.xml.
 -- The binding sits under the "Interface Panel" section (Blizzard's existing
 -- BINDING_HEADER_INTERFACE), alongside Spellbook / Quest Log / etc.
-BINDING_NAME_MUI_TOGGLE_PROFESSIONS = "Toggle Professions Pane"
+BINDING_NAME_MUI_TOGGLE_PROFESSIONS = BINDING_NAME_TOGGLEPROFESSIONBOOK
 
 -- Profession catalog + rank-title resolution live in MUI_Professions.lua
 -- (the ModuleProfessions singleton). This file just consumes its accessors
@@ -250,7 +250,7 @@ class "ProfessionSlot" : extends "Frame" {
             self._abandonIcon:FillParent()
         end)
         self._abandonBtn:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:SetText(UNLEARN_SKILL_TOOLTIP or "Abandon Profession")
+            tooltip:SetText(UNLEARN_SKILL_TOOLTIP)
         end)
         self._abandonBtn.OnClick = function()
             local prof = self._profession
@@ -273,7 +273,7 @@ class "ProfessionSlot" : extends "Frame" {
         self._hint:SetJustifyH("LEFT")
         self._hint:SetFontSize(9)
         self._hint:SetTextColor(0.1, 0.05, 0.05, 1)
-        self._hint:SetText("Consult a profession trainer in one of the major cities to master new areas of expertise. You have the ability to learn any two professions from the gathering and crafting disciplines.")
+        self._hint:SetText(PROFESSIONS_MISSING_PROFESSION)
 
         self._spellSlot1 = ProfessionSpellSlot(self)
         self._spellSlot1:AlignParentBottomRight(3, 1)
@@ -291,7 +291,7 @@ class "ProfessionSlot" : extends "Frame" {
 
         if profession == nil then
 
-            local title = (self._index == 2) and "Second Profession" or "First Profession"
+            local title = (self._index == 2) and PROFESSIONS_SECOND_PROFESSION or PROFESSIONS_FIRST_PROFESSION
             self._name:SetTextColor(0.85, 0.7, 0.6, 1)
             self._name:SetText(title)
 
@@ -437,7 +437,7 @@ class "ProfessionSlotSecondary" : extends "Frame" {
 object "ProfessionsOverviewFrame" : extends "PanelPortrait" {
 
     __init = function(self)
-        PanelPortrait.__init(self, nil, "MUI_ProfessionsOverviewFrame", "Professions")
+        PanelPortrait.__init(self, nil, "MUI_ProfessionsOverviewFrame", TRADE_SKILLS)
         
         self:SetPortrait(TEX_PATH .. "professions-book-icon")
 
@@ -483,13 +483,13 @@ object "ProfessionsOverviewFrame" : extends "PanelPortrait" {
         self._mainSlot2 = ProfessionSlot(content, 2)
         self._mainSlot2:Below(self._mainSlot1, 5)
 
-        self._secondarySlotCooking = ProfessionSlotSecondary(content, "Cooking", "Visit a trainer to learn Cooking. This profession allows you to learn recipes and cook food. Food restores health and grants temporary beneficial effects.")
+        self._secondarySlotCooking = ProfessionSlotSecondary(content, PROFESSIONS_COOKING, PROFESSIONS_COOKING_MISSING)
         self._secondarySlotCooking:Below(self._mainSlot2, 12)
 
-        self._secondarySlotFishing = ProfessionSlotSecondary(content, "Fishing", "Visit a trainer to learn Fishing. This profession allows you to catch fish and other strange things found in the waters. With basic Cooking skills, you can prepare delicious dishes from fish.")
+        self._secondarySlotFishing = ProfessionSlotSecondary(content, PROFESSIONS_FISHING, PROFESSIONS_FISHING_MISSING)
         self._secondarySlotFishing:Below(self._secondarySlotCooking, 7)
-        
-        self._secondarySlotFirstAid = ProfessionSlotSecondary(content, "First Aid", "Visit a trainer to learn First Aid. This profession allows you to craft bandages from cloth. Bandages can be used to quickly restore health to yourself or your allies.")
+
+        self._secondarySlotFirstAid = ProfessionSlotSecondary(content, PROFESSIONS_FIRST_AID, PROFESSIONS_FIRST_AID_MISSING)
         self._secondarySlotFirstAid:Below(self._secondarySlotFishing, 7)
 
     end;

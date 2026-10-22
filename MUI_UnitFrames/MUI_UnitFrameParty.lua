@@ -60,7 +60,7 @@ class "PartyFrameEditable" : extends {"Frame", "Editable"} {
         self._party = Frame(PartyFrame)
         Frame.__init(self, "Frame", nil, "MUI_PartyFrame")
         Editable.__init(self)
-        self:EditModeSetLabel("Party")
+        self:EditModeSetLabel(HUD_EDIT_MODE_PARTY_FRAMES_LABEL)
         self:EditModeSetupSettings(function(content)
             self:_AddStatusTextSetting(content)
         end)

@@ -64,9 +64,10 @@ class "DropdownMenu" : extends "Frame" {
 
     -- ----- configuration --------------------------------------------------
 
+    -- The popup's width; a row whose text needs more room widens it.
     SetMenuWidth = function(self, w)
         self._width = w
-        self.popup:SetWidth(w)
+        self:_FitWidth()
     end;
 
     SetMenuPadding = function(self, l, t, r, b)
@@ -104,7 +105,10 @@ class "DropdownMenu" : extends "Frame" {
     -- items last passed to SetItems.
     SetItemLabel = function(self, index, text)
         local item = self._items[index]
-        if item and item._label then item._label:SetText(text) end
+        if item and item._label then
+            item._label:SetText(text)
+            self:_FitWidth()
+        end
     end;
 
     -- Toggle a built row's clickability + greyed label in place.
@@ -225,12 +229,36 @@ class "DropdownMenu" : extends "Frame" {
     _LayoutRows = function(self)
         local items = self._items
         local n = #items
-        self.popup:SetWidth(self._width)
         self.popup:SetHeight(self._padT + n * self._rowH + math.max(n - 1, 0) * self._rowGap + self._padB)
 
         local rowW = self._width - self._padL - self._padR
         for i, item in ipairs(items) do
             self._rows[i] = self:_BuildRow(item, i, rowW)
+        end
+        self:_FitWidth()
+    end;
+
+    -- The menu's width, or wider when a row's content needs more room (a
+    -- longer translation); the rows follow it.
+    _FitWidth = function(self)
+        local need = 0
+        for _, item in ipairs(self._items) do
+            local w = 0
+            if item._checkbox then
+                w = 3 + item._checkbox:GetContentWidth()
+            elseif item._label then
+                w = 4 + item._label:GetStringWidth()
+            end
+            if item._hint then w = w + item._hint:GetStringWidth() + 6 end
+            if item.icon then w = w + (item.icon.size or 17) + 6 end
+            need = math.max(need, w)
+        end
+        local width = math.max(self._width, self._padL + need + 4 + self._padR)
+        self.popup:SetWidth(width)
+        local rowW = width - self._padL - self._padR
+        for _, row in ipairs(self._rows) do
+            row:SetWidth(rowW)
+            if row._checkbox then row._checkbox:SetWidth(rowW) end
         end
     end;
 
@@ -320,6 +348,7 @@ class "DropdownMenu" : extends "Frame" {
         label:SetText(item.label or "")
         label:SetFont(MUI.FONT, 10.5)
         label:AlignParentLeft(4, 0)
+        item._label = label
 
         if item.icon then self:_AttachIcon(row, item.icon) end
 
@@ -329,6 +358,7 @@ class "DropdownMenu" : extends "Frame" {
         hint:SetFont(MUI.FONT, 8)
         hint:SetTextColor(0.7, 0.7, 0.7, 1)
         hint:AlignParentRight(-2, 0)
+        item._hint = hint
 
         local sub = DropdownMenu(row, nil, row)
         sub:SetMenuWidth(item.submenuWidth or self._width)

@@ -20,29 +20,35 @@ object "TransportDB" {
         self._routes = {
             -- Menethil Harbor ↔ Theramore Isle
             { type = "boat", faction = "A",
-              a = { areaId = 11,   x = 8.5,  y = 62.4, name = "Menethil Harbor" },
-              b = { areaId = 15,   x = 71.22, y = 56.01, name = "Theramore Isle" } },
+              a = { areaId = 11,   x = 8.5,  y = 62.4, town = 150, name = "Menethil Harbor" },
+              b = { areaId = 15,   x = 71.22, y = 56.01, town = 513, name = "Theramore Isle" } },
             -- Menethil Harbor ↔ Auberdine
             { type = "boat", faction = "A",
-              a = { areaId = 11,   x = 5.16,  y = 57.85, name = "Menethil Harbor" },
-              b = { areaId = 148,  x = 32.22, y = 44.19, name = "Auberdine" } },
+              a = { areaId = 11,   x = 5.16,  y = 57.85, town = 150, name = "Menethil Harbor" },
+              b = { areaId = 148,  x = 32.22, y = 44.19, town = 442, name = "Auberdine" } },
             -- Booty Bay ↔ Ratchet 
             { type = "boat", faction = "N",
-              a = { areaId = 33,   x = 26.0, y = 73.20, name = "Booty Bay" },
-              b = { areaId = 17,   x = 63.71, y = 38.74, name = "Ratchet" } },
+              a = { areaId = 33,   x = 26.0, y = 73.20, town = 35, name = "Booty Bay" },
+              b = { areaId = 17,   x = 63.71, y = 38.74, town = 392, name = "Ratchet" } },
             -- Teldrassil ↔ Auberdine
             { type = "boat", faction = "A",
-              a = { areaId = 141,  x = 54.85, y = 96.66, name = "Rut'theran Village" },
-              b = { areaId = 148,  x = 33.0,  y = 40.0,  name = "Auberdine" } },
+              a = { areaId = 141,  x = 54.85, y = 96.66, town = 702, name = "Rut'theran Village" },
+              b = { areaId = 148,  x = 33.0,  y = 40.0,  town = 442, name = "Auberdine" } },
             -- Orgrimmar ↔ Undercity. 
             { type = "zeppelin", faction = "H",
-              a = { areaId = 14, x = 50.8, y = 12.6, name = "Orgrimmar" },
-              b = { areaId = 85, x = 61.0, y = 59.0, name = "Undercity" } },
+              a = { areaId = 14, x = 50.8, y = 12.6, town = 1637, name = "Orgrimmar" },
+              b = { areaId = 85, x = 61.0, y = 59.0, town = 1497, name = "Undercity" } },
             -- Orgrimmar ↔ Grom'gol
             { type = "zeppelin", faction = "H",
-              a = { areaId = 14, x = 50.8,  y = 14.6,  name = "Orgrimmar" },
-              b = { areaId = 33, x = 31.5,  y = 29.6, name = "Grom'gol" } },
+              a = { areaId = 14, x = 50.8,  y = 14.6,  town = 1637, name = "Orgrimmar" },
+              b = { areaId = 33, x = 31.5,  y = 29.6, town = 117, name = "Grom'gol" } },
         }
+
+        -- Each dock by the client's name for its town (`town`, an area id).
+        for _, route in ipairs(self._routes) do
+            route.a.name = C_Map.GetAreaInfo(route.a.town) or route.a.name
+            route.b.name = C_Map.GetAreaInfo(route.b.town) or route.b.name
+        end
 
         -- Lazy resolution cache. Key is a route index (1-based) in
         -- self._routes; value is {a = {wx, wy, continent}, b = {…}} or

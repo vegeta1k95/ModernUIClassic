@@ -2,182 +2,67 @@
 --
 -- The client builds the comparison tooltips itself (SetCompareItem) and diffs
 -- only an item's base stat fields, so vanilla "Equip:" bonuses (spell damage,
--- healing, attack power, hit, crit, ...) and enchants never count. We read
--- both items' tooltip lines as shown, total every stat we recognise, and
--- replace the client's list with ours.
+-- healing, attack power, hit, crit, ...) and enchants never count. We total
+-- what each item gives by its ids (MUI_ItemStatDB: the item, its enchantment,
+-- its random property) and replace the client's list with ours.
+
+local L = MUI.L
 
 local HEADER       = ITEM_DELTA_DESCRIPTION
 local HEADER_MULTI = ITEM_DELTA_MULTIPLE_COMPARISON_DESCRIPTION or HEADER
 
 local PERCENT = "%+d%%"
-local SCHOOLS = { "arcane", "fire", "frost", "holy", "nature", "shadow" }
 
--- Display order: { key, label, number format }.
+-- Display order: { key, label, number format }. The labels are Blizzard's
+-- for "+N <stat>" tooltip lines where it has them (ITEM_MOD_*_SHORT), which
+-- other languages word to follow a number ("+5 к силе").
 local STATS = {
-    { "ARMOR",       "Armor" },
-    { "DPS",         "Damage Per Second", "%+.1f" },
-    { "WDMG",        "Weapon Damage" },
-    { "BLOCK",       "Block" },
-    { "STR",         "Strength" },
-    { "AGI",         "Agility" },
-    { "STA",         "Stamina" },
-    { "INT",         "Intellect" },
-    { "SPI",         "Spirit" },
-    { "HEALTH",      "Health" },
-    { "MANA",        "Mana" },
-    { "AP",          "Attack Power" },
-    { "RAP",         "Ranged Attack Power" },
-    { "FERALAP",     "Attack Power in Forms" },
-    { "HIT",         "Hit", PERCENT },
-    { "CRIT",        "Critical Strike", PERCENT },
-    { "HASTE",       "Attack Speed", PERCENT },
-    { "SPELLDMG",    "Spell Damage" },
-    { "HEAL",        "Healing" },
-    { "DMG_ARCANE",  "Arcane Spell Damage" },
-    { "DMG_FIRE",    "Fire Spell Damage" },
-    { "DMG_FROST",   "Frost Spell Damage" },
-    { "DMG_HOLY",    "Holy Spell Damage" },
-    { "DMG_NATURE",  "Nature Spell Damage" },
-    { "DMG_SHADOW",  "Shadow Spell Damage" },
-    { "SPELLHIT",    "Spell Hit", PERCENT },
-    { "SPELLCRIT",   "Spell Critical Strike", PERCENT },
-    { "SPELLPEN",    "Spell Penetration" },
-    { "MP5",         "Mana per 5 sec" },
-    { "HP5",         "Health per 5 sec" },
-    { "DEFENSE",     "Defense" },
-    { "DODGE",       "Dodge", PERCENT },
-    { "PARRY",       "Parry", PERCENT },
-    { "BLOCKCHANCE", "Block Chance", PERCENT },
-    { "RES_ARCANE",  "Arcane Resistance" },
-    { "RES_FIRE",    "Fire Resistance" },
-    { "RES_FROST",   "Frost Resistance" },
-    { "RES_NATURE",  "Nature Resistance" },
-    { "RES_SHADOW",  "Shadow Resistance" },
+    { "ARMOR",       ARMOR },
+    { "DPS",         ITEM_MOD_DAMAGE_PER_SECOND_SHORT, "%+.1f" },
+    { "WDMG",        DAMAGE },
+    { "BLOCK",       ITEM_MOD_BLOCK_RATING_SHORT },
+    { "STR",         ITEM_MOD_STRENGTH_SHORT },
+    { "AGI",         ITEM_MOD_AGILITY_SHORT },
+    { "STA",         ITEM_MOD_STAMINA_SHORT },
+    { "INT",         ITEM_MOD_INTELLECT_SHORT },
+    { "SPI",         ITEM_MOD_SPIRIT_SHORT },
+    { "HEALTH",      ITEM_MOD_HEALTH_SHORT },
+    { "MANA",        ITEM_MOD_MANA_SHORT },
+    { "AP",          ITEM_MOD_ATTACK_POWER_SHORT },
+    { "RAP",         ITEM_MOD_RANGED_ATTACK_POWER_SHORT },
+    { "FERALAP",     ITEM_MOD_FERAL_ATTACK_POWER_SHORT },
+    { "HIT",         ITEM_MOD_HIT_RATING_SHORT, PERCENT },
+    { "CRIT",        ITEM_MOD_CRIT_RATING_SHORT, PERCENT },
+    { "HASTE",       STAT_ATTACK_SPEED, PERCENT },
+    { "SPELLDMG",    STAT_SPELLDAMAGE },
+    { "HEAL",        ITEM_MOD_SPELL_HEALING_DONE_SHORT },
+    { "DMG_ARCANE",  ITEM_MOD_ARCANE_DAMAGE_DONE_SHORT },
+    { "DMG_FIRE",    ITEM_MOD_FIRE_DAMAGE_DONE_SHORT },
+    { "DMG_FROST",   ITEM_MOD_FROST_DAMAGE_DONE_SHORT },
+    { "DMG_HOLY",    ITEM_MOD_HOLY_DAMAGE_DONE_SHORT },
+    { "DMG_NATURE",  ITEM_MOD_NATURE_DAMAGE_DONE_SHORT },
+    { "DMG_SHADOW",  ITEM_MOD_SHADOW_DAMAGE_DONE_SHORT },
+    { "SPELLHIT",    ITEM_MOD_HIT_SPELL_RATING_SHORT, PERCENT },
+    { "SPELLCRIT",   ITEM_MOD_CRIT_SPELL_RATING_SHORT, PERCENT },
+    { "SPELLPEN",    ITEM_MOD_SPELL_PENETRATION_SHORT },
+    { "MP5",         ITEM_MOD_POWER_REGEN0_SHORT },
+    { "HP5",         ITEM_MOD_HEALTH_REGEN_SHORT },
+    { "DEFENSE",     ITEM_MOD_DEFENSE_SKILL_RATING_SHORT },
+    { "DODGE",       ITEM_MOD_DODGE_RATING_SHORT, PERCENT },
+    { "PARRY",       ITEM_MOD_PARRY_RATING_SHORT, PERCENT },
+    { "BLOCKCHANCE", BLOCK_CHANCE, PERCENT },
+    { "RES_ARCANE",  RESISTANCE6_NAME },
+    { "RES_FIRE",    RESISTANCE2_NAME },
+    { "RES_FROST",   RESISTANCE4_NAME },
+    { "RES_NATURE",  RESISTANCE3_NAME },
+    { "RES_SHADOW",  RESISTANCE5_NAME },
 }
 
--- "+N <name>" / "<name> +N" lines: white and green stats, enchants, random
--- suffixes. Lower-case name -> stat keys.
-local NAMES = {
-    ["strength"]                  = { "STR" },
-    ["agility"]                   = { "AGI" },
-    ["stamina"]                   = { "STA" },
-    ["intellect"]                 = { "INT" },
-    ["spirit"]                    = { "SPI" },
-    ["armor"]                     = { "ARMOR" },
-    ["reinforced armor"]          = { "ARMOR" },
-    ["health"]                    = { "HEALTH" },
-    ["mana"]                      = { "MANA" },
-    ["attack power"]              = { "AP" },
-    ["ranged attack power"]       = { "RAP" },
-    ["damage"]                    = { "WDMG" },
-    ["weapon damage"]             = { "WDMG" },
-    ["spell damage"]              = { "SPELLDMG" },
-    ["damage and healing spells"] = { "SPELLDMG", "HEAL" },
-    ["spell damage and healing"]  = { "SPELLDMG", "HEAL" },
-    ["healing spells"]            = { "HEAL" },
-    ["healing"]                   = { "HEAL" },
-    ["defense"]                   = { "DEFENSE" },
-    ["mana every 5 sec"]          = { "MP5" },
-    ["mana per 5 sec"]            = { "MP5" },
-    ["health every 5 sec"]        = { "HP5" },
-    ["health per 5 sec"]          = { "HP5" },
-    ["all resistances"]           = { "RES_ARCANE", "RES_FIRE", "RES_FROST", "RES_NATURE", "RES_SHADOW" },
-}
-for _, school in ipairs(SCHOOLS) do
-    NAMES[school .. " resistance"]   = { "RES_" .. school:upper() }
-    NAMES[school .. " spell damage"] = { "DMG_" .. school:upper() }
-end
-
--- The same two forms with a percent sign ("+1% Dodge").
-local PERCENT_NAMES = {
-    ["hit"]             = { "HIT" },
-    ["critical strike"] = { "CRIT" },
-    ["attack speed"]    = { "HASTE" },
-    ["haste"]           = { "HASTE" },
-    ["dodge"]           = { "DODGE" },
-    ["parry"]           = { "PARRY" },
-    ["block"]           = { "BLOCKCHANCE" },
-}
-
--- "Equip: ..." sentences (lower-case, prefix removed): { pattern, keys... }.
-local EQUIP = {
-    { "^increases damage and healing done by magical spells and effects by up to (%d+)", "SPELLDMG", "HEAL" },
-    { "^increases healing done by spells and effects by up to (%d+)", "HEAL" },
-    { "^%+(%d+) attack power%.?$", "AP" },
-    { "^%+(%d+) ranged attack power%.?$", "RAP" },
-    { "^%+(%d+) attack power in cat, bear,? and dire bear forms only", "FERALAP" },
-    { "^improves your chance to hit by (%d+)%%", "HIT" },
-    { "^improves your chance to get a critical strike by (%d+)%%", "CRIT" },
-    { "^improves your chance to hit with spells by (%d+)%%", "SPELLHIT" },
-    { "^improves your chance to get a critical strike with spells by (%d+)%%", "SPELLCRIT" },
-    { "^restores (%d+) mana per 5 sec", "MP5" },
-    { "^restores (%d+) mana every 5 sec", "MP5" },
-    { "^restores (%d+) health per 5 sec", "HP5" },
-    { "^restores (%d+) health every 5 sec", "HP5" },
-    { "^increased defense %+(%d+)", "DEFENSE" },
-    { "^increases your chance to dodge an attack by (%d+)%%", "DODGE" },
-    { "^increases your chance to parry an attack by (%d+)%%", "PARRY" },
-    { "^increases your chance to block attacks with a shield by (%d+)%%", "BLOCKCHANCE" },
-    { "^increases the block value of your shield by (%d+)", "BLOCK" },
-    { "^decreases the magical resistances of your spell targets by (%d+)", "SPELLPEN" },
-}
+-- A shield's block value is in none of the client's tables: its line.
+local BLOCK = MUI.FormatMatcher(SHIELD_BLOCK_TEMPLATE)
 
 local function Strip(text)
     return strtrim((text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")))
-end
-
-local function Add(stats, keys, value, first)
-    for i = first or 1, #keys do
-        stats[keys[i]] = (stats[keys[i]] or 0) + value
-    end
-end
-
-local function ParseEquip(stats, text)
-    for _, entry in ipairs(EQUIP) do
-        local value = text:match(entry[1])
-        if value then
-            Add(stats, entry, tonumber(value), 2)
-            return
-        end
-    end
-    local school, damage = text:match("^increases damage done by (%a+) spells and effects by up to (%d+)")
-    if school and NAMES[school .. " spell damage"] then
-        Add(stats, NAMES[school .. " spell damage"], tonumber(damage))
-        return
-    end
-    -- Weapon skills: "Increased Swords +7."
-    local skill, points = text:match("^increased ([%a%s%-]+) %+(%d+)")
-    if skill then
-        Add(stats, { "SKILL:" .. skill }, tonumber(points))
-    end
-end
-
--- Add whatever one tooltip line grants to `stats`.
-local function ParseLine(stats, text)
-    text = Strip(text):lower()
-
-    local equip = text:match("^equip: (.+)$")
-    if equip then
-        ParseEquip(stats, equip)
-        return
-    end
-
-    local value = text:match("^(%d+) armor$")
-    if value then Add(stats, { "ARMOR" }, tonumber(value)) return end
-    value = text:match("^(%d+) block$")
-    if value then Add(stats, { "BLOCK" }, tonumber(value)) return end
-    value = text:match("^%(([%d%.]+) damage per second%)$")
-    if value then Add(stats, { "DPS" }, tonumber(value)) return end
-
-    local sign, percent, name
-    sign, value, percent, name = text:match("^([%+%-])(%d+)(%%?) (.-)%.?$")
-    if not value then
-        name, value, percent = text:match("^(.-) %+(%d+)(%%?)%.?$")
-    end
-    local keys = value and (percent == "%" and PERCENT_NAMES or NAMES)[name]
-    if keys then
-        Add(stats, keys, sign == "-" and -tonumber(value) or tonumber(value))
-    end
 end
 
 local function IsBlank(text)
@@ -210,6 +95,7 @@ object "TooltipItemCompare" {
         local _, link = main:GetItem()
         local equipLoc = link and select(9, C_Item.GetItemInfo(link))
         local new = self:_ReadStats(main, main:NumLines())
+        if not new then return end
 
         -- Each comparison tooltip's own item: the lines above the client's list.
         local old, headers = {}, {}
@@ -243,12 +129,16 @@ object "TooltipItemCompare" {
         end
     end;
 
-    -- Stat totals of lines 1..last of a tooltip.
+    -- Stat totals of a tooltip's item (nil without one the DB knows), the
+    -- block value off its lines 1..last.
     _ReadStats = function(self, tip, last)
-        local stats = {}
+        local _, link = tip:GetItem()
+        local stats = link and MUI_ItemStatDB:GetStats(link)
+        if not stats then return end
         for i = 1, last do
             local text = tip:GetLineText(i)
-            if text then ParseLine(stats, text) end
+            local block = text and BLOCK(Strip(text))
+            if block then stats.BLOCK = (stats.BLOCK or 0) + tonumber(block) end
         end
         return stats
     end;
@@ -277,14 +167,12 @@ object "TooltipItemCompare" {
 
         local skills = {}
         for key in pairs(diff) do
-            if key:sub(1, 6) == "SKILL:" then skills[#skills + 1] = key end
+            local line = key:match("^SKILL(%d+)$")
+            if line then skills[#skills + 1] = tonumber(line) end
         end
         table.sort(skills)
-        for _, key in ipairs(skills) do
-            local name = key:sub(7):gsub("%a+", function(word)
-                return word:sub(1, 1):upper() .. word:sub(2)
-            end)
-            add(key, name .. " Skill")
+        for _, line in ipairs(skills) do
+            add("SKILL" .. line, L.TOOLTIP_SKILL:format(MUI_SkillLineDB:GetName(line)))
         end
         return lines
     end;

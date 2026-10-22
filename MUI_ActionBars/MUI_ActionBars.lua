@@ -76,12 +76,12 @@ object "ModuleActionBars" : extends "Module" {
         local multi = {}
         for i = 1, 7 do multi[i] = self.bars["MULTIBAR" .. i] end
 
-        main:EditModeSetLabel("Action Bar 1")
+        main:EditModeSetLabel(HUD_EDIT_MODE_ACTION_BAR_LABEL:format(1))
         for i, bar in ipairs(multi) do
-            bar:EditModeSetLabel("Action Bar " .. (i + 1), bar.orientation == "vertical" and math.pi / 2 or 0)
+            bar:EditModeSetLabel(HUD_EDIT_MODE_ACTION_BAR_LABEL:format(i + 1), bar.orientation == "vertical" and math.pi / 2 or 0)
         end
-        pet:EditModeSetLabel("Pet Bar")
-        stance:EditModeSetLabel("Stance Bar")
+        pet:EditModeSetLabel(HUD_EDIT_MODE_PET_ACTION_BAR_LABEL)
+        stance:EditModeSetLabel(HUD_EDIT_MODE_STANCE_BAR_LABEL)
 
         -- Only the bar relevant to the player's class is editable: the stance
         -- (shapeshift) bar for warrior/paladin/druid/rogue, the pet bar for

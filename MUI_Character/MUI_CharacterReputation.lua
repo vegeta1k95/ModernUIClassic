@@ -173,9 +173,9 @@ class "CharacterReputationDetail" : extends "Panel" {
             box.label:SetFontSize(10.5)
             return box
         end
-        self._atWar    = check("At War", 132)
-        self._inactive = check("Move to Inactive", 156)
-        self._watch    = check("Show as Experience Bar", 180)
+        self._atWar    = check(AT_WAR, 132)
+        self._inactive = check(MOVE_TO_INACTIVE, 156)
+        self._watch    = check(SHOW_FACTION_ON_MAINSCREEN, 180)
         self._atWar.OnChanged = function()
             FactionToggleAtWar(GetSelectedFaction())
         end

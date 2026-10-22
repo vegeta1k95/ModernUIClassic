@@ -27,11 +27,12 @@ local FRAME_W, FRAME_H = 800, 538
 -- manager puts that frame flush against the screen edge, retail's a little in.
 local NATIVE_DX, NATIVE_DY = 16, -12
 
+-- Retail's titles (AuctionHouseFrameMixin:UpdateTitle).
 local TITLES = {
-    Buy      = "Browse Auctions",
-    ItemBuy  = "Browse Auctions",
-    ItemSell = "Sell",
-    Auctions = "Your Auctions",
+    Buy      = AUCTION_HOUSE_FRAME_TITLE_BUY,
+    ItemBuy  = AUCTION_HOUSE_FRAME_TITLE_BUY,
+    ItemSell = AUCTION_HOUSE_FRAME_TITLE_SELL,
+    Auctions = AUCTION_HOUSE_AUCTIONS_SUB_TAB,
 }
 
 class "AuctionHouseWindow" : extends "PanelPortrait" {
@@ -117,7 +118,8 @@ class "AuctionHouseWindow" : extends "PanelPortrait" {
     _BuildTabs = function(self)
         self._tabs = {}
         local x = 22
-        for _, spec in ipairs({ { "Buy", "Buy" }, { "ItemSell", "Sell" }, { "Auctions", "Auctions" } }) do
+        for _, spec in ipairs({ { "Buy", AUCTION_HOUSE_BUY_TAB }, { "ItemSell", AUCTION_HOUSE_SELL_TAB },
+                                { "Auctions", AUCTION_HOUSE_AUCTIONS_SUB_TAB } }) do
             local mode = spec[1]
             local tab = AuctionHouseTab(self, spec[2])
             tab:SetPoint("TOPLEFT", self, "BOTTOMLEFT", x, 1)

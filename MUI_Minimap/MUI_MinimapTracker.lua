@@ -9,7 +9,7 @@
 -- player-centric context; cross-continent icons would be dead pixels).
 --
 -- Filter wiring: each DB filter flag maps to a matcher (by npcFlags bit,
--- by object name, or by domain-specific rule) and an icon type string.
+-- by id list, or by domain-specific rule) and an icon type string.
 -- When a filter flips on, we find matching entries in the current zone and
 -- spawn a pin each; when it flips off, we destroy that filter's pins.
 --
@@ -129,6 +129,18 @@ local _PLAYER_CLASS_TRAINER_SET = {}   -- populated in OnEnable
 local _PROFESSION_TRAINER_SET = {}
 for _, id in ipairs(PROFESSION_TRAINER_IDS) do _PROFESSION_TRAINER_SET[id] = true end
 
+-- Mailbox object IDs for Classic Era, ported verbatim from Questie's
+-- Modules/QuestieMenu/Mailboxes.lua (Classic branch).
+local MAILBOX_IDS = {
+    32349,142075,142089,142093,142094,142095,142102,142103,142109,142110,142111,142117,142119,143981,143982,143983,
+    143984,143985,143986,143987,143988,143989,143990,144011,144112,144125,144126,144127,144128,144129,144131,153578,
+    153716,157637,163313,163645,164618,164840,171556,171699,171752,173047,173221,176319,176324,176404,177044,178864,
+    179895,179896,180451,181236,181639,187260,188123,
+}
+
+local _MAILBOX_SET = {}
+for _, id in ipairs(MAILBOX_IDS) do _MAILBOX_SET[id] = true end
+
 
 -- Filter spec: each key in MUI_DB.settings.minimapTracker.filters maps here.
 -- `match(npc)`   — returns true if this NPC is tracked by the filter.
@@ -173,7 +185,7 @@ local FILTERS = {
     Mailbox = {
         source = "objects",
         icon   = "Mailbox",
-        match  = function(e) return e.name == "Mailbox" end,
+        match  = function(e, id) return _MAILBOX_SET[id] == true end,
     },
     -- Subname-based heuristics misclassify — profession trainers and class
     -- trainers often share TRAINER flag and similar subName wording. Questie

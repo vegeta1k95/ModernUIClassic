@@ -23,6 +23,8 @@
 -- out (Alliance characters never see Horde nodes and vice versa);
 -- neutral nodes are visible to everyone.
 
+local L = MUI.L
+
 -- Enum.UIMapType.Zone == 3 (Cosmic=0, World=1, Continent=2, Zone=3, ...).
 local ZONE_MAP_TYPE = 3
 local CONTINENT_MAP_TYPE = 2
@@ -118,7 +120,7 @@ end
 -- coloring setting is off.
 local function _QuestLineFormat(questId)
     local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-    local name  = MUI_QuestHelper:GetQuestDisplayName(questId, (q and q.name) or "?")
+    local name  = MUI_QuestHelper:GetQuestDisplayName(questId, (q and MUI_QuestDB:LocalizeQuestName(questId)) or "?")
     local level = q and q.questLevel
 
     local s = MUI_DB and MUI_DB.settings and MUI_DB.settings.questHelper
@@ -369,11 +371,11 @@ class "MapStaticPinManager" : extends "Frame" {
         end
         if not ep then return end
 
-        local vehicle = (ep.type == "zeppelin") and "Zeppelin" or "Boat"
+        local zeppelin = ep.type == "zeppelin"
         local destUi = MUI_ZoneDB:GetUiMapForArea(ep.otherAreaId)
         local destInfo = destUi and C_Map.GetMapInfo(destUi)
         local destZone = destInfo and destInfo.name or "?"
-        local labelText = vehicle .. " to " .. (ep.otherName or "?") .. " (" .. destZone .. ")"
+        local labelText = (zeppelin and L.MAP_ZEPPELIN_TO or L.MAP_BOAT_TO):format(ep.otherName or "?") .. " (" .. destZone .. ")"
 
         -- Retail's waypoint POI: the super-tracked disc with the travel arrow on it.
         local pin = MapPin("MUI_MapStaticPin_Travel", 26)
@@ -392,7 +394,7 @@ class "MapStaticPinManager" : extends "Frame" {
             _EnsureLabelHook()
             _hoveredOverride = labelText
             MUI_ModuleMap.zoneLabelName:SetText(labelText)
-            MUI_ModuleMap.zoneSubLabel:SetText("Travel Waypoint")
+            MUI_ModuleMap.zoneSubLabel:SetText(L.MAP_TRAVEL_WAYPOINT)
             MUI_ModuleMap.zoneLabel:Show()
         end)
         pin:SetScript("OnLeave", function()
@@ -405,9 +407,9 @@ class "MapStaticPinManager" : extends "Frame" {
             if adapter and adapter.FillTooltip then
                 adapter:FillTooltip(key, "title")
             end
-            tooltip:AddLine(string.format("Take the %s from %s to %s.", vehicle:lower(), ep.name or "here", ep.otherName or "?"), 1, 1, 1, true)
+            tooltip:AddLine((zeppelin and L.MAP_TAKE_ZEPPELIN or L.MAP_TAKE_BOAT):format(ep.name or "?", ep.otherName or "?"), 1, 1, 1, true)
             tooltip:AddBlank()
-            tooltip:AddLine("<Click to view " .. destZone .. ">", 0, 1, 0)
+            tooltip:AddLine(L.MAP_CLICK_TO_VIEW:format(destZone), 0, 1, 0)
         end)
         self.travelPin = pin
     end;
@@ -633,14 +635,13 @@ class "MapStaticPinManager" : extends "Frame" {
     -- evaluation falls back to whatever the cursor is over (subzone
     -- label or hidden).
     _WireTransportHover = function(self, pin, ep)
-        local prefix = (ep.type == "zeppelin") and "Zeppelin to" or "Boat to"
         local otherZone = "?"
         local otherUi = MUI_ZoneDB:GetUiMapForArea(ep.otherAreaId)
         if otherUi then
             local info = C_Map.GetMapInfo(otherUi)
             if info and info.name then otherZone = info.name end
         end
-        local overrideText = prefix .. " " .. (ep.otherName or "?")
+        local overrideText = (ep.type == "zeppelin" and L.MAP_ZEPPELIN_TO or L.MAP_BOAT_TO):format(ep.otherName or "?")
                           .. " (" .. otherZone .. ")"
 
         pin:SetScript("OnEnter", function()
@@ -1111,7 +1112,7 @@ class "MapStaticPinManager" : extends "Frame" {
 
             if #stdPicked > 0 then
                 tooltip:AddBlank()
-                tooltip:AddLine("Available quests", 1, 1, 1)
+                tooltip:AddLine(AVAILABLE_QUESTS, 1, 1, 1)
                 for _, q in ipairs(stdPicked) do
                     local icon = self:_IconEscape((q.isPvP and not q.isTrivial) and "QuestPvP" or "Quest",
                                                   19, q.isTrivial)
@@ -1119,14 +1120,14 @@ class "MapStaticPinManager" : extends "Frame" {
                     tooltip:AddLine(icon .. " " .. text, r, g, b)
                 end
                 if stdTotal > #stdPicked then
-                    tooltip:AddLine("+" .. (stdTotal - #stdPicked) .. " more",
+                    tooltip:AddLine(L.QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING:format(stdTotal - #stdPicked),
                                 0.8, 0.8, 0.8)
                 end
             end
 
             if #repPicked > 0 then
                 tooltip:AddBlank()
-                tooltip:AddLine("Available repeatable", 1, 1, 1)
+                tooltip:AddLine(L.MAP_AVAILABLE_REPEATABLE, 1, 1, 1)
                 for _, q in ipairs(repPicked) do
                     local iconType = q.isTurnIn
                         and "QuestRepeatableTurnIn"
@@ -1136,7 +1137,7 @@ class "MapStaticPinManager" : extends "Frame" {
                     tooltip:AddLine(icon .. " " .. text, r, g, b)
                 end
                 if repTotal > #repPicked then
-                    tooltip:AddLine("+" .. (repTotal - #repPicked) .. " more",
+                    tooltip:AddLine(L.QUEST_HUB_TOOLTIP_MORE_QUESTS_REMAINING:format(repTotal - #repPicked),
                                 0.8, 0.8, 0.8)
                 end
             end
@@ -1153,7 +1154,7 @@ class "MapStaticPinManager" : extends "Frame" {
     -- hover — no /reload or zone change required.
     _WireAvailableQuestHover = function(self, pin, questIds)
         local count = questIds and #questIds or 0
-        local subtitle = (count > 1) and "Available quests" or "Available quest"
+        local subtitle = (count > 1) and AVAILABLE_QUESTS or AVAILABLE_QUEST
 
         pin:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             if MUI_QuestDB and questIds then
@@ -1171,7 +1172,7 @@ class "MapStaticPinManager" : extends "Frame" {
         if d.minLevel then
             label = MUI_ModuleMap:FormatLevelRange(label, d.minLevel, d.maxLevel)
         end
-        local sublabel = d.isRaid and "Raid" or "Dungeon"
+        local sublabel = d.isRaid and CALENDAR_TYPE_RAID or CALENDAR_TYPE_DUNGEON
         pin:SetScript("OnEnter", function()
             _EnsureLabelHook()
             _hoveredOverride = label
@@ -1188,8 +1189,7 @@ class "MapStaticPinManager" : extends "Frame" {
         pin:SetTooltip("ANCHOR_RIGHT", function(tooltip)
             tooltip:AddLine(label, 1,1,1, false, 13)
             tooltip:AddLine(sublabel, 1, 0.82, 0, true)
-            -- Retail's DUNGEON_POI_TOOLTIP_INSTRUCTION_LINE (not in Era's strings)
-            tooltip:AddLine("<Right Click to open Adventure Guide>", 0, 1, 0)
+            tooltip:AddLine(L.DUNGEON_POI_TOOLTIP_INSTRUCTION_LINE, 0, 1, 0)
         end)
     end;
 

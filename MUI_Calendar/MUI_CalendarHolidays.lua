@@ -24,6 +24,8 @@
 --     (calendarType "HOLIDAY", sequenceType, iconTexture, ...), plus
 --     .filter (the calendar filter that hides it), .description, .key
 
+local L = MUI.L
+
 local ART = "Interface\\Calendar\\Holidays\\Calendar_"
 local DAY = 1440    -- minutes
 
@@ -105,9 +107,9 @@ end
 -- starts at; it lasts `length` minutes.
 local HOLIDAYS = {
     {
-        key = "LunarFestival", name = "Lunar Festival", filter = "holidays", priority = 5,
+        key = "LunarFestival", name = L.CAL_HOLIDAY_LUNAR_FESTIVAL, filter = "holidays", priority = 5,
         textures = Textures("LunarFestival"), length = 20 * DAY,
-        description = "Every year the druids of Moonglade hold a celebration of their city's great triumph over an ancient evil. During the Lunar Festival, citizens of Azeroth have the opportunity to honor their elders by celebrating their sage wisdom, sharing in magnificent feasts, and of course... shooting lots of fireworks!",
+        description = L.CAL_HOLIDAY_LUNAR_FESTIVAL_DESC,
         starts = function(year)
             local date = LUNAR_FESTIVAL[year]
             if date then return { DayNumber(year, date[1], date[2]) * DAY + 600 } end
@@ -116,91 +118,91 @@ local HOLIDAYS = {
         end,
     },
     {
-        key = "LoveIsInTheAir", name = "Love is in the Air", filter = "holidays", priority = 5,
+        key = "LoveIsInTheAir", name = L.CAL_HOLIDAY_LOVE_IS_IN_THE_AIR, filter = "holidays", priority = 5,
         textures = Textures("LoveInTheAir"), length = 5 * DAY,
-        description = "Something is in the air in the major cities of Azeroth. Many guards and townsfolk spend their days giving and receiving gifts to other amorous citizens.",
+        description = L.CAL_HOLIDAY_LOVE_IS_IN_THE_AIR_DESC,
         starts = function(year) return { DayNumber(year, 2, 11) * DAY + 600 } end,
     },
     {
-        key = "Noblegarden", name = "Noblegarden", filter = "holidays", priority = 5,
+        key = "Noblegarden", name = L.CAL_HOLIDAY_NOBLEGARDEN, filter = "holidays", priority = 5,
         textures = Textures("Noblegarden"), length = DAY - 1,
-        description = "The feast of Noblegarden has arrived.  The proving grounds of each race, the place where young heroes first test their strength, each holds cleverly hidden treasure eggs.  How many can you find?",
+        description = L.CAL_HOLIDAY_NOBLEGARDEN_DESC,
         starts = function(year) return { DayNumber(year, Easter(year)) * DAY } end,
     },
     {
-        key = "ChildrensWeek", name = "Children's Week", filter = "holidays", priority = 5,
+        key = "ChildrensWeek", name = L.CAL_HOLIDAY_CHILDRENS_WEEK, filter = "holidays", priority = 5,
         textures = Textures("ChildrensWeek"), length = 7 * DAY,
-        description = "Show an orphan what the hero's life is like!  Visit Orphan Matron Nightingale in Stormwind or Orphan Matron Battlewail in Orgrimmar and make a child's dream come true.",
+        description = L.CAL_HOLIDAY_CHILDRENS_WEEK_DESC,
         starts = function(year) return { DayNumber(year, 5, 1) * DAY + 600 } end,
     },
     {
-        key = "Midsummer", name = "Midsummer Fire Festival", filter = "holidays", priority = 5,
+        key = "Midsummer", name = L.CAL_HOLIDAY_MIDSUMMER, filter = "holidays", priority = 5,
         textures = Textures("Midsummer"), length = 7 * DAY,
-        description = "A time of merriment and celebration, dedicated to the hottest season of the year.",
+        description = L.CAL_HOLIDAY_MIDSUMMER_DESC,
         starts = function(year) return { DayNumber(year, 6, 21) * DAY + 600 } end,
     },
     {
-        key = "FireworksSpectacular", name = "Fireworks Spectacular", filter = "holidays", priority = 4,
+        key = "FireworksSpectacular", name = L.CAL_HOLIDAY_FIREWORKS, filter = "holidays", priority = 4,
         textures = { ART .. "Fireworks", ART .. "Fireworks", ART .. "Fireworks" }, length = 18 * 60,
-        description = "After the sun sets, the end of Midsummer is celebrated, with an hourly firework extravaganza.\n\nTo watch the show, visit any capital city or Booty Bay.",
+        description = L.CAL_HOLIDAY_FIREWORKS_DESC,
         starts = function(year) return { DayNumber(year, 6, 27) * DAY + 600 } end,
     },
     {
-        key = "HarvestFestival", name = "Harvest Festival", filter = "holidays", priority = 5,
+        key = "HarvestFestival", name = L.CAL_HOLIDAY_HARVEST_FESTIVAL, filter = "holidays", priority = 5,
         textures = Textures("HarvestFestival"), length = 7 * DAY,
-        description = "The Harvest Festival is a time to commemorate those who have sacrificed their lives to help friends and allies.  Feasts are held outside Orgrimmar and Ironforge in honor of these fallen heroes.",
+        description = L.CAL_HOLIDAY_HARVEST_FESTIVAL_DESC,
         starts = function(year)
             local date = MID_AUTUMN[year]
             if date then return { (DayNumber(year, date[1], date[2]) - 4) * DAY + 600 } end
         end,
     },
     {
-        key = "HallowsEnd", name = "Hallow's End", filter = "holidays", priority = 5,
+        key = "HallowsEnd", name = L.CAL_HOLIDAY_HALLOWS_END, filter = "holidays", priority = 5,
         textures = Textures("HallowsEnd"), length = 14 * DAY + 60,
-        description = "Hallow's End celebrates the break of the Forsaken from the Scourge.\n\nFun and mischief reign as the Innkeepers of Azeroth give treats, and tricks, to whomever asks.",
+        description = L.CAL_HOLIDAY_HALLOWS_END_DESC,
         starts = function(year) return { DayNumber(year, 10, 18) * DAY + 600 } end,
     },
     {
-        key = "WinterVeil", name = "Feast of Winter Veil", filter = "holidays", priority = 5,
+        key = "WinterVeil", name = L.CAL_HOLIDAY_WINTER_VEIL, filter = "holidays", priority = 5,
         textures = Textures("WinterVeil"), length = 18 * DAY,
-        description = "Greatfather Winter is visiting the cities of Ironforge and Orgrimmar, courtesy of Smokywood Pastures.  And throughout Azeroth, it is the season to be jolly!",
+        description = L.CAL_HOLIDAY_WINTER_VEIL_DESC,
         starts = function(year) return { DayNumber(year, 12, 15) * DAY + 600 } end,
     },
     {
-        key = "DarkmoonElwynn", name = "Darkmoon Faire", filter = "darkmoon", priority = 1,
+        key = "DarkmoonElwynn", name = CALENDAR_FILTER_DARKMOON, filter = "darkmoon", priority = 1,
         textures = Textures("DarkmoonFaireElwynn"), length = 7 * DAY - 1,
-        description = "The Darkmoon Faire is here, this time in idyllic Elwynn Forest.\n\nMeet Silas Darkmoon and his troupe, play games that test mind and nerve, and behold exotic sights from the four corners of Azeroth... and beyond!",
+        description = L.CAL_HOLIDAY_DARKMOON_ELWYNN_DESC,
         months = 1,
     },
     {
-        key = "DarkmoonMulgore", name = "Darkmoon Faire", filter = "darkmoon", priority = 1,
+        key = "DarkmoonMulgore", name = CALENDAR_FILTER_DARKMOON, filter = "darkmoon", priority = 1,
         textures = Textures("DarkmoonFaireMulgore"), length = 7 * DAY - 1,
-        description = "The Darkmoon Faire is here, this time at the foot of Thunder Bluff.\n\nMeet Silas Darkmoon and his troupe, play games that test mind and nerve, and behold exotic sights from the four corners of Azeroth... and beyond!",
+        description = L.CAL_HOLIDAY_DARKMOON_MULGORE_DESC,
         months = 0,
     },
     {
-        key = "FishingExtravaganza", name = "Stranglethorn Fishing Extravaganza", filter = "weekly", priority = 0,
+        key = "FishingExtravaganza", name = L.CAL_HOLIDAY_FISHING_EXTRAVAGANZA, filter = "weekly", priority = 0,
         textures = { ART .. "FishingExtravaganza", ART .. "FishingExtravaganza", ART .. "FishingExtravaganza" },
         length = 120,
-        description = "A fishing tournament, competed along the coasts of Stranglethorn Vale.  Catch as many tastyfish as you can!  \n\nWill you be one of the first to catch forty fish and win a prize?  Tastyfish can be caught for two hours after the contest begins, but you'll have to be quick to win!",
+        description = L.CAL_HOLIDAY_FISHING_EXTRAVAGANZA_DESC,
         anchor = { 2026, 1, 4 }, period = 7, hour = 14,
     },
     {
-        key = "CallToArmsAB", name = "Call to Arms: Arathi Basin", filter = "battlegrounds", priority = 0,
+        key = "CallToArmsAB", name = L.CAL_HOLIDAY_CALL_TO_ARMS_AB, filter = "battlegrounds", priority = 0,
         textures = Textures("WeekendBattlegrounds"), length = 4 * DAY - 1,
-        description = "The battle for Arathi Basin grows intense.  Greater honor is given to those who pledge sword to their liege and battle in Arathi.",
+        description = L.CAL_HOLIDAY_CALL_TO_ARMS_AB_DESC,
         anchor = { 2026, 1, 2 }, period = 21, hour = 0,
     },
     {
-        key = "CallToArmsAV", name = "Call to Arms: Alterac Valley", filter = "battlegrounds", priority = 0,
+        key = "CallToArmsAV", name = L.CAL_HOLIDAY_CALL_TO_ARMS_AV, filter = "battlegrounds", priority = 0,
         textures = Textures("WeekendBattlegrounds"), length = 4 * DAY - 1,
-        description = "The battle for Alterac Valley grows intense.  Greater honor is given to those who pledge sword to their liege and battle in Alterac.",
+        description = L.CAL_HOLIDAY_CALL_TO_ARMS_AV_DESC,
         anchor = { 2026, 1, 9 }, period = 21, hour = 0,
     },
     {
-        key = "CallToArmsWSG", name = "Call to Arms: Warsong Gulch", filter = "battlegrounds", priority = 0,
+        key = "CallToArmsWSG", name = L.CAL_HOLIDAY_CALL_TO_ARMS_WSG, filter = "battlegrounds", priority = 0,
         textures = Textures("WeekendBattlegrounds"), length = 4 * DAY - 1,
-        description = "The battle for Warsong Gulch grows intense.  Greater honor is given to those who pledge sword to their liege and battle in the Gulch.",
+        description = L.CAL_HOLIDAY_CALL_TO_ARMS_WSG_DESC,
         anchor = { 2026, 1, 16 }, period = 21, hour = 0,
     },
 }

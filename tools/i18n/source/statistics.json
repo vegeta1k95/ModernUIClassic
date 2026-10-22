@@ -1,0 +1,74 @@
+{
+ "statistics/itemsLooted": {
+  "en": "Items looted",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/epicsLooted": {
+  "en": "Epic items looted",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/books/set": {
+  "en": "Books read",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/fallsSurvived": {
+  "en": "Falls survived (>50% health)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/deaths_av": {
+  "en": "Deaths in Alterac Valley",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/deaths_ab": {
+  "en": "Deaths in Arathi Basin",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/deaths_wsg": {
+  "en": "Deaths in Warsong Gulch",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/groupDeaths": {
+  "en": "Group member deaths witnessed",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/speedTop": {
+  "en": "Fastest recorded run speed",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/bossesSlain": {
+  "en": "Dungeon and raid bosses slain",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_11520": {
+  "en": "Taragaman the Hungerer kills (Ragefire Chasm)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_639": {
+  "en": "Edwin VanCleef kills (The Deadmines)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_4275": {
+  "en": "Archmage Arugal kills (Shadowfang Keep)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_1716": {
+  "en": "Bazil Thredd kills (The Stockade)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_10440": {
+  "en": "Baron Rivendare kills (Stratholme)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_1853": {
+  "en": "Darkmaster Gandling kills (Scholomance)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_15339": {
+  "en": "Ossirian the Unscarred kills (Ruins of Ahn'Qiraj)",
+  "note": "a statistic's name (a number follows it)"
+ },
+ "statistics/boss_15990": {
+  "en": "Kel'Thuzad kills (Naxxramas)",
+  "note": "a statistic's name (a number follows it)"
+ }
+}

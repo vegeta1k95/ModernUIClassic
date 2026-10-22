@@ -14,7 +14,7 @@ class "UnitFramePet" {
         Frame(PetFrameHealthBar):HideFrame()
         Frame(PetFrameManaBar):HideFrame()
 
-        self.frame = UnitFrameEditable(PetFrame, "Pet")
+        self.frame = UnitFrameEditable(PetFrame, HUD_EDIT_MODE_PET_FRAME_LABEL)
         self.frame:EditModeSetOption("pet")
         self.frame:ClearAllPoints()
         self.frame:SetSize(103, 41)

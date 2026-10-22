@@ -30,6 +30,19 @@ object "MountDB" {
         return C_Spell.GetSpellTexture(mount.spell)
     end;
 
+    -- The text in the client's language, from MUI_DB/Locale: [spell] =
+    -- { name, lore, vendor, drop }; the list is sorted by the names again.
+    Localize = function(self, text)
+        for _, mount in ipairs(self._mounts) do
+            local t = text[mount.spell]
+            if t then
+                mount.name, mount.lore = t.name or mount.name, t.lore or mount.lore
+                mount.vendor, mount.drop = t.vendor or mount.vendor, t.drop or mount.drop
+            end
+        end
+        table.sort(self._mounts, function(a, b) return strcmputf8i(a.name, b.name) < 0 end)
+    end;
+
     __init = function(self)
         self._mounts = {
             { spell = 22719, item = 18243, name = "Black Battlestrider", display = 14372, dist = 6.1, eye = 1.01, faction = "Alliance", vendor = "Lieutenant Karter", cost = 1000000, area = 2918,

@@ -38,10 +38,10 @@ object "GameMenuSkin" : extends "Module" {
         self._border:FillHeight()
         self._border:SetFrameLevel(self._menuFrame:GetFrameLevel())
 
-        self._header = DiamondHeader(self._menuFrame, nil, "Game Menu")
+        self._header = DiamondHeader(self._menuFrame, nil, MAINMENU_BUTTON)
         self._header:AlignTop(self._border, -26)
 
-        self._btnEditMode = ButtonRed(self._menuFrame, "MUI_GameMenuEditMode", "Edit Mode")
+        self._btnEditMode = ButtonRed(self._menuFrame, "MUI_GameMenuEditMode", HUD_EDIT_MODE_MENU)
         self._btnEditMode:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         self._btnEditMode:SetScale(0.9)
         self._btnEditMode.OnClick = function()

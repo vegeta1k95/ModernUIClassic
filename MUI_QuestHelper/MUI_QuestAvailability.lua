@@ -652,6 +652,7 @@ class "QuestAvailability" : extends "Frame" {
             if q and q.startedBy then
                 local trivial    = self._trivial[questId]    and true or false
                 local repeatable = self._repeatable[questId] and true or false
+                local name       = MUI_QuestDB:LocalizeQuestName(questId)
                 local npcs = q.startedBy[1]
                 if npcs then
                     for _, npcId in ipairs(npcs) do
@@ -660,7 +661,7 @@ class "QuestAvailability" : extends "Frame" {
                             for _, c in ipairs(npc.spawns[areaId]) do
                                 out[#out + 1] = {
                                     questId      = questId,
-                                    name         = q.name,
+                                    name         = name,
                                     kind         = "npc",
                                     targetId     = npcId,
                                     areaId       = areaId,
@@ -682,7 +683,7 @@ class "QuestAvailability" : extends "Frame" {
                             for _, c in ipairs(obj.spawns[areaId]) do
                                 out[#out + 1] = {
                                     questId      = questId,
-                                    name         = q.name,
+                                    name         = name,
                                     kind         = "object",
                                     targetId     = objId,
                                     areaId       = areaId,
@@ -708,7 +709,7 @@ class "QuestAvailability" : extends "Frame" {
                                     for _, c in ipairs(obj.spawns[areaId]) do
                                         out[#out + 1] = {
                                             questId      = questId,
-                                            name         = q.name,
+                                            name         = name,
                                             kind         = "object",
                                             targetId     = objId,
                                             areaId       = areaId,

@@ -18,6 +18,8 @@
 -- (AUCTION_HOUSE_POST_WARNING) the native frame's dialog answers through
 -- that button, and the pending post has to be the one it holds.
 
+local L = MUI.L
+
 local Style = MUI_AuctionHouseStyle
 local S     = Style.S
 
@@ -27,10 +29,10 @@ local ROW_TOP, ROW_STEP, ROW_H = 96, 45, 30
 local LABEL_W = 93
 
 local MARKET_COLUMNS = {
-    { key = "unit",   title = "Unit Price", width = 110, justify = "RIGHT", text = function(d) return d.unitText end },
-    { key = "buyout", title = "Buyout",     width = 110, justify = "RIGHT", text = function(d) return d.buyoutText end },
-    { key = "count",  title = "Qty",        width = 44,  justify = "RIGHT", text = function(d) return d.count end },
-    { key = "owner",  title = "Seller",     fill = true, justify = "LEFT",  text = function(d) return d.owner or "" end },
+    { key = "unit",   title = AUCTION_HOUSE_HEADER_UNIT_PRICE, width = 110, justify = "RIGHT", text = function(d) return d.unitText end },
+    { key = "buyout", title = BUYOUT,     width = 110, justify = "RIGHT", text = function(d) return d.buyoutText end },
+    { key = "count",  title = L.AH_QUANTITY_SHORT,        width = 44,  justify = "RIGHT", text = function(d) return d.count end },
+    { key = "owner",  title = AUCTION_HOUSE_HEADER_SELLER, fill = true, justify = "LEFT",  text = function(d) return d.owner or "" end },
 }
 
 local function Coins(copper)
@@ -75,13 +77,13 @@ class "AuctionHouseSell" : extends "Frame" {
         self:_BuildPlate(form, inset)
         self:_BuildSlot(form)
 
-        self._quantityRow = self:_Row("Quantity")
+        self._quantityRow = self:_Row(AUCTION_HOUSE_QUANTITY_LABEL)
         self._quantity = AuctionHouseInput(self._quantityRow, 134)
         self._quantity:SetNumeric(true)
         self._quantity:SetMaxLetters(4)
         self._quantity:RightOf(self._quantityRow.label, 18 * S)
         self._quantity.OnTextChanged = function() self:_Validate() end
-        local max = ButtonGold(self._quantityRow, nil, "Max")
+        local max = ButtonGold(self._quantityRow, nil, AUCTION_HOUSE_MAX_QUANTITY_BUTTON)
         max:SetSize(50 * S, 20 * S)
         max.label:SetFontSize(10)
         max:RightOf(self._quantity, 10 * S)
@@ -89,17 +91,17 @@ class "AuctionHouseSell" : extends "Frame" {
             self._quantity:SetNumber(math.min(self._stackCount, self._totalCount))
         end
 
-        self._buyoutRow = self:_Row("Buyout")
+        self._buyoutRow = self:_Row(AUCTION_HOUSE_BUYOUT_LABEL)
         self._buyout = AuctionHouseMoneyInput(self._buyoutRow)
         self._buyout:RightOf(self._buyoutRow.label, 18 * S)
         self._buyout.OnChanged = function() self:_Validate() end
 
-        self._startBidRow = self:_Row("Starting Bid")
+        self._startBidRow = self:_Row(AUCTION_HOUSE_BID_LABEL)
         self._startBid = AuctionHouseMoneyInput(self._startBidRow)
         self._startBid:RightOf(self._startBidRow.label, 18 * S)
         self._startBid.OnChanged = function() self:_Validate() end
 
-        self._durationRow = self:_Row("Duration")
+        self._durationRow = self:_Row(AUCTION_HOUSE_DURATION_LABEL)
         self._durationButton = DropdownSimple(self._durationRow)
         self._durationButton:SetSize(120 * S, 22)
         self._durationButton:RightOf(self._durationRow.label, 18 * S)
@@ -113,21 +115,21 @@ class "AuctionHouseSell" : extends "Frame" {
         self._durationMenu:SetItems(items)
         self._durationButton.OnClick = function() self._durationMenu:Toggle() end
 
-        self._depositRow = self:_Row("Deposit")
+        self._depositRow = self:_Row(AUCTION_HOUSE_DEPOSIT_LABEL)
         self._deposit = Style:Label(self._depositRow, 10.5, 1, 1, 1)
         self._deposit:RightOf(self._depositRow.label, 18 * S)
 
-        self._totalRow = self:_Row("Total Price")
+        self._totalRow = self:_Row(AUCTION_HOUSE_TOTAL_PRICE_LABEL)
         self._total = Style:Label(self._totalRow, 10.5, 1, 1, 1)
         self._total:RightOf(self._totalRow.label, 18 * S)
 
-        self._post = ButtonGold(form, nil, "Create Auction")
+        self._post = ButtonGold(form, nil, AUCTION_HOUSE_POST_BUTTON)
         self._post:SetSize(160 * S, 22 * S)
         self._post.label:SetFontSize(10.5)
         self._post:SetClickSound(SOUNDKIT.LOOT_WINDOW_COIN_SOUND)
         self._post.OnClick = function() self:_Post() end
 
-        self._mode = CheckBoxThin(form, nil, "Buyout Only")
+        self._mode = CheckBoxThin(form, nil, L.AH_BUYOUT_ONLY)
         self._mode:SetSize(110, 13)
         self._mode:SetBoxSize(11, 11)
         self._mode.label:SetFontSize(10.5)
@@ -140,7 +142,7 @@ class "AuctionHouseSell" : extends "Frame" {
             self:_Validate()
         end
         self._mode:SetTooltip("ANCHOR_RIGHT", function(tip)
-            tip:AddLine("Sell at a fixed price. Uncheck to set a starting bid, with or without a buyout.", 1, 0.82, 0, true)
+            tip:AddLine(L.AH_BUYOUT_ONLY_TOOLTIP, 1, 0.82, 0, true)
         end)
     end;
 
@@ -149,7 +151,7 @@ class "AuctionHouseSell" : extends "Frame" {
         local plate = Frame("Frame", form)
         plate:PutInfront(inset, 1)
         local label = Style:Label(plate, 9.5, 1, 0.82, 0)
-        label:SetText("Create Auction")
+        label:SetText(AUCTION_HOUSE_POST_BUTTON)
         label:CenterInParent()
         plate:SetSize(label:GetStringWidth() + 42 * S, 23 * S)
         plate:AlignParentTopLeft(-20 * S, 42 * S)
@@ -197,8 +199,8 @@ class "AuctionHouseSell" : extends "Frame" {
             if GetAuctionSellItemInfo() then
                 tip:SetAuctionSellItem()
             else
-                tip:AddTitle("Auction Item")
-                tip:AddLine("Drag an item here to auction it, or right-click it in your bags.", 1, 1, 1, true)
+                tip:AddTitle(AUCTION_ITEM)
+                tip:AddLine(L.AH_SELL_SLOT_TOOLTIP, 1, 1, 1, true)
             end
         end)
     end;
@@ -385,7 +387,7 @@ class "AuctionHouseSell" : extends "Frame" {
             elseif key == "count" then
                 av, bv = a.count, b.count
             elseif key == "owner" then
-                av, bv = string.lower(a.owner or ""), string.lower(b.owner or "")
+                av, bv = strcmputf8i(a.owner or "", b.owner or ""), 0     -- the sign of the client's own comparison
             else
                 av, bv = a.unit, b.unit
             end

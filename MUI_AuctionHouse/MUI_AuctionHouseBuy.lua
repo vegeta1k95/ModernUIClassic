@@ -9,6 +9,8 @@
 -- (OnRefresh) and the rows are rebuilt, and nothing is bid on without
 -- checking that the auction at that index is still the one selected.
 
+local L = MUI.L
+
 local Style = MUI_AuctionHouseStyle
 local S     = Style.S
 
@@ -43,12 +45,12 @@ StaticPopupDialogs[POPUP_BID] = {
 }
 
 local COLUMNS = {
-    { key = "unit",   title = "Unit Price", width = 105, justify = "RIGHT", text = function(d) return d.unitText end },
-    { key = "buyout", title = "Buyout",     width = 105, justify = "RIGHT", text = function(d) return d.buyoutText end },
-    { key = "bid",    title = "Bid",        width = 105, justify = "RIGHT", text = function(d) return d.bidText end },
-    { key = "count",  title = "Qty",        width = 44,  justify = "RIGHT", text = function(d) return d.count end },
-    { key = "owner",  title = "Seller",     fill = true, justify = "LEFT",  text = function(d) return d.owner or "" end },
-    { key = "time",   title = "Time Left",  width = 80,  justify = "RIGHT", text = function(d) return d.timeText end },
+    { key = "unit",   title = AUCTION_HOUSE_HEADER_UNIT_PRICE, width = 105, justify = "RIGHT", text = function(d) return d.unitText end },
+    { key = "buyout", title = BUYOUT,     width = 105, justify = "RIGHT", text = function(d) return d.buyoutText end },
+    { key = "bid",    title = BID,        width = 105, justify = "RIGHT", text = function(d) return d.bidText end },
+    { key = "count",  title = L.AH_QUANTITY_SHORT,        width = 44,  justify = "RIGHT", text = function(d) return d.count end },
+    { key = "owner",  title = AUCTION_HOUSE_HEADER_SELLER, fill = true, justify = "LEFT",  text = function(d) return d.owner or "" end },
+    { key = "time",   title = CLOSES_IN,  width = 80,  justify = "RIGHT", text = function(d) return d.timeText end },
 }
 
 class "AuctionHouseBuy" : extends "Frame" {
@@ -62,7 +64,7 @@ class "AuctionHouseBuy" : extends "Frame" {
         self._sortKey  = "unit"
         self._sortDesc = false
 
-        self._back = ButtonGold(self, nil, "Back")
+        self._back = ButtonGold(self, nil, AUCTION_HOUSE_BACK_BUTTON)
         self._back:SetSize(110 * S, 22 * S)
         self._back.label:SetFontSize(10.5)
         self._back:AlignParentTopLeft(9 * S, 11 * S)
@@ -115,7 +117,7 @@ class "AuctionHouseBuy" : extends "Frame" {
     _BuildActions = function(self)
         local bottom = (8 + (AuctionHouseInput.HEIGHT - 22) / 2) * S
 
-        self._buyout = ButtonGold(self, nil, "Buyout")
+        self._buyout = ButtonGold(self, nil, AUCTION_HOUSE_BUYOUT_BUTTON)
         self._buyout:SetSize(110 * S, 22 * S)
         self._buyout.label:SetFontSize(10.5)
         self._buyout:AlignParentBottomRight(bottom, 8 * S)
@@ -124,7 +126,7 @@ class "AuctionHouseBuy" : extends "Frame" {
             if row then StaticPopup_Show(POPUP_BUYOUT, nil, nil, { panel = self, row = row, amount = row.buyout }) end
         end
 
-        self._bid = ButtonGold(self, nil, "Bid")
+        self._bid = ButtonGold(self, nil, AUCTION_HOUSE_BID_BUTTON)
         self._bid:SetSize(110 * S, 22 * S)
         self._bid.label:SetFontSize(10.5)
         self._bid:LeftOf(self._buyout, 6 * S)
@@ -242,7 +244,7 @@ class "AuctionHouseBuy" : extends "Frame" {
             elseif key == "count" then
                 av, bv = a.count, b.count
             elseif key == "owner" then
-                av, bv = string.lower(a.owner or ""), string.lower(b.owner or "")
+                av, bv = strcmputf8i(a.owner or "", b.owner or ""), 0     -- the sign of the client's own comparison
             elseif key == "time" then
                 av, bv = a.timeLeft or 0, b.timeLeft or 0
             else
@@ -290,7 +292,7 @@ class "AuctionHouseBuy" : extends "Frame" {
     -- buffer still holds that auction at that index.
     Place = function(self, row, amount)
         if not self._owner.scan:Matches(row) then
-            UIErrorsFrame:AddMessage("That auction has changed.", 1.0, 0.1, 0.1, 1.0)
+            UIErrorsFrame:AddMessage(L.AH_AUCTION_CHANGED, 1.0, 0.1, 0.1, 1.0)
             return
         end
         PlaceAuctionBid("list", row.index, amount)

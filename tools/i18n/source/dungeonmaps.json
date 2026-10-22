@@ -1,0 +1,206 @@
+{
+ "dmap/Ahn'Qiraj 40": {
+  "en": "Ahn'Qiraj 40",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/BRD Outside": {
+  "en": "BRD Outside",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/BWL 3": {
+  "en": "BWL 3",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Barov Family Crypt": {
+  "en": "Barov Family Crypt",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Blackrock Depths / Molten Core": {
+  "en": "Blackrock Depths / Molten Core",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Blackrock Spire (LBRS and UBRS. Map is of the Draenor version, in classic they're the same instance)": {
+  "en": "Blackrock Spire (LBRS and UBRS. Map is of the Draenor version, in classic they're the same instance)",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/C'Thuns Chamber": {
+  "en": "C'Thuns Chamber",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Caverns of Maraudon": {
+  "en": "Caverns of Maraudon",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Chest of the Seven Encounter": {
+  "en": "Chest of the Seven Encounter",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Crimson Laboratories": {
+  "en": "Crimson Laboratories",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Deadmines Exit to Westfall": {
+  "en": "Deadmines Exit to Westfall",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Dining Hall": {
+  "en": "Dining Hall",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Edge of Madness Event": {
+  "en": "Edge of Madness Event",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/LBRS": {
+  "en": "LBRS",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Lord Godfrey's Chamber": {
+  "en": "Lord Godfrey's Chamber",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Lower Floor": {
+  "en": "Lower Floor",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Lower Observatory": {
+  "en": "Lower Observatory",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Maraudon Outside Orange": {
+  "en": "Maraudon Outside Orange",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Maraudon Outside Orange Side": {
+  "en": "Maraudon Outside Orange Side",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Maraudon Outside Purple": {
+  "en": "Maraudon Outside Purple",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Maraudon Outside Purple Side": {
+  "en": "Maraudon Outside Purple Side",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Outside": {
+  "en": "Outside",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Prison of Immol'Thar": {
+  "en": "Prison of Immol'Thar",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Ring of Law Event": {
+  "en": "Ring of Law Event",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/SM Armory": {
+  "en": "SM Armory",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/SM Cathedral": {
+  "en": "SM Cathedral",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/SM Entrance": {
+  "en": "SM Entrance",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/SM Graveyard": {
+  "en": "SM Graveyard",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/SM Library": {
+  "en": "SM Library",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Stormwind": {
+  "en": "Stormwind",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Stratholme Live": {
+  "en": "Stratholme Live",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Stratholme Undead": {
+  "en": "Stratholme Undead",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Tazz'Alor (click when you go down the steps)": {
+  "en": "Tazz'Alor (click when you go down the steps)",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Arachnid Quarter": {
+  "en": "The Arachnid Quarter",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Construct Quarter": {
+  "en": "The Construct Quarter",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Courtyard": {
+  "en": "The Courtyard",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Deadmines Outside": {
+  "en": "The Deadmines Outside",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Great Ossuary (Lower)": {
+  "en": "The Great Ossuary (Lower)",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Great Ossuary (Upper)": {
+  "en": "The Great Ossuary (Upper)",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Lower Necropolis": {
+  "en": "The Lower Necropolis",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Military Quarter": {
+  "en": "The Military Quarter",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Plague Quarter": {
+  "en": "The Plague Quarter",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Pool of Ask'Ar": {
+  "en": "The Pool of Ask'Ar",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Upper Necropolis": {
+  "en": "The Upper Necropolis",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Vacant Den": {
+  "en": "The Vacant Den",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/The Wall Walk": {
+  "en": "The Wall Walk",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Tinker's Court": {
+  "en": "Tinker's Court",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/UBRS": {
+  "en": "UBRS",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Uldaman Outside": {
+  "en": "Uldaman Outside",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Upper Observatory": {
+  "en": "Upper Observatory",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ },
+ "dmap/Wailing Caverns Outside": {
+  "en": "Wailing Caverns Outside",
+  "note": "a label on a dungeon's map: a boss, a room, a way out or a note"
+ }
+}

@@ -11,13 +11,14 @@ object "QuestDB" {
         return self._data
     end;
 
+    -- A quest's title as the client has it, once the server has sent it
+    -- (C_QuestLog.GetQuestInfo, as Era's QuestUtils_GetQuestName asks):
+    -- the table's own (MUI_DB/Locale's) until then.
     LocalizeQuestName = function(self, id)
         local q = self._data and self._data[id]
         if not q then return nil end
-        if self._localeNames then
-            local override = self._localeNames[id]
-            if override then return override end
-        end
+        local title = C_QuestLog.GetQuestInfo(id)
+        if title and title ~= "" then return title end
         return q.name
     end;
 
@@ -26,6 +27,18 @@ object "QuestDB" {
         local c = 0
         for _ in pairs(self._data) do c = c + 1 end
         return c
+    end;
+
+    -- Titles and objective texts in the client's language, from
+    -- MUI_DB/Locale: id -> { title, { objective text, ... } }.
+    Localize = function(self, quests)
+        for id, text in pairs(quests) do
+            local row = self._data[id]
+            if row then
+                row.name = text[1] or row.name
+                row.objectivesText = text[2] or row.objectivesText
+            end
+        end
     end;
 
     _data = {

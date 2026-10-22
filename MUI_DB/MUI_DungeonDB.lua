@@ -48,6 +48,10 @@ object "DungeonDB" {
             [3428] = { outerAreaId = 1377, x = 28.6, y = 92.3, name = "Temple of Ahn'Qiraj", isRaid = true, minLevel = 60, maxLevel = 60 },
             [3456] = { outerAreaId = 139,  x = 39.9, y = 25.8, name = "Naxxramas",           isRaid = true, minLevel = 60, maxLevel = 60 },
         }
+        -- Each by the client's name for it, in its language.
+        for areaId, d in pairs(self._dungeons) do
+            d.name = C_Map.GetAreaInfo(areaId) or d.name
+        end
     end;
 
     -- Returns {outerAreaId, x, y, name, isRaid} for the dungeon's primary

@@ -11,6 +11,8 @@
 -- QuestTrackerObjective, QuestTrackerCollapseBtn) are loaded by
 -- MUI_QuestHelper before MUI_Map and are referenced as-is here.
 
+local L = MUI.L
+
 local HEADER_QUEST_PAD    = -2.5
 local QUEST_GAP           = 2
 local OBJECTIVE_GAP       = 2
@@ -242,7 +244,7 @@ class "QuestLogQuest" : extends "Frame" {
             end
 
             tooltip:AddBlank()
-            tooltip:AddLine("<Click for more details>", 0, 1, 0)
+            tooltip:AddLine("<" .. CLICK_FOR_DETAILS .. ">", 0, 1, 0)
             
         end)
 
@@ -292,11 +294,11 @@ class "QuestLogQuest" : extends "Frame" {
             and MUI_DB.settings.questHelper
             and MUI_DB.settings.questHelper.showQuestLevel
 
-        local title = MUI_QuestHelper:GetQuestDisplayName(questId, entry.title or ("quest " .. questId))
+        local title = MUI_QuestHelper:GetQuestDisplayName(questId, entry.title or UNKNOWN)
         if showLvl then 
             title = "[".. entry.level .. "] " .. title
         end
-        if entry.isFailed then title = title .. " |cffff2020(Failed)|r" end
+        if entry.isFailed then title = title .. " |cffff2020(" .. FAILED .. ")|r" end
         self.title:SetText(title)
 
         if not showObjs then
@@ -307,7 +309,7 @@ class "QuestLogQuest" : extends "Frame" {
         end
 
         if entry.isComplete then
-            self.turnInLabel:SetText("Can Turn In")
+            self.turnInLabel:SetText(QUEST_WATCH_QUEST_READY)
             self.turnInLabel:SetTextColor(0.7, 0.7, 0.7, 1)
             self.turnInLabel:Show()
             self.objContainer:SetHeight(math.max(OBJECTIVE_H,
@@ -340,8 +342,7 @@ class "QuestLogQuest" : extends "Frame" {
             -- No leaderboard objectives — fall back to the DB's
             -- objectivesText so quests like "A Threat Within" still show
             -- a description under the title.
-            local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-            local lines = q and q.objectivesText
+            local lines = MUI_QuestHelper:GetObjectivesText(questId)
             if lines and #lines > 0 then
                 local text = type(lines) == "table"
                              and table.concat(lines, "\n")
@@ -443,15 +444,15 @@ class "QuestLogQuest" : extends "Frame" {
         local questId   = self.questId  -- close over local; self.questId may rebind on rebuild
 
         self._contextMenu:SetItems({
-            { type = "text", label = isTracked and "Untrack quest" or "Track quest",
+            { type = "text", label = isTracked and UNTRACK_QUEST or TRACK_QUEST,
               OnClick = function()
                   MUI_QuestHelper:SetTracked(questId, not isTracked)
               end },
-            { type = "text", label = "Focus quest",
+            { type = "text", label = L.SUPER_TRACK_QUEST,
               OnClick = function()
                   MUI_QuestHelper:SetFocusedQuest(questId)
               end },
-            { type = "text", label = "Share quest", disabled = not canShare,
+            { type = "text", label = SHARE_QUEST, disabled = not canShare,
               OnClick = function()
                   local i = _findQuestLogIndex(questId)
                   if not i then return end
@@ -460,7 +461,7 @@ class "QuestLogQuest" : extends "Frame" {
                   QuestLogPushQuest()
                   SelectQuestLogEntry(prev)
               end },
-            { type = "text", label = "Abandon quest",
+            { type = "text", label = ABANDON_QUEST,
               OnClick = function()
                   local i = _findQuestLogIndex(questId)
                   if not i then return end

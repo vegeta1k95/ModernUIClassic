@@ -13,6 +13,8 @@
 --     :DepositReagents()      every trade good in the bags, into the bank
 --     .grid .tabs
 
+local L = MUI.L
+
 local FRAME_W, FRAME_H = 664, 414
 -- The panel manager puts Era's frame 16 px left of and 12 px above where a
 -- window's art begins: its classic art has that much empty margin.
@@ -146,17 +148,17 @@ class "BankWindow" : extends "PanelPortrait" {
         self._sort:SetSize(23, 23)
         self._sort:AlignParentRight(-31, -1)
         self._sort:SetTooltip("ANCHOR_LEFT", function(tooltip)
-            tooltip:AddLine("Clean Up Bank", 1, 1, 1, true, 13)
+            tooltip:AddLine(BAG_CLEANUP_BANK, 1, 1, 1, true, 13)
         end)
         self._sort.OnClick = function() MUI_BagSorter:SortBank() end
     end;
 
     _BuildDeposit = function(self)
-        self._deposit = ButtonGold(self, nil, "Deposit All Reagents")
+        self._deposit = ButtonGold(self, nil, REAGENTBANK_DEPOSIT)
         self._deposit:SetSize(160, 22)
         self._deposit:AlignParentBottom(FOOTER + 10)
         self._deposit:SetTooltip("ANCHOR_RIGHT", function(tooltip)
-            tooltip:AddLine("Move every trade good in your bags into the bank.", 1, 0.82, 0, true)
+            tooltip:AddLine(L.BANK_DEPOSIT_TOOLTIP, 1, 0.82, 0, true)
         end)
         self._deposit.OnClick = function() self:DepositReagents() end
     end;
@@ -189,7 +191,7 @@ class "BankWindow" : extends "PanelPortrait" {
 
     -- A visit starts: Era's frame has just opened at a banker.
     _OnOpen = function(self)
-        self:SetTitle(UnitName("npc") or "Bank")
+        self:SetTitle(UnitName("npc") or BANK)
         self:SetPortraitFromUnit("npc")
         self.grid:ResetScroll()
         self:Refresh()

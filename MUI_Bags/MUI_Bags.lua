@@ -1,5 +1,7 @@
 -- Modern bag button reskin
 
+local L = MUI.L
+
 local TEX = MUI.TEX_SKIN .. "bags\\"
 local ICON_SIZE = 25
 local SLOT_SIZE = 30.5
@@ -26,7 +28,7 @@ class "BagBar" : extends {"Frame", "Editable"} {
     __init = function(self)
         Frame.__init(self, "Frame", MUI_Root, "MUI_BagBar")
         Editable.__init(self)
-        self:EditModeSetLabel("Bags Bar")
+        self:EditModeSetLabel(HUD_EDIT_MODE_BAGS_LABEL)
         self:EditModeSetupSettings(function(content) end)
         -- KeyRingButton's OnShow calls GetParent():Layout() (it expects Blizzard's BagsBar).
         self:SetNativeMethod("Layout", function() end)
@@ -425,8 +427,8 @@ object "ModuleBags" : extends "Module" {
         self._btnSort:SetSize(23, 23)
         self._btnSort:AlignParentRight(-28, -1)
         self._btnSort:SetTooltip("ANCHOR_LEFT", function(tooltip)
-            tooltip:AddLine("Sort items in bags", 1, 1, 1, true, 13)
-            tooltip:AddLine("Automatic item sorting is a setting that automatically places items. You can choose a specific type of item for each bag by clicking the icon in the upper-left corner of the bag.", 1, 0.82, 0, true)
+            tooltip:AddLine(BAG_CLEANUP_BAGS, 1, 1, 1, true, 13)
+            tooltip:AddLine(L.BAGS_CLEANUP_TOOLTIP, 1, 0.82, 0, true)
         end)
         self._btnSort.OnClick = function()
             MUI_BagSorter:SortBags()
@@ -882,7 +884,7 @@ object "ModuleBags" : extends "Module" {
         menu:SetItems({
             {
                 type    = "text",
-                label   = self._combined and "Separate Bags" or "Combine Bags",
+                label   = self._combined and L.BAGS_SEPARATE or USE_COMBINED_BAGS_TEXT,
                 OnClick = function() self:SetCombined(not self._combined) end,
             },
         })
@@ -929,7 +931,7 @@ object "ModuleBags" : extends "Module" {
         frame:SetWidth(cols * slotW + (cols - 1) * ITEM_SPACING_X + 2 * CONTAINER_SPACING)
         frame:SetHeight(COMBINED_TOP + rows * slotH + (rows - 1) * ITEM_SPACING_Y + COMBINED_BOTTOM + 12)
 
-        host.panel:SetTitle(BACKPACK_TOOLTIP or "Bags")
+        host.panel:SetTitle(BACKPACK_TOOLTIP)
         host.panel:SetPortrait(133633)
 
         -- Fill from the bottom-right: item 1 (left-most bag's first slot) sits

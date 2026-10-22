@@ -128,6 +128,24 @@ _STD_DB_METHODS = """\
         return c
     end;"""
 
+# The DBs of things with a name: MUI_DB/Locale puts it in the client's language.
+_NAMED_DB_METHODS = _STD_DB_METHODS + """
+
+    -- Names in the client's language, from MUI_DB/Locale: id -> name, or
+    -- { name, subName } (a creature's title under its name).
+    Localize = function(self, names)
+        for id, name in pairs(names) do
+            local row = self._data[id]
+            if row then
+                if type(name) == "table" then
+                    row.name, row.subName = name[1], name[2] or row.subName
+                else
+                    row.name = name
+                end
+            end
+        end
+    end;"""
+
 _QUEST_METHODS = """\
     Get = function(self, id)
         return self._data and self._data[id]
@@ -137,13 +155,14 @@ _QUEST_METHODS = """\
         return self._data
     end;
 
+    -- A quest's title as the client has it, once the server has sent it
+    -- (C_QuestLog.GetQuestInfo, as Era's QuestUtils_GetQuestName asks):
+    -- the table's own (MUI_DB/Locale's) until then.
     LocalizeQuestName = function(self, id)
         local q = self._data and self._data[id]
         if not q then return nil end
-        if self._localeNames then
-            local override = self._localeNames[id]
-            if override then return override end
-        end
+        local title = C_QuestLog.GetQuestInfo(id)
+        if title and title ~= "" then return title end
         return q.name
     end;
 
@@ -152,6 +171,18 @@ _QUEST_METHODS = """\
         local c = 0
         for _ in pairs(self._data) do c = c + 1 end
         return c
+    end;
+
+    -- Titles and objective texts in the client's language, from
+    -- MUI_DB/Locale: id -> { title, { objective text, ... } }.
+    Localize = function(self, quests)
+        for id, text in pairs(quests) do
+            local row = self._data[id]
+            if row then
+                row.name = text[1] or row.name
+                row.objectivesText = text[2] or row.objectivesText
+            end
+        end
     end;"""
 
 _ZONE_METHODS = """\
@@ -371,9 +402,9 @@ def main() -> int:
             HEADER.format(filename=filename, ver=ver)))
 
     emit_singleton("MUI_QuestDB.lua",         "QuestDB",         _QUEST_METHODS,   quests)
-    emit_singleton("MUI_NpcDB.lua",           "NpcDB",           _STD_DB_METHODS,  npcs)
-    emit_singleton("MUI_ObjectDB.lua",        "ObjectDB",        _STD_DB_METHODS,  objects)
-    emit_singleton("MUI_ItemDB.lua",          "ItemDB",          _STD_DB_METHODS,  items)
+    emit_singleton("MUI_NpcDB.lua",           "NpcDB",           _NAMED_DB_METHODS, npcs)
+    emit_singleton("MUI_ObjectDB.lua",        "ObjectDB",        _NAMED_DB_METHODS, objects)
+    emit_singleton("MUI_ItemDB.lua",          "ItemDB",          _NAMED_DB_METHODS, items)
     emit_singleton("MUI_ZoneDB.lua",          "ZoneDB",          _ZONE_METHODS,    zones)
     emit_singleton("MUI_QuestClustersDB.lua", "QuestClustersDB", _STD_DB_METHODS,  quest_clusters)
 

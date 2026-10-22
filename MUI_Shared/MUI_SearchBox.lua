@@ -10,7 +10,7 @@ class "SearchBox" : extends "EditBox" {
         self._hint:ClearAllPoints()
         self._hint:AlignParentLeft(22)
         self._hint:AlignParentRight(22)
-        self:SetHint("Search")
+        self:SetHint(SEARCH)
 
         self._searchIcon = Texture(self, nil, "OVERLAY")
         self._searchIcon:SetAtlas(atlas, "SearchIcon")

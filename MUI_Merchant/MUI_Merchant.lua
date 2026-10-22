@@ -14,6 +14,8 @@
 -- "Sell junk" is retail's MerchantSellAllJunkButton. Era has no
 -- C_MerchantFrame.SellAllJunkItems, so it sells slot by slot.
 
+local L = MUI.L
+
 -- Retail's merchant sheet (512 x 256): x, y, w, h.
 local SHEET = MUI.TEX_SKIN .. "merchant\\merchant"
 local ART = {
@@ -268,11 +270,11 @@ class "MerchantWindow" : extends "Frame" {
 
         btn:SetTooltip("ANCHOR_RIGHT", function(tip)
             local junk, value = self:_CollectJunk()
-            tip:AddTitle("Sell Junk")
+            tip:AddTitle(L.SELL_ALL_JUNK_ITEMS)
             if #junk == 0 then
-                tip:AddLine("No junk in your bags", 0.8, 0.8, 0.8)
+                tip:AddLine(L.MERCHANT_NO_JUNK, 0.8, 0.8, 0.8)
             else
-                tip:AddLine(#junk .. (#junk == 1 and " item" or " items"), 1, 1, 1)
+                tip:AddLine(ITEMS_VARIABLE_QUANTITY:format(#junk), 1, 1, 1)
                 if value > 0 then
                     tip:AddLine(C_CurrencyInfo.GetCoinTextureString(value), 1, 1, 1)
                 end

@@ -9,12 +9,14 @@
 -- Everything here observes: chat lines, the combat log, hooks on the API
 -- the UI already calls. Nothing protected is touched.
 
-local BG_BY_INSTANCE = { ["Alterac Valley"] = "av", ["Arathi Basin"] = "ab", ["Warsong Gulch"] = "wsg" }
+local L = MUI.L
+
+-- battlegrounds by instance id (GetInstanceInfo)
+local BG_BY_INSTANCE = { [30] = "av", [529] = "ab", [489] = "wsg" }
+-- the counters a scoreboard column feeds, by its place on the board
 local BG_COLUMNS = {
-    ["Flags Captured"]  = "wsgCaps",
-    ["Flags Returned"]  = "wsgReturns",
-    ["Towers Assaulted"] = "avTowersCaptured",
-    ["Towers Defended"]  = "avTowersDefended",
+    wsg = { [1] = "wsgCaps", [2] = "wsgReturns" },                -- Flags Captured, Flags Returned
+    av  = { [3] = "avTowersCaptured", [4] = "avTowersDefended" },  -- Towers Assaulted, Towers Defended
 }
 local HEARTHSTONE = 8690
 local DISENCHANT  = 13262
@@ -23,37 +25,51 @@ local ENV_DEATH = {
     Drowning = "deathDrowning", Fatigue = "deathFatigue", Falling = "deathFalling",
     Fire = "deathFireLava", Lava = "deathFireLava",
 }
--- the client's own-emote lines (CHAT_MSG_TEXT_EMOTE from us)
+-- our emotes by token (C_ChatInfo.PerformEmote)
 local EMOTES = {
-    { "^You hug",              "hugs" },
-    { "^You cheer",            "cheers" },
-    { "^You wave",             "waves" },
-    { "^You laugh",            "lols" },
-    { "^You cover your face",  "facepalms" },
-    { "smallest violin",       "violins" },
-    { "^You burst into dance", "dance" },
-    { "^You dance",            "dance" },
-    { "^You tell",             "silly" },
+    HUG = "hugs", CHEER = "cheers", WAVE = "waves", BYE = "waves", LAUGH = "lols",
+    FACEPALM = "facepalms", VIOLIN = "violins", DANCE = "dance", JOKE = "silly",
 }
--- fish that mostly come out of schools (The Old Gnome and the Sea)
-local SCHOOL_FISH = { ["Oily Blackmouth"] = true, ["Firefin Snapper"] = true, ["Stonescale Eel"] = true }
+-- fish that mostly come out of schools (The Old Gnome and the Sea): Oily
+-- Blackmouth, Firefin Snapper, Stonescale Eel
+local SCHOOL_FISH = { [6358] = true, [6359] = true, [13422] = true }
 -- a battleground's single-match bests the achievements want
 local BG_BESTS = { hk = "hkBest", kb = "kbNoDeathBest", damage = "damageBest" }
+-- the skill lines whose highest rank is kept: the professions, Cooking,
+-- First Aid and Fishing
 local SKILLS = {
-    Alchemy = true, Blacksmithing = true, Enchanting = true, Engineering = true, Herbalism = true,
-    Leatherworking = true, Mining = true, Skinning = true, Tailoring = true,
-    Cooking = true, ["First Aid"] = true, Fishing = true,
+    [171] = true, [164] = true, [333] = true, [202] = true, [182] = true,
+    [165] = true, [186] = true, [393] = true, [197] = true,
+    [185] = true, [129] = true, [356] = true,
 }
+local MINING, ENCHANTING, SMELTING = 186, 333, 2656
 local ITEM_CLASS_CONSUMABLE, ITEM_CLASS_TRADEGOODS = 0, 7
+-- food and drink cast spells all named alike: the client's names for one
+local FOOD, DRINK = 433, 430
+local CRITTER = 8                  -- creature type
+-- a Soulstone's aura, still on the dead; the shaman's Reincarnation aside
+local SOULSTONES = { 20707, 20762, 20763, 20764, 20765 }
+local REINCARNATION = { [20608] = true, [20613] = true, [21169] = true, [27740] = true }
 
--- GlobalString -> capture pattern ("You receive loot: %s." -> "^You receive loot: (.+)%.$");
--- a string this client lacks gives a pattern that never matches.
-local function ToPattern(gs)
-    if not gs then return "^%z" end
-    gs = gs:gsub("%%%d%$s", "\1"):gsub("%%%d%$d", "\2"):gsub("%%s", "\1"):gsub("%%d", "\2")
-    gs = gs:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1")
-    gs = gs:gsub("\1", "(.+)"):gsub("\2", "(%%d+)")
-    return "^" .. gs .. "$"
+-- The spells Era's bandages, potions, flasks, elixirs and healthstones cast
+-- (the client's item effects, for the items so named): the counter each
+-- bumps, and its tally of kinds, by the used bag item's name (bandages) or
+-- the spell's.
+local CONSUMABLES = {}
+for counter, kind in pairs({
+    bandages      = { "bandageKinds", { 746, 1159, 3267, 3268, 7926, 7927, 10838, 10839, 18608, 18610, 23567,
+                                        23568, 23569, 23696, 24412, 24413, 24414, 30020 } },
+    healthPotions = { "healthPotionKinds", { 439, 440, 441, 2024, 4042, 17534 } },
+    manaPotions   = { "manaPotionKinds", { 437, 438, 2023, 11903, 17530, 17531 } },
+    flasks        = { "flaskKinds", { 17624, 17626, 17627, 17628, 17629 } },
+    elixirs       = { "elixirKinds", { 673, 2367, 2374, 2378, 3160, 3164, 3166, 3220, 3593, 6512, 7178, 7844,
+                                       8212, 11319, 11328, 11334, 11348, 11349, 11389, 11390, 11396, 11403,
+                                       11405, 11406, 11407, 11474, 12608, 16589, 17535, 17537, 17538, 17539,
+                                       21920, 22807, 26276, 26677, 27652, 27653, 417627 } },
+    healthstones  = { nil, { 5720, 5723, 6262, 6263, 11732, 23468, 23469, 23470, 23471, 23472, 23473, 23474,
+                             23475, 23476, 23477 } },
+}) do
+    for _, spell in ipairs(kind[2]) do CONSUMABLES[spell] = { counter = counter, tally = kind[1] } end
 end
 
 local function NpcId(guid)
@@ -83,13 +99,21 @@ class "StatisticsTrackers" : extends "Frame" {
         self.pendingPortal, self.pendingPortalAt = nil, 0 -- "Portal to X" clicked
         self.finalBosses = {}
         for _, b in ipairs(MUI_StatisticsDB:GetFinalBosses()) do self.finalBosses[b[1]] = true end
-        self.lootSelf    = ToPattern(LOOT_ITEM_SELF)
-        self.lootSelfN   = ToPattern(LOOT_ITEM_SELF_MULTIPLE)
-        self.lootPushed  = ToPattern(LOOT_ITEM_PUSHED_SELF)
-        self.lootPushedN = ToPattern(LOOT_ITEM_PUSHED_SELF_MULTIPLE)
-        self.duelKO      = ToPattern(DUEL_WINNER_KNOCKOUT)
-        self.duelRetreat = ToPattern(DUEL_WINNER_RETREAT)
-        self.auctionMail = (AUCTION_SOLD_MAIL_SUBJECT or "Auction successful: %s"):gsub("%%s.*$", "")
+        self.lootSelf    = MUI.FormatMatcher(LOOT_ITEM_SELF)
+        self.lootSelfN   = MUI.FormatMatcher(LOOT_ITEM_SELF_MULTIPLE)
+        self.lootPushed  = MUI.FormatMatcher(LOOT_ITEM_PUSHED_SELF)
+        self.lootPushedN = MUI.FormatMatcher(LOOT_ITEM_PUSHED_SELF_MULTIPLE)
+        self.duelKO      = MUI.FormatMatcher(DUEL_WINNER_KNOCKOUT)
+        self.duelRetreat = MUI.FormatMatcher(DUEL_WINNER_RETREAT)
+        self.gold        = MUI.FormatMatcher(GOLD_AMOUNT, true)
+        self.silver      = MUI.FormatMatcher(SILVER_AMOUNT, true)
+        self.copper      = MUI.FormatMatcher(COPPER_AMOUNT, true)
+        -- a portal object's name ("Portal to Darnassus"): no id reaches the tooltip
+        self.portalTo    = MUI.FormatMatcher(L.STAT_PORTAL_TO)
+        self.auctionMail = AUCTION_SOLD_MAIL_SUBJECT:gsub("%%s.*$", "")
+        self.food, self.drink = C_Spell.GetSpellName(FOOD), C_Spell.GetSpellName(DRINK)
+        self.smelting = C_Spell.GetSpellName(SMELTING)
+        self.critter = C_CreatureInfo.GetCreatureTypeInfo(CRITTER).name
 
         self:_Hook()
         self:_Register()
@@ -132,7 +156,6 @@ class "StatisticsTrackers" : extends "Frame" {
         self:RegisterEventHandler("CRAFT_SHOW", function() self:_Craft() end)
         self:RegisterEventHandler("CRAFT_UPDATE", function() self:_Craft() end)
         self:RegisterEventHandler("CHAT_MSG_SYSTEM", function(_, _, msg) self:_System(msg) end)
-        self:RegisterEventHandler("CHAT_MSG_TEXT_EMOTE", function(_, _, msg, sender) self:_Emote(msg, sender) end)
         self:RegisterEventHandler("ITEM_TEXT_BEGIN", function()
             local title = ItemTextGetItem()
             if title and title ~= "" then
@@ -149,7 +172,8 @@ class "StatisticsTrackers" : extends "Frame" {
 
     -- Hooks on what the UI calls for us: the bag click (to name the food,
     -- drink or bandage a cast then consumes), the flight, the mail, the
-    -- auction house, the quest log, the summon and the self-resurrect.
+    -- auction house, the quest log, the summon, the self-resurrect and our
+    -- emotes.
     _Hook = function(self)
         local e = self.engine
         hooksecurefunc(C_Container, "UseContainerItem", function(bag, slot)
@@ -169,14 +193,15 @@ class "StatisticsTrackers" : extends "Frame" {
         hooksecurefunc("AbandonQuest", function() e:Bump("questsAbandoned") end)
         hooksecurefunc(C_SummonInfo, "ConfirmSummon", function() e:Bump("summons") end)
         hooksecurefunc(C_DeathInfo, "UseSelfResurrectOption", function(_, id) self:_SelfRes(id) end)
+        hooksecurefunc(C_ChatInfo, "PerformEmote", function(token) self:_Emote(token) end)
     end;
 
     -- ---- the world -----------------------------------------------------
 
     _EnterWorld = function(self)
         local e = self.engine
-        local name, kind = GetInstanceInfo()
-        self.bg = kind == "pvp" and BG_BY_INSTANCE[name] or nil
+        local _, kind, _, _, _, _, _, instanceID = GetInstanceInfo()
+        self.bg = kind == "pvp" and BG_BY_INSTANCE[instanceID] or nil
         self.bgCounted = false
         self.sessionHK = GetPVPSessionStats() or 0
         self.money = GetMoney()
@@ -194,7 +219,7 @@ class "StatisticsTrackers" : extends "Frame" {
     _PortalClick = function(self)
         if UnitExists("mouseover") or not self.tooltip:IsShown() then return end
         local text = FontString(GameTooltipTextLeft1):GetText()
-        local dest = text and text:match("^Portal to (.+)$")
+        local dest = text and self.portalTo(text)
         if dest then self.pendingPortal, self.pendingPortalAt = dest, GetTime() end
     end;
 
@@ -225,14 +250,10 @@ class "StatisticsTrackers" : extends "Frame" {
         e:Dirty("money")
     end;
 
+    -- The coins in a loot line, read by the client's own words for them.
     _LootMoney = function(self, msg)
-        local copper = 0
-        local g = msg:match("(%d+) [Gg]old")
-        local s = msg:match("(%d+) [Ss]ilver")
-        local c = msg:match("(%d+) [Cc]opper")
-        if g then copper = copper + tonumber(g) * 10000 end
-        if s then copper = copper + tonumber(s) * 100 end
-        if c then copper = copper + tonumber(c) end
+        local copper = (tonumber(self.gold(msg)) or 0) * 10000 + (tonumber(self.silver(msg)) or 0) * 100
+            + (tonumber(self.copper(msg)) or 0)
         if copper > 0 then
             self.engine:Bump("goldLoot", copper)
             self.engine:Dirty("money")
@@ -261,10 +282,10 @@ class "StatisticsTrackers" : extends "Frame" {
 
     -- Our own loot lines: items, and epics by the link's colour.
     _LootItem = function(self, msg)
-        local link, n = msg:match(self.lootSelfN)
-        if not link then link = msg:match(self.lootSelf) end
-        if not link then link, n = msg:match(self.lootPushedN) end
-        if not link then link = msg:match(self.lootPushed) end
+        local link, n = self.lootSelfN(msg)
+        if not link then link = self.lootSelf(msg) end
+        if not link then link, n = self.lootPushedN(msg) end
+        if not link then link = self.lootPushed(msg) end
         if not link then return end
         n = tonumber(n) or 1
         local e = self.engine
@@ -279,15 +300,18 @@ class "StatisticsTrackers" : extends "Frame" {
     _LootOpened = function(self)
         local e = self.engine
         if IsFishingLoot() then
-            e:Set("fishedZones")[GetRealZoneText()] = true
+            local map = C_Map.GetBestMapForUnit("player")
+            if map then e:Set("fishedZones")[map] = true end
             for i = 1, GetNumLootItems() do
-                local _, name, quantity = GetLootSlotInfo(i)
+                local _, _, quantity = GetLootSlotInfo(i)
                 quantity = quantity or 1
                 e:Bump("fishAll", quantity)
-                if SCHOOL_FISH[name] then e:Bump("fishSchool") end
                 local link = GetLootSlotLink(i)
                 local itemId = link and tonumber(link:match("|Hitem:(%d+)"))
-                if itemId then e:Set("fishKinds")[itemId] = true end
+                if itemId then
+                    e:Set("fishKinds")[itemId] = true
+                    if SCHOOL_FISH[itemId] then e:Bump("fishSchool") end
+                end
                 local classID = link and select(12, C_Item.GetItemInfo(link))
                 if classID == ITEM_CLASS_CONSUMABLE or classID == ITEM_CLASS_TRADEGOODS then
                     e:Bump("fish", quantity)
@@ -307,9 +331,10 @@ class "StatisticsTrackers" : extends "Frame" {
 
     -- ---- casts: consumables, hearth, disenchant ------------------------
 
-    -- A consumable's use is a spell: potions, elixirs and flasks are named
-    -- like the item; food, drink and bandages cast "Food" / "Drink" /
-    -- "First Aid", so the kind comes from the bag item clicked just before.
+    -- A consumable's use is a spell: CONSUMABLES knows the bandages',
+    -- potions', flasks', elixirs' and healthstones'; food and drink cast
+    -- "Food" / "Drink". Food, drink and bandages are told apart by the bag
+    -- item clicked just before.
     _Cast = function(self, spellId)
         local e = self.engine
         if spellId == HEARTHSTONE then
@@ -322,33 +347,21 @@ class "StatisticsTrackers" : extends "Frame" {
             self.lastDisenchantAt = GetTime()
             return
         end
-        local info = C_Spell.GetSpellInfo(spellId)
-        local name = info and info.name
+        local name = C_Spell.GetSpellName(spellId)
         if not name then return end
         local used = GetTime() - self.lastUsedAt < 3 and self.lastUsed or nil
-        if name == "First Aid" then
-            e:Bump("bandages")
-            if used and used:find("Bandage") then e:TallyBump("bandageKinds", used) end
-        elseif name == "Food" then
+        local consumable = CONSUMABLES[spellId]
+        if consumable then
+            e:Bump(consumable.counter)
+            local kind = name
+            if consumable.counter == "bandages" then kind = used end
+            if consumable.tally and kind then e:TallyBump(consumable.tally, kind) end
+        elseif name == self.food then
             e:Bump("foods")
             if used then e:TallyBump("foodKinds", used) end
-        elseif name == "Drink" then
+        elseif name == self.drink then
             e:Bump("drinks")
             if used then e:TallyBump("drinkKinds", used) end
-        elseif name:find("Healing Potion") then
-            e:Bump("healthPotions")
-            e:TallyBump("healthPotionKinds", name)
-        elseif name:find("Mana Potion") then
-            e:Bump("manaPotions")
-            e:TallyBump("manaPotionKinds", name)
-        elseif name:find("^Flask of") then
-            e:Bump("flasks")
-            e:TallyBump("flaskKinds", name)
-        elseif name:find("Elixir") then
-            e:Bump("elixirs")
-            e:TallyBump("elixirKinds", name)
-        elseif name:find("Healthstone") then
-            e:Bump("healthstones")
         end
         e:Dirty("use")
     end;
@@ -393,7 +406,7 @@ class "StatisticsTrackers" : extends "Frame" {
         local kind = unit and UnitCreatureType(unit)
         if kind then
             e:TallyBump("creatureTypes", kind)
-            if kind == "Critter" then e:Bump("crittersKilled") end
+            if kind == self.critter then e:Bump("crittersKilled") end
         end
         e:Dirty("kills")
     end;
@@ -483,50 +496,57 @@ class "StatisticsTrackers" : extends "Frame" {
         self.pendingRes = nil
     end;
 
+    -- The self-resurrection taken with a Soulstone's aura on us.
     _SelfRes = function(self, id)
-        for _, option in ipairs(C_DeathInfo.GetSelfResurrectOptions() or {}) do
-            if option.id == id and option.name and option.name:find("Soulstone") then
+        if REINCARNATION[id] then return end
+        for _, spell in ipairs(SOULSTONES) do
+            if C_UnitAuras.GetPlayerAuraBySpellID(spell) then
                 self.engine:Bump("resSoulstone")
+                return
             end
         end
     end;
 
     -- ---- skills --------------------------------------------------------
 
+    -- skillmax_<skill line id>
     _Skills = function(self)
         local e = self.engine
         for i = 1, GetNumSkillLines() do
             local name, isHeader, _, rank = GetSkillLineInfo(i)
-            if not isHeader and SKILLS[name] then e:Max("skillmax_" .. name, rank or 0) end
+            local line = MUI_SkillLineDB:GetByName(name)
+            if not isHeader and SKILLS[line] then e:Max("skillmax_" .. line, rank or 0) end
         end
     end;
 
-    -- The trade skill window: how many recipes the open profession knows.
+    -- The trade skill window: how many recipes the open profession knows,
+    -- as recipes_<skill line id> (Mining's window is Smelting).
     _TradeSkill = function(self)
         local prof = GetTradeSkillLine()
         if not prof or prof == "UNKNOWN" then return end
+        local line = MUI_SkillLineDB:GetByName(prof) or (prof == self.smelting and MINING)
+        if not line then return end
         local n = 0
         for i = 1, GetNumTradeSkills() do
             local _, kind = GetTradeSkillInfo(i)
             if kind and kind ~= "header" then n = n + 1 end
         end
         if n > 0 then
-            self.engine:Max("recipes_" .. prof, n)
+            self.engine:Max("recipes_" .. line, n)
             self.engine:Dirty("recipes")
         end
     end;
 
     -- The craft window: Enchanting (Beast Training shares the frame).
     _Craft = function(self)
-        local prof = GetCraftDisplaySkillLine()
-        if prof ~= "Enchanting" then return end
+        if MUI_SkillLineDB:GetByName(GetCraftDisplaySkillLine()) ~= ENCHANTING then return end
         local n = 0
         for i = 1, GetNumCrafts() do
             local _, _, kind = GetCraftInfo(i)
             if kind and kind ~= "header" then n = n + 1 end
         end
         if n > 0 then
-            self.engine:Max("recipes_Enchanting", n)
+            self.engine:Max("recipes_" .. ENCHANTING, n)
             self.engine:Dirty("recipes")
         end
     end;
@@ -534,8 +554,8 @@ class "StatisticsTrackers" : extends "Frame" {
     -- ---- chat: duels, emotes -------------------------------------------
 
     _System = function(self, msg)
-        local winner, loser = msg:match(self.duelKO)
-        if not winner then loser, winner = msg:match(self.duelRetreat) end
+        local winner, loser = self.duelKO(msg)
+        if not winner then winner, loser = self.duelRetreat(msg) end
         if not winner then return end
         if winner == self.playerName then
             self.engine:Bump("duelsWon")
@@ -545,15 +565,11 @@ class "StatisticsTrackers" : extends "Frame" {
         self.engine:Dirty("pvp")
     end;
 
-    _Emote = function(self, msg, sender)
-        sender = sender and sender:match("^([^%-]+)") or sender
-        if sender ~= self.playerName or not msg then return end
-        for _, emote in ipairs(EMOTES) do
-            if msg:find(emote[1]) then
-                self.engine:Bump(emote[2])
-                self.engine:Dirty("emote")
-                return
-            end
+    _Emote = function(self, token)
+        local counter = EMOTES[token]
+        if counter then
+            self.engine:Bump(counter)
+            self.engine:Dirty("emote")
         end
     end;
 
@@ -594,11 +610,10 @@ class "StatisticsTrackers" : extends "Frame" {
             e:Bump("bgwin_" .. bg)
         end
         for col = 1, numStats do
-            local column = GetBattlefieldStatInfo(col)
             local v = GetBattlefieldStatData(myRow, col) or 0
-            if column and v > 0 then
-                e:AddBattlegroundColumn(bg, column, v)
-                local key = BG_COLUMNS[column]
+            if v > 0 then
+                e:AddBattlegroundColumn(bg, col, v)
+                local key = BG_COLUMNS[bg] and BG_COLUMNS[bg][col]
                 if key then e:Bump(key, v) end
             end
         end

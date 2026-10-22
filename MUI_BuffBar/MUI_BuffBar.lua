@@ -41,7 +41,7 @@ object "ModuleBuffBar" : extends "Module" {
         -- Buffs and debuffs are independent editable frames, each pinned by its
         -- TOP-RIGHT corner and fixed to its full grid size, so auras always fill
         -- from the same top-right origin and the editable box never resizes.
-        self.buffFrame = EditableFrame("Frame", "Buff Bar", nil, "MUI_BuffBar")
+        self.buffFrame = EditableFrame("Frame", HUD_EDIT_MODE_BUFF_FRAME_LABEL, nil, "MUI_BuffBar")
         self.buffFrame:SetSize(GridSize(BUFFS_PER_ROW, BUFF_MAX_DISPLAY or 32))
         self.buffFrame:EditModeSetOption("buffs")
         self.buffFrame:EditModeSetDragAnchor("TOPRIGHT")
@@ -53,7 +53,7 @@ object "ModuleBuffBar" : extends "Module" {
             f:AlignTop(MUI_Root, 10)
         end)
 
-        self.debuffFrame = EditableFrame("Frame", "Debuff Bar", nil, "MUI_DebuffBar")
+        self.debuffFrame = EditableFrame("Frame", HUD_EDIT_MODE_DEBUFF_FRAME_LABEL, nil, "MUI_DebuffBar")
         self.debuffFrame:SetSize(GridSize(DEBUFFS_PER_ROW, DEBUFF_MAX_DISPLAY or 16))
         self.debuffFrame:EditModeSetOption("buffs")
         self.debuffFrame:EditModeSetDragAnchor("TOPRIGHT")

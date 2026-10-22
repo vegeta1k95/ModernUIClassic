@@ -173,25 +173,16 @@ class "QuestObjectiveTooltip" {
     GetNpcObjectiveKind = function(self, npcId)
         local questIds = npcId and self._npcQuests[npcId]
         if not questIds then return nil end
-        local npc = MUI_NpcDB:Get(npcId)
-        local npcName = npc and npc.name
         local kind
         for _, questId in ipairs(questIds) do
             local entry = self.watcher:GetEntry(questId)
-            local q = MUI_QuestDB:Get(questId)
-            if entry and q and not entry.isComplete then
-                local names = self:_TargetNames(questId, "npc", npcId)
-                for _, o in ipairs(entry.objectives or {}) do
-                    if not o.finished and o.text and o.text ~= "" then
-                        for _, n in ipairs(names) do
-                            if n ~= "" and o.text:find(n, 1, true) then
-                                if n == npcName then
-                                    if self:_IsKillTarget(q, npcId) then return "kill" end
-                                else
-                                    kind = "loot"
-                                end
-                            end
-                        end
+            if entry and not entry.isComplete then
+                local targets = MUI_QuestHelper:GetObjectiveTargets(questId, entry)
+                for i, o in ipairs(entry.objectives or {}) do
+                    local target = targets[i]
+                    if target and not o.finished then
+                        if target.npcs and target.npcs[npcId] then return "kill" end
+                        if target.item and self:_HasItem(npcId, target.item) then kind = "loot" end
                     end
                 end
                 for _, src in ipairs(MUI_QuestHelper:GetSourceItemObjectives(questId)) do
@@ -202,24 +193,32 @@ class "QuestObjectiveTooltip" {
         return kind
     end;
 
-    _IsKillTarget = function(self, q, npcId)
-        local objs = q.objectives or {}
-        for _, e in ipairs(objs[1] or {}) do
-            if e and e[1] == npcId then return true end
-        end
-        for _, e in ipairs(objs[5] or {}) do
-            for _, id in ipairs(e[1]) do
-                if id == npcId then return true end
-            end
-        end
-        return false
-    end;
-
     _DropsItem = function(self, npcId, itemId)
         local item = MUI_ItemDB:Get(itemId)
         local npcDrops = item and MUI_QuestHelper:GetItemDrops(item)
         for _, nid in ipairs(npcDrops or {}) do
             if nid == npcId then return true end
+        end
+        return false
+    end;
+
+    -- Whether an NPC drops an item or sells it to the player.
+    _HasItem = function(self, npcId, itemId)
+        if self:_DropsItem(npcId, itemId) then return true end
+        local item = MUI_ItemDB:Get(itemId)
+        for _, nid in ipairs(item and MUI_QuestHelper:GetItemVendors(item) or {}) do
+            if nid == npcId then return true end
+        end
+        return false
+    end;
+
+    -- Whether a world object of this name holds an item.
+    _ObjectHasItem = function(self, name, itemId)
+        local item = MUI_ItemDB:Get(itemId)
+        local objectDrops = item and select(2, MUI_QuestHelper:GetItemDrops(item))
+        for _, oid in ipairs(objectDrops or {}) do
+            local obj = MUI_ObjectDB:Get(oid)
+            if obj and obj.name == name then return true end
         end
         return false
     end;
@@ -368,92 +367,39 @@ class "QuestObjectiveTooltip" {
     end;
 
     -- Build a {idx → true} set of objective indices in `entry.objectives`
-    -- whose text refers to the hovered target. Match is by substring of
-    -- the target's display name(s); for an NPC/object that drops a quest
-    -- item, the item's name is included so the loot objective ("Wolf
-    -- Pelt: 5/10") still matches when hovering the wolf or chest.
+    -- whose target is the hovered one (MUI_QuestHelper:GetObjectiveTargets);
+    -- for an NPC / object that drops or sells a quest item, that item's line
+    -- too, so the loot objective ("Wolf Pelt: 5/10") still matches when
+    -- hovering the wolf or chest.
     --
     -- Returns nil (= "no filter, show all") when no objective matches —
     -- e.g. the hovered NPC is only the quest's turn-in giver. Showing all
     -- objectives is more useful there than emitting just a bare title.
     _FilterFor = function(self, questId, entry, targetKind, targetId)
         if not entry.objectives then return nil end
-        local names = self:_TargetNames(questId, targetKind, targetId)
-        if not names or #names == 0 then return nil end
+        local targets = MUI_QuestHelper:GetObjectiveTargets(questId, entry)
         local matched, any = {}, false
-        for idx, o in ipairs(entry.objectives) do
-            local txt = o.text
-            if txt and txt ~= "" then
-                for _, n in ipairs(names) do
-                    if n and n ~= "" and txt:find(n, 1, true) then
-                        matched[idx] = true
-                        any = true
-                        break
-                    end
-                end
+        for idx in ipairs(entry.objectives) do
+            local target = targets[idx]
+            if target and self:_IsAbout(target, targetKind, targetId) then
+                matched[idx] = true
+                any = true
             end
         end
         return any and matched or nil
     end;
 
-    _TargetNames = function(self, questId, kind, id)
-        local q = MUI_QuestDB:Get(questId)
-        if not q then return {} end
-        local names = {}
-
+    -- Whether an objective line's target is the hovered NPC, item or world
+    -- object (by name, as everywhere here), or an item that one drops or sells.
+    _IsAbout = function(self, target, kind, id)
         if kind == "npc" then
-            local npc = MUI_NpcDB:Get(id)
-            if npc and npc.name then names[#names + 1] = npc.name end
-            -- Items this NPC drops as part of this quest's [3] objectives.
-            if q.objectives and q.objectives[3] then
-                for _, e in ipairs(q.objectives[3]) do
-                    local item = e[1] and MUI_ItemDB:Get(e[1])
-                    local npcDrops = item and MUI_QuestHelper:GetItemDrops(item)
-                    if npcDrops then
-                        for _, nid in ipairs(npcDrops) do
-                            if nid == id and item.name then
-                                names[#names + 1] = item.name
-                                break
-                            end
-                        end
-                    end
-                    -- ... or sells (vendor-bought objective items).
-                    if item and item.name then
-                        for _, nid in ipairs(MUI_QuestHelper:GetItemVendors(item)) do
-                            if nid == id then
-                                names[#names + 1] = item.name
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-
-        elseif kind == "object-name" then
-            -- World-object IDs aren't exposed; we already matched by name.
-            names[#names + 1] = id
-            -- Items this object drops/contains for this quest's [3].
-            if q.objectives and q.objectives[3] then
-                for _, e in ipairs(q.objectives[3]) do
-                    local item = e[1] and MUI_ItemDB:Get(e[1])
-                    local objectDrops = item and select(2, MUI_QuestHelper:GetItemDrops(item))
-                    if objectDrops then
-                        for _, oid in ipairs(objectDrops) do
-                            local obj = MUI_ObjectDB:Get(oid)
-                            if obj and obj.name == id and item.name then
-                                names[#names + 1] = item.name
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-
+            return (target.npcs and target.npcs[id]) or (target.item and self:_HasItem(id, target.item)) or false
         elseif kind == "item" then
-            local item = MUI_ItemDB:Get(id)
-            if item and item.name then names[#names + 1] = item.name end
+            return target.item == id
+        elseif kind == "object-name" then
+            local obj = target.object and MUI_ObjectDB:Get(target.object)
+            return (obj and obj.name == id) or (target.item and self:_ObjectHasItem(id, target.item)) or false
         end
-
-        return names
+        return false
     end;
 }

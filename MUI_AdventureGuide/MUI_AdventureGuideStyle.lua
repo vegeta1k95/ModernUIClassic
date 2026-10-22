@@ -1,6 +1,8 @@
 -- MUI_AdventureGuideStyle: what the Adventure Guide's pages share — the art
 -- folder, labels, the pieces of retail's journal sheets.
 
+local L = MUI.L
+
 local ART   = MUI.TEX_SKIN .. "adventureguide\\"
 local SHEET = ART .. "journal"          -- 512x1024
 local TILE  = ART .. "journal-tile"     -- 64x512, bands that repeat sideways
@@ -72,7 +74,7 @@ local FLAGS = {
     { 265, 1,   ENCOUNTER_JOURNAL_SECTION_FLAG10 },     -- disease
     { 299, 1,   ENCOUNTER_JOURNAL_SECTION_FLAG11 },     -- enrage
     { 265, 35,  ENCOUNTER_JOURNAL_SECTION_FLAG12 },     -- mythic
-    { 1,   199, "Bleed" },
+    { 1,   199, L.ENCOUNTER_JOURNAL_SECTION_FLAG13 },
 }
 
 object "AdventureGuideStyle" {

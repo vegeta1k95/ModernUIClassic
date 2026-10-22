@@ -12,6 +12,8 @@
 -- is cut off at MAX_PAGES every item shown still has its true price and
 -- quantity, and what is missing is the tail of the alphabet.
 
+local L = MUI.L
+
 local Style = MUI_AuctionHouseStyle
 local S     = Style.S
 
@@ -47,7 +49,7 @@ class "AuctionHouseFilterPanel" {
         popup:SetHeight(214)
 
         local levelTitle = Style:Label(popup, 10.5, 1, 0.82, 0)
-        levelTitle:SetText("Level Range")
+        levelTitle:SetText(AUCTION_HOUSE_FILTER_DROP_DOWN_LEVEL_RANGE)
         levelTitle:AlignParentTopLeft(13, 15)
 
         self._min = self:_LevelBox(popup)
@@ -58,7 +60,7 @@ class "AuctionHouseFilterPanel" {
         self._max = self:_LevelBox(popup)
         self._max:RightOf(dash, 6)
 
-        self._usable = CheckBoxThin(popup, nil, "Usable Items Only")
+        self._usable = CheckBoxThin(popup, nil, AUCTION_HOUSE_FILTER_USABLE_ONLY)
         self._usable:SetSize(140, 13)
         self._usable:SetBoxSize(11, 11)
         self._usable.label:SetFontSize(10.5)
@@ -69,12 +71,12 @@ class "AuctionHouseFilterPanel" {
         end
 
         local rarityTitle = Style:Label(popup, 10.5, 1, 0.82, 0)
-        rarityTitle:SetText("Rarity")
+        rarityTitle:SetText(AUCTION_HOUSE_FILTER_CATEGORY_RARITY)
         rarityTitle:AlignParentTopLeft(82, 15)
 
         self._rarities = {}
         for i, quality in ipairs(RARITIES) do
-            local text = quality < 0 and "All" or Style:QualityText(_G["ITEM_QUALITY" .. quality .. "_DESC"], quality)
+            local text = quality < 0 and ALL or Style:QualityText(_G["ITEM_QUALITY" .. quality .. "_DESC"], quality)
             local radio = CheckBoxThin(popup, nil, text)
             radio:SetSize(140, 13)
             radio:SetBoxSize(11, 11)
@@ -144,11 +146,11 @@ class "AuctionHouseSearchBar" : extends "Frame" {
         self._star:CenterInParent()
         self._favorites.OnClick = function() owner:SearchFavorites() end
         self._favorites:SetTooltip("ANCHOR_RIGHT", function(tip)
-            tip:AddTitle("Favorites")
+            tip:AddTitle(AUCTION_HOUSE_FAVORITES_SEARCH_TOOLTIP_TITLE)
             if owner.browse:HasFavorites() then
-                tip:AddLine("Search for your favorite items.", 1, 1, 1, true)
+                tip:AddLine(L.AH_FAVORITES_SEARCH, 1, 1, 1, true)
             else
-                tip:AddLine("Star an item in the results to add it to your favorites.", 0.7, 0.7, 0.7, true)
+                tip:AddLine(L.AH_FAVORITES_HOW, 0.7, 0.7, 0.7, true)
             end
         end)
 
@@ -157,7 +159,7 @@ class "AuctionHouseSearchBar" : extends "Frame" {
         self._box:RightOf(self._favorites, 9 * S)
         self._box.OnEnterPressed = function() owner:StartSearch() end
 
-        self._search = ButtonGold(self, nil, "Search")
+        self._search = ButtonGold(self, nil, AUCTION_HOUSE_SEARCH_BUTTON)
         self._search:SetSize(132 * S, 22 * S)
         self._search.label:SetFontSize(10.5)
         self._search:AlignParentRight()
@@ -177,7 +179,7 @@ class "AuctionHouseSearchBar" : extends "Frame" {
 
     _UpdateFilterLabel = function(self)
         local n = self._panel:CountActive()
-        self._filter:SetText(n > 0 and ("Filter (" .. n .. ")") or "Filter")
+        self._filter:SetText(n > 0 and (FILTER .. " (" .. n .. ")") or FILTER)
     end;
 
     -- The gold star while there are favourites to search for.
@@ -216,10 +218,10 @@ class "AuctionHouseSearchBar" : extends "Frame" {
 -- item requires, red when above the player's, as in Era's own list.
 -- ---------------------------------------------------------------------
 local COLUMNS = {
-    { key = "price",    title = "Price",    width = 146, justify = "LEFT",  text = function(d) return d.priceText end },
-    { key = "name",     title = "Name",     fill = true, justify = "LEFT",  text = function(d) return d.label end, icon = true },
-    { key = "level",    title = "Level",    width = 55,  justify = "CENTER", text = function(d) return d.levelText end },
-    { key = "quantity", title = "Quantity", width = 83,  justify = "RIGHT", text = function(d) return d.quantityText end },
+    { key = "price",    title = AUCTION_HOUSE_BROWSE_HEADER_PRICE,          width = 146, justify = "LEFT",  text = function(d) return d.priceText end },
+    { key = "name",     title = AUCTION_HOUSE_BROWSE_HEADER_NAME,           fill = true, justify = "LEFT",  text = function(d) return d.label end, icon = true },
+    { key = "level",    title = AUCTION_HOUSE_BROWSE_HEADER_REQUIRED_LEVEL, width = 55,  justify = "CENTER", text = function(d) return d.levelText end },
+    { key = "quantity", title = AUCTION_HOUSE_QUANTITY_LABEL,               width = 83,  justify = "RIGHT", text = function(d) return d.quantityText end },
     { key = "favorite", width = 24, favorite = true },
 }
 
@@ -316,7 +318,7 @@ class "AuctionHouseBrowse" : extends "Frame" {
                 self.list:SetEmptyText(BROWSE_NO_RESULTS)
                 if capped then
                     self._status:SetText(string.format(
-                        "Showing the first %d auctions by name. Narrow the search to see the rest.", MAX_PAGES * PAGE_SIZE))
+                        L.AH_RESULTS_CAPPED, MAX_PAGES * PAGE_SIZE))
                 else
                     self._status:SetText("")
                 end
@@ -333,7 +335,7 @@ class "AuctionHouseBrowse" : extends "Frame" {
         if self._job ~= job then return end
         self.list:SetLoading(false)
         self.list:SetEmptyText(BROWSE_NO_RESULTS)
-        self._status:SetText("Search interrupted. Search again for the full results.")
+        self._status:SetText(L.AH_SEARCH_INTERRUPTED)
     end;
 
     -- Each favourite by its exact name, one query after another; every
@@ -354,11 +356,11 @@ class "AuctionHouseBrowse" : extends "Frame" {
                 C_Item.RequestLoadItemDataByID(itemId)
             end
         end
-        table.sort(names)
+        table.sort(names, function(a, b) return strcmputf8i(a, b) < 0 end)
         if #names == 0 then
             self._owner.scan:Cancel()
             self.list:SetLoading(false)
-            self.list:SetEmptyText("You have no favorite items. Star an item in the results to add one.")
+            self.list:SetEmptyText(L.AH_NO_FAVORITES)
             self:_Publish(false)
             return
         end
@@ -481,9 +483,9 @@ class "AuctionHouseBrowse" : extends "Frame" {
             elseif key == "level" then
                 av, bv = a.level, b.level
             else
-                av, bv = string.lower(a.name or ""), string.lower(b.name or "")
+                av, bv = strcmputf8i(a.name or "", b.name or ""), 0     -- the sign of the client's own comparison
             end
-            if av == bv then return (a.name or "") < (b.name or "") end
+            if av == bv then return strcmputf8i(a.name or "", b.name or "") < 0 end
             if desc then return av > bv end
             return av < bv
         end)

@@ -17,7 +17,8 @@
 --       targetId     = <npc/object/item id>,
 --       targetKind   = "npc" | "object" | "item-npc" | "item-object" | "trigger",
 --       spawnIdx     = <per-areaId spawn index>,
---       targetName   = <string, DB target name, may include item context>,
+--       slot         = <its line among the quest log's lines of its type,
+--                       1..N; nil for turn-ins and required source items>,
 --       sourceItemId = <item id for required-source-item specs, else nil>,
 --   }
 
@@ -48,7 +49,7 @@ local function _emitSpawnSpecs(out, spawns, base)
                 targetId     = base.targetId,
                 targetKind   = base.targetKind,
                 spawnIdx     = spawnIdx,
-                targetName   = base.targetName,
+                slot         = base.slot,
                 sourceItemId = base.sourceItemId,
             }
             count = count + 1
@@ -56,7 +57,7 @@ local function _emitSpawnSpecs(out, spawns, base)
     end
 end
 
-local function _resolveCreature(out, questId, objectiveIdx, creatureId, iconType)
+local function _resolveCreature(out, questId, objectiveIdx, creatureId, iconType, slot)
     local npc = MUI_NpcDB:Get(creatureId)
     if not npc then return end
     _emitSpawnSpecs(out, npc.spawns, {
@@ -65,11 +66,11 @@ local function _resolveCreature(out, questId, objectiveIdx, creatureId, iconType
         objectiveIdx = objectiveIdx,
         targetId     = creatureId,
         targetKind   = "npc",
-        targetName   = npc.name or "?",
+        slot         = slot,
     })
 end
 
-local function _resolveObject(out, questId, objectiveIdx, objectId, iconType)
+local function _resolveObject(out, questId, objectiveIdx, objectId, iconType, slot)
     local obj = MUI_ObjectDB:Get(objectId)
     if not obj then return end
     _emitSpawnSpecs(out, obj.spawns, {
@@ -78,14 +79,13 @@ local function _resolveObject(out, questId, objectiveIdx, objectId, iconType)
         objectiveIdx = objectiveIdx,
         targetId     = objectId,
         targetKind   = "object",
-        targetName   = obj.name or "?",
+        slot         = slot,
     })
 end
 
-local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId)
+local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId, slot)
     local item = MUI_ItemDB:Get(itemId)
     if not item then return end
-    local itemName = item.name or "?"
     local npcDrops, objectDrops = MUI_QuestHelper:GetItemDrops(item)
     -- IMPORTANT: targetId is the *source* ID (NPC / Object), not itemId.
     -- Clustering downstream groups by (objectiveIdx, targetId); using itemId
@@ -102,7 +102,7 @@ local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId)
                     objectiveIdx = objectiveIdx,
                     targetId     = npcId,
                     targetKind   = "item-npc",
-                    targetName   = itemName .. " <" .. (npc.name or "?") .. ">",
+                    slot         = slot,
                     sourceItemId = sourceItemId,
                 })
             end
@@ -118,7 +118,7 @@ local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId)
             objectiveIdx = objectiveIdx,
             targetId     = npcId,
             targetKind   = "item-npc",
-            targetName   = itemName .. " <" .. (npc.name or "?") .. ">",
+            slot         = slot,
             sourceItemId = sourceItemId,
         })
     end
@@ -136,7 +136,7 @@ local function _resolveItem(out, questId, objectiveIdx, itemId, sourceItemId)
                     objectiveIdx = objectiveIdx,
                     targetId     = objId,
                     targetKind   = "item-object",
-                    targetName   = itemName .. " <" .. (obj.name or "?") .. ">",
+                    slot         = slot,
                     sourceItemId = sourceItemId,
                 })
             end
@@ -147,7 +147,7 @@ end
 -- triggerEnd shape: { "Scout description", { [areaId] = { {x, y}, ... } } }
 local function _resolveTriggerEnd(out, questId, triggerEnd)
     if not triggerEnd then return end
-    local desc, zones = triggerEnd[1], triggerEnd[2]
+    local zones = triggerEnd[2]
     if type(zones) ~= "table" then return end
     _emitSpawnSpecs(out, zones, {
         iconType     = "ObjectiveEvent",
@@ -155,7 +155,7 @@ local function _resolveTriggerEnd(out, questId, triggerEnd)
         objectiveIdx = -1,
         targetId     = 0,
         targetKind   = "trigger",
-        targetName   = desc or "Scout location",
+        slot         = 1,
     })
 end
 
@@ -171,27 +171,32 @@ object "QuestObjectiveResolver" {
         local out = {}
 
         if q.objectives then
+            -- A spec's slot is its line among the quest log's lines of its
+            -- type, counted as clusters.py counts them: "monster" lines are
+            -- the creatures, then the kill credits.
+            local monster = 0
             -- [1] creature (slay / speak-with) objectives
             if q.objectives[1] then
                 for _, entry in ipairs(q.objectives[1]) do
+                    monster = monster + 1
                     if entry and entry[1] then
-                        _resolveCreature(out, questId, 1, entry[1], "ObjectiveSlay")
+                        _resolveCreature(out, questId, 1, entry[1], "ObjectiveSlay", monster)
                     end
                 end
             end
             -- [2] object (interact / use) objectives
             if q.objectives[2] then
-                for _, entry in ipairs(q.objectives[2]) do
+                for slot, entry in ipairs(q.objectives[2]) do
                     if entry and entry[1] then
-                        _resolveObject(out, questId, 2, entry[1], "ObjectiveObject")
+                        _resolveObject(out, questId, 2, entry[1], "ObjectiveObject", slot)
                     end
                 end
             end
             -- [3] item (loot) objectives: pin each drop source (npc or object)
             if q.objectives[3] then
-                for _, entry in ipairs(q.objectives[3]) do
+                for slot, entry in ipairs(q.objectives[3]) do
                     if entry and entry[1] then
-                        _resolveItem(out, questId, 3, entry[1])
+                        _resolveItem(out, questId, 3, entry[1], nil, slot)
                     end
                 end
             end
@@ -201,8 +206,9 @@ object "QuestObjectiveResolver" {
             -- text, icon } (Kodo Roundup's three kinds of kodo).
             if q.objectives[5] then
                 for _, entry in ipairs(q.objectives[5]) do
+                    monster = monster + 1
                     for _, creatureId in ipairs(entry[1]) do
-                        _resolveCreature(out, questId, 5, creatureId, "ObjectiveSlay")
+                        _resolveCreature(out, questId, 5, creatureId, "ObjectiveSlay", monster)
                     end
                 end
             end

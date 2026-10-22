@@ -29,6 +29,8 @@
 --   * Quest-row shine sweep on new-quest accept.
 --   * Scale-pulse + glow halo on objective-finish transition.
 
+local L = MUI.L
+
 local WIDTH               = 250.5
 local OUTER_PAD           = 6
 local CATEGORY_GAP        = 0      -- primary header bottom → first category
@@ -949,11 +951,11 @@ class "QuestTrackerQuest" : extends "Frame" {
             and MUI_DB.settings.questHelper
             and MUI_DB.settings.questHelper.showQuestLevel
 
-        local title = MUI_QuestHelper:GetQuestDisplayName(questId, entry.title or ("quest " .. questId))
+        local title = MUI_QuestHelper:GetQuestDisplayName(questId, entry.title or UNKNOWN)
         if showLvl then 
             title = "[" .. entry.level .. "] " .. title
         end
-        if entry.isFailed then title = title .. " |cffff2020(Failed)|r" end
+        if entry.isFailed then title = title .. " |cffff2020(" .. FAILED .. ")|r" end
         self.title:SetText(title)
 
         -- Quest item: a usable item the quest gave (retail shows it while in
@@ -979,7 +981,7 @@ class "QuestTrackerQuest" : extends "Frame" {
         for _, row in ipairs(self.objectives) do row:Hide() end
 
         if entry.isComplete then
-            self.turnInLabel:SetText("Can Turn In.")
+            self.turnInLabel:SetText(QUEST_WATCH_QUEST_READY)
             self.turnInLabel:SetTextColor(0.7, 0.7, 0.7, 1)
             self.turnInLabel:Show()
             -- Floor to OBJECTIVE_H so a "Can Turn In." block lines up
@@ -1024,8 +1026,7 @@ class "QuestTrackerQuest" : extends "Frame" {
             -- objectivesText so rows like "A Threat Within" still show a
             -- description ("Speak with Marshal McBride.") under the
             -- title. Reuses the turnInLabel element in white.
-            local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-            local lines = q and q.objectivesText
+            local lines = MUI_QuestHelper:GetObjectivesText(questId)
             if lines and #lines > 0 then
                 local text = type(lines) == "table"
                              and table.concat(lines, "\n")
@@ -1449,7 +1450,7 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         Frame.__init(self, "Frame", nil, "MUI_QuestTracker")
         Editable.__init(self)
 
-        self:EditModeSetLabel("Quest Tracker")
+        self:EditModeSetLabel(HUD_EDIT_MODE_OBJECTIVE_TRACKER_LABEL)
         self:EditModeSetupSettings(function(content) end)
         self:EditModeSetDefaultPosition(function() self:_ApplyAnchor() end)
         -- The list grows top→down, so a dragged tracker pins its TOP edge.
@@ -1540,22 +1541,22 @@ class "QuestTracker" : extends {"Frame", "Editable"} {
         self.primaryLabel:ClearAllPoints()
 		self.primaryLabel:AlignParentLeft(24)
 		self.primaryLabel:LeftOf(self.primaryCollapse)
-        self.primaryLabel:SetText("All Objectives")
+        self.primaryLabel:SetText(L.TRACKER_ALL_OBJECTIVES)
 
         self.questsCategory = QuestTrackerCategory(self,
-            "MUI_QuestTracker_Quests", "Quests")
+            "MUI_QuestTracker_Quests", TRACKER_HEADER_QUESTS)
         self.questsCategory._OnLayoutChanged = function() self:_Restack() end
 
         -- Tracked achievements: fed once the achievement engine is up
         -- (SetAchievementEngine), redrawn as its tallies move.
         self.achievementCategory = QuestTrackerCategory(self,
-            "MUI_QuestTracker_Achievements", "Achievements", QuestTrackerAchievement)
+            "MUI_QuestTracker_Achievements", TRACKER_HEADER_ACHIEVEMENTS, QuestTrackerAchievement)
         self.achievementCategory._OnLayoutChanged = function() self:_Restack() end
         self._pendingAchievementAnim = {}
 
         -- Tracked recipes: redrawn on every bag change for the reagent counts.
         self.professionCategory = QuestTrackerCategory(self,
-            "MUI_QuestTracker_Profession", "Profession", QuestTrackerRecipe)
+            "MUI_QuestTracker_Profession", L.PROFESSIONS_TRACKER_HEADER_PROFESSION, QuestTrackerRecipe)
         self.professionCategory._OnLayoutChanged = function() self:_Restack() end
         -- A newly tracked recipe gets the add shine, an untracked one the
         -- farewell sweep + fade before its block goes.

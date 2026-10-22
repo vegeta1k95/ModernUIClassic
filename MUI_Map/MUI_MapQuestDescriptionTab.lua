@@ -260,7 +260,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         self.scroll = ScrollFrame(self._borderContainer)
         self.scroll:FillParentPadding(2, 4, 1, 1)
 
-        self._btnBack = ButtonGold(self._borderOverlay, "MUI_MapQuestDescriptionBack", "Back")
+        self._btnBack = ButtonGold(self._borderOverlay, "MUI_MapQuestDescriptionBack", BACK)
         self._btnBack:AlignParentTopLeft(13, 11)
         self._btnBack:SetScale(0.6)
         self._btnBack.OnClick = function()
@@ -276,7 +276,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
 
         local width = (211-6-self.slider:GetWidth()) / 3
 
-        self._btnAbandon = ButtonGold(bottomPanel, "MUI_MapQuestDescriptionAbandon", "Abandon")
+        self._btnAbandon = ButtonGold(bottomPanel, "MUI_MapQuestDescriptionAbandon", ABANDON_QUEST_ABBREV)
         self._btnAbandon:AlignParentLeft(-3)
         self._btnAbandon:SetScale(0.61)
         self._btnAbandon:SetWidth(width/0.61)
@@ -297,7 +297,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         div1:SetSize(12, 34)
         div1:SetScale(0.63)
 
-        self._btnTrack = ButtonGold(bottomPanel, "MUI_MapQuestDescriptionTrack", "Track")
+        self._btnTrack = ButtonGold(bottomPanel, "MUI_MapQuestDescriptionTrack", TRACK_QUEST_ABBREV)
         self._btnTrack:AlignParentRight(-3)
         self._btnTrack:SetScale(0.61)
         self._btnTrack:SetWidth(width/0.61)
@@ -315,7 +315,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         div2:SetSize(12, 34)
         div2:SetScale(0.63)
 
-        self._btnShare = ButtonGold(bottomPanel, "MUI_MapQuestDescriptionShare", "Share")
+        self._btnShare = ButtonGold(bottomPanel, "MUI_MapQuestDescriptionShare", SHARE_QUEST_ABBREV)
         self._btnShare:LeftOf(self._btnTrack, 0)
         self._btnShare:RightOf(self._btnAbandon, 0)
         self._btnShare:SetScale(0.61)
@@ -358,7 +358,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         header:SetFont(MUI.FONT_CAL, 17)
         header:SetTextColor(0.9, 0.8, 0.71, 1)
         header:SetJustifyH("LEFT")
-        header:SetText("Rewards")
+        header:SetText(REWARDS)
         header:CenterAt(footerTop, 0, -2)
 
         local footerTex = Texture(self._footerContent, nil, "ARTWORK")
@@ -400,7 +400,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         self._contentDescHeader:SetFont(MUI.FONT_CAL, 17)
         self._contentDescHeader:SetTextColor(0, 0, 0)
         self._contentDescHeader:SetJustifyH("LEFT")
-        self._contentDescHeader:SetText("Description")
+        self._contentDescHeader:SetText(QUEST_DESCRIPTION)
         self._contentDescHeader:SetShadowOffset(1, -1)
         self._contentDescHeader:SetShadowColor(0,0,0,0.4)
 
@@ -650,7 +650,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
             text = _trim(text)
             if text ~= "" then
                 local color = finished and "|cFF444444" or "|cFF000000"
-                objLines[#objLines + 1] = color .. "" .. text .. " " .. (finished and "(Complete)" or "") .. "|r"
+                objLines[#objLines + 1] = color .. "" .. text .. " " .. (finished and "(" .. COMPLETE .. ")" or "") .. "|r"
             end
         end
 
@@ -907,10 +907,10 @@ class "MapQuestDescriptionTab" : extends "Frame" {
         end
 
         -- Build sections per the user's spec:
-        --   1) choices + (anything else)        → "Choose one of these rewards:" + "You will also receive:" (rest)
-        --   2) no choices, has items + xp/money → "You will receive:" (items) + "You will also receive:" (xp/money)
-        --   3) no choices, items only           → "You will receive:" (items)
-        --   4) no choices, no items, xp/money   → "You will receive:" (xp/money)
+        --   1) choices + (anything else)        → REWARD_CHOICES + REWARD_ITEMS (rest)
+        --   2) no choices, has items + xp/money → REWARD_ITEMS_ONLY (items) + REWARD_ITEMS (xp/money)
+        --   3) no choices, items only           → REWARD_ITEMS_ONLY (items)
+        --   4) no choices, no items, xp/money   → REWARD_ITEMS_ONLY (xp/money)
         --   5) nothing                          → return 0 (caller hides footer)
         local hasChoices = #data.choices > 0
         local hasItems   = #data.items   > 0
@@ -920,33 +920,33 @@ class "MapQuestDescriptionTab" : extends "Frame" {
             -- Section 1: choices.
             local choices = {}
             for _, c in ipairs(data.choices) do choices[#choices + 1] = entryChoice(c) end
-            placeSection("Choose one of these rewards:", choices)
+            placeSection(REWARD_CHOICES, choices)
             -- Section 2: everything else under "also receive".
             if hasItems or hasXPMoney then
                 local rest = {}
                 for _, item in ipairs(data.items) do rest[#rest + 1] = entryItem(item) end
                 if entryXP    then rest[#rest + 1] = entryXP    end
                 if entryMoney then rest[#rest + 1] = entryMoney end
-                placeSection("You will also receive:", rest)
+                placeSection(REWARD_ITEMS, rest)
             end
         elseif hasItems then
             -- Section 1: items under "receive".
             local items = {}
             for _, item in ipairs(data.items) do items[#items + 1] = entryItem(item) end
-            placeSection("You will receive:", items)
+            placeSection(REWARD_ITEMS_ONLY, items)
             -- Section 2: xp/money under "also receive" (only if any).
             if hasXPMoney then
                 local rest = {}
                 if entryXP    then rest[#rest + 1] = entryXP    end
                 if entryMoney then rest[#rest + 1] = entryMoney end
-                placeSection("You will also receive:", rest)
+                placeSection(REWARD_ITEMS, rest)
             end
         elseif hasXPMoney then
             -- Only xp/money — single section under "receive".
             local rest = {}
             if entryXP    then rest[#rest + 1] = entryXP    end
             if entryMoney then rest[#rest + 1] = entryMoney end
-            placeSection("You will receive:", rest)
+            placeSection(REWARD_ITEMS_ONLY, rest)
         end
 
         if y == 0 then return 0 end
@@ -957,7 +957,7 @@ class "MapQuestDescriptionTab" : extends "Frame" {
     _UpdateButtonStates = function(self)
         if not self.questId then return end
         local tracked = MUI_QuestHelper:IsTracked(self.questId)
-        self._btnTrack:SetText(tracked and "Untrack" or "Track")
+        self._btnTrack:SetText(tracked and UNTRACK_QUEST_ABBREV or TRACK_QUEST_ABBREV)
         if self._canShare then
             self._btnShare:SetEnabled(true)
         else

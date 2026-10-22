@@ -10,6 +10,8 @@
 -- house opens, and AUCTION_OWNED_LIST_UPDATE / AUCTION_BIDDER_LIST_UPDATE
 -- announce every change.
 
+local L = MUI.L
+
 local Style = MUI_AuctionHouseStyle
 local S     = Style.S
 
@@ -34,10 +36,10 @@ StaticPopupDialogs[POPUP_CANCEL] = {
 }
 
 local COLUMNS = {
-    { key = "name",   title = "Name",      fill = true, justify = "LEFT",  text = function(d) return d.label end, icon = true },
-    { key = "bid",    title = "Bid",       width = 120, justify = "RIGHT", text = function(d) return d.bidText end },
-    { key = "buyout", title = "Buyout",    width = 120, justify = "RIGHT", text = function(d) return d.buyoutText end },
-    { key = "time",   title = "Time Left", width = 90,  justify = "RIGHT", text = function(d) return d.timeText end },
+    { key = "name",   title = AUCTION_HOUSE_BROWSE_HEADER_NAME, fill = true, justify = "LEFT",  text = function(d) return d.label end, icon = true },
+    { key = "bid",    title = BID,       width = 120, justify = "RIGHT", text = function(d) return d.bidText end },
+    { key = "buyout", title = BUYOUT,    width = 120, justify = "RIGHT", text = function(d) return d.buyoutText end },
+    { key = "time",   title = CLOSES_IN, width = 90,  justify = "RIGHT", text = function(d) return d.timeText end },
 }
 
 -- ---------------------------------------------------------------------
@@ -106,7 +108,7 @@ class "AuctionHouseAuctions" : extends "Frame" {
         self:_BuildSummary()
         self:_BuildList()
 
-        self._cancel = ButtonGold(self, nil, "Cancel Auction")
+        self._cancel = ButtonGold(self, nil, AUCTION_HOUSE_CANCEL_AUCTION_BUTTON)
         self._cancel:SetSize(158 * S, 22 * S)
         self._cancel.label:SetFontSize(10.5)
         self._cancel:AlignParentBottomRight(-22 * S, 3 * S)
@@ -128,10 +130,10 @@ class "AuctionHouseAuctions" : extends "Frame" {
 
     -- The two tabs standing on the lists' top edge.
     _BuildTabs = function(self)
-        self._tabAuctions = AuctionHouseTab(self, "Auctions", true)
+        self._tabAuctions = AuctionHouseTab(self, AUCTION_HOUSE_AUCTIONS_SUB_TAB, true)
         self._tabAuctions:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 58 * S, -34 * S)
         self._tabAuctions.OnClick = function() self:_SetKind("owner") end
-        self._tabBids = AuctionHouseTab(self, "Bids", true)
+        self._tabBids = AuctionHouseTab(self, AUCTION_HOUSE_BIDS_SUB_TAB, true)
         self._tabBids:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 58 * S + self._tabAuctions:GetWidth() - 4, -34 * S)
         self._tabBids.OnClick = function() self:_SetKind("bidder") end
     end;
@@ -177,7 +179,7 @@ class "AuctionHouseAuctions" : extends "Frame" {
         self._tabAuctions:SetSelected(kind == "owner")
         self._tabBids:SetSelected(kind == "bidder")
         self._cancel:SetVisible(kind == "owner")
-        self.list:SetEmptyText(kind == "owner" and "You have no auctions." or "You have no bids.")
+        self.list:SetEmptyText(kind == "owner" and L.AH_NO_AUCTIONS or L.AH_NO_BIDS)
         self:Refresh()
     end;
 
@@ -259,8 +261,8 @@ class "AuctionHouseAuctions" : extends "Frame" {
                 if row.name == self._filter then filterAlive = true end
             end
         end
-        table.sort(entries, function(a, b) return a.name < b.name end)
-        table.insert(entries, 1, { title = self._kind == "owner" and "All Auctions" or "All Bids" })
+        table.sort(entries, function(a, b) return strcmputf8i(a.name, b.name) < 0 end)
+        table.insert(entries, 1, { title = self._kind == "owner" and AUCTION_HOUSE_ALL_AUCTIONS or AUCTION_HOUSE_ALL_BIDS })
         if not filterAlive then self._filter = nil end
 
         for i, entry in ipairs(entries) do
@@ -301,7 +303,7 @@ class "AuctionHouseAuctions" : extends "Frame" {
                 elseif key == "time" then
                     av, bv = a.timeLeft, b.timeLeft
                 else
-                    av, bv = string.lower(a.name), string.lower(b.name)
+                    av, bv = strcmputf8i(a.name, b.name), 0     -- the sign of the client's own comparison
                 end
                 if av == bv then return a.index < b.index end
                 if desc then return av > bv end
@@ -334,7 +336,7 @@ class "AuctionHouseAuctions" : extends "Frame" {
     Cancel = function(self, row)
         local current = self:_Row("owner", row.index)
         if not (current and self:_Same(current, row)) then
-            UIErrorsFrame:AddMessage("That auction has changed.", 1.0, 0.1, 0.1, 1.0)
+            UIErrorsFrame:AddMessage(L.AH_AUCTION_CHANGED, 1.0, 0.1, 0.1, 1.0)
             return
         end
         CancelAuction(row.index)

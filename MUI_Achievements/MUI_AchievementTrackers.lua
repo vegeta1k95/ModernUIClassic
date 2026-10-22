@@ -12,24 +12,24 @@
 -- Everything here observes: the combat log, chat lines, the spellbook.
 -- Nothing protected is touched.
 
+-- the capitals by uiMapID: Stormwind City, Ironforge, Darnassus; Orgrimmar,
+-- Thunder Bluff, Undercity
 local HOME_CITIES = {
-    Alliance = { ["Stormwind City"] = true, ["Ironforge"] = true, ["Darnassus"] = true },
-    Horde    = { ["Orgrimmar"] = true, ["Thunder Bluff"] = true, ["Undercity"] = true },
+    Alliance = { [1453] = true, [1455] = true, [1457] = true },
+    Horde    = { [1454] = true, [1456] = true, [1458] = true },
 }
 local ARMOR_SLOTS = { 1, 3, 5, 6, 7, 8, 9, 10 }   -- head, shoulder, chest, waist, legs, feet, wrist, hands
 local ITEM_CLASS_TRADEGOODS, ITEM_CLASS_MISC = 7, 15
 local SUB_MOUNT, SUB_COMPANION = 5, 2
 local SUB_METAL, SUB_HERB, SUB_LEATHER = 7, 9, 6
-
--- GlobalString -> capture pattern ("You receive loot: %s." -> "^You receive loot: (.+)%.$");
--- a string this client lacks gives a pattern that never matches.
-local function ToPattern(gs)
-    if not gs then return "^%z" end
-    gs = gs:gsub("%%%d%$s", "\1"):gsub("%%%d%$d", "\2"):gsub("%%s", "\1"):gsub("%%d", "\2")
-    gs = gs:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1")
-    gs = gs:gsub("\1", "(.+)"):gsub("\2", "(%%d+)")
-    return "^" .. gs .. "$"
-end
+local STRATHOLME, WARSONG_GULCH = 329, 489        -- instance ids (GetInstanceInfo)
+-- the flag a carrier holds in Warsong Gulch (the Horde's, the Alliance's),
+-- and the scoreboard column of its captures
+local FLAG_AURAS, FLAG_CAPTURES = { 23333, 23335 }, 1
+local CRITTER = 8                                 -- creature type
+-- a bandage's heal and the meal buff: spells all named alike, the client's
+-- name for one of each
+local FIRST_AID, WELL_FED = 746, 19705
 
 local function NpcId(guid)
     local kind, _, _, _, _, id = strsplit("-", guid)
@@ -56,19 +56,22 @@ class "AchievementTrackers" : extends "Frame" {
         self.timedKillTimes = {}
         self.stratEnter = nil
         self.runDeathSeen, self.selfDied = false, false
-        self.flagPickupAt, self.capsThisMatch = nil, 0
+        self.flagPickupAt, self.flagLostAt, self.carryingFlag, self.capsThisMatch = nil, nil, false, 0
         self.roll100At = 0
         self.pendingInfo = {}     -- itemId -> handlers waiting for its info
         self.bagScanQueued = false
-        self.lootSelf    = ToPattern(LOOT_ITEM_SELF)
-        self.lootSelfN   = ToPattern(LOOT_ITEM_SELF_MULTIPLE)
-        self.lootPushed  = ToPattern(LOOT_ITEM_PUSHED_SELF)
-        self.lootPushedN = ToPattern(LOOT_ITEM_PUSHED_SELF_MULTIPLE)
-        self.createSelf  = ToPattern(LOOT_ITEM_CREATED_SELF)
-        self.createSelfN = ToPattern(LOOT_ITEM_CREATED_SELF_MULTIPLE)
-        self.rollNeed    = ToPattern(LOOT_ROLL_ROLLED_NEED)
-        self.rollGreed   = ToPattern(LOOT_ROLL_ROLLED_GREED)
-        self.rollWon     = ToPattern(LOOT_ROLL_YOU_WON)
+        self.lootSelf    = MUI.FormatMatcher(LOOT_ITEM_SELF)
+        self.lootSelfN   = MUI.FormatMatcher(LOOT_ITEM_SELF_MULTIPLE)
+        self.lootPushed  = MUI.FormatMatcher(LOOT_ITEM_PUSHED_SELF)
+        self.lootPushedN = MUI.FormatMatcher(LOOT_ITEM_PUSHED_SELF_MULTIPLE)
+        self.createSelf  = MUI.FormatMatcher(LOOT_ITEM_CREATED_SELF)
+        self.createSelfN = MUI.FormatMatcher(LOOT_ITEM_CREATED_SELF_MULTIPLE)
+        self.rollNeed    = MUI.FormatMatcher(LOOT_ROLL_ROLLED_NEED)
+        self.rollGreed   = MUI.FormatMatcher(LOOT_ROLL_ROLLED_GREED)
+        self.rollWon     = MUI.FormatMatcher(LOOT_ROLL_YOU_WON)
+        self.critter  = C_CreatureInfo.GetCreatureTypeInfo(CRITTER).name
+        self.firstAid = C_Spell.GetSpellName(FIRST_AID)
+        self.wellFed  = C_Spell.GetSpellName(WELL_FED)
 
         self:_BuildWatches()
         self:_Register()
@@ -79,7 +82,7 @@ class "AchievementTrackers" : extends "Frame" {
     end;
 
     -- What the definitions ask the events to watch for: npcs, items,
-    -- spells, aura names, places.
+    -- spells, aura names, places (the client's names for their ids).
     _BuildWatches = function(self)
         local kills, lockouts, loots, lootNames, creates = {}, {}, {}, {}, {}
         local casts, auras, costumes, selfKills, bubbles, killSpells, heals = {}, {}, {}, {}, {}, {}, {}
@@ -129,7 +132,7 @@ class "AchievementTrackers" : extends "Frame" {
             elseif c.t == "selfKill" then
                 for _, s in ipairs(c.spell) do selfKills[s] = true end
             elseif c.t == "bubbleHearth" then
-                for _, s in ipairs(c.hearth) do bubbles[s] = c.shield end
+                for _, s in ipairs(c.hearth) do bubbles[s] = auraName(c.shield) end
             elseif c.t == "killingSpell" then
                 local key = "ks" .. c.spell[1]
                 for _, s in ipairs(c.spell) do killSpells[s] = key end
@@ -137,9 +140,9 @@ class "AchievementTrackers" : extends "Frame" {
                 local key = "ho" .. c.spell[1]
                 for _, s in ipairs(c.spell) do heals[s] = key end
             elseif c.t == "visit" then
-                for _, a in ipairs(c.areas) do visits[a] = true end
+                for _, a in ipairs(c.areas) do visits[C_Map.GetAreaInfo(a)] = a end
             elseif c.t == "visitInstance" then
-                for _, n in ipairs(c.names) do instances[n:lower()] = true end
+                for _, m in ipairs(c.maps) do instances[m] = true end
             elseif c.t == "slainBy" then
                 local key = "slain" .. c.npc[1]
                 for _, n in ipairs(c.npc) do slain[n] = key end
@@ -150,7 +153,9 @@ class "AchievementTrackers" : extends "Frame" {
             elseif c.t == "soloKill" then
                 for _, n in ipairs(c.npcs) do soloBosses[n] = true end
             elseif c.t == "flag" and c.auras then
-                allAuras[c.key] = c.auras
+                local names = {}
+                for _, s in ipairs(c.auras) do names[#names + 1] = auraName(s) end
+                allAuras[c.key] = names
             elseif c.t == "blocks" then
                 self.watchBlocks = true
             elseif c.t == "castAll" then
@@ -192,7 +197,7 @@ class "AchievementTrackers" : extends "Frame" {
         self:RegisterEventHandler("LEARNED_SPELL_IN_SKILL_LINE", function() e:Dirty("spells") end)
         self:RegisterEventHandler("CHAT_MSG_LOOT", function(_, _, msg) self:_Loot(msg) end)
         self:RegisterEventHandler("CHAT_MSG_SYSTEM", function(_, _, msg) self:_System(msg) end)
-        self:RegisterEventHandler("CHAT_MSG_TEXT_EMOTE", function(_, _, msg, sender) self:_Emote(msg, sender) end)
+        hooksecurefunc(C_ChatInfo, "PerformEmote", function(token) self:_Emote(token) end)
         self:RegisterUnitEventHandler("UNIT_SPELLCAST_SUCCEEDED", "player", function(_, _, _, _, spellId)
             self:_Cast(spellId)
         end)
@@ -224,36 +229,35 @@ class "AchievementTrackers" : extends "Frame" {
             self:_Visit()
             e:Dirty("explore")
         end)
-        self:RegisterEventHandler("CHAT_MSG_BG_SYSTEM_ALLIANCE", function(_, _, msg) self:_Battleground(msg) end)
-        self:RegisterEventHandler("CHAT_MSG_BG_SYSTEM_HORDE", function(_, _, msg) self:_Battleground(msg) end)
-        self:RegisterEventHandler("CHAT_MSG_BG_SYSTEM_NEUTRAL", function(_, _, msg) self:_Battleground(msg) end)
+        self:RegisterEventHandler("UPDATE_BATTLEFIELD_SCORE", function() self:_Scoreboard() end)
     end;
 
     -- ---- the world -----------------------------------------------------
 
     _EnterWorld = function(self)
         self.runDeathSeen, self.selfDied = false, false
-        self.capsThisMatch, self.flagPickupAt = 0, nil
+        self.capsThisMatch, self.flagPickupAt, self.flagLostAt = 0, nil, nil
         self.timedKillTimes = {}
-        local name, kind = GetInstanceInfo()
-        self.stratEnter = name == "Stratholme" and GetTime() or nil
-        if name and (kind == "party" or kind == "raid") then
-            local key = name:lower()
-            if self.instanceWatch[key] and not self.engine:Set("visitedInstances")[key] then
-                self.engine:Set("visitedInstances")[key] = true
+        local _, kind, _, _, _, _, _, instanceID = GetInstanceInfo()
+        self.stratEnter = instanceID == STRATHOLME and GetTime() or nil
+        if kind == "party" or kind == "raid" then
+            if self.instanceWatch[instanceID] and not self.engine:Set("visitedInstances")[instanceID] then
+                self.engine:Set("visitedInstances")[instanceID] = true
                 self.engine:Dirty("visit")
             end
         end
         self:_Visit()
     end;
 
-    -- Any zone transition re-checks the three name surfaces.
+    -- Any zone transition re-checks the three name surfaces against the
+    -- watched areas' names.
     _Visit = function(self)
         local visited = self.engine:Set("visited")
         local changed = false
         for _, name in ipairs({ GetSubZoneText(), GetRealZoneText(), GetMinimapZoneText() }) do
-            if name and name ~= "" and self.visitWatch[name] and not visited[name] then
-                visited[name] = true
+            local area = self.visitWatch[name]
+            if area and not visited[area] then
+                visited[area] = true
                 changed = true
             end
         end
@@ -377,8 +381,8 @@ class "AchievementTrackers" : extends "Frame" {
         local _, class, _, race = GetPlayerInfoByGUID(guid)
         if class then e:Set("kbClass")[class] = true end
         if race then e:Set("kbRace")[race] = true end
-        local zone = GetRealZoneText()
-        if self.faction and zone and HOME_CITIES[self.faction] and HOME_CITIES[self.faction][zone] then
+        local map = C_Map.GetBestMapForUnit("player")
+        if map and HOME_CITIES[self.faction] and HOME_CITIES[self.faction][map] then
             e:Bump("kbCity")
         end
         e:Dirty("pvp")
@@ -389,7 +393,7 @@ class "AchievementTrackers" : extends "Frame" {
     _CritterHit = function(self, guid, amount)
         if not amount or amount <= self.engine:Counter("critterTop") then return end
         if UnitGUID("target") ~= guid then return end
-        if UnitLevel("target") ~= 1 or UnitIsPlayer("target") or UnitCreatureType("target") ~= "Critter" then return end
+        if UnitLevel("target") ~= 1 or UnitIsPlayer("target") or UnitCreatureType("target") ~= self.critter then return end
         self.engine:Max("critterTop", amount)
         self.engine:Dirty("critter")
     end;
@@ -402,7 +406,7 @@ class "AchievementTrackers" : extends "Frame" {
         local unit = UnitTokenFromGUID(destGUID)
         if unit then
             local before = (UnitHealth(unit) - (amount - (overheal or 0))) / math.max(UnitHealthMax(unit), 1)
-            if spellName == "First Aid" then
+            if spellName == self.firstAid then
                 if before < 0.05 then
                     e:Bump("triage")
                     e:Dirty("bandage")
@@ -490,7 +494,7 @@ class "AchievementTrackers" : extends "Frame" {
             end
         end
         -- a Well Fed day
-        if have["Well Fed"] then
+        if have[self.wellFed] then
             local days = e:Set("wellFedDays")
             local stamp = date("%Y%j")
             if not days[stamp] then
@@ -498,15 +502,23 @@ class "AchievementTrackers" : extends "Frame" {
                 e:Dirty("aura")
             end
         end
+        -- Warsong Gulch's flag, picked up or let go
+        local carrying = false
+        for _, spell in ipairs(FLAG_AURAS) do
+            if C_UnitAuras.GetPlayerAuraBySpellID(spell) then carrying = true end
+        end
+        if carrying ~= self.carryingFlag then self:_FlagCarried(carrying) end
     end;
 
+    -- The pet's family, and the creature it was tamed from (a pet's GUID
+    -- carries it as a creature's does).
     _Pet = function(self)
         if not UnitExists("pet") then return end
         local e = self.engine
         local family = UnitCreatureFamily("pet")
         if family then e:Set("petFams")[family] = true end
-        local name = UnitName("pet")
-        if name then e:Set("petNames")[name] = true end
+        local kind, _, _, _, _, npc = strsplit("-", UnitGUID("pet"))
+        if kind == "Pet" and tonumber(npc) then e:Set("petNpcs")[tonumber(npc)] = true end
         e:Dirty("pet")
     end;
 
@@ -547,16 +559,16 @@ class "AchievementTrackers" : extends "Frame" {
     -- Our own loot lines: items picked up, pushed into the bags or
     -- created, by id.
     _Loot = function(self, msg)
-        local link, n = msg:match(self.createSelfN)
-        if not link then link = msg:match(self.createSelf) end
+        local link, n = self.createSelfN(msg)
+        if not link then link = self.createSelf(msg) end
         if link then
             self:_Created(tonumber(msg:match("|Hitem:(%d+)")), tonumber(n) or 1)
             return
         end
-        link, n = msg:match(self.lootSelfN)
-        if not link then link = msg:match(self.lootSelf) end
-        if not link then link, n = msg:match(self.lootPushedN) end
-        if not link then link = msg:match(self.lootPushed) end
+        link, n = self.lootSelfN(msg)
+        if not link then link = self.lootSelf(msg) end
+        if not link then link, n = self.lootPushedN(msg) end
+        if not link then link = self.lootPushed(msg) end
         if not link then return end
         self:_Looted(tonumber(msg:match("|Hitem:(%d+)")), tonumber(n) or 1)
     end;
@@ -638,11 +650,12 @@ class "AchievementTrackers" : extends "Frame" {
 
     -- ---- chat ----------------------------------------------------------
 
-    -- Loot rolls (a 1, a 100 that won) and the last drunkenness line.
+    -- Loot rolls (a 1, a 100 that won) and the last drunkenness line. A
+    -- roll's line: its loot history id, the roll, the item, who rolled.
     _System = function(self, msg)
         local e = self.engine
-        local roll, _, who = msg:match(self.rollNeed)
-        if not roll then roll, _, who = msg:match(self.rollGreed) end
+        local _, roll, _, who = self.rollNeed(msg)
+        if not roll then _, roll, _, who = self.rollGreed(msg) end
         if roll and who == self.playerName then
             if tonumber(roll) == 100 then
                 self.roll100At = GetTime()
@@ -652,7 +665,7 @@ class "AchievementTrackers" : extends "Frame" {
             end
             return
         end
-        if msg:match(self.rollWon) then
+        if self.rollWon(msg) then
             if self.roll100At > 0 and GetTime() - self.roll100At < 30 then
                 e:Bump("roll100")
                 self.roll100At = 0
@@ -666,49 +679,59 @@ class "AchievementTrackers" : extends "Frame" {
         end
     end;
 
-    -- Our emotes at a target: /love on a critter, /hug on a player; dancing
+    -- Our emotes, by token: /love on a critter, /hug on a player; dancing
     -- without armour.
-    _Emote = function(self, msg, sender)
-        sender = sender and sender:match("^([^%-]+)") or sender
-        if sender ~= self.playerName or not msg then return end
+    _Emote = function(self, token)
         local e = self.engine
-        if msg:find("^You love") then
-            if UnitExists("target") and not UnitIsPlayer("target") and UnitCreatureType("target") == "Critter" then
+        if token == "LOVE" then
+            if UnitExists("target") and not UnitIsPlayer("target") and UnitCreatureType("target") == self.critter then
                 e:Set("loved")[UnitName("target") or "?"] = true
                 e:Dirty("emote")
             end
-        elseif msg:find("^You burst into dance") or msg:find("^You dance") then
+        elseif token == "DANCE" then
             if e:Counter("nakedDance") == 0 and IsNaked() then e:Bump("nakedDance") end
             e:Dirty("emote")
-        else
-            local hugged = msg:match("^You hug (.+)%.$")
-            if hugged and UnitExists("target") and UnitIsPlayer("target") then
-                e:Set("hugged")[hugged] = true
-                e:Dirty("emote")
-                -- a fallen enemy, still at their corpse
-                if UnitIsEnemy("player", "target") and UnitIsDead("target") and not UnitIsGhost("target")
-                        and e:Counter("hugDeadEnemy") == 0 then
-                    e:Bump("hugDeadEnemy")
-                end
+        elseif token == "HUG" and UnitExists("target") and UnitIsPlayer("target") then
+            e:Set("hugged")[UnitName("target")] = true
+            e:Dirty("emote")
+            -- a fallen enemy, still at their corpse
+            if UnitIsEnemy("player", "target") and UnitIsDead("target") and not UnitIsGhost("target")
+                    and e:Counter("hugDeadEnemy") == 0 then
+                e:Bump("hugDeadEnemy")
             end
         end
     end;
 
-    -- Warsong Gulch's broadcast lines: the flag-carry stopwatch for the
-    -- quick capture, and the flawless three for the ironman.
-    _Battleground = function(self, msg)
-        if not msg:find(self.playerName, 1, true) then return end
-        local e = self.engine
-        if msg:find("picked up the") and msg:find("[Ff]lag") then
-            self.flagPickupAt = GetTime()
-        elseif msg:find("captured the") and msg:find("[Ff]lag") then
-            if self.flagPickupAt and GetTime() - self.flagPickupAt <= 75 then e:Bump("quickcap") end
-            self.capsThisMatch = self.capsThisMatch + 1
-            if self.capsThisMatch >= 3 and not self.selfDied then e:Bump("ironman") end
-            self.flagPickupAt = nil
-            e:Dirty("bg")
-        elseif msg:find("dropped the") then
-            self.flagPickupAt = nil
+    -- Warsong Gulch: our flag carries, from picking the flag up (its aura)
+    -- to letting it go, and a capture seen on the scoreboard (our column of
+    -- captures grows): the stopwatch for the quick capture, and the
+    -- flawless three for the ironman.
+    _FlagCarried = function(self, carrying)
+        self.carryingFlag = carrying
+        if carrying then
+            self.flagPickupAt, self.flagLostAt = GetTime(), nil
+        else
+            self.flagLostAt = GetTime()
+            RequestBattlefieldScoreData()
         end
+    end;
+
+    _Scoreboard = function(self)
+        if select(8, GetInstanceInfo()) ~= WARSONG_GULCH then return end
+        local caps
+        for i = 1, GetNumBattlefieldScores() do
+            local name = GetBattlefieldScore(i)
+            if name and name:match("^([^%-]+)") == self.playerName then
+                caps = GetBattlefieldStatData(i, FLAG_CAPTURES) or 0
+            end
+        end
+        if not caps or caps <= self.capsThisMatch then return end
+        local e = self.engine
+        local held = self.flagPickupAt and (self.flagLostAt or GetTime()) - self.flagPickupAt
+        if held and held <= 75 then e:Bump("quickcap") end
+        self.capsThisMatch = caps
+        if caps >= 3 and not self.selfDied then e:Bump("ironman") end
+        self.flagPickupAt, self.flagLostAt = nil, nil
+        e:Dirty("bg")
     end;
 }

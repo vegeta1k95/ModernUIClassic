@@ -1,3 +1,4 @@
+local L = MUI.L
 
 local TEX_BG = MUI.TEX_SKIN .. "spellbook\\spellbook-bg"
 local TEX    = MUI.TEX_SKIN .. "spellbook\\spellbook-elements"
@@ -104,7 +105,7 @@ class "SpellsTab" : extends "SecureFrame" {
         self._pager:HookScript("OnAttributeChanged", function(_, name, value)
             if name ~= "current" or not value or value < 1 then return end
             local num = self._numSpreads or 1
-            self._pageText:SetText("Page " .. value .. " / " .. num)
+            self._pageText:SetText(COLLECTION_PAGE_NUMBER:format(value, num))
             --self._prevBtn:SetNormalTexture(value > 1   and PREV_UP or PREV_DIS)
             self._prevBtn:SetEnabled(value > 1)
             --self._nextBtn:SetNormalTexture(value < num and NEXT_UP or NEXT_DIS)
@@ -344,9 +345,9 @@ class "TabSpellbook" : extends "SecureFrame" {
             PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN, "SFX", false)
         end
 
-        self._classTabBtn   = self._tabs:AddTab("MUI_SpellbookTabBtnClass",   "Class",   self._tabClass,   98, 200, 4)
-        self._generalTabBtn = self._tabs:AddTab("MUI_SpellbookTabBtnGeneral", "General", self._tabGeneral, 98, 200, 4)
-        self._petTabBtn     = self._tabs:AddTab("MUI_SpellbookTabBtnPet",     "Pet",     self._tabPet,     98, 200, 4)
+        self._classTabBtn   = self._tabs:AddTab("MUI_SpellbookTabBtnClass",   CLASS,          self._tabClass,   98, 200, 4)
+        self._generalTabBtn = self._tabs:AddTab("MUI_SpellbookTabBtnGeneral", GENERAL_SPELLS, self._tabGeneral, 98, 200, 4)
+        self._petTabBtn     = self._tabs:AddTab("MUI_SpellbookTabBtnPet",     PET,            self._tabPet,     98, 200, 4)
         self._petTabBtn:Hide()
 
         -- A rebuild reparents pooled items (SetParent on secure frames),
@@ -398,7 +399,7 @@ class "TabSpellbook" : extends "SecureFrame" {
             self._settingsMenu:SetItems({
                 {
                     type    = "checkbox",
-                    label   = "Show passive abilities",
+                    label   = L.SPELLBOOK_SHOW_PASSIVES,
                     checked = MUI_DB.settings.spellbook.showPassive,
                     OnChanged = function(_, checked)
                         MUI_DB.settings.spellbook.showPassive = checked
@@ -407,7 +408,7 @@ class "TabSpellbook" : extends "SecureFrame" {
                 },
                 {
                     type    = "checkbox",
-                    label   = "Show header icons",
+                    label   = L.SPELLBOOK_SHOW_HEADER_ICONS,
                     checked = MUI_DB.settings.spellbook.showHeaderIcons,
                     OnChanged = function(_, checked)
                         MUI_DB.settings.spellbook.showHeaderIcons = checked
@@ -493,7 +494,7 @@ class "TabSpellbook" : extends "SecureFrame" {
             if #groups > 0 then
                 local _, specName = C_SpecializationInfo.GetSpecializationInfo(spec)
                 table.insert(sections, {
-                    title  = specName or ("Spec " .. spec),
+                    title  = specName or (SPECIALIZATION .. " " .. spec),
                     groups = groups,
                     spec   = spec,
                 })
@@ -506,7 +507,7 @@ class "TabSpellbook" : extends "SecureFrame" {
         local groups = self:_GroupsFromDB(MUI_DB.data.spells.general)
         local sections = {}
         if #groups > 0 then
-            table.insert(sections, { title = "General", groups = groups })
+            table.insert(sections, { title = GENERAL_SPELLS, groups = groups })
         end
         self._tabGeneral:SetSections(sections)
     end;
@@ -546,7 +547,7 @@ class "TabSpellbook" : extends "SecureFrame" {
                 table.insert(groups, SpellGroup(name, byName[name]))
             end
             if #groups > 0 then
-                table.insert(sections, { title = UnitName("pet") or "Pet", groups = groups })
+                table.insert(sections, { title = UnitName("pet") or PET, groups = groups })
             end
         end
 
@@ -588,10 +589,10 @@ class "TabSpellbook" : extends "SecureFrame" {
                 if ka.known   ~= kb.known   then return ka.known       end  -- known first
                 if ka.passive ~= kb.passive then return not ka.passive end  -- active first
                 if ka.known then
-                    return ka.name < kb.name                                -- known: alphabetical
+                    return strcmputf8i(ka.name, kb.name) < 0                -- known: alphabetical
                 end
                 if ka.level ~= kb.level then return ka.level < kb.level end -- unknown: by level
-                return ka.name < kb.name
+                return strcmputf8i(ka.name, kb.name) < 0
             end)
         end
         return groups

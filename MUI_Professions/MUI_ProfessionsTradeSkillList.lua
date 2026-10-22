@@ -9,6 +9,54 @@
 -- (which triggers the SetSelection hook on the overlay), unlearned →
 -- OnUnlearnedSelected(spellID), header → toggle local collapse + redraw.
 
+local L = MUI.L
+
+-- MUI_RecipeDB's categories (the list's keys, in English) as the list
+-- shows them.
+local CATEGORY_TEXT = {
+    ["Axe"]              = L.PROF_CAT_AXE,
+    ["Bag"]              = L.PROF_CAT_BAG,
+    ["Boots"]            = L.PROF_CAT_BOOTS,
+    ["Bracer"]           = L.PROF_CAT_BRACER,
+    ["Chest"]            = L.PROF_CAT_CHEST,
+    ["Cloak"]            = L.PROF_CAT_CLOAK,
+    ["Cloth Armor"]      = L.PROF_CAT_CLOTH_ARMOR,
+    ["Consumable"]       = L.PROF_CAT_CONSUMABLE,
+    ["Dagger"]           = L.PROF_CAT_DAGGER,
+    ["Elixir"]           = L.PROF_CAT_ELIXIR,
+    ["Engineered Item"]  = L.PROF_CAT_ENGINEERED_ITEM,
+    ["Flask"]            = L.PROF_CAT_FLASK,
+    ["Gloves"]           = L.PROF_CAT_GLOVES,
+    ["Gun"]              = L.PROF_CAT_GUN,
+    ["Item Enhancement"] = L.PROF_CAT_ITEM_ENHANCEMENT,
+    ["Leather Armor"]    = L.PROF_CAT_LEATHER_ARMOR,
+    ["Mace"]             = L.PROF_CAT_MACE,
+    ["Mail Armor"]       = L.PROF_CAT_MAIL_ARMOR,
+    ["Material"]         = L.PROF_CAT_MATERIAL,
+    ["Misc Armor"]       = L.PROF_CAT_MISC_ARMOR,
+    ["Oil"]              = L.PROF_CAT_OIL,
+    ["Other"]            = OTHER,
+    ["Plate Armor"]      = L.PROF_CAT_PLATE_ARMOR,
+    ["Polearm"]          = L.PROF_CAT_POLEARM,
+    ["Potion"]           = L.PROF_CAT_POTION,
+    ["Reagent"]          = L.PROF_CAT_REAGENT,
+    ["Rods"]             = L.PROF_CAT_RODS,
+    ["Shield"]           = L.PROF_CAT_SHIELD,
+    ["Shirt"]            = L.PROF_CAT_SHIRT,
+    ["Sword"]            = L.PROF_CAT_SWORD,
+    ["Trade Goods"]      = L.PROF_CAT_TRADE_GOODS,
+    ["Weapon"]           = L.PROF_CAT_WEAPON,
+    ["Weapon Coating"]   = L.PROF_CAT_WEAPON_COATING,
+}
+
+local function CategoryText(cat)
+    return CATEGORY_TEXT[cat] or cat
+end
+
+local function ByCategoryText(a, b)
+    return strcmputf8i(CategoryText(a), CategoryText(b)) < 0
+end
+
 local TEX = MUI.TEX_SKIN .. "professions\\tradeskill\\"
 
 local ROW_HEIGHT  = RecipeListRow.ROW_HEIGHT
@@ -35,7 +83,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
         self._textEmpty:AlignParentTop(60)
         self._textEmpty:FillWidth(50)
         self._textEmpty:SetTextColor(1, 0.82, 0, 1)
-        self._textEmpty:SetText("No results mathcing current filters were found")
+        self._textEmpty:SetText(L.PROF_NO_RESULTS)
         self._textEmpty:Hide()
 
         local bg = Texture(parent, nil, "BACKGROUND")
@@ -49,7 +97,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
 
         local TEX_BTN = MUI.TEX_BASE .. "dropdown"
 
-        self._btnFilter = Button(self._listFrame, nil, "Filter")
+        self._btnFilter = Button(self._listFrame, nil, FILTER)
         self._btnFilter:SetNormalTexture(TEX_BTN):SetTextureRegion(TEX_BTN, 512, 512, 0, 185, 196, 48)
         self._btnFilter:SetPushedTexture(TEX_BTN):SetTextureRegion(TEX_BTN, 512, 512, 0, 185, 196, 48)
         self._btnFilter:SetHighlightTexture(TEX_BTN):SetTextureRegion(TEX_BTN, 512, 512, 0, 185, 196, 48)
@@ -81,7 +129,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
             self._filterMenu:SetItems({
                 {
                     type    = "checkbox",
-                    label   = "Show learned",
+                    label   = TRADE_SKILLS_LEARNED_TAB,
                     checked = MUI_DB.settings.professions.showLearned,
                     OnChanged = function(_, checked)
                         MUI_DB.settings.professions.showLearned = checked
@@ -90,7 +138,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
                 },
                 {
                     type    = "checkbox",
-                    label   = "Show unlearned",
+                    label   = TRADE_SKILLS_UNLEARNED_TAB,
                     checked = MUI_DB.settings.professions.showUnlearned,
                     OnChanged = function(_, checked)
                         MUI_DB.settings.professions.showUnlearned = checked
@@ -99,7 +147,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
                 },
                 {
                     type    = "checkbox",
-                    label   = "Skill levelup",
+                    label   = TRADESKILL_FILTER_HAS_SKILL_UP,
                     checked = false,
                     OnChanged = function(_, checked)
                         self._filterSkillLevelup = checked
@@ -108,7 +156,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
                 },
                 {
                     type    = "checkbox",
-                    label   = "Have reagents",
+                    label   = CRAFT_IS_MAKEABLE,
                     checked = false,
                     OnChanged = function(_, checked)
                         self._filterCraftable = checked
@@ -132,7 +180,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
         local prevOnTextChanged = self._searchBox.OnTextChanged
         self._searchBox.OnTextChanged = function(box, text)
             if prevOnTextChanged then prevOnTextChanged(box, text) end
-            self._searchQuery = (text or ""):lower()
+            self._searchQuery = MUI.Fold(text or "")
             self:Refresh()
         end
 
@@ -226,7 +274,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
                              or skillType == "medium"
                              or skillType == "optimal") then return false end
             if craftable and (not available or available <= 0) then return false end
-            if query ~= "" and not (name and string.find(name:lower(), query, 1, true)) then
+            if query ~= "" and not (name and string.find(MUI.Fold(name), query, 1, true)) then
                 return false
             end
             return true
@@ -350,7 +398,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
                     else                     skillType = "trivial" end
 
                     local nameOk = query == ""
-                                or string.find(name:lower(), query, 1, true) ~= nil
+                                or string.find(MUI.Fold(name), query, 1, true) ~= nil
                     local levelOk = not levelup
                                  or skillType == "easy"
                                  or skillType == "medium"
@@ -380,12 +428,12 @@ class "ProfessionsRecipeList" : extends "Frame" {
             if info.category then useCategories = true; break end
         end
 
-        table.insert(list, { isDivider = true, name = "Unlearned", index = -1 })
+        table.insert(list, { isDivider = true, name = TRADE_SKILLS_UNLEARNED_TAB, index = -1 })
 
         if useCategories then
             local buckets = {}
             for _, e in ipairs(unlearned) do
-                local cat = e.category or "Other"
+                local cat = e.category or OTHER
                 buckets[cat] = buckets[cat] or {}
                 table.insert(buckets[cat], e)
             end
@@ -396,7 +444,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
             end
             local cats = {}
             for cat in pairs(buckets) do cats[#cats + 1] = cat end
-            table.sort(cats)
+            table.sort(cats, ByCategoryText)
             for _, cat in ipairs(cats) do
                 local collapseKey = "unlearned:" .. cat
                 local isCollapsed = collapsed[collapseKey] == true
@@ -404,7 +452,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
                     index       = -1,
                     isHeader    = true,
                     isExpanded  = not isCollapsed,
-                    name        = cat,
+                    name        = CategoryText(cat),
                     skillType   = "header",
                     collapseKey = collapseKey,
                 })
@@ -441,7 +489,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
             for i = 1, adapter:GetNumRecipes() do
                 local name, skillType, available, _, _, numSkillUps = adapter:GetRecipeInfo(i)
                 if skillType ~= "header" and passes(skillType, name, available) then
-                    local cat = cache[name] or "Other"
+                    local cat = cache[name] or OTHER
                     buckets[cat] = buckets[cat] or {}
                     table.insert(buckets[cat], {
                         index     = i,
@@ -462,7 +510,8 @@ class "ProfessionsRecipeList" : extends "Frame" {
             table.insert(out, {
                 isHeader   = true,
                 isExpanded = not isCollapsed,
-                name       = cat,
+                name       = CategoryText(cat),
+                collapseKey = cat,
                 skillType  = "header",
                 index      = -1,
             })
@@ -473,7 +522,7 @@ class "ProfessionsRecipeList" : extends "Frame" {
 
         local cats = {}
         for cat in pairs(buckets) do cats[#cats + 1] = cat end
-        table.sort(cats)
+        table.sort(cats, ByCategoryText)
         for _, cat in ipairs(cats) do
             local recipes = buckets[cat]
             if #recipes > 0 then

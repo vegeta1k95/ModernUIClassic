@@ -32,7 +32,7 @@ class "UnitFrameTarget" {
         Frame(textureFrame.ManaBarTextRight):HideFrame()
         Texture(TargetFrameFlash):SetAlpha(0)
 
-        self.frame = UnitFrameEditable(TargetFrame, "Target")
+        self.frame = UnitFrameEditable(TargetFrame, HUD_EDIT_MODE_TARGET_FRAME_LABEL)
         self.frame:EditModeSetOption("target")
         self.frame:ClearAllPoints()
         self.frame:SetSize(171, 58)

@@ -98,7 +98,7 @@ class "AdventureGuideSearch" : extends "Frame" {
         local items = {}
         local function add(kind, entry)
             entry.kind = kind
-            entry.lower = string.lower(entry.name)
+            entry.lower = MUI.Fold(entry.name)
             table.insert(index[kind], entry)
         end
         for _, raids in ipairs({ false, true }) do
@@ -141,7 +141,7 @@ class "AdventureGuideSearch" : extends "Frame" {
     end;
 
     _Search = function(self, text)
-        local needle = string.lower(text)
+        local needle = MUI.Fold(text)
         local found = {}
         for _, entries in ipairs(self:_Index()) do
             for _, entry in ipairs(entries) do

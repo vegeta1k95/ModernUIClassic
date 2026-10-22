@@ -10,6 +10,19 @@ MUI = MUI or {}
 
 MUI.FONT_CAL  = "Interface\\AddOns\\ModernUI\\assets\\fonts\\morpheus_cyr.ttf"
 MUI.FONT      = "Interface\\AddOns\\ModernUI\\assets\\fonts\\frizqt___cyr.ttf"
+
+-- Ours have Latin and Cyrillic letters, no Hangul or Han: the Korean and
+-- Chinese clients write in their own fonts, the ones Blizzard's Fonts.xml
+-- puts in place of Friz Quadrata and of Morpheus for their alphabet.
+local CLIENT_FONTS = {
+    koKR = { "Fonts\\2002.TTF", "Fonts\\K_Pagetext.ttf" },
+    zhCN = { "Fonts\\ARKai_T.ttf", "Fonts\\ARKai_T.ttf" },
+    zhTW = { "Fonts\\blei00d.TTF", "Fonts\\blei00d.TTF" },
+}
+local clientFonts = CLIENT_FONTS[GetLocale()]
+if clientFonts then
+    MUI.FONT, MUI.FONT_CAL = clientFonts[1], clientFonts[2]
+end
 MUI.TEX_BASE  = "Interface\\AddOns\\ModernUI\\assets\\textures\\"
 MUI.TEX_ICON  = "Interface\\AddOns\\ModernUI\\assets\\textures\\icons\\"
 MUI.TEX_SKIN  = MUI.TEX_BASE .. "skin\\"

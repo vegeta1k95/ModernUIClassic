@@ -14,6 +14,18 @@
 --   items     its pieces' item ids: a weapon first, then as worn, head to
 --               feet, jewellery last
 
+local L = MUI.L
+
+-- The labels no area or profession names, in the client's language.
+local LABELS = {
+    ["Argent Dawn"]   = L.PROF_FACTION_ARGENT_DAWN,
+    ["Dungeons"]      = DUNGEONS,
+    ["Dungeon Set 1"] = L.COLLECTIONS_DUNGEON_SET_1,
+    ["Dungeon Set 2"] = L.COLLECTIONS_DUNGEON_SET_2,
+    ["PvP Rank 10"]   = L.COLLECTIONS_PVP_RANK:format(10),
+    ["PvP Rank 13"]   = L.COLLECTIONS_PVP_RANK:format(13),
+}
+
 object "ItemSetDB" {
     -- Every set, the highest item level first; those of one level by where
     -- they come from.
@@ -46,7 +58,7 @@ object "ItemSetDB" {
         elseif set.skill then
             source = C_TradeSkillUI.GetTradeSkillDisplayName(set.skill)
         end
-        if not source or source == "" then source = set.label end
+        if not source or source == "" then source = LABELS[set.label] or set.label end
         if set.faction then
             source = source .. " (" .. (set.faction == "Alliance" and FACTION_ALLIANCE or FACTION_HORDE) .. ")"
         end

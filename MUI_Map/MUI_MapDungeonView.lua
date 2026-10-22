@@ -199,7 +199,7 @@ class "MapDungeonView" : extends "Frame" {
     end;
 
     -- Which map the player is on: by minimap subzone, else (first time in
-    -- this instance) by the instance's name. A subzone we don't know keeps
+    -- this instance) by the instance's id. A subzone we don't know keeps
     -- the floor already shown.
     _Resolve = function(self)
         if self._browsing then return end
@@ -209,7 +209,7 @@ class "MapDungeonView" : extends "Frame" {
             self:Hide()
             return
         end
-        local instance = GetInstanceInfo()
+        local instance = select(8, GetInstanceInfo())
         local code, floor = MUI_DungeonMapDB:FindBySubzone(GetMinimapZoneText())
         if not code and self._instance ~= instance then
             code, floor = MUI_DungeonMapDB:FindByInstance(instance)

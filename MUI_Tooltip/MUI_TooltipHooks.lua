@@ -57,7 +57,7 @@ object "TooltipItemHook" {
                 local _, _, _, ilvl, _, _, _, _, equipLoc, _, _, classID, subclassID = C_Item.GetItemInfo(link)
 
                 if classID == 7 then
-                    tooltip:InsertLine(2, "Crafting Reagent", 0.38, 0.68, 0.95)
+                    tooltip:InsertLine(2, PROFESSIONS_USED_IN_COOKING, 0.38, 0.68, 0.95)
                     return
                 end
 
@@ -66,7 +66,7 @@ object "TooltipItemHook" {
                     or equipLoc == ""
                     or equipLoc == "INVTYPE_NON_EQUIP_IGNORE"
                 then return end
-                tooltip:InsertLine(2, "Item level: " .. ilvl, 1, 0.82, 0)
+                tooltip:InsertLine(2, CHARACTER_LINK_ITEM_LEVEL_TOOLTIP:format(ilvl), 1, 0.82, 0)
                 tooltip:Show()
             end)
         end
@@ -88,7 +88,7 @@ object "TooltipItemHook" {
                 if not link then return end
                 local sellPrice = select(11, C_Item.GetItemInfo(link))
                 if not sellPrice or sellPrice <= 0 then return end
-                tooltip:AddLine("Selling price:   " .. C_CurrencyInfo.GetCoinTextureString(sellPrice), 1, 1, 1)
+                tooltip:AddLine(SELL_PRICE .. ":   " .. C_CurrencyInfo.GetCoinTextureString(sellPrice), 1, 1, 1)
                 tooltip._mui_sellPriceAdded = true
                 tooltip:Show()
             end)
@@ -127,7 +127,7 @@ object "TooltipItemHook" {
             badge:SetFromTextureRegion("tooltiplabel", 128, 32, 16, 0, 96, 31, 8, 8, 8, 4, 0.75)
 
             local text = FontString(badge, nil, "OVERLAY")
-            text:SetText("Currently equipped")
+            text:SetText(CURRENTLY_EQUIPPED)
             text:SetTextColor(1, 0.82, 0, 1)
             text:SetFontSize(10.5)
             text:CenterInParent(0, -1)

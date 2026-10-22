@@ -6,6 +6,7 @@
 local PROFESSIONS = {
     -- Primary professions (the player is limited to two of these)
     ALCHEMY = {
+        skillLine = 171,
         isGathering = false,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-alchemy",
@@ -14,6 +15,7 @@ local PROFESSIONS = {
         },
     },
     BLACKSMITHING = {
+        skillLine = 164,
         isGathering = false,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-blacksmithing",
@@ -23,6 +25,7 @@ local PROFESSIONS = {
         },
     },
     ENCHANTING = {
+        skillLine = 333,
         isGathering = false,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-enchanting",
@@ -32,6 +35,7 @@ local PROFESSIONS = {
         },
     },
     ENGINEERING = {
+        skillLine = 202,
         isGathering = false,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-engineering",
@@ -41,6 +45,7 @@ local PROFESSIONS = {
         },
     },
     HERBALISM = {
+        skillLine = 182,
         isGathering = true,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-herbalism",
@@ -50,6 +55,7 @@ local PROFESSIONS = {
         },
     },
     LEATHERWORKING = {
+        skillLine = 165,
         isGathering = false,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-leatherworking",
@@ -59,6 +65,7 @@ local PROFESSIONS = {
         },
     },
     MINING = {
+        skillLine = 186,
         isGathering = true,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-mining",
@@ -68,6 +75,7 @@ local PROFESSIONS = {
         },
     },
     SKINNING = {
+        skillLine = 393,
         isGathering = true,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-skinning",
@@ -76,6 +84,7 @@ local PROFESSIONS = {
         },
     },
     TAILORING = {
+        skillLine = 197,
         isGathering = false,
         isPrimary = true,
         icon = MUI.TEX_ICON .. "profession-tailoring",
@@ -86,6 +95,7 @@ local PROFESSIONS = {
 
     -- Secondary professions (no character limit)
     COOKING = {
+        skillLine = 185,
         isGathering = false,
         isPrimary = false,
         icon = MUI.TEX_ICON .. "profession-cooking",
@@ -95,6 +105,7 @@ local PROFESSIONS = {
         },
     },
     FISHING = {
+        skillLine = 356,
         isGathering = true,
         isPrimary = false,
         icon = MUI.TEX_ICON .. "profession-fishing",
@@ -103,6 +114,7 @@ local PROFESSIONS = {
         },
     },
     FIRST_AID = {
+        skillLine = 129,
         isGathering = false,
         isPrimary = false,
         icon = MUI.TEX_ICON .. "profession-firstaid",
@@ -113,6 +125,7 @@ local PROFESSIONS = {
 
     -- Poisons 
     POISONS = {
+        skillLine = 40,
         isGathering = false,
         isPrimary = false,
         icon = "Interface\\Icons\\Trade_BrewPoison",
@@ -122,37 +135,14 @@ local PROFESSIONS = {
     },
 }
 
--- Localized skill-line name → PROFESSION def. Used by _RefreshSkillProgress
--- to map GetSkillLineInfo's localized row name back to one of our entries.
--- Add a new locale by copying the EN block and translating each key.
-local SKILL_TO_PROFESSION = {
-    EN = {
-        ["Alchemy"]         = PROFESSIONS.ALCHEMY,
-        ["Blacksmithing"]   = PROFESSIONS.BLACKSMITHING,
-        ["Enchanting"]      = PROFESSIONS.ENCHANTING,
-        ["Engineering"]     = PROFESSIONS.ENGINEERING,
-        ["Herbalism"]       = PROFESSIONS.HERBALISM,
-        ["Leatherworking"]  = PROFESSIONS.LEATHERWORKING,
-        ["Mining"]          = PROFESSIONS.MINING,
-        ["Skinning"]        = PROFESSIONS.SKINNING,
-        ["Tailoring"]       = PROFESSIONS.TAILORING,
-        ["Cooking"]         = PROFESSIONS.COOKING,
-        ["Fishing"]         = PROFESSIONS.FISHING,
-        ["First Aid"]       = PROFESSIONS.FIRST_AID,
-        ["Poisons"]         = PROFESSIONS.POISONS,
-    },
-}
-
--- Map Blizzard's GetLocale() → SKILL_TO_PROFESSION table key. Fallback to EN
--- when a locale isn't translated yet — the table lookup will simply miss and
--- skill rank/maxRank will stay nil for that locale until someone adds rows.
-local LOCALE_TO_KEY = {
-    enUS = "EN",
-    enGB = "EN",
-}
-
--- Back-pointer so SKILL_TO_PROFESSION lookups can recover the string key.
-for key, def in pairs(PROFESSIONS) do def.key = key end
+-- Skill line id → PROFESSION def, and each def's key back on it. A row of the
+-- skill window (GetSkillLineInfo) names its line in the client's language;
+-- MUI_SkillLineDB tells which line that is.
+local BY_SKILL_LINE = {}
+for key, def in pairs(PROFESSIONS) do
+    def.key = key
+    BY_SKILL_LINE[def.skillLine] = def
+end
 
 -- Era profession tiers (300 cap). Sorted ascending; resolved by walking until
 -- maxRank < threshold. Title constants are Blizzard globals (localized).
@@ -325,18 +315,15 @@ object "ModuleProfessions" : extends "Module" {
     end;
 
     -- Populate rank/maxRank/skillIndex on each known profession by walking
-    -- GetSkillLineInfo. Maps the localized skill row name back to our
-    -- PROFESSION def via SKILL_TO_PROFESSION[locale]; only known profs
-    -- (already populated by the spell-detection pass) get updated.
+    -- GetSkillLineInfo. A row's localized name gives its skill line, and
+    -- that our PROFESSION def; only known profs (already populated by the
+    -- spell-detection pass) get updated.
     _RefreshSkillProgress = function(self)
-        local skillToProf = SKILL_TO_PROFESSION[LOCALE_TO_KEY[GetLocale()] or "EN"]
-                            or SKILL_TO_PROFESSION.EN
-
         ExpandSkillHeader(0)
         for i = 1, GetNumSkillLines() do
             local skillName, isHeader, _, rank, _, _, maxRank = GetSkillLineInfo(i)
             if not isHeader then
-                local def = skillToProf[skillName]
+                local def = BY_SKILL_LINE[MUI_SkillLineDB:GetByName(skillName)]
                 if def and self._professions[def.key] then
                     self._professions[def.key].name       = skillName
                     self._professions[def.key].rank       = rank

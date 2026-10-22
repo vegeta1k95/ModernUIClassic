@@ -9,6 +9,8 @@
 --                              or from the slot's arrow while the manager shows
 --   CharacterEquipmentManager  the side pane listing the sets
 
+local L = MUI.L
+
 local FLYOUT_ART   = "Interface\\PaperDollInfoFrame\\UI-GearManager-Flyout"
 local IGNORE_ART   = "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Opaque"
 local UNIGNORE_ART = "Interface\\PaperDollInfoFrame\\UI-GearManager-Undo"
@@ -66,7 +68,7 @@ local POPUP_SAVE   = "MUI_EQUIPMENT_SET_SAVE"
 
 -- Retail's two confirmations, acting on our sets.
 StaticPopupDialogs[POPUP_DELETE] = {
-    text = "Are you sure you want to delete the equipment set %s?",
+    text = CONFIRM_DELETE_EQUIPMENT_SET,
     button1 = YES,
     button2 = NO,
     OnAccept = function(dialog, data) MUI_EquipmentSets:Delete(data.set) end,
@@ -76,7 +78,7 @@ StaticPopupDialogs[POPUP_DELETE] = {
     hideOnEscape = 1,
 }
 StaticPopupDialogs[POPUP_SAVE] = {
-    text = "Would you like to save the equipment set \"%s\"?",
+    text = CONFIRM_SAVE_EQUIPMENT_SET,
     button1 = YES,
     button2 = NO,
     OnAccept = function(dialog, data) MUI_EquipmentSets:Save(data.set, data.ignored) end,
@@ -358,13 +360,13 @@ class "CharacterEquipmentFlyout" : extends "Frame" {
         if manager:IsVisible() and slot.slot ~= 0 then
             local ignored = manager:IsSlotIgnored(slot.slot)
             add(ignored and UNIGNORE_ART or IGNORE_ART, nil, nil,
-                ignored and "Include this slot in the set" or "Ignore this slot when saving the set", function()
+                ignored and EQUIPMENT_MANAGER_UNIGNORE_SLOT or EQUIPMENT_MANAGER_IGNORE_SLOT, function()
                 manager:SetSlotIgnored(slot.slot, not ignored)
                 self:_Fill()
             end)
         end
         if GetInventoryItemLink("player", slot.slot) then
-            add(INTO_BAG_ART, nil, nil, "Place in bags", function()
+            add(INTO_BAG_ART, nil, nil, EQUIPMENT_MANAGER_PLACE_IN_BAGS, function()
                 MUI_EquipmentSets:Unequip(slot.slot)
                 self:Close()
             end)
@@ -494,10 +496,10 @@ class "CharacterSetRow" : extends "Button" {
         self._name:SetSize(98, 38)
         self._name:AlignParentLeft(44)
 
-        self._delete = self:_Tool("Interface\\Buttons\\UI-GroupLoot-Pass-Up", 14, "Delete")
+        self._delete = self:_Tool("Interface\\Buttons\\UI-GroupLoot-Pass-Up", 14, DELETE)
         self._delete:AlignParentBottomRight(2, 2)
         self._delete.OnClick = function() manager:ConfirmDelete(self.set) end
-        self._edit = self:_Tool("Interface\\WorldMap\\GEAR_64GREY", 16, "Change the name and icon")
+        self._edit = self:_Tool("Interface\\WorldMap\\GEAR_64GREY", 16, EQUIPMENT_SET_EDIT)
         self._edit:LeftOf(self._delete, 1)
         self._edit.OnClick = function() manager:EditSet(self.set) end
 
@@ -553,7 +555,7 @@ class "CharacterSetRow" : extends "Button" {
             self._icon:SetTexture(PLUS_ART)
             self._icon:SetSize(30, 30)
             self._icon:AlignParentLeft(7)
-            self._name:SetText("New Set")
+            self._name:SetText(PAPERDOLL_NEWEQUIPMENTSET)
             self._name:SetTextColor(0.1, 1, 0.1, 1)
             self._check:Hide()
         end
@@ -620,7 +622,7 @@ class "CharacterSetDialog" : extends "Panel" {
         local prompt = FontString(self, nil, "ARTWORK")
         prompt:SetFontSize(10.5)
         prompt:SetTextColor(1, 0.82, 0, 1)
-        prompt:SetText("Enter a name for this set:")
+        prompt:SetText(GEARSETS_POPUP_TEXT)
         prompt:AlignParentTopLeft(34, GRID_LEFT)
 
         self._name = EditBox(self)
@@ -878,11 +880,11 @@ class "CharacterEquipmentManager" : extends "Frame" {
 
         -- The two buttons span the rows under them, a little in from the
         -- pane's left edge.
-        self._equip = ButtonGold(self, nil, "Equip")
+        self._equip = ButtonGold(self, nil, EQUIPSET_EQUIP)
         self._equip:SetSize(83, 22)
         self._equip:AlignParentTopLeft(1, 7)
         self._equip.OnClick = function() MUI_EquipmentSets:Equip(self._selected) end
-        self._save = ButtonGold(self, nil, "Save")
+        self._save = ButtonGold(self, nil, SAVE)
         self._save:SetSize(83, 22)
         self._save:RightOf(self._equip, 4)
         self._save.OnClick = function() self:_ConfirmSave() end
@@ -979,7 +981,7 @@ class "CharacterEquipmentManager" : extends "Frame" {
         self._ignored = { [4] = true, [19] = true }
         self:Refresh()
         self:_ShowSlotArrows(true)
-        self._dialog:Open("New Equipment Set", nil, nil, function(name, icon)
+        self._dialog:Open(PAPERDOLL_NEWEQUIPMENTSET, nil, nil, function(name, icon)
             local existing = MUI_EquipmentSets:Find(name)
             if existing then
                 MUI_EquipmentSets:Save(existing, self._ignored)
@@ -991,7 +993,7 @@ class "CharacterEquipmentManager" : extends "Frame" {
     end;
 
     EditSet = function(self, set)
-        self._dialog:Open("Equipment Set", set.name, set.icon, function(name, icon)
+        self._dialog:Open(L.CHAR_EQUIPMENT_SET, set.name, set.icon, function(name, icon)
             MUI_EquipmentSets:Modify(set, name, icon)
         end)
     end;
@@ -1008,8 +1010,8 @@ class "CharacterEquipmentManager" : extends "Frame" {
     -- The set's items, each in its quality's colour; red when it is gone.
     BuildSetTooltip = function(self, tooltip, set)
         if not set then
-            tooltip:AddLine("New Set", 1, 1, 1, false, 13)
-            tooltip:AddLine("Save what you are wearing as an equipment set.", 1, 0.82, 0, true)
+            tooltip:AddLine(PAPERDOLL_NEWEQUIPMENTSET, 1, 1, 1, false, 13)
+            tooltip:AddLine(L.CHAR_NEW_SET_TOOLTIP, 1, 0.82, 0, true)
             return
         end
         tooltip:AddLine(set.name, 1, 1, 1, false, 13)
@@ -1027,6 +1029,6 @@ class "CharacterEquipmentManager" : extends "Frame" {
                 end
             end
         end
-        tooltip:AddLine("Double-click to equip.", 0.5, 0.5, 0.5)
+        tooltip:AddLine(L.CHAR_DOUBLE_CLICK_EQUIP, 0.5, 0.5, 0.5)
     end;
 }

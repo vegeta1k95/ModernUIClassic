@@ -225,7 +225,7 @@ class "CollectionsMounts" : extends "Frame" {
         self._search:SetSize(145, 20)
         self._search:AlignParentTopLeft(9, 15)
         self._search.OnTextChanged = function(_, text)
-            local query = strlower(text or "")
+            local query = MUI.Fold(text or "")
             if query == self._query then return end
             self._query = query
             if self:IsVisible() then self:Refresh() end
@@ -251,7 +251,7 @@ class "CollectionsMounts" : extends "Frame" {
         menu:SetItems({
             toggle(COLLECTED, "collected"),
             toggle(NOT_COLLECTED, "uncollected"),
-            toggle("Unusable", "unusable"),
+            toggle(MOUNT_JOURNAL_FILTER_UNUSABLE, "unusable"),
             { type = "separator" },
             toggle(BATTLE_PET_SOURCE_1, "drop"),
             toggle(BATTLE_PET_SOURCE_2, "quest"),
@@ -347,7 +347,7 @@ class "CollectionsMounts" : extends "Frame" {
         if not (collected and filters.collected or not collected and filters.uncollected) then return false end
         if not filters.unusable and not self:IsForPlayer(mount) then return false end
         if not filters[SourceOf(mount)] then return false end
-        if self._query ~= "" and not strfind(strlower(mount.name), self._query, 1, true) then return false end
+        if self._query ~= "" and not strfind(MUI.Fold(mount.name), self._query, 1, true) then return false end
         return true
     end;
 

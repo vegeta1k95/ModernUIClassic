@@ -7,6 +7,25 @@
 -- threshold) to BuildSourceLines so the resolver doesn't have to reach
 -- back into the tradeskill frame's instance state.
 
+local L = MUI.L
+
+-- MUI_RecipeDB's factions, standings and events (in English) as a source
+-- line shows them.
+local FACTION_TEXT = {
+    ["Argent Dawn"]         = L.PROF_FACTION_ARGENT_DAWN,
+    ["Cenarion Circle"]     = L.PROF_FACTION_CENARION_CIRCLE,
+    ["Thorium Brotherhood"] = L.PROF_FACTION_THORIUM_BROTHERHOOD,
+    ["Timbermaw Hold"]      = L.PROF_FACTION_TIMBERMAW_HOLD,
+    ["Zandalar Tribe"]      = L.PROF_FACTION_ZANDALAR_TRIBE,
+}
+local STANDING_TEXT = {
+    Friendly = FACTION_STANDING_LABEL5, Honored = FACTION_STANDING_LABEL6,
+    Revered  = FACTION_STANDING_LABEL7, Exalted = FACTION_STANDING_LABEL8,
+}
+local EVENT_TEXT = {
+    ["Feast of Winter Veil"] = L.CAL_HOLIDAY_WINTER_VEIL,
+}
+
 object "ProfessionsSourceResolver" {
 
     -- Display-name overrides ONLY for area-ids the source parser collapses
@@ -23,9 +42,9 @@ object "ProfessionsSourceResolver" {
     -- callers add formatting. Zone is looked up via MUI_ZoneDB →
     -- uiMapId → C_Map.GetMapInfo, returning "" when any link is missing.
     ResolveNpc = function(self, npcId)
-        if not npcId or not MUI_NpcDB then return "Unknown NPC", "" end
+        if not npcId or not MUI_NpcDB then return UNKNOWN, "" end
         local npc = MUI_NpcDB:Get(npcId)
-        local name = (npc and npc.name) or ("NPC #" .. tostring(npcId))
+        local name = (npc and npc.name) or UNKNOWN
         local zone = ""
         if npc and npc.zoneID and MUI_ZoneDB then
             local uiMapId = MUI_ZoneDB:GetUiMapForArea(npc.zoneID)
@@ -74,7 +93,7 @@ object "ProfessionsSourceResolver" {
         if not itemId then return "" end
         local entry = MUI_ItemDB and MUI_ItemDB:Get(itemId)
         if entry and entry.name then return entry.name end
-        return C_Item.GetItemInfo(itemId) or ("Item #" .. tostring(itemId))
+        return C_Item.GetItemInfo(itemId) or RETRIEVING_ITEM_INFO
     end;
 
     -- Resolve a quest id into its localized name (MUI_QuestDB first, then
@@ -82,8 +101,8 @@ object "ProfessionsSourceResolver" {
     ResolveQuest = function(self, questId)
         if not questId then return "" end
         local q = MUI_QuestDB and MUI_QuestDB:Get(questId)
-        if q and q.name then return q.name end
-        return ("Quest #" .. tostring(questId))
+        if q and q.name then return MUI_QuestDB:LocalizeQuestName(questId) end
+        return UNKNOWN
     end;
 
     -- Build a single tooltip line from a structured source entry. Schema:
@@ -110,14 +129,14 @@ object "ProfessionsSourceResolver" {
         local kind = entry.kind
         local GOLD, R = "|cffffd200", "|r"
         local function emit(label, value)
-            tooltip:AddLine(GOLD .. label .. ":" .. R .. " " .. (value or ""), 1, 1, 1, false, 12)
+            tooltip:AddLine(GOLD .. label .. HEADER_COLON .. R .. " " .. (value or ""), 1, 1, 1, false, 12)
         end
 
         if kind == "trainer" or kind == "trainerManual" then
             local profName = (ctx and ctx.profName) or "?"
             local lvl = ctx and ctx.orange
             local suffix = lvl and (" (" .. lvl .. ")") or ""
-            emit("Profession trainer", profName .. suffix)
+            emit(L.PROF_SOURCE_TRAINER, profName .. suffix)
         elseif kind == "vendor" then
             -- Alliance/Horde split (npcA/npcH) — pick by the player's faction.
             -- Neutral / single-faction vendors live in `npc` and apply to both.
@@ -128,8 +147,8 @@ object "ProfessionsSourceResolver" {
                 else                       npc = entry.npcH or entry.npcA end
             end
             local who, zone = self:ResolveNpc(npc)
-            emit("Vendor", who)
-            if zone ~= "" then emit("Zone", zone) end
+            emit(TRANSMOG_SOURCE_3, who)
+            if zone ~= "" then emit(ZONE, zone) end
         elseif kind == "drop" then
             -- Three shapes (decided by the source-parser):
             --   { npc, zone? }    → single NPC drop     "Loot: <npc>" + "Zone: <zone>"
@@ -139,33 +158,33 @@ object "ProfessionsSourceResolver" {
             -- exist) since MUI_NpcDB is incomplete for instance NPCs.
             if entry.npc then
                 local who = self:ResolveNpc(entry.npc)
-                emit("Loot", who)
+                emit(LOOT_NOUN, who)
                 local zoneName = entry.zone and self:ResolveZone(entry.zone) or ""
                 if zoneName == "" then
                     local _, npcZone = self:ResolveNpc(entry.npc)
                     zoneName = npcZone
                 end
-                if zoneName ~= "" then emit("Zone", zoneName) end
+                if zoneName ~= "" then emit(ZONE, zoneName) end
             elseif entry.zone then
                 local zoneName = self:ResolveZone(entry.zone)
-                emit("Loot", zoneName ~= "" and ("creatures in " .. zoneName) or "Unknown")
+                emit(LOOT_NOUN, zoneName ~= "" and L.PROF_CREATURES_IN:format(zoneName) or UNKNOWN)
             else
-                emit("Loot", "Unknown")
+                emit(LOOT_NOUN, UNKNOWN)
             end
         elseif kind == "dungeonDrop" then
-            emit("Source", entry.zone or "dungeons and raids")
+            emit(L.PROF_SOURCE, entry.zone or GROUP_FINDER)
         elseif kind == "worldDrop" then
             -- `event` lets us label holiday/event-only world drops:
             --   { kind = "worldDrop", event = "Feast of Winter Veil" }
             -- renders as "Source: Feast of Winter Veil" instead of the
             -- generic "Source: world drop".
-            emit("Source", entry.event or "world drop")
+            emit(L.PROF_SOURCE, entry.event and EVENT_TEXT[entry.event] or entry.event or TRANSMOG_SOURCE_4)
         elseif kind == "quest" then
-            emit("Quest", self:ResolveQuest(entry.quest))
+            emit(BATTLE_PET_SOURCE_2, self:ResolveQuest(entry.quest))
         elseif kind == "reputation" then
-            local rep = entry.faction or "?"
-            local standing = entry.standing and (" (" .. entry.standing .. ")") or ""
-            emit("Reputation", rep .. standing)
+            local rep = FACTION_TEXT[entry.faction] or entry.faction or "?"
+            local standing = entry.standing and (" (" .. (STANDING_TEXT[entry.standing] or entry.standing) .. ")") or ""
+            emit(COMBAT_FACTION_CHANGE, rep .. standing)
         end
     end;
 }

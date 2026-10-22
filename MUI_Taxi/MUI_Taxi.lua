@@ -116,7 +116,7 @@ class "TaxiNodeButton" : extends "Button" {
 class "TaxiWindow" : extends "PanelPortrait" {
     __init = function(self)
         self._blizzard = Frame(TaxiFrame)
-        PanelPortrait.__init(self, self._blizzard, "MUI_TaxiFrame", "Flight Map")
+        PanelPortrait.__init(self, self._blizzard, "MUI_TaxiFrame", FLIGHT_MAP)
         self:FillParentPadding(NATIVE_DX, NATIVE_DY, 0, 0)
         self._nodes = {}          -- by Era's node index
         self._routes = {}         -- the lines, reused

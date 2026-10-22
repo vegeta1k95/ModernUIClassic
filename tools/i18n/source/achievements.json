@@ -1,0 +1,3474 @@
+{
+ "achievements/cat/8": {
+  "en": "Loot & Wealth",
+  "note": "an achievement category"
+ },
+ "achievements/cat/10": {
+  "en": "Class",
+  "note": "an achievement category"
+ },
+ "achievements/107/desc": {
+  "en": "Learn to ride a mount.",
+  "note": "the description of the achievement \"Giddy Up!\""
+ },
+ "achievements/108/name": {
+  "en": "Need For Speed",
+  "note": "an achievement's name"
+ },
+ "achievements/108/desc": {
+  "en": "Own an epic (100% speed) mount.",
+  "note": "the description of the achievement \"Need For Speed\""
+ },
+ "achievements/109/desc": {
+  "en": "Raise four weapon skills to 300.",
+  "note": "the description of the achievement \"Master of Arms\""
+ },
+ "achievements/110/name": {
+  "en": "Knuckle Sandwich",
+  "note": "an achievement's name"
+ },
+ "achievements/110/desc": {
+  "en": "Raise your unarmed skill to 300.",
+  "note": "the description of the achievement \"Knuckle Sandwich\""
+ },
+ "achievements/111/desc": {
+  "en": "Buy all 6 additional bank bag slots.",
+  "note": "the description of the achievement \"Safe Deposit\""
+ },
+ "achievements/112/desc": {
+  "en": "Own 5 unique companion pets.",
+  "note": "the description of the achievement \"Menagerie\""
+ },
+ "achievements/113/name": {
+  "en": "Crazy Cat Person",
+  "note": "an achievement's name"
+ },
+ "achievements/113/desc": {
+  "en": "Own 15 unique companion pets.",
+  "note": "the description of the achievement \"Crazy Cat Person\""
+ },
+ "achievements/114/desc": {
+  "en": "Survive a fall that costs more than half of your maximum health.",
+  "note": "the description of the achievement \"Going Down?\""
+ },
+ "achievements/115/desc": {
+  "en": "Drink 25 different beverages.",
+  "note": "the description of the achievement \"It's Happy Hour Somewhere\""
+ },
+ "achievements/116/desc": {
+  "en": "Eat 50 different foods.",
+  "note": "the description of the achievement \"Tastes Like Chicken\""
+ },
+ "achievements/117/desc": {
+  "en": "Read 25 of Azeroth's books.",
+  "note": "the description of the achievement \"Well Read\""
+ },
+ "achievements/118/desc": {
+  "en": "Fall in love with 15 different critter species using /love.",
+  "note": "the description of the achievement \"To All The Squirrels I've Loved Before\""
+ },
+ "achievements/119/name": {
+  "en": "Saving Elwynn",
+  "note": "an achievement's name"
+ },
+ "achievements/119/desc": {
+  "en": "Kill Hogger.",
+  "note": "the description of the achievement \"Saving Elwynn\""
+ },
+ "achievements/120/name": {
+  "en": "The Princess Must Die",
+  "note": "an achievement's name"
+ },
+ "achievements/120/desc": {
+  "en": "Slay Princess, terror of Brackwell Pumpkin Patch.",
+  "note": "the description of the achievement \"The Princess Must Die\""
+ },
+ "achievements/121/name": {
+  "en": "Fishing for Murlocs",
+  "note": "an achievement's name"
+ },
+ "achievements/121/desc": {
+  "en": "Slay Old Murk-Eye on the Westfall coast.",
+  "note": "the description of the achievement \"Fishing for Murlocs\""
+ },
+ "achievements/122/name": {
+  "en": "An Hero of the Horde",
+  "note": "an achievement's name"
+ },
+ "achievements/122/desc": {
+  "en": "Slay Gamon in Orgrimmar.",
+  "note": "the description of the achievement \"An Hero of the Horde\""
+ },
+ "achievements/123/name": {
+  "en": "The Embalmer's Revenge",
+  "note": "an achievement's name"
+ },
+ "achievements/123/desc": {
+  "en": "Slay Stitches when he marches on Darkshire.",
+  "note": "the description of the achievement \"The Embalmer's Revenge\""
+ },
+ "achievements/124/name": {
+  "en": "Rest in Peace, Mor'Ladim",
+  "note": "an achievement's name"
+ },
+ "achievements/124/desc": {
+  "en": "Put Mor'Ladim to rest in Raven Hill Cemetery.",
+  "note": "the description of the achievement \"Rest in Peace, Mor'Ladim\""
+ },
+ "achievements/125/name": {
+  "en": "Like Father, Like Son",
+  "note": "an achievement's name"
+ },
+ "achievements/125/desc": {
+  "en": "Slay a Son of Arugal in Silverpine Forest.",
+  "note": "the description of the achievement \"Like Father, Like Son\""
+ },
+ "achievements/126/desc": {
+  "en": "Discover the fate of Mankrik's wife.",
+  "note": "the description of the achievement \"Lost in Battle\""
+ },
+ "achievements/127/name": {
+  "en": "Kitten Stomper",
+  "note": "an achievement's name"
+ },
+ "achievements/127/desc": {
+  "en": "Slay Mr. Bigglesworth in Naxxramas.",
+  "note": "the description of the achievement \"Kitten Stomper\""
+ },
+ "achievements/128/name": {
+  "en": "Devilsaur Slayer",
+  "note": "an achievement's name"
+ },
+ "achievements/128/desc": {
+  "en": "Slay King Mosh in Un'Goro Crater.",
+  "note": "the description of the achievement \"Devilsaur Slayer\""
+ },
+ "achievements/129/name": {
+  "en": "The Devourer Devoured",
+  "note": "an achievement's name"
+ },
+ "achievements/129/desc": {
+  "en": "Slay Teremus the Devourer in the Blasted Lands.",
+  "note": "the description of the achievement \"The Devourer Devoured\""
+ },
+ "achievements/130/name": {
+  "en": "Azeroth's Most Wanted",
+  "note": "an achievement's name"
+ },
+ "achievements/130/desc": {
+  "en": "Complete the Azeroth's Most Wanted achievements.",
+  "note": "the description of the achievement \"Azeroth's Most Wanted\""
+ },
+ "achievements/131/desc": {
+  "en": "Ride faster than an epic mount: 100% riding speed plus a Carrot on a Stick, Mithril Spurs or a Riding Skill enchant.",
+  "note": "the description of the achievement \"Breaking the Sound Barrier\""
+ },
+ "achievements/132/name": {
+  "en": "Overkill",
+  "note": "an achievement's name"
+ },
+ "achievements/132/desc": {
+  "en": "Hit a level 1 critter for 100 damage.",
+  "note": "the description of the achievement \"Overkill\""
+ },
+ "achievements/133/name": {
+  "en": "Massive Overkill",
+  "note": "an achievement's name"
+ },
+ "achievements/133/desc": {
+  "en": "Hit a level 1 critter for 500 damage.",
+  "note": "the description of the achievement \"Massive Overkill\""
+ },
+ "achievements/134/name": {
+  "en": "Ludicrous Overkill",
+  "note": "an achievement's name"
+ },
+ "achievements/134/desc": {
+  "en": "Hit a level 1 critter for 1,000 damage.",
+  "note": "the description of the achievement \"Ludicrous Overkill\""
+ },
+ "achievements/135/name": {
+  "en": "Costume Party",
+  "note": "an achievement's name"
+ },
+ "achievements/135/desc": {
+  "en": "Transform yourself with Azeroth's classic costumes.",
+  "note": "the description of the achievement \"Costume Party\""
+ },
+ "achievements/135/list.5": {
+  "en": "A Hallow's End wand costume",
+  "note": "a criterion of the achievement \"Costume Party\" (Transform yourself with Azeroth's classic costumes.)"
+ },
+ "achievements/136/name": {
+  "en": "Gravity Always Wins",
+  "note": "an achievement's name"
+ },
+ "achievements/136/desc": {
+  "en": "Die from falling.",
+  "note": "the description of the achievement \"Gravity Always Wins\""
+ },
+ "achievements/137/name": {
+  "en": "Sleeping with the Fishes",
+  "note": "an achievement's name"
+ },
+ "achievements/137/desc": {
+  "en": "Drown.",
+  "note": "the description of the achievement \"Sleeping with the Fishes\""
+ },
+ "achievements/138/name": {
+  "en": "Completely Smashed",
+  "note": "an achievement's name"
+ },
+ "achievements/138/desc": {
+  "en": "Get completely smashed.",
+  "note": "the description of the achievement \"Completely Smashed\""
+ },
+ "achievements/139/name": {
+  "en": "Au Naturel",
+  "note": "an achievement's name"
+ },
+ "achievements/139/desc": {
+  "en": "Get a kill while wearing no armor at all.",
+  "note": "the description of the achievement \"Au Naturel\""
+ },
+ "achievements/140/name": {
+  "en": "There and Back Again",
+  "note": "an achievement's name"
+ },
+ "achievements/140/desc": {
+  "en": "Use your Hearthstone 50 times.",
+  "note": "the description of the achievement \"There and Back Again\""
+ },
+ "achievements/141/name": {
+  "en": "Rock Bottom",
+  "note": "an achievement's name"
+ },
+ "achievements/141/desc": {
+  "en": "Roll a 1 on a loot roll.",
+  "note": "the description of the achievement \"Rock Bottom\""
+ },
+ "achievements/142/name": {
+  "en": "Not On My Watch",
+  "note": "an achievement's name"
+ },
+ "achievements/142/desc": {
+  "en": "Heal a player who is at 1% health or less with a healing spell.",
+  "note": "the description of the achievement \"Not On My Watch\""
+ },
+ "achievements/143/name": {
+  "en": "Ways to Die",
+  "note": "an achievement's name"
+ },
+ "achievements/143/desc": {
+  "en": "Die to the elements: a fall, the deep, exhaustion and lava.",
+  "note": "the description of the achievement \"Ways to Die\""
+ },
+ "achievements/143/labels.1": {
+  "en": "Die from falling",
+  "note": "a criterion of the achievement \"Ways to Die\" (Die to the elements: a fall, the deep, exhaustion and lava.)"
+ },
+ "achievements/143/labels.2": {
+  "en": "Drown",
+  "note": "a criterion of the achievement \"Ways to Die\" (Die to the elements: a fall, the deep, exhaustion and lava.)"
+ },
+ "achievements/143/labels.3": {
+  "en": "Die of exhaustion",
+  "note": "a criterion of the achievement \"Ways to Die\" (Die to the elements: a fall, the deep, exhaustion and lava.)"
+ },
+ "achievements/143/labels.4": {
+  "en": "Die in lava",
+  "note": "a criterion of the achievement \"Ways to Die\" (Die to the elements: a fall, the deep, exhaustion and lava.)"
+ },
+ "achievements/144/name": {
+  "en": "If At First You Don't Succeed",
+  "note": "an achievement's name"
+ },
+ "achievements/144/desc": {
+  "en": "Die 100 times.",
+  "note": "the description of the achievement \"If At First You Don't Succeed\""
+ },
+ "achievements/145/name": {
+  "en": "Boogie Down",
+  "note": "an achievement's name"
+ },
+ "achievements/145/desc": {
+  "en": "Dance 50 times.",
+  "note": "the description of the achievement \"Boogie Down\""
+ },
+ "achievements/146/name": {
+  "en": "Free Hugs",
+  "note": "an achievement's name"
+ },
+ "achievements/146/desc": {
+  "en": "Hug 25 different players.",
+  "note": "the description of the achievement \"Free Hugs\""
+ },
+ "achievements/147/name": {
+  "en": "Rude Interruption",
+  "note": "an achievement's name"
+ },
+ "achievements/147/desc": {
+  "en": "Interrupt 50 enemy spellcasts.",
+  "note": "the description of the achievement \"Rude Interruption\""
+ },
+ "achievements/148/name": {
+  "en": "Mailbox Dancer",
+  "note": "an achievement's name"
+ },
+ "achievements/148/desc": {
+  "en": "Dance wearing no armor at all. A proud Azerothian tradition.",
+  "note": "the description of the achievement \"Mailbox Dancer\""
+ },
+ "achievements/149/name": {
+  "en": "Living on the Edge",
+  "note": "an achievement's name"
+ },
+ "achievements/149/desc": {
+  "en": "Land a killing blow while below 5% health.",
+  "note": "the description of the achievement \"Living on the Edge\""
+ },
+ "achievements/150/name": {
+  "en": "Gnoll'd",
+  "note": "an achievement's name"
+ },
+ "achievements/150/desc": {
+  "en": "Be slain by Hogger. He's waited years for this.",
+  "note": "the description of the achievement \"Gnoll'd\""
+ },
+ "achievements/150/label": {
+  "en": "Fall to Hogger",
+  "note": "a criterion of the achievement \"Gnoll'd\" (Be slain by Hogger. He's waited years for this.)"
+ },
+ "achievements/151/name": {
+  "en": "Stop Me If You've Heard This One",
+  "note": "an achievement's name"
+ },
+ "achievements/151/desc": {
+  "en": "Tell 25 jokes.",
+  "note": "the description of the achievement \"Stop Me If You've Heard This One\""
+ },
+ "achievements/152/name": {
+  "en": "Rare Breed",
+  "note": "an achievement's name"
+ },
+ "achievements/152/desc": {
+  "en": "Hunt down 8 of Azeroth's famous rare beasts and outlaws.",
+  "note": "the description of the achievement \"Rare Breed\""
+ },
+ "achievements/206/desc": {
+  "en": "Complete 1,500 quests.",
+  "note": "the description of the achievement \"1500 Quests Completed\""
+ },
+ "achievements/209/desc": {
+  "en": "Complete the continental Loremaster achievements.",
+  "note": "the description of the achievement \"The Loremaster\""
+ },
+ "achievements/210/name": {
+  "en": "Elwynn Forest Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/210/desc": {
+  "en": "Complete the Elwynn Forest storylines listed below.",
+  "note": "the description of the achievement \"Elwynn Forest Quests\""
+ },
+ "achievements/211/name": {
+  "en": "Dun Morogh Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/211/desc": {
+  "en": "Complete the Dun Morogh storylines listed below.",
+  "note": "the description of the achievement \"Dun Morogh Quests\""
+ },
+ "achievements/212/name": {
+  "en": "Tirisfal Glades Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/212/desc": {
+  "en": "Complete the Tirisfal Glades storylines listed below.",
+  "note": "the description of the achievement \"Tirisfal Glades Quests\""
+ },
+ "achievements/5042/name": {
+  "en": "Alterac Mountains Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/5042/desc": {
+  "en": "Complete the Alterac Mountains storylines listed below.",
+  "note": "the description of the achievement \"Alterac Mountains Quests\""
+ },
+ "achievements/221/name": {
+  "en": "The Hinterlands Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/221/desc": {
+  "en": "Complete the The Hinterlands storylines listed below.",
+  "note": "the description of the achievement \"The Hinterlands Quests\""
+ },
+ "achievements/222/name": {
+  "en": "Stranglethorn Vale Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/222/desc": {
+  "en": "Complete the Stranglethorn Vale storylines listed below.",
+  "note": "the description of the achievement \"Stranglethorn Vale Quests\""
+ },
+ "achievements/230/name": {
+  "en": "Durotar Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/230/desc": {
+  "en": "Complete the Durotar storylines listed below.",
+  "note": "the description of the achievement \"Durotar Quests\""
+ },
+ "achievements/231/name": {
+  "en": "Mulgore Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/231/desc": {
+  "en": "Complete the Mulgore storylines listed below.",
+  "note": "the description of the achievement \"Mulgore Quests\""
+ },
+ "achievements/232/name": {
+  "en": "Teldrassil Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/232/desc": {
+  "en": "Complete the Teldrassil storylines listed below.",
+  "note": "the description of the achievement \"Teldrassil Quests\""
+ },
+ "achievements/234/name": {
+  "en": "The Barrens Quests",
+  "note": "an achievement's name"
+ },
+ "achievements/234/desc": {
+  "en": "Complete the The Barrens storylines listed below.",
+  "note": "the description of the achievement \"The Barrens Quests\""
+ },
+ "achievements/247/name": {
+  "en": "Quests of Dire Maul",
+  "note": "an achievement's name"
+ },
+ "achievements/247/desc": {
+  "en": "Complete 10 quests for Dire Maul - Dungeon.",
+  "note": "the description of the achievement \"Quests of Dire Maul\""
+ },
+ "achievements/248/name": {
+  "en": "Quests of Blackrock Spire",
+  "note": "an achievement's name"
+ },
+ "achievements/248/desc": {
+  "en": "Complete 15 quests for Blackrock Spire - Dungeon.",
+  "note": "the description of the achievement \"Quests of Blackrock Spire\""
+ },
+ "achievements/249/name": {
+  "en": "Quests of Blackrock Depths",
+  "note": "an achievement's name"
+ },
+ "achievements/249/desc": {
+  "en": "Complete 10 quests for Blackrock Depths - Dungeon -- Detention Block.",
+  "note": "the description of the achievement \"Quests of Blackrock Depths\""
+ },
+ "achievements/250/name": {
+  "en": "Quests of Stratholme",
+  "note": "an achievement's name"
+ },
+ "achievements/250/desc": {
+  "en": "Complete 8 quests for Stratholme - Dungeon.",
+  "note": "the description of the achievement \"Quests of Stratholme\""
+ },
+ "achievements/251/name": {
+  "en": "Quests of Scholomance",
+  "note": "an achievement's name"
+ },
+ "achievements/251/desc": {
+  "en": "Complete 6 quests for Scholomance - Dungeon.",
+  "note": "the description of the achievement \"Quests of Scholomance\""
+ },
+ "achievements/252/desc": {
+  "en": "Complete Hemet Nesingwary's hunting trials, including Big Game Hunter.",
+  "note": "the description of the achievement \"The Green Hills of Stranglethorn\""
+ },
+ "achievements/253/name": {
+  "en": "The Missing Diplomat",
+  "note": "an achievement's name"
+ },
+ "achievements/253/desc": {
+  "en": "Unravel the disappearance of King Varian Wrynn.",
+  "note": "the description of the achievement \"The Missing Diplomat\""
+ },
+ "achievements/254/name": {
+  "en": "Hidden Enemies",
+  "note": "an achievement's name"
+ },
+ "achievements/254/desc": {
+  "en": "Root out the Burning Blade for Thrall.",
+  "note": "the description of the achievement \"Hidden Enemies\""
+ },
+ "achievements/255/desc": {
+  "en": "Help Linken recover his memory and his sword.",
+  "note": "the description of the achievement \"It's Dangerous to Go Alone\""
+ },
+ "achievements/256/desc": {
+  "en": "Restore the honor of Tirion Fordring.",
+  "note": "the description of the achievement \"Of Lost Honor\""
+ },
+ "achievements/257/desc": {
+  "en": "Redeem the heroes of the Battle of Darrowshire.",
+  "note": "the description of the achievement \"Annals of Darrowshire\""
+ },
+ "achievements/258/desc": {
+  "en": "See Taelan Fordring's tale through to its end.",
+  "note": "the description of the achievement \"In Dreams\""
+ },
+ "achievements/259/desc": {
+  "en": "Earn 200 gold from quest rewards.",
+  "note": "the description of the achievement \"The Bread Winner\""
+ },
+ "achievements/260/desc": {
+  "en": "Complete 25 quests in a single day.",
+  "note": "the description of the achievement \"A Simple Request\""
+ },
+ "achievements/261/desc": {
+  "en": "Complete the questline of the Scepter of the Shifting Sands.",
+  "note": "the description of the achievement \"The Scepter of the Shifting Sands\""
+ },
+ "achievements/261/label": {
+  "en": "The scepter questline",
+  "note": "a criterion of the achievement \"The Scepter of the Shifting Sands\" (Complete the questline of the Scepter of the Shifting Sands.)"
+ },
+ "achievements/262/name": {
+  "en": "Efficient Adventurer",
+  "note": "an achievement's name"
+ },
+ "achievements/262/desc": {
+  "en": "Turn in 8 quests within two minutes.",
+  "note": "the description of the achievement \"Efficient Adventurer\""
+ },
+ "achievements/263/desc": {
+  "en": "Answer 10 wanted posters.",
+  "note": "the description of the achievement \"Bounty Hunter\""
+ },
+ "achievements/263/label": {
+  "en": "Wanted posters answered",
+  "note": "a criterion of the achievement \"Bounty Hunter\" (Answer 10 wanted posters.)"
+ },
+ "achievements/264/name": {
+  "en": "Chicken Run",
+  "note": "an achievement's name"
+ },
+ "achievements/264/desc": {
+  "en": "Rescue all three of OOX's homing robot chickens.",
+  "note": "the description of the achievement \"Chicken Run\""
+ },
+ "achievements/264/list.1": {
+  "en": "OOX-09/HL (The Hinterlands)",
+  "note": "a criterion of the achievement \"Chicken Run\" (Rescue all three of OOX's homing robot chickens.)"
+ },
+ "achievements/264/list.2": {
+  "en": "OOX-17/TN (Tanaris)",
+  "note": "a criterion of the achievement \"Chicken Run\" (Rescue all three of OOX's homing robot chickens.)"
+ },
+ "achievements/264/list.3": {
+  "en": "OOX-22/FE (Feralas)",
+  "note": "a criterion of the achievement \"Chicken Run\" (Rescue all three of OOX's homing robot chickens.)"
+ },
+ "achievements/265/name": {
+  "en": "Cross the Road",
+  "note": "an achievement's name"
+ },
+ "achievements/265/desc": {
+  "en": "Discover why the chicken crossed the road. CLUCK!",
+  "note": "the description of the achievement \"Cross the Road\""
+ },
+ "achievements/265/label": {
+  "en": "CLUCK!",
+  "note": "a criterion of the achievement \"Cross the Road\" (Discover why the chicken crossed the road. CLUCK!)"
+ },
+ "achievements/311/name": {
+  "en": "Explore Alterac Mountains",
+  "note": "an achievement's name"
+ },
+ "achievements/311/desc": {
+  "en": "Explore Alterac Mountains, revealing the covered areas of the world map.",
+  "note": "the description of the achievement \"Explore Alterac Mountains\""
+ },
+ "achievements/313/name": {
+  "en": "Explore Stranglethorn Vale",
+  "note": "an achievement's name"
+ },
+ "achievements/313/desc": {
+  "en": "Explore Stranglethorn Vale, revealing the covered areas of the world map.",
+  "note": "the description of the achievement \"Explore Stranglethorn Vale\""
+ },
+ "achievements/327/name": {
+  "en": "Explore The Barrens",
+  "note": "an achievement's name"
+ },
+ "achievements/334/name": {
+  "en": "Explore Tanaris Desert",
+  "note": "an achievement's name"
+ },
+ "achievements/341/name": {
+  "en": "Explore Eastern Kingdoms",
+  "note": "an achievement's name"
+ },
+ "achievements/341/desc": {
+  "en": "Explore the zones of the Eastern Kingdoms.",
+  "note": "the description of the achievement \"Explore Eastern Kingdoms\""
+ },
+ "achievements/342/name": {
+  "en": "Explore Kalimdor",
+  "note": "an achievement's name"
+ },
+ "achievements/342/desc": {
+  "en": "Explore the zones of Kalimdor.",
+  "note": "the description of the achievement \"Explore Kalimdor\""
+ },
+ "achievements/343/name": {
+  "en": "World Explorer",
+  "note": "an achievement's name"
+ },
+ "achievements/343/desc": {
+  "en": "Explore both continents of Azeroth.",
+  "note": "the description of the achievement \"World Explorer\""
+ },
+ "achievements/344/name": {
+  "en": "Civic Pride",
+  "note": "an achievement's name"
+ },
+ "achievements/344/desc": {
+  "en": "Visit the three capital cities of the Alliance.",
+  "note": "the description of the achievement \"Civic Pride\""
+ },
+ "achievements/345/name": {
+  "en": "Civic Pride",
+  "note": "an achievement's name"
+ },
+ "achievements/345/desc": {
+  "en": "Visit the three capital cities of the Horde.",
+  "note": "the description of the achievement \"Civic Pride\""
+ },
+ "achievements/346/name": {
+  "en": "Behind Enemy Lines",
+  "note": "an achievement's name"
+ },
+ "achievements/346/desc": {
+  "en": "Set foot inside all three enemy capital cities.",
+  "note": "the description of the achievement \"Behind Enemy Lines\""
+ },
+ "achievements/347/name": {
+  "en": "Behind Enemy Lines",
+  "note": "an achievement's name"
+ },
+ "achievements/347/desc": {
+  "en": "Set foot inside all three enemy capital cities.",
+  "note": "the description of the achievement \"Behind Enemy Lines\""
+ },
+ "achievements/348/name": {
+  "en": "Off the Beaten Path",
+  "note": "an achievement's name"
+ },
+ "achievements/348/desc": {
+  "en": "Discover the secret corners of Azeroth.",
+  "note": "the description of the achievement \"Off the Beaten Path\""
+ },
+ "achievements/349/name": {
+  "en": "Dungeon Delver",
+  "note": "an achievement's name"
+ },
+ "achievements/349/desc": {
+  "en": "Set foot in every dungeon of vanilla Azeroth.",
+  "note": "the description of the achievement \"Dungeon Delver\""
+ },
+ "achievements/350/name": {
+  "en": "Dream a Little Dream",
+  "note": "an achievement's name"
+ },
+ "achievements/350/desc": {
+  "en": "Find all four portals of the Emerald Dream.",
+  "note": "the description of the achievement \"Dream a Little Dream\""
+ },
+ "achievements/351/desc": {
+  "en": "Pay your respects at Azeroth's forgotten landmarks.",
+  "note": "the description of the achievement \"Pilgrimage\""
+ },
+ "achievements/352/name": {
+  "en": "Mind the Gap",
+  "note": "an achievement's name"
+ },
+ "achievements/352/desc": {
+  "en": "Ride the Deeprun Tram.",
+  "note": "the description of the achievement \"Mind the Gap\""
+ },
+ "achievements/401/desc": {
+  "en": "Defeat the bosses of Ragefire Chasm.",
+  "note": "the description of the achievement \"Ragefire Chasm\""
+ },
+ "achievements/402/desc": {
+  "en": "Defeat Edwin VanCleef.",
+  "note": "the description of the achievement \"Deadmines\""
+ },
+ "achievements/404/desc": {
+  "en": "Defeat Archmage Arugal.",
+  "note": "the description of the achievement \"Shadowfang Keep\""
+ },
+ "achievements/406/desc": {
+  "en": "Defeat Bazil Thredd.",
+  "note": "the description of the achievement \"The Stockade\""
+ },
+ "achievements/409/desc": {
+  "en": "Defeat the Scarlet Crusade within the Scarlet Monastery.",
+  "note": "the description of the achievement \"Scarlet Monastery\""
+ },
+ "achievements/419/desc": {
+  "en": "Defeat the leaders of Scholomance.",
+  "note": "the description of the achievement \"Scholomance\""
+ },
+ "achievements/421/desc": {
+  "en": "Complete the classic dungeon achievements.",
+  "note": "the description of the achievement \"Classic Dungeonmaster\""
+ },
+ "achievements/422/desc": {
+  "en": "Kill 50 Rookery Whelps within 15 seconds.",
+  "note": "the description of the achievement \"Leeeeeeeeeeeeeroy!\""
+ },
+ "achievements/423/desc": {
+  "en": "Complete a Dire Maul tribute run and be crowned King of the Gordok.",
+  "note": "the description of the achievement \"King of the Gordok\""
+ },
+ "achievements/424/name": {
+  "en": "Dead Man's Sprint",
+  "note": "an achievement's name"
+ },
+ "achievements/424/desc": {
+  "en": "Kill Baron Rivendare within 45 minutes of entering Stratholme.",
+  "note": "the description of the achievement \"Dead Man's Sprint\""
+ },
+ "achievements/425/name": {
+  "en": "Untouchable",
+  "note": "an achievement's name"
+ },
+ "achievements/425/desc": {
+  "en": "Defeat a level-60 dungeon end boss with no deaths in the party, entrance to kill.",
+  "note": "the description of the achievement \"Untouchable\""
+ },
+ "achievements/426/name": {
+  "en": "Dungeon Set Collector",
+  "note": "an achievement's name"
+ },
+ "achievements/426/desc": {
+  "en": "Own all 8 pieces of your class's Dungeon Set.",
+  "note": "the description of the achievement \"Dungeon Set Collector\""
+ },
+ "achievements/427/name": {
+  "en": "A Brilliant Disguise",
+  "note": "an achievement's name"
+ },
+ "achievements/427/desc": {
+  "en": "Complete the full Dungeon Set upgrade questline.",
+  "note": "the description of the achievement \"A Brilliant Disguise\""
+ },
+ "achievements/428/desc": {
+  "en": "Forge the true Seal of Ascension.",
+  "note": "the description of the achievement \"Seal of Ascension\""
+ },
+ "achievements/429/name": {
+  "en": "The Keymaster",
+  "note": "an achievement's name"
+ },
+ "achievements/429/desc": {
+  "en": "Obtain every dungeon key of Azeroth.",
+  "note": "the description of the achievement \"The Keymaster\""
+ },
+ "achievements/430/name": {
+  "en": "Lord of the Ring of Law",
+  "note": "an achievement's name"
+ },
+ "achievements/430/desc": {
+  "en": "Defeat all six Ring of Law arena bosses in Blackrock Depths.",
+  "note": "the description of the achievement \"Lord of the Ring of Law\""
+ },
+ "achievements/431/desc": {
+  "en": "Free Princess Moira Bronzebeard from the Emperor's grip... or so you hope.",
+  "note": "the description of the achievement \"The Princess Saved?\""
+ },
+ "achievements/501/name": {
+  "en": "Into the Core",
+  "note": "an achievement's name"
+ },
+ "achievements/501/desc": {
+  "en": "Complete the Molten Core attunement.",
+  "note": "the description of the achievement \"Into the Core\""
+ },
+ "achievements/502/desc": {
+  "en": "Complete the Onyxia attunement questline.",
+  "note": "the description of the achievement \"Drakefire Amulet\""
+ },
+ "achievements/503/desc": {
+  "en": "Touch the orb commanded by General Drakkisath.",
+  "note": "the description of the achievement \"Blackhand's Command\""
+ },
+ "achievements/504/name": {
+  "en": "The Dread Citadel",
+  "note": "an achievement's name"
+ },
+ "achievements/504/desc": {
+  "en": "Earn entry to the necropolis of Naxxramas.",
+  "note": "the description of the achievement \"The Dread Citadel\""
+ },
+ "achievements/505/desc": {
+  "en": "Defeat Lucifron in Molten Core.",
+  "note": "the description of the achievement \"Lucifron\""
+ },
+ "achievements/506/desc": {
+  "en": "Defeat Magmadar in Molten Core.",
+  "note": "the description of the achievement \"Magmadar\""
+ },
+ "achievements/507/desc": {
+  "en": "Defeat Gehennas in Molten Core.",
+  "note": "the description of the achievement \"Gehennas\""
+ },
+ "achievements/508/desc": {
+  "en": "Defeat Garr in Molten Core.",
+  "note": "the description of the achievement \"Garr\""
+ },
+ "achievements/509/desc": {
+  "en": "Defeat Shazzrah in Molten Core.",
+  "note": "the description of the achievement \"Shazzrah\""
+ },
+ "achievements/510/desc": {
+  "en": "Defeat Baron Geddon in Molten Core.",
+  "note": "the description of the achievement \"Baron Geddon\""
+ },
+ "achievements/511/desc": {
+  "en": "Defeat Sulfuron Harbinger in Molten Core.",
+  "note": "the description of the achievement \"Sulfuron Harbinger\""
+ },
+ "achievements/512/desc": {
+  "en": "Defeat Golemagg the Incinerator in Molten Core.",
+  "note": "the description of the achievement \"Golemagg the Incinerator\""
+ },
+ "achievements/513/desc": {
+  "en": "Defeat Majordomo Executus in Molten Core.",
+  "note": "the description of the achievement \"Majordomo Executus\""
+ },
+ "achievements/514/desc": {
+  "en": "Defeat Ragnaros, the Firelord.",
+  "note": "the description of the achievement \"Molten Core\""
+ },
+ "achievements/515/name": {
+  "en": "Master of the Core",
+  "note": "an achievement's name"
+ },
+ "achievements/515/desc": {
+  "en": "Defeat all ten bosses of Molten Core within a single raid lockout.",
+  "note": "the description of the achievement \"Master of the Core\""
+ },
+ "achievements/516/desc": {
+  "en": "Defeat Onyxia, the Broodmother.",
+  "note": "the description of the achievement \"Onyxia's Lair\""
+ },
+ "achievements/517/desc": {
+  "en": "Defeat Razorgore the Untamed in Blackwing Lair.",
+  "note": "the description of the achievement \"Razorgore the Untamed\""
+ },
+ "achievements/518/desc": {
+  "en": "Defeat Vaelastrasz the Corrupt in Blackwing Lair.",
+  "note": "the description of the achievement \"Vaelastrasz the Corrupt\""
+ },
+ "achievements/519/desc": {
+  "en": "Defeat Broodlord Lashlayer in Blackwing Lair.",
+  "note": "the description of the achievement \"Broodlord Lashlayer\""
+ },
+ "achievements/520/desc": {
+  "en": "Defeat Firemaw in Blackwing Lair.",
+  "note": "the description of the achievement \"Firemaw\""
+ },
+ "achievements/521/desc": {
+  "en": "Defeat Ebonroc in Blackwing Lair.",
+  "note": "the description of the achievement \"Ebonroc\""
+ },
+ "achievements/522/desc": {
+  "en": "Defeat Flamegor in Blackwing Lair.",
+  "note": "the description of the achievement \"Flamegor\""
+ },
+ "achievements/523/desc": {
+  "en": "Defeat Chromaggus in Blackwing Lair.",
+  "note": "the description of the achievement \"Chromaggus\""
+ },
+ "achievements/524/desc": {
+  "en": "Defeat Nefarian, Lord of Blackwing Lair.",
+  "note": "the description of the achievement \"Blackwing Lair\""
+ },
+ "achievements/525/desc": {
+  "en": "Defeat High Priest Venoxis in Zul'Gurub.",
+  "note": "the description of the achievement \"High Priest Venoxis\""
+ },
+ "achievements/526/desc": {
+  "en": "Defeat High Priestess Jeklik in Zul'Gurub.",
+  "note": "the description of the achievement \"High Priestess Jeklik\""
+ },
+ "achievements/527/desc": {
+  "en": "Defeat High Priestess Mar'li in Zul'Gurub.",
+  "note": "the description of the achievement \"High Priestess Mar'li\""
+ },
+ "achievements/528/desc": {
+  "en": "Defeat Bloodlord Mandokir in Zul'Gurub.",
+  "note": "the description of the achievement \"Bloodlord Mandokir\""
+ },
+ "achievements/529/desc": {
+  "en": "Defeat High Priest Thekal in Zul'Gurub.",
+  "note": "the description of the achievement \"High Priest Thekal\""
+ },
+ "achievements/530/desc": {
+  "en": "Defeat High Priestess Arlokk in Zul'Gurub.",
+  "note": "the description of the achievement \"High Priestess Arlokk\""
+ },
+ "achievements/531/desc": {
+  "en": "Defeat Jin'do the Hexxer in Zul'Gurub.",
+  "note": "the description of the achievement \"Jin'do the Hexxer\""
+ },
+ "achievements/532/desc": {
+  "en": "Defeat Hakkar the Soulflayer.",
+  "note": "the description of the achievement \"Zul'Gurub\""
+ },
+ "achievements/533/desc": {
+  "en": "Defeat all four rotating bosses at the Edge of Madness.",
+  "note": "the description of the achievement \"Edge of Madness\""
+ },
+ "achievements/534/desc": {
+  "en": "Fish up and defeat Gahz'ranka.",
+  "note": "the description of the achievement \"Deadliest Catch\""
+ },
+ "achievements/535/desc": {
+  "en": "Defeat Kurinnaxx in Ruins of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Kurinnaxx\""
+ },
+ "achievements/536/desc": {
+  "en": "Defeat General Rajaxx in Ruins of Ahn'Qiraj.",
+  "note": "the description of the achievement \"General Rajaxx\""
+ },
+ "achievements/537/desc": {
+  "en": "Defeat Moam in Ruins of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Moam\""
+ },
+ "achievements/538/desc": {
+  "en": "Defeat Buru the Gorger in Ruins of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Buru the Gorger\""
+ },
+ "achievements/539/desc": {
+  "en": "Defeat Ayamiss the Hunter in Ruins of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Ayamiss the Hunter\""
+ },
+ "achievements/541/desc": {
+  "en": "Defeat The Prophet Skeram in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"The Prophet Skeram\""
+ },
+ "achievements/542/name": {
+  "en": "Silithid Royalty",
+  "note": "an achievement's name"
+ },
+ "achievements/542/desc": {
+  "en": "Defeat Silithid Royalty in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Silithid Royalty\""
+ },
+ "achievements/542/label": {
+  "en": "Silithid Royalty",
+  "note": "a criterion of the achievement \"Silithid Royalty\" (Defeat Silithid Royalty in Temple of Ahn'Qiraj.)"
+ },
+ "achievements/543/desc": {
+  "en": "Defeat Battleguard Sartura in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Battleguard Sartura\""
+ },
+ "achievements/544/desc": {
+  "en": "Defeat Fankriss the Unyielding in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Fankriss the Unyielding\""
+ },
+ "achievements/545/desc": {
+  "en": "Defeat Viscidus in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Viscidus\""
+ },
+ "achievements/546/desc": {
+  "en": "Defeat Princess Huhuran in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Princess Huhuran\""
+ },
+ "achievements/547/desc": {
+  "en": "Defeat Ouro in Temple of Ahn'Qiraj.",
+  "note": "the description of the achievement \"Ouro\""
+ },
+ "achievements/548/name": {
+  "en": "The Twin Emperors",
+  "note": "an achievement's name"
+ },
+ "achievements/548/desc": {
+  "en": "Defeat Emperors Vek'lor and Vek'nilash.",
+  "note": "the description of the achievement \"The Twin Emperors\""
+ },
+ "achievements/548/label": {
+  "en": "The Twin Emperors",
+  "note": "a criterion of the achievement \"The Twin Emperors\" (Defeat Emperors Vek'lor and Vek'nilash.)"
+ },
+ "achievements/549/desc": {
+  "en": "Defeat C'Thun, the Old God.",
+  "note": "the description of the achievement \"Temple of Ahn'Qiraj\""
+ },
+ "achievements/550/desc": {
+  "en": "Defeat Anub'Rekhan in Naxxramas.",
+  "note": "the description of the achievement \"Anub'Rekhan\""
+ },
+ "achievements/551/desc": {
+  "en": "Defeat Grand Widow Faerlina in Naxxramas.",
+  "note": "the description of the achievement \"Grand Widow Faerlina\""
+ },
+ "achievements/552/desc": {
+  "en": "Defeat Maexxna in Naxxramas.",
+  "note": "the description of the achievement \"Maexxna\""
+ },
+ "achievements/553/desc": {
+  "en": "Defeat Noth the Plaguebringer in Naxxramas.",
+  "note": "the description of the achievement \"Noth the Plaguebringer\""
+ },
+ "achievements/554/desc": {
+  "en": "Defeat Heigan the Unclean in Naxxramas.",
+  "note": "the description of the achievement \"Heigan the Unclean\""
+ },
+ "achievements/555/desc": {
+  "en": "Defeat Loatheb in Naxxramas.",
+  "note": "the description of the achievement \"Loatheb\""
+ },
+ "achievements/556/desc": {
+  "en": "Defeat Instructor Razuvious in Naxxramas.",
+  "note": "the description of the achievement \"Instructor Razuvious\""
+ },
+ "achievements/557/desc": {
+  "en": "Defeat Gothik the Harvester in Naxxramas.",
+  "note": "the description of the achievement \"Gothik the Harvester\""
+ },
+ "achievements/558/name": {
+  "en": "The Four Horsemen",
+  "note": "an achievement's name"
+ },
+ "achievements/558/desc": {
+  "en": "Defeat The Four Horsemen in Naxxramas.",
+  "note": "the description of the achievement \"The Four Horsemen\""
+ },
+ "achievements/558/label": {
+  "en": "The Four Horsemen",
+  "note": "a criterion of the achievement \"The Four Horsemen\" (Defeat The Four Horsemen in Naxxramas.)"
+ },
+ "achievements/559/desc": {
+  "en": "Defeat Patchwerk in Naxxramas.",
+  "note": "the description of the achievement \"Patchwerk\""
+ },
+ "achievements/560/desc": {
+  "en": "Defeat Grobbulus in Naxxramas.",
+  "note": "the description of the achievement \"Grobbulus\""
+ },
+ "achievements/561/desc": {
+  "en": "Defeat Gluth in Naxxramas.",
+  "note": "the description of the achievement \"Gluth\""
+ },
+ "achievements/562/desc": {
+  "en": "Defeat Thaddius in Naxxramas.",
+  "note": "the description of the achievement \"Thaddius\""
+ },
+ "achievements/563/name": {
+  "en": "The Arachnid Quarter",
+  "note": "an achievement's name"
+ },
+ "achievements/563/desc": {
+  "en": "Defeat the bosses of The Arachnid Quarter of Naxxramas.",
+  "note": "the description of the achievement \"The Arachnid Quarter\""
+ },
+ "achievements/564/name": {
+  "en": "The Plague Quarter",
+  "note": "an achievement's name"
+ },
+ "achievements/564/desc": {
+  "en": "Defeat the bosses of The Plague Quarter of Naxxramas.",
+  "note": "the description of the achievement \"The Plague Quarter\""
+ },
+ "achievements/565/name": {
+  "en": "The Military Quarter",
+  "note": "an achievement's name"
+ },
+ "achievements/565/desc": {
+  "en": "Defeat the bosses of The Military Quarter of Naxxramas.",
+  "note": "the description of the achievement \"The Military Quarter\""
+ },
+ "achievements/565/list.3": {
+  "en": "The Four Horsemen",
+  "note": "a criterion of the achievement \"The Military Quarter\" (Defeat the bosses of The Military Quarter of Naxxramas.)"
+ },
+ "achievements/566/name": {
+  "en": "The Construct Quarter",
+  "note": "an achievement's name"
+ },
+ "achievements/566/desc": {
+  "en": "Defeat the bosses of The Construct Quarter of Naxxramas.",
+  "note": "the description of the achievement \"The Construct Quarter\""
+ },
+ "achievements/567/name": {
+  "en": "The Hundred Club",
+  "note": "an achievement's name"
+ },
+ "achievements/567/desc": {
+  "en": "Defeat Sapphiron in Naxxramas.",
+  "note": "the description of the achievement \"The Hundred Club\""
+ },
+ "achievements/568/desc": {
+  "en": "Defeat Kel'Thuzad, Archlich of Naxxramas.",
+  "note": "the description of the achievement \"Naxxramas\""
+ },
+ "achievements/569/desc": {
+  "en": "Defeat the final boss of every classic raid.",
+  "note": "the description of the achievement \"Classic Raider\""
+ },
+ "achievements/570/desc": {
+  "en": "Defeat the blue dragon Azuregos in Azshara.",
+  "note": "the description of the achievement \"Azuregos\""
+ },
+ "achievements/571/desc": {
+  "en": "Defeat Lord Kazzak in the Tainted Scar.",
+  "note": "the description of the achievement \"Lord Kazzak\""
+ },
+ "achievements/572/desc": {
+  "en": "Defeat Lethon, dragon of the Emerald Nightmare.",
+  "note": "the description of the achievement \"Lethon\""
+ },
+ "achievements/573/desc": {
+  "en": "Defeat Emeriss, dragon of the Emerald Nightmare.",
+  "note": "the description of the achievement \"Emeriss\""
+ },
+ "achievements/574/desc": {
+  "en": "Defeat Taerar, dragon of the Emerald Nightmare.",
+  "note": "the description of the achievement \"Taerar\""
+ },
+ "achievements/575/desc": {
+  "en": "Defeat Ysondre, dragon of the Emerald Nightmare.",
+  "note": "the description of the achievement \"Ysondre\""
+ },
+ "achievements/576/name": {
+  "en": "Dragonslayer of the Nightmare",
+  "note": "an achievement's name"
+ },
+ "achievements/576/desc": {
+  "en": "Defeat all four dragons of the Emerald Nightmare.",
+  "note": "the description of the achievement \"Dragonslayer of the Nightmare\""
+ },
+ "achievements/577/desc": {
+  "en": "Wield Thunderfury, Blessed Blade of the Windseeker.",
+  "note": "the description of the achievement \"Thunderfury, Blessed Blade of the Windseeker\""
+ },
+ "achievements/578/desc": {
+  "en": "Wield Sulfuras, Hand of Ragnaros.",
+  "note": "the description of the achievement \"Sulfuras, Hand of Ragnaros\""
+ },
+ "achievements/579/desc": {
+  "en": "Wield Atiesh, Greatstaff of the Guardian.",
+  "note": "the description of the achievement \"Atiesh, Greatstaff of the Guardian\""
+ },
+ "achievements/605/desc": {
+  "en": "Earn Exalted reputation with the cities of the Alliance.",
+  "note": "the description of the achievement \"Ambassador of the Alliance\""
+ },
+ "achievements/606/desc": {
+  "en": "Earn Exalted reputation with the cities of the Horde.",
+  "note": "the description of the achievement \"Ambassador of the Horde\""
+ },
+ "achievements/607/desc": {
+  "en": "Earn Exalted reputation with the Argent Dawn.",
+  "note": "the description of the achievement \"The Argent Dawn\""
+ },
+ "achievements/608/desc": {
+  "en": "Earn Exalted reputation with Timbermaw Hold.",
+  "note": "the description of the achievement \"They Love Me In That Tunnel\""
+ },
+ "achievements/609/desc": {
+  "en": "Earn Exalted reputation with the Zandalar Tribe.",
+  "note": "the description of the achievement \"Hero of the Zandalar Tribe\""
+ },
+ "achievements/610/desc": {
+  "en": "Earn Exalted reputation with the Cenarion Circle.",
+  "note": "the description of the achievement \"Guardian of Cenarius\""
+ },
+ "achievements/611/name": {
+  "en": "The Thorium Brotherhood",
+  "note": "an achievement's name"
+ },
+ "achievements/611/desc": {
+  "en": "Earn Exalted reputation with the Thorium Brotherhood.",
+  "note": "the description of the achievement \"The Thorium Brotherhood\""
+ },
+ "achievements/612/desc": {
+  "en": "Earn Exalted reputation with the Hydraxian Waterlords.",
+  "note": "the description of the achievement \"Hydraxian Waterlords\""
+ },
+ "achievements/613/desc": {
+  "en": "Earn Exalted reputation with the Brood of Nozdormu.",
+  "note": "the description of the achievement \"Brood of Nozdormu\""
+ },
+ "achievements/614/name": {
+  "en": "Avast Ye, Mateys!",
+  "note": "an achievement's name"
+ },
+ "achievements/614/desc": {
+  "en": "Earn Honored reputation with the Bloodsail Buccaneers.",
+  "note": "the description of the achievement \"Avast Ye, Mateys!\""
+ },
+ "achievements/615/desc": {
+  "en": "Earn Exalted reputation with the Alliance battleground factions.",
+  "note": "the description of the achievement \"The Conqueror\""
+ },
+ "achievements/616/desc": {
+  "en": "Earn Exalted reputation with the Horde battleground factions.",
+  "note": "the description of the achievement \"The Justicar\""
+ },
+ "achievements/617/desc": {
+  "en": "Earn Exalted reputation with the Wintersaber Trainers and ride their frostsaber.",
+  "note": "the description of the achievement \"Winterspring Frostsaber\""
+ },
+ "achievements/618/name": {
+  "en": "Keeper of Lost Knowledge",
+  "note": "an achievement's name"
+ },
+ "achievements/618/desc": {
+  "en": "Earn Exalted reputation with the Shen'dralar.",
+  "note": "the description of the achievement \"Keeper of Lost Knowledge\""
+ },
+ "achievements/619/name": {
+  "en": "Honor Among Thieves",
+  "note": "an achievement's name"
+ },
+ "achievements/619/desc": {
+  "en": "Earn Exalted reputation with Ravenholdt.",
+  "note": "the description of the achievement \"Honor Among Thieves\""
+ },
+ "achievements/620/name": {
+  "en": "A Side Chosen",
+  "note": "an achievement's name"
+ },
+ "achievements/620/desc": {
+  "en": "Earn Exalted reputation with the Gelkis or Magram centaur clan.",
+  "note": "the description of the achievement \"A Side Chosen\""
+ },
+ "achievements/620/label": {
+  "en": "Gelkis or Magram Clan",
+  "note": "a criterion of the achievement \"A Side Chosen\" (Earn Exalted reputation with the Gelkis or Magram centaur clan.)"
+ },
+ "achievements/621/name": {
+  "en": "Darkmoon Devotee",
+  "note": "an achievement's name"
+ },
+ "achievements/621/desc": {
+  "en": "Earn Exalted reputation with the Darkmoon Faire.",
+  "note": "the description of the achievement \"Darkmoon Devotee\""
+ },
+ "achievements/701/desc": {
+  "en": "Raise a primary profession to 150 skill.",
+  "note": "the description of the achievement \"Professional Expert\""
+ },
+ "achievements/702/name": {
+  "en": "Professional Artisan",
+  "note": "an achievement's name"
+ },
+ "achievements/702/desc": {
+  "en": "Raise a primary profession to 300 skill.",
+  "note": "the description of the achievement \"Professional Artisan\""
+ },
+ "achievements/703/name": {
+  "en": "Double Artisan",
+  "note": "an achievement's name"
+ },
+ "achievements/703/desc": {
+  "en": "Raise both primary professions to 300 skill.",
+  "note": "the description of the achievement \"Double Artisan\""
+ },
+ "achievements/704/desc": {
+  "en": "Raise cooking, fishing and first aid to 300 skill.",
+  "note": "the description of the achievement \"Skills to Pay the Bills\""
+ },
+ "achievements/705/name": {
+  "en": "Artisan Cook",
+  "note": "an achievement's name"
+ },
+ "achievements/705/desc": {
+  "en": "Raise cooking to 300 skill.",
+  "note": "the description of the achievement \"Artisan Cook\""
+ },
+ "achievements/706/desc": {
+  "en": "Raise fishing to 300 skill.",
+  "note": "the description of the achievement \"Artisan Fisherman\""
+ },
+ "achievements/707/name": {
+  "en": "Artisan First Aid",
+  "note": "an achievement's name"
+ },
+ "achievements/707/desc": {
+  "en": "Raise first aid to 300 skill.",
+  "note": "the description of the achievement \"Artisan First Aid\""
+ },
+ "achievements/711/desc": {
+  "en": "Create 500 Heavy Runecloth Bandages.",
+  "note": "the description of the achievement \"Stocking Up\""
+ },
+ "achievements/711/label": {
+  "en": "Heavy Runecloth Bandage",
+  "note": "a criterion of the achievement \"Stocking Up\" (Create 500 Heavy Runecloth Bandages.)"
+ },
+ "achievements/712/desc": {
+  "en": "Use a bandage on a player below 5% health.",
+  "note": "the description of the achievement \"Ultimate Triage\""
+ },
+ "achievements/713/desc": {
+  "en": "Catch a fish from a fishing school.",
+  "note": "the description of the achievement \"The Old Gnome and the Sea\""
+ },
+ "achievements/715/desc": {
+  "en": "Fish up 1,000 items.",
+  "note": "the description of the achievement \"1000 Fish\""
+ },
+ "achievements/716/desc": {
+  "en": "Win the Stranglethorn Vale Fishing Extravaganza.",
+  "note": "the description of the achievement \"Master Angler of Azeroth\""
+ },
+ "achievements/717/name": {
+  "en": "Salt of the Earth",
+  "note": "an achievement's name"
+ },
+ "achievements/717/desc": {
+  "en": "Mine 100 ores or stones.",
+  "note": "the description of the achievement \"Salt of the Earth\""
+ },
+ "achievements/718/name": {
+  "en": "By the Roots",
+  "note": "an achievement's name"
+ },
+ "achievements/718/desc": {
+  "en": "Gather 100 herbs.",
+  "note": "the description of the achievement \"By the Roots\""
+ },
+ "achievements/719/name": {
+  "en": "Skin Deep",
+  "note": "an achievement's name"
+ },
+ "achievements/719/desc": {
+  "en": "Skin 100 creatures.",
+  "note": "the description of the achievement \"Skin Deep\""
+ },
+ "achievements/720/name": {
+  "en": "Rare Harvest: Black Lotus",
+  "note": "an achievement's name"
+ },
+ "achievements/720/desc": {
+  "en": "Pick a Black Lotus.",
+  "note": "the description of the achievement \"Rare Harvest: Black Lotus\""
+ },
+ "achievements/720/label": {
+  "en": "Black Lotus",
+  "note": "a criterion of the achievement \"Rare Harvest: Black Lotus\" (Pick a Black Lotus.)"
+ },
+ "achievements/721/name": {
+  "en": "Rare Harvest: Dark Iron",
+  "note": "an achievement's name"
+ },
+ "achievements/721/desc": {
+  "en": "Mine Dark Iron Ore.",
+  "note": "the description of the achievement \"Rare Harvest: Dark Iron\""
+ },
+ "achievements/722/name": {
+  "en": "Rare Harvest: Devilsaur",
+  "note": "an achievement's name"
+ },
+ "achievements/722/desc": {
+  "en": "Skin a Devilsaur.",
+  "note": "the description of the achievement \"Rare Harvest: Devilsaur\""
+ },
+ "achievements/722/label": {
+  "en": "Devilsaur Leather",
+  "note": "a criterion of the achievement \"Rare Harvest: Devilsaur\" (Skin a Devilsaur.)"
+ },
+ "achievements/723/name": {
+  "en": "Transmutation Master",
+  "note": "an achievement's name"
+ },
+ "achievements/723/desc": {
+  "en": "Transmute 50 Arcanite Bars.",
+  "note": "the description of the achievement \"Transmutation Master\""
+ },
+ "achievements/724/name": {
+  "en": "Flask Artisan",
+  "note": "an achievement's name"
+ },
+ "achievements/724/desc": {
+  "en": "Craft any flask.",
+  "note": "the description of the achievement \"Flask Artisan\""
+ },
+ "achievements/724/label": {
+  "en": "Any flask",
+  "note": "a criterion of the achievement \"Flask Artisan\" (Craft any flask.)"
+ },
+ "achievements/725/name": {
+  "en": "Hammer of the Firelord",
+  "note": "an achievement's name"
+ },
+ "achievements/726/desc": {
+  "en": "Craft a Lionheart Helm.",
+  "note": "the description of the achievement \"Lionheart\""
+ },
+ "achievements/727/name": {
+  "en": "Enchanter Supreme",
+  "note": "an achievement's name"
+ },
+ "achievements/727/desc": {
+  "en": "Cast Enchant Weapon - Crusader.",
+  "note": "the description of the achievement \"Enchanter Supreme\""
+ },
+ "achievements/728/name": {
+  "en": "It's Purple and I Made It",
+  "note": "an achievement's name"
+ },
+ "achievements/728/desc": {
+  "en": "Craft your first epic-quality item.",
+  "note": "the description of the achievement \"It's Purple and I Made It\""
+ },
+ "achievements/729/name": {
+  "en": "Beyond the Limit",
+  "note": "an achievement's name"
+ },
+ "achievements/729/desc": {
+  "en": "Raise a profession above 300 effective skill with equipment or enchantments.",
+  "note": "the description of the achievement \"Beyond the Limit\""
+ },
+ "achievements/730/name": {
+  "en": "Soft as Moonlight",
+  "note": "an achievement's name"
+ },
+ "achievements/730/desc": {
+  "en": "Create Mooncloth.",
+  "note": "the description of the achievement \"Soft as Moonlight\""
+ },
+ "achievements/731/name": {
+  "en": "The One That Got Away",
+  "note": "an achievement's name"
+ },
+ "achievements/731/desc": {
+  "en": "Catch one of the rare fish of the Stranglethorn Fishing Extravaganza.",
+  "note": "the description of the achievement \"The One That Got Away\""
+ },
+ "achievements/731/label": {
+  "en": "A rare tournament fish",
+  "note": "a criterion of the achievement \"The One That Got Away\" (Catch one of the rare fish of the Stranglethorn Fishing Extravaganza.)"
+ },
+ "achievements/732/name": {
+  "en": "Premature Detonation",
+  "note": "an achievement's name"
+ },
+ "achievements/732/desc": {
+  "en": "Be killed by one of your own engineering devices.",
+  "note": "the description of the achievement \"Premature Detonation\""
+ },
+ "achievements/733/name": {
+  "en": "Pagle's Pupil",
+  "note": "an achievement's name"
+ },
+ "achievements/733/desc": {
+  "en": "Pass Nat Pagle's test and become an Artisan Angler.",
+  "note": "the description of the achievement \"Pagle's Pupil\""
+ },
+ "achievements/802/name": {
+  "en": "Got My Money On My Mind",
+  "note": "an achievement's name"
+ },
+ "achievements/803/name": {
+  "en": "My Mind On My Money And My Money On My Mind",
+  "note": "an achievement's name"
+ },
+ "achievements/804/desc": {
+  "en": "Hold 1,000 gold.",
+  "note": "the description of the achievement \"Deep Pockets\""
+ },
+ "achievements/805/name": {
+  "en": "Mountain of Gold",
+  "note": "an achievement's name"
+ },
+ "achievements/805/desc": {
+  "en": "Hold 5,000 gold.",
+  "note": "the description of the achievement \"Mountain of Gold\""
+ },
+ "achievements/806/name": {
+  "en": "It's Purple!",
+  "note": "an achievement's name"
+ },
+ "achievements/806/desc": {
+  "en": "Loot your first epic item.",
+  "note": "the description of the achievement \"It's Purple!\""
+ },
+ "achievements/5003/desc": {
+  "en": "Equip a Superior or better item in every slot.",
+  "note": "the description of the achievement \"Superior\""
+ },
+ "achievements/807/desc": {
+  "en": "Equip an epic item in every slot.",
+  "note": "the description of the achievement \"Decked Out\""
+ },
+ "achievements/808/name": {
+  "en": "Epic Hoarder",
+  "note": "an achievement's name"
+ },
+ "achievements/808/desc": {
+  "en": "Loot 25 epic items.",
+  "note": "the description of the achievement \"Epic Hoarder\""
+ },
+ "achievements/809/name": {
+  "en": "Perfect Roll",
+  "note": "an achievement's name"
+ },
+ "achievements/809/desc": {
+  "en": "Win a loot roll on a 100.",
+  "note": "the description of the achievement \"Perfect Roll\""
+ },
+ "achievements/810/name": {
+  "en": "Packrat",
+  "note": "an achievement's name"
+ },
+ "achievements/810/desc": {
+  "en": "Loot 10,000 items.",
+  "note": "the description of the achievement \"Packrat\""
+ },
+ "achievements/811/name": {
+  "en": "Five Thousand Kills",
+  "note": "an achievement's name"
+ },
+ "achievements/811/desc": {
+  "en": "Kill 5,000 creatures.",
+  "note": "the description of the achievement \"Five Thousand Kills\""
+ },
+ "achievements/812/name": {
+  "en": "One in a Million",
+  "note": "an achievement's name"
+ },
+ "achievements/812/desc": {
+  "en": "Loot one of Azeroth's famous ultra-rare world drops.",
+  "note": "the description of the achievement \"One in a Million\""
+ },
+ "achievements/812/label": {
+  "en": "An ultra-rare world drop",
+  "note": "a criterion of the achievement \"One in a Million\" (Loot one of Azeroth's famous ultra-rare world drops.)"
+ },
+ "achievements/813/desc": {
+  "en": "Obtain Deathcharger's Reins from Baron Rivendare.",
+  "note": "the description of the achievement \"Deathcharger\""
+ },
+ "achievements/814/desc": {
+  "en": "Obtain the Swift Zulian Tiger from High Priest Thekal.",
+  "note": "the description of the achievement \"Swift Zulian Tiger\""
+ },
+ "achievements/815/desc": {
+  "en": "Obtain the Swift Razzashi Raptor from Bloodlord Mandokir.",
+  "note": "the description of the achievement \"Swift Razzashi Raptor\""
+ },
+ "achievements/816/name": {
+  "en": "My Precious",
+  "note": "an achievement's name"
+ },
+ "achievements/816/desc": {
+  "en": "Obtain The 1 Ring.",
+  "note": "the description of the achievement \"My Precious\""
+ },
+ "achievements/817/name": {
+  "en": "Whelp Wrangler",
+  "note": "an achievement's name"
+ },
+ "achievements/817/desc": {
+  "en": "Obtain one of the rare whelpling companions.",
+  "note": "the description of the achievement \"Whelp Wrangler\""
+ },
+ "achievements/817/label": {
+  "en": "A rare whelpling companion",
+  "note": "a criterion of the achievement \"Whelp Wrangler\" (Obtain one of the rare whelpling companions.)"
+ },
+ "achievements/818/name": {
+  "en": "Disgustingly Adorable",
+  "note": "an achievement's name"
+ },
+ "achievements/818/desc": {
+  "en": "Obtain the Disgusting Oozeling.",
+  "note": "the description of the achievement \"Disgustingly Adorable\""
+ },
+ "achievements/819/name": {
+  "en": "Against All Odds: Runeblade of Baron Rivendare",
+  "note": "an achievement's name"
+ },
+ "achievements/819/desc": {
+  "en": "Loot Runeblade of Baron Rivendare from Lord Aurius Rivendare in Stratholme - Service Entrance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Runeblade of Baron Rivendare\""
+ },
+ "achievements/820/name": {
+  "en": "Against All Odds: Bloodmail Legguards",
+  "note": "an achievement's name"
+ },
+ "achievements/820/desc": {
+  "en": "Loot Bloodmail Legguards from Lord Alexei Barov in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Bloodmail Legguards\""
+ },
+ "achievements/821/name": {
+  "en": "Against All Odds: Bloodmail Belt",
+  "note": "an achievement's name"
+ },
+ "achievements/821/desc": {
+  "en": "Loot Bloodmail Belt from Lord Alexei Barov in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Bloodmail Belt\""
+ },
+ "achievements/822/name": {
+  "en": "Against All Odds: Bloodmail Gauntlets",
+  "note": "an achievement's name"
+ },
+ "achievements/822/desc": {
+  "en": "Loot Bloodmail Gauntlets from Lord Alexei Barov in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Bloodmail Gauntlets\""
+ },
+ "achievements/823/name": {
+  "en": "Against All Odds: Bloodmail Boots",
+  "note": "an achievement's name"
+ },
+ "achievements/823/desc": {
+  "en": "Loot Bloodmail Boots from Lord Alexei Barov in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Bloodmail Boots\""
+ },
+ "achievements/824/name": {
+  "en": "Against All Odds: Deathbone Sabatons",
+  "note": "an achievement's name"
+ },
+ "achievements/824/desc": {
+  "en": "Loot Deathbone Sabatons from Lord Alexei Barov in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Deathbone Sabatons\""
+ },
+ "achievements/825/name": {
+  "en": "Against All Odds: Totem of Sustaining",
+  "note": "an achievement's name"
+ },
+ "achievements/825/desc": {
+  "en": "Loot Totem of Sustaining from Instructor Malicia in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Totem of Sustaining\""
+ },
+ "achievements/826/name": {
+  "en": "Against All Odds: Libram of Divinity",
+  "note": "an achievement's name"
+ },
+ "achievements/826/desc": {
+  "en": "Loot Libram of Divinity from Lorekeeper Polkelt in Scholomance — a 0.1% drop.",
+  "note": "the description of the achievement \"Against All Odds: Libram of Divinity\""
+ },
+ "achievements/827/name": {
+  "en": "Against All Odds: Dragon's Call",
+  "note": "an achievement's name"
+ },
+ "achievements/827/desc": {
+  "en": "Loot Dragon's Call from Shade of Eranikus in The Temple of Atal'hakkar — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Dragon's Call\""
+ },
+ "achievements/828/name": {
+  "en": "Against All Odds: Grim Guzzler Key",
+  "note": "an achievement's name"
+ },
+ "achievements/828/desc": {
+  "en": "Loot Grim Guzzler Key from Hurley Blackbreath in Blackrock Depths — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Grim Guzzler Key\""
+ },
+ "achievements/829/name": {
+  "en": "Against All Odds: Deathbone Girdle",
+  "note": "an achievement's name"
+ },
+ "achievements/829/desc": {
+  "en": "Loot Deathbone Girdle from Lord Alexei Barov in Scholomance — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Deathbone Girdle\""
+ },
+ "achievements/830/name": {
+  "en": "Against All Odds: Deathbone Gauntlets",
+  "note": "an achievement's name"
+ },
+ "achievements/830/desc": {
+  "en": "Loot Deathbone Gauntlets from Lord Alexei Barov in Scholomance — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Deathbone Gauntlets\""
+ },
+ "achievements/831/name": {
+  "en": "Against All Odds: Deathbone Legguards",
+  "note": "an achievement's name"
+ },
+ "achievements/831/desc": {
+  "en": "Loot Deathbone Legguards from Lord Alexei Barov in Scholomance — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Deathbone Legguards\""
+ },
+ "achievements/832/name": {
+  "en": "Against All Odds: Necropile Mantle",
+  "note": "an achievement's name"
+ },
+ "achievements/832/desc": {
+  "en": "Loot Necropile Mantle from Lord Alexei Barov in Scholomance — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Necropile Mantle\""
+ },
+ "achievements/833/name": {
+  "en": "Against All Odds: Cadaverous Gloves",
+  "note": "an achievement's name"
+ },
+ "achievements/833/desc": {
+  "en": "Loot Cadaverous Gloves from Lord Alexei Barov in Scholomance — a 0.2% drop.",
+  "note": "the description of the achievement \"Against All Odds: Cadaverous Gloves\""
+ },
+ "achievements/834/name": {
+  "en": "Against All Odds: Schematic: Gnomish Cloaking Device",
+  "note": "an achievement's name"
+ },
+ "achievements/834/desc": {
+  "en": "Loot Schematic: Gnomish Cloaking Device from Mekgineer Thermaplugg in Gnomeregan — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Schematic: Gnomish Cloaking Device\""
+ },
+ "achievements/835/name": {
+  "en": "Against All Odds: Circle of Flame",
+  "note": "an achievement's name"
+ },
+ "achievements/835/desc": {
+  "en": "Loot Circle of Flame from Ambassador Flamelash in Blackrock Depths — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Circle of Flame\""
+ },
+ "achievements/836/name": {
+  "en": "Against All Odds: Necropile Cuffs",
+  "note": "an achievement's name"
+ },
+ "achievements/836/desc": {
+  "en": "Loot Necropile Cuffs from Lord Alexei Barov in Scholomance — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Necropile Cuffs\""
+ },
+ "achievements/837/name": {
+  "en": "Against All Odds: Necropile Boots",
+  "note": "an achievement's name"
+ },
+ "achievements/837/desc": {
+  "en": "Loot Necropile Boots from Lord Alexei Barov in Scholomance — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Necropile Boots\""
+ },
+ "achievements/838/name": {
+  "en": "Against All Odds: Necropile Leggings",
+  "note": "an achievement's name"
+ },
+ "achievements/838/desc": {
+  "en": "Loot Necropile Leggings from Lord Alexei Barov in Scholomance — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Necropile Leggings\""
+ },
+ "achievements/839/name": {
+  "en": "Against All Odds: Cadaverous Belt",
+  "note": "an achievement's name"
+ },
+ "achievements/839/desc": {
+  "en": "Loot Cadaverous Belt from Lord Alexei Barov in Scholomance — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Cadaverous Belt\""
+ },
+ "achievements/840/name": {
+  "en": "Against All Odds: Cadaverous Leggings",
+  "note": "an achievement's name"
+ },
+ "achievements/840/desc": {
+  "en": "Loot Cadaverous Leggings from Lord Alexei Barov in Scholomance — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Cadaverous Leggings\""
+ },
+ "achievements/841/name": {
+  "en": "Against All Odds: Blade of Eternal Darkness",
+  "note": "an achievement's name"
+ },
+ "achievements/841/desc": {
+  "en": "Loot Blade of Eternal Darkness from Princess Theradras in Maraudon — a 0.3% drop.",
+  "note": "the description of the achievement \"Against All Odds: Blade of Eternal Darkness\""
+ },
+ "achievements/901/desc": {
+  "en": "Get an honorable kill.",
+  "note": "the description of the achievement \"An Honorable Kill\""
+ },
+ "achievements/903/desc": {
+  "en": "Get 1,000 honorable kills.",
+  "note": "the description of the achievement \"1000 Honorable Kills\""
+ },
+ "achievements/904/desc": {
+  "en": "Get 10,000 honorable kills.",
+  "note": "the description of the achievement \"10000 Honorable Kills\""
+ },
+ "achievements/905/desc": {
+  "en": "Get 25,000 honorable kills.",
+  "note": "the description of the achievement \"25000 Honorable Kills\""
+ },
+ "achievements/907/name": {
+  "en": "Duelist of the Crossroads",
+  "note": "an achievement's name"
+ },
+ "achievements/907/desc": {
+  "en": "Win 50 duels.",
+  "note": "the description of the achievement \"Duelist of the Crossroads\""
+ },
+ "achievements/908/desc": {
+  "en": "Get an honorable killing blow on each of the nine classes.",
+  "note": "the description of the achievement \"That Takes Class\""
+ },
+ "achievements/909/desc": {
+  "en": "Get an honorable killing blow on each enemy race.",
+  "note": "the description of the achievement \"Know Thy Enemy\""
+ },
+ "achievements/910/desc": {
+  "en": "Get 50 killing blows in your home cities.",
+  "note": "the description of the achievement \"City Defender\""
+ },
+ "achievements/911/name": {
+  "en": "Death to the Warchief!",
+  "note": "an achievement's name"
+ },
+ "achievements/911/desc": {
+  "en": "Slay Thrall.",
+  "note": "the description of the achievement \"Death to the Warchief!\""
+ },
+ "achievements/912/name": {
+  "en": "Slay Cairne Bloodhoof",
+  "note": "an achievement's name"
+ },
+ "achievements/912/desc": {
+  "en": "Slay Cairne Bloodhoof.",
+  "note": "the description of the achievement \"Slay Cairne Bloodhoof\""
+ },
+ "achievements/913/name": {
+  "en": "Slay Lady Sylvanas Windrunner",
+  "note": "an achievement's name"
+ },
+ "achievements/913/desc": {
+  "en": "Slay Lady Sylvanas Windrunner.",
+  "note": "the description of the achievement \"Slay Lady Sylvanas Windrunner\""
+ },
+ "achievements/914/name": {
+  "en": "Storm the Keep!",
+  "note": "an achievement's name"
+ },
+ "achievements/914/desc": {
+  "en": "Slay Highlord Bolvar Fordragon.",
+  "note": "the description of the achievement \"Storm the Keep!\""
+ },
+ "achievements/915/name": {
+  "en": "Slay King Magni Bronzebeard",
+  "note": "an achievement's name"
+ },
+ "achievements/915/desc": {
+  "en": "Slay King Magni Bronzebeard.",
+  "note": "the description of the achievement \"Slay King Magni Bronzebeard\""
+ },
+ "achievements/916/name": {
+  "en": "Slay Tyrande Whisperwind",
+  "note": "an achievement's name"
+ },
+ "achievements/916/desc": {
+  "en": "Slay Tyrande Whisperwind.",
+  "note": "the description of the achievement \"Slay Tyrande Whisperwind\""
+ },
+ "achievements/917/name": {
+  "en": "Slay High Tinker Mekkatorque",
+  "note": "an achievement's name"
+ },
+ "achievements/917/desc": {
+  "en": "Slay High Tinker Mekkatorque.",
+  "note": "the description of the achievement \"Slay High Tinker Mekkatorque\""
+ },
+ "achievements/918/name": {
+  "en": "For The Alliance!",
+  "note": "an achievement's name"
+ },
+ "achievements/920/desc": {
+  "en": "Get 30 honorable kills in a single battleground.",
+  "note": "the description of the achievement \"The Grim Reaper\""
+ },
+ "achievements/921/desc": {
+  "en": "Get 20 killing blows in a single battleground without dying.",
+  "note": "the description of the achievement \"Wrecking Ball\""
+ },
+ "achievements/922/name": {
+  "en": "Rank: Sergeant",
+  "note": "an achievement's name"
+ },
+ "achievements/922/desc": {
+  "en": "Attain PvP rank 3.",
+  "note": "the description of the achievement \"Rank: Sergeant\""
+ },
+ "achievements/923/name": {
+  "en": "Rank: Knight",
+  "note": "an achievement's name"
+ },
+ "achievements/923/desc": {
+  "en": "Attain PvP rank 6.",
+  "note": "the description of the achievement \"Rank: Knight\""
+ },
+ "achievements/924/name": {
+  "en": "Rank: Lieutenant Commander",
+  "note": "an achievement's name"
+ },
+ "achievements/924/desc": {
+  "en": "Attain PvP rank 10.",
+  "note": "the description of the achievement \"Rank: Lieutenant Commander\""
+ },
+ "achievements/925/name": {
+  "en": "Rank: Grand Marshal",
+  "note": "an achievement's name"
+ },
+ "achievements/925/desc": {
+  "en": "Attain PvP rank 14.",
+  "note": "the description of the achievement \"Rank: Grand Marshal\""
+ },
+ "achievements/926/desc": {
+  "en": "Obtain a PvP war mount.",
+  "note": "the description of the achievement \"Call in the Cavalry\""
+ },
+ "achievements/926/label": {
+  "en": "A black war mount",
+  "note": "a criterion of the achievement \"Call in the Cavalry\" (Obtain a PvP war mount.)"
+ },
+ "achievements/928/desc": {
+  "en": "Win 100 battles in Alterac Valley.",
+  "note": "the description of the achievement \"Alterac Valley Veteran\""
+ },
+ "achievements/930/desc": {
+  "en": "Win 100 battles in Arathi Basin.",
+  "note": "the description of the achievement \"Arathi Basin Veteran\""
+ },
+ "achievements/932/desc": {
+  "en": "Win 100 battles in Warsong Gulch.",
+  "note": "the description of the achievement \"Warsong Gulch Veteran\""
+ },
+ "achievements/933/desc": {
+  "en": "Take 25 graveyards in Alterac Valley.",
+  "note": "the description of the achievement \"Alterac Grave Robber\""
+ },
+ "achievements/933/label": {
+  "en": "Graveyards Assaulted",
+  "note": "a criterion of the achievement \"Alterac Grave Robber\" (Take 25 graveyards in Alterac Valley.)"
+ },
+ "achievements/934/desc": {
+  "en": "Defend 25 towers in Alterac Valley.",
+  "note": "the description of the achievement \"Tower Defense\""
+ },
+ "achievements/934/label": {
+  "en": "Towers Defended",
+  "note": "a criterion of the achievement \"Tower Defense\" (Defend 25 towers in Alterac Valley.)"
+ },
+ "achievements/935/name": {
+  "en": "Me and the Cappin' Makin' it Happen",
+  "note": "an achievement's name"
+ },
+ "achievements/935/desc": {
+  "en": "Capture 25 bases in Arathi Basin.",
+  "note": "the description of the achievement \"Me and the Cappin' Makin' it Happen\""
+ },
+ "achievements/935/label": {
+  "en": "Bases Assaulted",
+  "note": "a criterion of the achievement \"Me and the Cappin' Makin' it Happen\" (Capture 25 bases in Arathi Basin.)"
+ },
+ "achievements/936/desc": {
+  "en": "Defend 25 bases in Arathi Basin.",
+  "note": "the description of the achievement \"To The Rescue!\""
+ },
+ "achievements/936/label": {
+  "en": "Bases Defended",
+  "note": "a criterion of the achievement \"To The Rescue!\" (Defend 25 bases in Arathi Basin.)"
+ },
+ "achievements/937/desc": {
+  "en": "Carry and capture the enemy flag in Warsong Gulch.",
+  "note": "the description of the achievement \"Capture the Flag\""
+ },
+ "achievements/938/desc": {
+  "en": "Carry and capture the enemy flag in under 75 seconds.",
+  "note": "the description of the achievement \"Quick Cap\""
+ },
+ "achievements/939/desc": {
+  "en": "Return 25 flags in Warsong Gulch.",
+  "note": "the description of the achievement \"Supreme Defender\""
+ },
+ "achievements/939/label": {
+  "en": "Flags Returned",
+  "note": "a criterion of the achievement \"Supreme Defender\" (Return 25 flags in Warsong Gulch.)"
+ },
+ "achievements/940/desc": {
+  "en": "Carry and capture 3 flags in a single Warsong Gulch battle without dying.",
+  "note": "the description of the achievement \"Ironman\""
+ },
+ "achievements/941/name": {
+  "en": "Warsong Perfection",
+  "note": "an achievement's name"
+ },
+ "achievements/942/desc": {
+  "en": "Win Arathi Basin with a score of 1600 to 0.",
+  "note": "the description of the achievement \"Arathi Basin Perfection\""
+ },
+ "achievements/943/name": {
+  "en": "The Battle for the Basin",
+  "note": "an achievement's name"
+ },
+ "achievements/943/desc": {
+  "en": "Get 100 honorable kills in a single Arathi Basin battle.",
+  "note": "the description of the achievement \"The Battle for the Basin\""
+ },
+ "achievements/944/desc": {
+  "en": "Obtain an Arena Master trinket from the Gurubashi Arena.",
+  "note": "the description of the achievement \"Gurubashi Arena Master\""
+ },
+ "achievements/945/desc": {
+  "en": "Complete the battleground achievements.",
+  "note": "the description of the achievement \"Battlemaster\""
+ },
+ "achievements/946/name": {
+  "en": "Take the Base",
+  "note": "an achievement's name"
+ },
+ "achievements/946/desc": {
+  "en": "Capture a base in Arathi Basin.",
+  "note": "the description of the achievement \"Take the Base\""
+ },
+ "achievements/946/label": {
+  "en": "Bases Assaulted",
+  "note": "a criterion of the achievement \"Take the Base\" (Capture a base in Arathi Basin.)"
+ },
+ "achievements/947/name": {
+  "en": "Storm the Tower",
+  "note": "an achievement's name"
+ },
+ "achievements/947/desc": {
+  "en": "Assault a tower in Alterac Valley.",
+  "note": "the description of the achievement \"Storm the Tower\""
+ },
+ "achievements/947/label": {
+  "en": "Towers Assaulted",
+  "note": "a criterion of the achievement \"Storm the Tower\" (Assault a tower in Alterac Valley.)"
+ },
+ "achievements/948/name": {
+  "en": "Drek'Thar's Downfall",
+  "note": "an achievement's name"
+ },
+ "achievements/948/desc": {
+  "en": "Slay Drek'Thar, the Frostwolf General.",
+  "note": "the description of the achievement \"Drek'Thar's Downfall\""
+ },
+ "achievements/949/name": {
+  "en": "The Fall of Vanndar",
+  "note": "an achievement's name"
+ },
+ "achievements/949/desc": {
+  "en": "Slay Vanndar Stormpike, the Stormpike General.",
+  "note": "the description of the achievement \"The Fall of Vanndar\""
+ },
+ "achievements/950/name": {
+  "en": "Wrecking Crew",
+  "note": "an achievement's name"
+ },
+ "achievements/950/desc": {
+  "en": "Deal 250,000 damage in a single battleground.",
+  "note": "the description of the achievement \"Wrecking Crew\""
+ },
+ "achievements/951/name": {
+  "en": "Full Battle Dress",
+  "note": "an achievement's name"
+ },
+ "achievements/951/desc": {
+  "en": "Own every piece of your class's epic PvP regalia.",
+  "note": "the description of the achievement \"Full Battle Dress\""
+ },
+ "achievements/1002/name": {
+  "en": "A Test of Skill: Warrior",
+  "note": "an achievement's name"
+ },
+ "achievements/1002/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Warrior\""
+ },
+ "achievements/1003/name": {
+  "en": "Class Acts: Warrior",
+  "note": "an achievement's name"
+ },
+ "achievements/1003/desc": {
+  "en": "Complete the noted number of warrior class quests.",
+  "note": "the description of the achievement \"Class Acts: Warrior\""
+ },
+ "achievements/1005/name": {
+  "en": "A Test of Skill: Paladin",
+  "note": "an achievement's name"
+ },
+ "achievements/1005/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Paladin\""
+ },
+ "achievements/1006/name": {
+  "en": "Class Acts: Paladin",
+  "note": "an achievement's name"
+ },
+ "achievements/1006/desc": {
+  "en": "Complete the noted number of paladin class quests.",
+  "note": "the description of the achievement \"Class Acts: Paladin\""
+ },
+ "achievements/1008/name": {
+  "en": "A Test of Skill: Hunter",
+  "note": "an achievement's name"
+ },
+ "achievements/1008/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Hunter\""
+ },
+ "achievements/1009/name": {
+  "en": "Class Acts: Hunter",
+  "note": "an achievement's name"
+ },
+ "achievements/1009/desc": {
+  "en": "Complete the noted number of hunter class quests.",
+  "note": "the description of the achievement \"Class Acts: Hunter\""
+ },
+ "achievements/1011/name": {
+  "en": "A Test of Skill: Rogue",
+  "note": "an achievement's name"
+ },
+ "achievements/1011/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Rogue\""
+ },
+ "achievements/1012/name": {
+  "en": "Class Acts: Rogue",
+  "note": "an achievement's name"
+ },
+ "achievements/1012/desc": {
+  "en": "Complete the noted number of rogue class quests.",
+  "note": "the description of the achievement \"Class Acts: Rogue\""
+ },
+ "achievements/1014/name": {
+  "en": "A Test of Skill: Priest",
+  "note": "an achievement's name"
+ },
+ "achievements/1014/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Priest\""
+ },
+ "achievements/1015/name": {
+  "en": "Class Acts: Priest",
+  "note": "an achievement's name"
+ },
+ "achievements/1015/desc": {
+  "en": "Complete the noted number of priest class quests.",
+  "note": "the description of the achievement \"Class Acts: Priest\""
+ },
+ "achievements/1017/name": {
+  "en": "A Test of Skill: Shaman",
+  "note": "an achievement's name"
+ },
+ "achievements/1017/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Shaman\""
+ },
+ "achievements/1018/name": {
+  "en": "Class Acts: Shaman",
+  "note": "an achievement's name"
+ },
+ "achievements/1018/desc": {
+  "en": "Complete the noted number of shaman class quests.",
+  "note": "the description of the achievement \"Class Acts: Shaman\""
+ },
+ "achievements/1020/name": {
+  "en": "A Test of Skill: Mage",
+  "note": "an achievement's name"
+ },
+ "achievements/1020/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Mage\""
+ },
+ "achievements/1021/name": {
+  "en": "Class Acts: Mage",
+  "note": "an achievement's name"
+ },
+ "achievements/1021/desc": {
+  "en": "Complete the noted number of mage class quests.",
+  "note": "the description of the achievement \"Class Acts: Mage\""
+ },
+ "achievements/1023/name": {
+  "en": "A Test of Skill: Warlock",
+  "note": "an achievement's name"
+ },
+ "achievements/1023/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Warlock\""
+ },
+ "achievements/1024/name": {
+  "en": "Class Acts: Warlock",
+  "note": "an achievement's name"
+ },
+ "achievements/1024/desc": {
+  "en": "Complete the noted number of warlock class quests.",
+  "note": "the description of the achievement \"Class Acts: Warlock\""
+ },
+ "achievements/1026/name": {
+  "en": "A Test of Skill: Druid",
+  "note": "an achievement's name"
+ },
+ "achievements/1026/desc": {
+  "en": "Complete your class's trial in the Temple of Atal'Hakkar.",
+  "note": "the description of the achievement \"A Test of Skill: Druid\""
+ },
+ "achievements/1027/name": {
+  "en": "Class Acts: Druid",
+  "note": "an achievement's name"
+ },
+ "achievements/1027/desc": {
+  "en": "Complete the noted number of druid class quests.",
+  "note": "the description of the achievement \"Class Acts: Druid\""
+ },
+ "achievements/1028/name": {
+  "en": "The Whirlwind Weapon",
+  "note": "an achievement's name"
+ },
+ "achievements/1028/desc": {
+  "en": "Avenge Galen Trollbane and claim a whirlwind weapon.",
+  "note": "the description of the achievement \"The Whirlwind Weapon\""
+ },
+ "achievements/1029/name": {
+  "en": "Forging Quel'Serrar",
+  "note": "an achievement's name"
+ },
+ "achievements/1029/desc": {
+  "en": "Forge Quel'Serrar in the flames of Onyxia.",
+  "note": "the description of the achievement \"Forging Quel'Serrar\""
+ },
+ "achievements/1030/name": {
+  "en": "The Tome of Valor",
+  "note": "an achievement's name"
+ },
+ "achievements/1030/desc": {
+  "en": "Prove your valor and earn Verigan's Fist.",
+  "note": "the description of the achievement \"The Tome of Valor\""
+ },
+ "achievements/1030/label": {
+  "en": "The Test of Righteousness",
+  "note": "a criterion of the achievement \"The Tome of Valor\" (Prove your valor and earn Verigan's Fist.)"
+ },
+ "achievements/1031/desc": {
+  "en": "Earn your epic charger.",
+  "note": "the description of the achievement \"Charger\""
+ },
+ "achievements/1031/label": {
+  "en": "Summon Charger",
+  "note": "a criterion of the achievement \"Charger\" (Earn your epic charger.)"
+ },
+ "achievements/1032/desc": {
+  "en": "Tame beasts from 5 different pet families.",
+  "note": "the description of the achievement \"Pack Leader\""
+ },
+ "achievements/1033/name": {
+  "en": "Legendary Patience",
+  "note": "an achievement's name"
+ },
+ "achievements/1033/desc": {
+  "en": "Tame one of Azeroth's famous rare beasts.",
+  "note": "the description of the achievement \"Legendary Patience\""
+ },
+ "achievements/1034/desc": {
+  "en": "Earn Rhok'delar and Lok'delar from the ancients.",
+  "note": "the description of the achievement \"The Ancient Leaf\""
+ },
+ "achievements/1035/name": {
+  "en": "When Pigs Cast",
+  "note": "an achievement's name"
+ },
+ "achievements/1035/desc": {
+  "en": "Learn Polymorph: Pig.",
+  "note": "the description of the achievement \"When Pigs Cast\""
+ },
+ "achievements/1035/label": {
+  "en": "Polymorph: Pig",
+  "note": "a criterion of the achievement \"When Pigs Cast\" (Learn Polymorph: Pig.)"
+ },
+ "achievements/1036/name": {
+  "en": "Planes Walker",
+  "note": "an achievement's name"
+ },
+ "achievements/1036/desc": {
+  "en": "Know the teleport spells to all three Alliance or Horde capitals.",
+  "note": "the description of the achievement \"Planes Walker\""
+ },
+ "achievements/1036/list.1": {
+  "en": "Teleport: Stormwind / Orgrimmar",
+  "note": "a criterion of the achievement \"Planes Walker\" (Know the teleport spells to all three Alliance or Horde capitals.)"
+ },
+ "achievements/1036/list.2": {
+  "en": "Teleport: Ironforge / Undercity",
+  "note": "a criterion of the achievement \"Planes Walker\" (Know the teleport spells to all three Alliance or Horde capitals.)"
+ },
+ "achievements/1036/list.3": {
+  "en": "Teleport: Darnassus / Thunder Bluff",
+  "note": "a criterion of the achievement \"Planes Walker\" (Know the teleport spells to all three Alliance or Horde capitals.)"
+ },
+ "achievements/1037/name": {
+  "en": "Felsteed",
+  "note": "an achievement's name"
+ },
+ "achievements/1037/desc": {
+  "en": "Summon your felsteed.",
+  "note": "the description of the achievement \"Felsteed\""
+ },
+ "achievements/1037/label": {
+  "en": "Summon Felsteed",
+  "note": "a criterion of the achievement \"Felsteed\" (Summon your felsteed.)"
+ },
+ "achievements/1038/desc": {
+  "en": "Summon your dreadsteed.",
+  "note": "the description of the achievement \"Dreadsteed of Xoroth\""
+ },
+ "achievements/1039/name": {
+  "en": "Full Roster",
+  "note": "an achievement's name"
+ },
+ "achievements/1039/desc": {
+  "en": "Command every demon, from imp to infernal and doomguard.",
+  "note": "the description of the achievement \"Full Roster\""
+ },
+ "achievements/1039/list.5": {
+  "en": "Inferno",
+  "note": "a criterion of the achievement \"Full Roster\" (Command every demon, from imp to infernal and doomguard.)"
+ },
+ "achievements/1039/list.6": {
+  "en": "Ritual of Doom",
+  "note": "a criterion of the achievement \"Full Roster\" (Command every demon, from imp to infernal and doomguard.)"
+ },
+ "achievements/1040/desc": {
+  "en": "Earn Benediction, the staff of the Light.",
+  "note": "the description of the achievement \"Benediction\""
+ },
+ "achievements/1041/name": {
+  "en": "Master Locksmith",
+  "note": "an achievement's name"
+ },
+ "achievements/1041/desc": {
+  "en": "Raise lockpicking to 300 skill.",
+  "note": "the description of the achievement \"Master Locksmith\""
+ },
+ "achievements/1042/name": {
+  "en": "Cat Burglar",
+  "note": "an achievement's name"
+ },
+ "achievements/1042/desc": {
+  "en": "Pick 100 locks.",
+  "note": "the description of the achievement \"Cat Burglar\""
+ },
+ "achievements/1043/name": {
+  "en": "Spirit Speaker",
+  "note": "an achievement's name"
+ },
+ "achievements/1043/desc": {
+  "en": "Complete the call of all four elements.",
+  "note": "the description of the achievement \"Spirit Speaker\""
+ },
+ "achievements/1044/name": {
+  "en": "She Who Swims",
+  "note": "an achievement's name"
+ },
+ "achievements/1044/desc": {
+  "en": "Learn to take the shape of the sea lion.",
+  "note": "the description of the achievement \"She Who Swims\""
+ },
+ "achievements/1045/name": {
+  "en": "Swift as the Wind",
+  "note": "an achievement's name"
+ },
+ "achievements/1045/desc": {
+  "en": "Know all of the druid's shapeshift forms.",
+  "note": "the description of the achievement \"Swift as the Wind\""
+ },
+ "achievements/1045/list.1": {
+  "en": "Bear Form",
+  "note": "a criterion of the achievement \"Swift as the Wind\" (Know all of the druid's shapeshift forms.)"
+ },
+ "achievements/1045/list.2": {
+  "en": "Cat Form",
+  "note": "a criterion of the achievement \"Swift as the Wind\" (Know all of the druid's shapeshift forms.)"
+ },
+ "achievements/1045/list.3": {
+  "en": "Aquatic Form",
+  "note": "a criterion of the achievement \"Swift as the Wind\" (Know all of the druid's shapeshift forms.)"
+ },
+ "achievements/1045/list.4": {
+  "en": "Travel Form",
+  "note": "a criterion of the achievement \"Swift as the Wind\" (Know all of the druid's shapeshift forms.)"
+ },
+ "achievements/1045/list.5": {
+  "en": "Dire Bear Form",
+  "note": "a criterion of the achievement \"Swift as the Wind\" (Know all of the druid's shapeshift forms.)"
+ },
+ "achievements/1046/name": {
+  "en": "Stance Dancer",
+  "note": "an achievement's name"
+ },
+ "achievements/1046/desc": {
+  "en": "Know all three warrior stances.",
+  "note": "the description of the achievement \"Stance Dancer\""
+ },
+ "achievements/1046/list.1": {
+  "en": "Battle Stance",
+  "note": "a criterion of the achievement \"Stance Dancer\" (Know all three warrior stances.)"
+ },
+ "achievements/1046/list.2": {
+  "en": "Defensive Stance",
+  "note": "a criterion of the achievement \"Stance Dancer\" (Know all three warrior stances.)"
+ },
+ "achievements/1046/list.3": {
+  "en": "Berserker Stance",
+  "note": "a criterion of the achievement \"Stance Dancer\" (Know all three warrior stances.)"
+ },
+ "achievements/1047/name": {
+  "en": "Bubble Hearth",
+  "note": "an achievement's name"
+ },
+ "achievements/1047/desc": {
+  "en": "Use your Hearthstone with Divine Shield active. The Horde will sing of it.",
+  "note": "the description of the achievement \"Bubble Hearth\""
+ },
+ "achievements/1048/name": {
+  "en": "Played Dead",
+  "note": "an achievement's name"
+ },
+ "achievements/1048/desc": {
+  "en": "Feign death.",
+  "note": "the description of the achievement \"Played Dead\""
+ },
+ "achievements/1049/name": {
+  "en": "Light Fingers",
+  "note": "an achievement's name"
+ },
+ "achievements/1049/desc": {
+  "en": "Pick 100 pockets.",
+  "note": "the description of the achievement \"Light Fingers\""
+ },
+ "achievements/1050/name": {
+  "en": "Puppet Master",
+  "note": "an achievement's name"
+ },
+ "achievements/1050/desc": {
+  "en": "Bend a mind to your will with Mind Control.",
+  "note": "the description of the achievement \"Puppet Master\""
+ },
+ "achievements/1051/name": {
+  "en": "Counting Sheep",
+  "note": "an achievement's name"
+ },
+ "achievements/1051/desc": {
+  "en": "Polymorph 100 targets.",
+  "note": "the description of the achievement \"Counting Sheep\""
+ },
+ "achievements/1052/name": {
+  "en": "Long Distance Call",
+  "note": "an achievement's name"
+ },
+ "achievements/1052/desc": {
+  "en": "Summon 25 players with Ritual of Summoning.",
+  "note": "the description of the achievement \"Long Distance Call\""
+ },
+ "achievements/1053/desc": {
+  "en": "Return to life with Reincarnation.",
+  "note": "the description of the achievement \"Second Wind\""
+ },
+ "achievements/1054/name": {
+  "en": "Power Flower",
+  "note": "an achievement's name"
+ },
+ "achievements/1054/desc": {
+  "en": "Bless an ally with Innervate.",
+  "note": "the description of the achievement \"Power Flower\""
+ },
+ "achievements/1055/name": {
+  "en": "Executioner",
+  "note": "an achievement's name"
+ },
+ "achievements/1055/desc": {
+  "en": "Land 100 killing blows with Execute.",
+  "note": "the description of the achievement \"Executioner\""
+ },
+ "achievements/1055/label": {
+  "en": "Execute killing blows",
+  "note": "a criterion of the achievement \"Executioner\" (Land 100 killing blows with Execute.)"
+ },
+ "achievements/1056/desc": {
+  "en": "Save another player with Lay on Hands.",
+  "note": "the description of the achievement \"Helping Hand\""
+ },
+ "achievements/1056/label": {
+  "en": "Lay on Hands an ally",
+  "note": "a criterion of the achievement \"Helping Hand\" (Save another player with Lay on Hands.)"
+ },
+ "achievements/1057/name": {
+  "en": "One Shot, One Kill",
+  "note": "an achievement's name"
+ },
+ "achievements/1057/desc": {
+  "en": "Land a killing blow with Aimed Shot.",
+  "note": "the description of the achievement \"One Shot, One Kill\""
+ },
+ "achievements/1057/label": {
+  "en": "Aimed Shot killing blow",
+  "note": "a criterion of the achievement \"One Shot, One Kill\" (Land a killing blow with Aimed Shot.)"
+ },
+ "achievements/1058/name": {
+  "en": "Say Goodnight",
+  "note": "an achievement's name"
+ },
+ "achievements/1058/desc": {
+  "en": "Sap 50 enemies.",
+  "note": "the description of the achievement \"Say Goodnight\""
+ },
+ "achievements/1059/name": {
+  "en": "Safety Blanket",
+  "note": "an achievement's name"
+ },
+ "achievements/1059/desc": {
+  "en": "Cast Power Word: Shield 250 times.",
+  "note": "the description of the achievement \"Safety Blanket\""
+ },
+ "achievements/1060/name": {
+  "en": "Open Bar",
+  "note": "an achievement's name"
+ },
+ "achievements/1060/desc": {
+  "en": "Conjure 300 refreshments.",
+  "note": "the description of the achievement \"Open Bar\""
+ },
+ "achievements/1060/label": {
+  "en": "Refreshments conjured",
+  "note": "a criterion of the achievement \"Open Bar\" (Conjure 300 refreshments.)"
+ },
+ "achievements/1061/name": {
+  "en": "Fear Factor",
+  "note": "an achievement's name"
+ },
+ "achievements/1061/desc": {
+  "en": "Send 100 enemies running with Fear.",
+  "note": "the description of the achievement \"Fear Factor\""
+ },
+ "achievements/1062/name": {
+  "en": "Totem Master",
+  "note": "an achievement's name"
+ },
+ "achievements/1062/desc": {
+  "en": "Plant 500 totems.",
+  "note": "the description of the achievement \"Totem Master\""
+ },
+ "achievements/1062/label": {
+  "en": "Totems planted",
+  "note": "a criterion of the achievement \"Totem Master\" (Plant 500 totems.)"
+ },
+ "achievements/1063/name": {
+  "en": "Quick Change Artist",
+  "note": "an achievement's name"
+ },
+ "achievements/1063/desc": {
+  "en": "Shapeshift 250 times.",
+  "note": "the description of the achievement \"Quick Change Artist\""
+ },
+ "achievements/1063/label": {
+  "en": "Shapeshifts",
+  "note": "a criterion of the achievement \"Quick Change Artist\" (Shapeshift 250 times.)"
+ },
+ "achievements/1064/name": {
+  "en": "Talent Show: Warrior",
+  "note": "an achievement's name"
+ },
+ "achievements/1064/desc": {
+  "en": "Use the deepest talent of each warrior talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Warrior\""
+ },
+ "achievements/1064/list.1": {
+  "en": "Mortal Strike (Arms)",
+  "note": "a criterion of the achievement \"Talent Show: Warrior\" (Use the deepest talent of each warrior talent tree at least once.)"
+ },
+ "achievements/1064/list.2": {
+  "en": "Bloodthirst (Fury)",
+  "note": "a criterion of the achievement \"Talent Show: Warrior\" (Use the deepest talent of each warrior talent tree at least once.)"
+ },
+ "achievements/1064/list.3": {
+  "en": "Shield Slam (Protection)",
+  "note": "a criterion of the achievement \"Talent Show: Warrior\" (Use the deepest talent of each warrior talent tree at least once.)"
+ },
+ "achievements/1065/name": {
+  "en": "Talent Show: Paladin",
+  "note": "an achievement's name"
+ },
+ "achievements/1065/desc": {
+  "en": "Use the deepest talent of each paladin talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Paladin\""
+ },
+ "achievements/1065/list.1": {
+  "en": "Divine Favor (Holy)",
+  "note": "a criterion of the achievement \"Talent Show: Paladin\" (Use the deepest talent of each paladin talent tree at least once.)"
+ },
+ "achievements/1065/list.2": {
+  "en": "Holy Shield (Protection)",
+  "note": "a criterion of the achievement \"Talent Show: Paladin\" (Use the deepest talent of each paladin talent tree at least once.)"
+ },
+ "achievements/1065/list.3": {
+  "en": "Repentance (Retribution)",
+  "note": "a criterion of the achievement \"Talent Show: Paladin\" (Use the deepest talent of each paladin talent tree at least once.)"
+ },
+ "achievements/1066/name": {
+  "en": "Talent Show: Hunter",
+  "note": "an achievement's name"
+ },
+ "achievements/1066/desc": {
+  "en": "Use the deepest talent of each hunter talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Hunter\""
+ },
+ "achievements/1066/list.1": {
+  "en": "Bestial Wrath (Beast Mastery)",
+  "note": "a criterion of the achievement \"Talent Show: Hunter\" (Use the deepest talent of each hunter talent tree at least once.)"
+ },
+ "achievements/1066/list.2": {
+  "en": "Trueshot Aura (Marksmanship)",
+  "note": "a criterion of the achievement \"Talent Show: Hunter\" (Use the deepest talent of each hunter talent tree at least once.)"
+ },
+ "achievements/1066/list.3": {
+  "en": "Wyvern Sting (Survival)",
+  "note": "a criterion of the achievement \"Talent Show: Hunter\" (Use the deepest talent of each hunter talent tree at least once.)"
+ },
+ "achievements/1067/name": {
+  "en": "Talent Show: Rogue",
+  "note": "an achievement's name"
+ },
+ "achievements/1067/desc": {
+  "en": "Use the deepest talent of each rogue talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Rogue\""
+ },
+ "achievements/1067/list.1": {
+  "en": "Cold Blood (Assassination)",
+  "note": "a criterion of the achievement \"Talent Show: Rogue\" (Use the deepest talent of each rogue talent tree at least once.)"
+ },
+ "achievements/1067/list.2": {
+  "en": "Adrenaline Rush (Combat)",
+  "note": "a criterion of the achievement \"Talent Show: Rogue\" (Use the deepest talent of each rogue talent tree at least once.)"
+ },
+ "achievements/1067/list.3": {
+  "en": "Premeditation (Subtlety)",
+  "note": "a criterion of the achievement \"Talent Show: Rogue\" (Use the deepest talent of each rogue talent tree at least once.)"
+ },
+ "achievements/1068/name": {
+  "en": "Talent Show: Priest",
+  "note": "an achievement's name"
+ },
+ "achievements/1068/desc": {
+  "en": "Use the deepest talent of each priest talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Priest\""
+ },
+ "achievements/1068/list.1": {
+  "en": "Power Infusion (Discipline)",
+  "note": "a criterion of the achievement \"Talent Show: Priest\" (Use the deepest talent of each priest talent tree at least once.)"
+ },
+ "achievements/1068/list.2": {
+  "en": "Lightwell (Holy)",
+  "note": "a criterion of the achievement \"Talent Show: Priest\" (Use the deepest talent of each priest talent tree at least once.)"
+ },
+ "achievements/1068/list.3": {
+  "en": "Vampiric Embrace (Shadow)",
+  "note": "a criterion of the achievement \"Talent Show: Priest\" (Use the deepest talent of each priest talent tree at least once.)"
+ },
+ "achievements/1069/name": {
+  "en": "Talent Show: Shaman",
+  "note": "an achievement's name"
+ },
+ "achievements/1069/desc": {
+  "en": "Use the deepest talent of each shaman talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Shaman\""
+ },
+ "achievements/1069/list.1": {
+  "en": "Elemental Mastery (Elemental)",
+  "note": "a criterion of the achievement \"Talent Show: Shaman\" (Use the deepest talent of each shaman talent tree at least once.)"
+ },
+ "achievements/1069/list.2": {
+  "en": "Stormstrike (Enhancement)",
+  "note": "a criterion of the achievement \"Talent Show: Shaman\" (Use the deepest talent of each shaman talent tree at least once.)"
+ },
+ "achievements/1069/list.3": {
+  "en": "Mana Tide Totem (Restoration)",
+  "note": "a criterion of the achievement \"Talent Show: Shaman\" (Use the deepest talent of each shaman talent tree at least once.)"
+ },
+ "achievements/1070/name": {
+  "en": "Talent Show: Mage",
+  "note": "an achievement's name"
+ },
+ "achievements/1070/desc": {
+  "en": "Use the deepest talent of each mage talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Mage\""
+ },
+ "achievements/1070/list.1": {
+  "en": "Arcane Power (Arcane)",
+  "note": "a criterion of the achievement \"Talent Show: Mage\" (Use the deepest talent of each mage talent tree at least once.)"
+ },
+ "achievements/1070/list.2": {
+  "en": "Combustion (Fire)",
+  "note": "a criterion of the achievement \"Talent Show: Mage\" (Use the deepest talent of each mage talent tree at least once.)"
+ },
+ "achievements/1070/list.3": {
+  "en": "Ice Barrier (Frost)",
+  "note": "a criterion of the achievement \"Talent Show: Mage\" (Use the deepest talent of each mage talent tree at least once.)"
+ },
+ "achievements/1071/name": {
+  "en": "Talent Show: Warlock",
+  "note": "an achievement's name"
+ },
+ "achievements/1071/desc": {
+  "en": "Use the deepest talent of each warlock talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Warlock\""
+ },
+ "achievements/1071/list.1": {
+  "en": "Dark Pact (Affliction)",
+  "note": "a criterion of the achievement \"Talent Show: Warlock\" (Use the deepest talent of each warlock talent tree at least once.)"
+ },
+ "achievements/1071/list.2": {
+  "en": "Soul Link (Demonology)",
+  "note": "a criterion of the achievement \"Talent Show: Warlock\" (Use the deepest talent of each warlock talent tree at least once.)"
+ },
+ "achievements/1071/list.3": {
+  "en": "Conflagrate (Destruction)",
+  "note": "a criterion of the achievement \"Talent Show: Warlock\" (Use the deepest talent of each warlock talent tree at least once.)"
+ },
+ "achievements/1072/name": {
+  "en": "Talent Show: Druid",
+  "note": "an achievement's name"
+ },
+ "achievements/1072/desc": {
+  "en": "Use the deepest talent of each druid talent tree at least once.",
+  "note": "the description of the achievement \"Talent Show: Druid\""
+ },
+ "achievements/1072/list.1": {
+  "en": "Hurricane (Balance)",
+  "note": "a criterion of the achievement \"Talent Show: Druid\" (Use the deepest talent of each druid talent tree at least once.)"
+ },
+ "achievements/1072/list.2": {
+  "en": "Leader of the Pack (Feral)",
+  "note": "a criterion of the achievement \"Talent Show: Druid\" (Use the deepest talent of each druid talent tree at least once.)"
+ },
+ "achievements/1072/list.3": {
+  "en": "Swiftmend (Restoration)",
+  "note": "a criterion of the achievement \"Talent Show: Druid\" (Use the deepest talent of each druid talent tree at least once.)"
+ },
+ "achievements/1073/desc": {
+  "en": "Block 250 attacks.",
+  "note": "the description of the achievement \"None Shall Pass\""
+ },
+ "achievements/1074/name": {
+  "en": "Blessed Are the Many",
+  "note": "an achievement's name"
+ },
+ "achievements/1074/desc": {
+  "en": "Bestow 250 blessings.",
+  "note": "the description of the achievement \"Blessed Are the Many\""
+ },
+ "achievements/1074/label": {
+  "en": "Blessings",
+  "note": "a criterion of the achievement \"Blessed Are the Many\" (Bestow 250 blessings.)"
+ },
+ "achievements/1075/name": {
+  "en": "Zookeeper",
+  "note": "an achievement's name"
+ },
+ "achievements/1075/desc": {
+  "en": "Tame beasts from 10 different pet families.",
+  "note": "the description of the achievement \"Zookeeper\""
+ },
+ "achievements/1076/name": {
+  "en": "Toxicologist",
+  "note": "an achievement's name"
+ },
+ "achievements/1076/desc": {
+  "en": "Coat your weapons with poison 100 times.",
+  "note": "the description of the achievement \"Toxicologist\""
+ },
+ "achievements/1076/label": {
+  "en": "Poisons applied",
+  "note": "a criterion of the achievement \"Toxicologist\" (Coat your weapons with poison 100 times.)"
+ },
+ "achievements/1077/name": {
+  "en": "Cleanliness",
+  "note": "an achievement's name"
+ },
+ "achievements/1077/desc": {
+  "en": "Cast Dispel Magic 100 times.",
+  "note": "the description of the achievement \"Cleanliness\""
+ },
+ "achievements/1078/name": {
+  "en": "Now You See Me",
+  "note": "an achievement's name"
+ },
+ "achievements/1078/desc": {
+  "en": "Blink 100 times.",
+  "note": "the description of the achievement \"Now You See Me\""
+ },
+ "achievements/1079/name": {
+  "en": "The Candy Man",
+  "note": "an achievement's name"
+ },
+ "achievements/1079/desc": {
+  "en": "Conjure 100 Healthstones.",
+  "note": "the description of the achievement \"The Candy Man\""
+ },
+ "achievements/1079/label": {
+  "en": "Healthstones conjured",
+  "note": "a criterion of the achievement \"The Candy Man\" (Conjure 100 Healthstones.)"
+ },
+ "achievements/1080/name": {
+  "en": "Shock Therapy",
+  "note": "an achievement's name"
+ },
+ "achievements/1080/desc": {
+  "en": "Land 500 shocks.",
+  "note": "the description of the achievement \"Shock Therapy\""
+ },
+ "achievements/1080/label": {
+  "en": "Shocks",
+  "note": "a criterion of the achievement \"Shock Therapy\" (Land 500 shocks.)"
+ },
+ "achievements/1081/name": {
+  "en": "Second Chances",
+  "note": "an achievement's name"
+ },
+ "achievements/1081/desc": {
+  "en": "Return a fallen ally to the fight with Rebirth.",
+  "note": "the description of the achievement \"Second Chances\""
+ },
+ "achievements/1101/desc": {
+  "en": "Honor the Elders of the Eastern Kingdoms during the Lunar Festival.",
+  "note": "the description of the achievement \"Elders of Eastern Kingdoms\""
+ },
+ "achievements/1101/list.1": {
+  "en": "Rumblerock",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.2": {
+  "en": "Silvervein",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.3": {
+  "en": "Highpeak",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.4": {
+  "en": "Obsidian",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.5": {
+  "en": "Hammershout",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.6": {
+  "en": "Bellowrage",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.7": {
+  "en": "Darkcore",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.8": {
+  "en": "Stormbrow",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.9": {
+  "en": "Snowcrown",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.10": {
+  "en": "Ironband",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.11": {
+  "en": "Graveborn",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.12": {
+  "en": "Goldwell",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.13": {
+  "en": "Winterhoof",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.14": {
+  "en": "Skychaser",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.15": {
+  "en": "Dawnstrider",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.16": {
+  "en": "Windrun",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.17": {
+  "en": "Moonstrike",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.18": {
+  "en": "Starglade",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.19": {
+  "en": "Meadowrun",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1101/list.20": {
+  "en": "Bronzebeard",
+  "note": "a criterion of the achievement \"Elders of Eastern Kingdoms\" (Honor the Elders of the Eastern Kingdoms during the Lunar Festival.)"
+ },
+ "achievements/1102/desc": {
+  "en": "Honor the Elders of Kalimdor during the Lunar Festival.",
+  "note": "the description of the achievement \"Elders of Kalimdor\""
+ },
+ "achievements/1102/list.1": {
+  "en": "Primestone",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.2": {
+  "en": "Runetotem",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.3": {
+  "en": "Ragetotem",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.4": {
+  "en": "Stonespire",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.5": {
+  "en": "Bloodhoof",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.6": {
+  "en": "Wildmane",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.7": {
+  "en": "Darkhorn",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.8": {
+  "en": "Proudhorn",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.9": {
+  "en": "Grimtotem",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.10": {
+  "en": "Windtotem",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.11": {
+  "en": "Thunderhorn",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.12": {
+  "en": "Skyseer",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.13": {
+  "en": "Dreamseer",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.14": {
+  "en": "High Mountain",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.15": {
+  "en": "Bladeleaf",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.16": {
+  "en": "Moonwarden",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.17": {
+  "en": "Bladeswift",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.18": {
+  "en": "Bladesing",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.19": {
+  "en": "Skygleam",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.20": {
+  "en": "Starweave",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.21": {
+  "en": "Nightwind",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.22": {
+  "en": "Morningdew",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.23": {
+  "en": "Riversong",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1102/list.24": {
+  "en": "Brightspear",
+  "note": "a criterion of the achievement \"Elders of Kalimdor\" (Honor the Elders of Kalimdor during the Lunar Festival.)"
+ },
+ "achievements/1103/desc": {
+  "en": "Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.",
+  "note": "the description of the achievement \"Elders of the Dungeons\""
+ },
+ "achievements/1103/list.1": {
+  "en": "Morndeep",
+  "note": "a criterion of the achievement \"Elders of the Dungeons\" (Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.)"
+ },
+ "achievements/1103/list.2": {
+  "en": "Splitrock",
+  "note": "a criterion of the achievement \"Elders of the Dungeons\" (Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.)"
+ },
+ "achievements/1103/list.3": {
+  "en": "Stonefort",
+  "note": "a criterion of the achievement \"Elders of the Dungeons\" (Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.)"
+ },
+ "achievements/1103/list.4": {
+  "en": "Mistwalker",
+  "note": "a criterion of the achievement \"Elders of the Dungeons\" (Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.)"
+ },
+ "achievements/1103/list.5": {
+  "en": "Starsong",
+  "note": "a criterion of the achievement \"Elders of the Dungeons\" (Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.)"
+ },
+ "achievements/1103/list.6": {
+  "en": "Farwhisper",
+  "note": "a criterion of the achievement \"Elders of the Dungeons\" (Honor the Elders hidden in Azeroth's dungeons during the Lunar Festival.)"
+ },
+ "achievements/1104/desc": {
+  "en": "Defeat Omen and receive Elune's blessing.",
+  "note": "the description of the achievement \"Elune's Blessing\""
+ },
+ "achievements/1105/name": {
+  "en": "Flames of Kalimdor",
+  "note": "an achievement's name"
+ },
+ "achievements/1105/desc": {
+  "en": "Honor the flames of Kalimdor during the Midsummer Fire Festival.",
+  "note": "the description of the achievement \"Flames of Kalimdor\""
+ },
+ "achievements/1105/label": {
+  "en": "Honor the flames of Kalimdor",
+  "note": "a criterion of the achievement \"Flames of Kalimdor\" (Honor the flames of Kalimdor during the Midsummer Fire Festival.)"
+ },
+ "achievements/1106/name": {
+  "en": "Flames of the Eastern Kingdoms",
+  "note": "an achievement's name"
+ },
+ "achievements/1106/desc": {
+  "en": "Honor the flames of the Eastern Kingdoms during the Midsummer Fire Festival.",
+  "note": "the description of the achievement \"Flames of the Eastern Kingdoms\""
+ },
+ "achievements/1106/label": {
+  "en": "Honor the flames of the Eastern Kingdoms",
+  "note": "a criterion of the achievement \"Flames of the Eastern Kingdoms\" (Honor the flames of the Eastern Kingdoms during the Midsummer Fire Festival.)"
+ },
+ "achievements/1107/desc": {
+  "en": "Steal the flames from the enemy's capital cities.",
+  "note": "the description of the achievement \"King of the Fire Festival\""
+ },
+ "achievements/1107/label": {
+  "en": "A Thief's Reward",
+  "note": "a criterion of the achievement \"King of the Fire Festival\" (Steal the flames from the enemy's capital cities.)"
+ },
+ "achievements/1108/desc": {
+  "en": "Rescue Metzen the Reindeer.",
+  "note": "the description of the achievement \"On Metzen!\""
+ },
+ "achievements/1109/desc": {
+  "en": "Recover the stolen Smokywood Pastures treats.",
+  "note": "the description of the achievement \"Simply Abominable\""
+ },
+ "achievements/1109/label": {
+  "en": "Stolen Winter Veil Treats",
+  "note": "a criterion of the achievement \"Simply Abominable\" (Recover the stolen Smokywood Pastures treats.)"
+ },
+ "achievements/1110/desc": {
+  "en": "Ruin Hallow's End for the enemy faction.",
+  "note": "the description of the achievement \"Rotten Hallow\""
+ },
+ "achievements/1110/label": {
+  "en": "Spoil the enemy's Hallow's End",
+  "note": "a criterion of the achievement \"Rotten Hallow\" (Ruin Hallow's End for the enemy faction.)"
+ },
+ "achievements/1111/name": {
+  "en": "For The Children",
+  "note": "an achievement's name"
+ },
+ "achievements/1111/desc": {
+  "en": "Escort an orphan during Children's Week.",
+  "note": "the description of the achievement \"For The Children\""
+ },
+ "achievements/1111/label": {
+  "en": "A Warden of the Alliance or Horde",
+  "note": "a criterion of the achievement \"For The Children\" (Escort an orphan during Children's Week.)"
+ },
+ "achievements/1112/desc": {
+  "en": "Obtain a Children's Week reward pet.",
+  "note": "the description of the achievement \"Aw, Isn't It Cute?\""
+ },
+ "achievements/1112/label": {
+  "en": "A Children's Week pet",
+  "note": "a criterion of the achievement \"Aw, Isn't It Cute?\" (Obtain a Children's Week reward pet.)"
+ },
+ "achievements/1113/desc": {
+  "en": "Find a Brightly Colored Egg during Noblegarden.",
+  "note": "the description of the achievement \"I Found One!\""
+ },
+ "achievements/1114/name": {
+  "en": "Honoring a Hero",
+  "note": "an achievement's name"
+ },
+ "achievements/1114/desc": {
+  "en": "Pay tribute to a fallen hero during the Harvest Festival.",
+  "note": "the description of the achievement \"Honoring a Hero\""
+ },
+ "achievements/1114/label": {
+  "en": "Honoring a Hero",
+  "note": "a criterion of the achievement \"Honoring a Hero\" (Pay tribute to a fallen hero during the Harvest Festival.)"
+ },
+ "achievements/1115/name": {
+  "en": "Master of the Elements",
+  "note": "an achievement's name"
+ },
+ "achievements/1115/desc": {
+  "en": "Defeat all four lieutenants of the elemental invasions.",
+  "note": "the description of the achievement \"Master of the Elements\""
+ },
+ "achievements/1116/name": {
+  "en": "Darkmoon Faire Patron",
+  "note": "an achievement's name"
+ },
+ "achievements/1116/desc": {
+  "en": "Spend 100 tickets at the Darkmoon Faire.",
+  "note": "the description of the achievement \"Darkmoon Faire Patron\""
+ },
+ "achievements/1117/name": {
+  "en": "A Full Deck",
+  "note": "an achievement's name"
+ },
+ "achievements/1117/desc": {
+  "en": "Combine a full set of Darkmoon cards into a deck and claim its reward.",
+  "note": "the description of the achievement \"A Full Deck\""
+ },
+ "achievements/1117/label": {
+  "en": "A Darkmoon deck",
+  "note": "a criterion of the achievement \"A Full Deck\" (Combine a full set of Darkmoon cards into a deck and claim its reward.)"
+ },
+ "achievements/5002/desc": {
+  "en": "Activate your Dual Talent Specialization.",
+  "note": "the description of the achievement \"Dual Talent Specialization\""
+ },
+ "achievements/5004/desc": {
+  "en": "Equip a tabard.",
+  "note": "the description of the achievement \"Represent\""
+ },
+ "achievements/5004/label": {
+  "en": "Wear a tabard",
+  "note": "a criterion of the achievement \"Represent\" (Equip a tabard.)"
+ },
+ "achievements/5006/label": {
+  "en": "Hug a dead enemy player",
+  "note": "a criterion of the achievement \"Make Love, Not Warcraft\" (Emote /hug on a dead enemy before they release corpse.)"
+ },
+ "achievements/5007/name": {
+  "en": "Buffed to the Gills",
+  "note": "an achievement's name"
+ },
+ "achievements/5007/desc": {
+  "en": "Carry Rallying Cry of the Dragonslayer, Warchief's Blessing, Spirit of Zandalar, Songflower Serenade and the three Gordok tribute buffs at once.",
+  "note": "the description of the achievement \"Buffed to the Gills\""
+ },
+ "achievements/5007/label": {
+  "en": "Every world buff at once",
+  "note": "a criterion of the achievement \"Buffed to the Gills\" (Carry Rallying Cry of the Dragonslayer, Warchief's Blessing, Spirit of Zandalar, Songflower Serenade and the three Gordok tribute buffs at once.)"
+ },
+ "achievements/5008/name": {
+  "en": "Chronoboon",
+  "note": "an achievement's name"
+ },
+ "achievements/5008/desc": {
+  "en": "Store your world buffs in a Chronoboon Displacer.",
+  "note": "the description of the achievement \"Chronoboon\""
+ },
+ "achievements/5008/label": {
+  "en": "Hold a Supercharged Chronoboon Displacer",
+  "note": "a criterion of the achievement \"Chronoboon\" (Store your world buffs in a Chronoboon Displacer.)"
+ },
+ "achievements/5009/name": {
+  "en": "Hardcore Sixty",
+  "note": "an achievement's name"
+ },
+ "achievements/5009/desc": {
+  "en": "Reach level 60 on a Hardcore realm.",
+  "note": "the description of the achievement \"Hardcore Sixty\""
+ },
+ "achievements/5010/name": {
+  "en": "Old-Timer",
+  "note": "an achievement's name"
+ },
+ "achievements/5010/desc": {
+  "en": "Play for 30 days.",
+  "note": "the description of the achievement \"Old-Timer\""
+ },
+ "achievements/5011/name": {
+  "en": "Timeworn",
+  "note": "an achievement's name"
+ },
+ "achievements/5011/desc": {
+  "en": "Play for 100 days.",
+  "note": "the description of the achievement \"Timeworn\""
+ },
+ "achievements/5013/name": {
+  "en": "Changed My Mind",
+  "note": "an achievement's name"
+ },
+ "achievements/5013/desc": {
+  "en": "Reset your talents 10 times.",
+  "note": "the description of the achievement \"Changed My Mind\""
+ },
+ "achievements/5013/label": {
+  "en": "Talent resets",
+  "note": "a criterion of the achievement \"Changed My Mind\" (Reset your talents 10 times.)"
+ },
+ "achievements/5014/desc": {
+  "en": "Take 100 flights.",
+  "note": "the description of the achievement \"Frequent Flyer\""
+ },
+ "achievements/5014/label": {
+  "en": "Flights taken",
+  "note": "a criterion of the achievement \"Frequent Flyer\" (Take 100 flights.)"
+ },
+ "achievements/5015/name": {
+  "en": "Seasoned Traveler",
+  "note": "an achievement's name"
+ },
+ "achievements/5015/desc": {
+  "en": "Take 500 flights.",
+  "note": "the description of the achievement \"Seasoned Traveler\""
+ },
+ "achievements/5015/label": {
+  "en": "Flights taken",
+  "note": "a criterion of the achievement \"Seasoned Traveler\" (Take 500 flights.)"
+ },
+ "achievements/5016/name": {
+  "en": "Eastern Kingdoms Skyways",
+  "note": "an achievement's name"
+ },
+ "achievements/5016/desc": {
+  "en": "Discover every flight path of the Eastern Kingdoms.",
+  "note": "the description of the achievement \"Eastern Kingdoms Skyways\""
+ },
+ "achievements/5016/labels.1": {
+  "en": "Eastern Kingdoms flight paths",
+  "note": "a criterion of the achievement \"Eastern Kingdoms Skyways\" (Discover every flight path of the Eastern Kingdoms.)"
+ },
+ "achievements/5017/name": {
+  "en": "Kalimdor Skyways",
+  "note": "an achievement's name"
+ },
+ "achievements/5017/desc": {
+  "en": "Discover every flight path of Kalimdor.",
+  "note": "the description of the achievement \"Kalimdor Skyways\""
+ },
+ "achievements/5017/labels.1": {
+  "en": "Kalimdor flight paths",
+  "note": "a criterion of the achievement \"Kalimdor Skyways\" (Discover every flight path of Kalimdor.)"
+ },
+ "achievements/5018/desc": {
+  "en": "Own 5 mounts.",
+  "note": "the description of the achievement \"Stable Keeper\""
+ },
+ "achievements/5019/desc": {
+  "en": "Own 10 mounts.",
+  "note": "the description of the achievement \"Leading the Cavalry\""
+ },
+ "achievements/5020/name": {
+  "en": "Tabard Collector",
+  "note": "an achievement's name"
+ },
+ "achievements/5020/desc": {
+  "en": "Own 5 tabards.",
+  "note": "the description of the achievement \"Tabard Collector\""
+ },
+ "achievements/5020/label": {
+  "en": "Tabards owned",
+  "note": "a criterion of the achievement \"Tabard Collector\" (Own 5 tabards.)"
+ },
+ "achievements/5021/name": {
+  "en": "Shopaholic",
+  "note": "an achievement's name"
+ },
+ "achievements/5021/desc": {
+  "en": "Spend 1,000 gold at vendors.",
+  "note": "the description of the achievement \"Shopaholic\""
+ },
+ "achievements/5021/label": {
+  "en": "Gold spent at vendors",
+  "note": "a criterion of the achievement \"Shopaholic\" (Spend 1,000 gold at vendors.)"
+ },
+ "achievements/5022/name": {
+  "en": "Auction Tycoon",
+  "note": "an achievement's name"
+ },
+ "achievements/5022/desc": {
+  "en": "Earn 1,000 gold from auctions and post 100 of them.",
+  "note": "the description of the achievement \"Auction Tycoon\""
+ },
+ "achievements/5022/list.1": {
+  "en": "Gold earned from auctions",
+  "note": "a criterion of the achievement \"Auction Tycoon\" (Earn 1,000 gold from auctions and post 100 of them.)"
+ },
+ "achievements/5022/list.2": {
+  "en": "Auctions posted",
+  "note": "a criterion of the achievement \"Auction Tycoon\" (Earn 1,000 gold from auctions and post 100 of them.)"
+ },
+ "achievements/5023/name": {
+  "en": "Angler of Azeroth",
+  "note": "an achievement's name"
+ },
+ "achievements/5023/desc": {
+  "en": "Catch every kind of fish in Azeroth.",
+  "note": "the description of the achievement \"Angler of Azeroth\""
+ },
+ "achievements/5023/items.21": {
+  "en": "Stonescale Eel",
+  "note": "a criterion of the achievement \"Angler of Azeroth\" (Catch every kind of fish in Azeroth.)"
+ },
+ "achievements/5023/items.22": {
+  "en": "Lightning Eel",
+  "note": "a criterion of the achievement \"Angler of Azeroth\" (Catch every kind of fish in Azeroth.)"
+ },
+ "achievements/5024/name": {
+  "en": "Lone Wolf",
+  "note": "an achievement's name"
+ },
+ "achievements/5024/desc": {
+  "en": "Defeat a dungeon end boss alone at level 60.",
+  "note": "the description of the achievement \"Lone Wolf\""
+ },
+ "achievements/5025/name": {
+  "en": "Raid Tourist",
+  "note": "an achievement's name"
+ },
+ "achievements/5025/desc": {
+  "en": "Set foot in every raid of Azeroth.",
+  "note": "the description of the achievement \"Raid Tourist\""
+ },
+ "achievements/5026/desc": {
+  "en": "Hold every raid attunement.",
+  "note": "the description of the achievement \"Attuned\""
+ },
+ "achievements/5027/name": {
+  "en": "Qiraji Battle Tanks",
+  "note": "an achievement's name"
+ },
+ "achievements/5027/desc": {
+  "en": "Own the red, blue, green and yellow Qiraji battle tanks.",
+  "note": "the description of the achievement \"Qiraji Battle Tanks\""
+ },
+ "achievements/5028/name": {
+  "en": "Dungeon Set 2",
+  "note": "an achievement's name"
+ },
+ "achievements/5028/desc": {
+  "en": "Own all 8 pieces of your class's Dungeon Set 2.",
+  "note": "the description of the achievement \"Dungeon Set 2\""
+ },
+ "achievements/5029/name": {
+  "en": "Tribute Collector",
+  "note": "an achievement's name"
+ },
+ "achievements/5029/desc": {
+  "en": "Receive Fengus' Ferocity, Mol'dar's Moxie and Slip'kik's Savvy.",
+  "note": "the description of the achievement \"Tribute Collector\""
+ },
+ "achievements/5030/name": {
+  "en": "Well-Fed",
+  "note": "an achievement's name"
+ },
+ "achievements/5030/desc": {
+  "en": "Have a Well Fed meal on 7 different days.",
+  "note": "the description of the achievement \"Well-Fed\""
+ },
+ "achievements/5030/label": {
+  "en": "Days well fed",
+  "note": "a criterion of the achievement \"Well-Fed\" (Have a Well Fed meal on 7 different days.)"
+ },
+ "achievements/5031/name": {
+  "en": "Night Shift",
+  "note": "an achievement's name"
+ },
+ "achievements/5031/desc": {
+  "en": "Turn in 25 quests between midnight and 6 AM server time.",
+  "note": "the description of the achievement \"Night Shift\""
+ },
+ "achievements/5031/label": {
+  "en": "Night turn-ins",
+  "note": "a criterion of the achievement \"Night Shift\" (Turn in 25 quests between midnight and 6 AM server time.)"
+ },
+ "achievements/5032/name": {
+  "en": "Summoner",
+  "note": "an achievement's name"
+ },
+ "achievements/5032/desc": {
+  "en": "Be summoned 50 times.",
+  "note": "the description of the achievement \"Summoner\""
+ },
+ "achievements/5032/label": {
+  "en": "Summons accepted",
+  "note": "a criterion of the achievement \"Summoner\" (Be summoned 50 times.)"
+ },
+ "achievements/5033/name": {
+  "en": "Mailman",
+  "note": "an achievement's name"
+ },
+ "achievements/5033/desc": {
+  "en": "Send 100 mails.",
+  "note": "the description of the achievement \"Mailman\""
+ },
+ "achievements/5033/label": {
+  "en": "Mails sent",
+  "note": "a criterion of the achievement \"Mailman\" (Send 100 mails.)"
+ },
+ "achievements/5034/name": {
+  "en": "Bottomless",
+  "note": "an achievement's name"
+ },
+ "achievements/5034/desc": {
+  "en": "Equip four bags of 16 slots or more.",
+  "note": "the description of the achievement \"Bottomless\""
+ },
+ "achievements/5037/desc": {
+  "en": "Obtain E'ko from the creatures of Winterspring.",
+  "note": "the description of the achievement \"E'ko Madness\""
+ },
+ "achievements/5038/desc": {
+  "en": "Deliver a Hakkari Bijou to Zanza the Restless on Yojamba Isle.",
+  "note": "the description of the achievement \"Relics of a Fallen Empire\""
+ },
+ "achievements/5039/desc": {
+  "en": "Fish something up in Orgrimmar and in Stormwind City.",
+  "note": "the description of the achievement \"The Fishing Diplomat\""
+ },
+ "achievements/5041/name": {
+  "en": "Cartel Connections",
+  "note": "an achievement's name"
+ },
+ "achievements/5041/desc": {
+  "en": "Earn Exalted reputation with Booty Bay, Everlook, Gadgetzan and Ratchet.",
+  "note": "the description of the achievement \"Cartel Connections\""
+ },
+ "achievements/5027/list.2": {
+  "en": "Blue Qiraji Battle Tank",
+  "note": "a criterion of the achievement \"Qiraji Battle Tanks\" (Own the red, blue, green and yellow Qiraji battle tanks.)"
+ }
+}

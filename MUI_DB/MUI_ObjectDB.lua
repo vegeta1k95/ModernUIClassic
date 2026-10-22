@@ -18,6 +18,21 @@ object "ObjectDB" {
         return c
     end;
 
+    -- Names in the client's language, from MUI_DB/Locale: id -> name, or
+    -- { name, subName } (a creature's title under its name).
+    Localize = function(self, names)
+        for id, name in pairs(names) do
+            local row = self._data[id]
+            if row then
+                if type(name) == "table" then
+                    row.name, row.subName = name[1], name[2] or row.subName
+                else
+                    row.name = name
+                end
+            end
+        end
+    end;
+
     _data = {
         [31] = {
             name = "Old Lion Statue",
